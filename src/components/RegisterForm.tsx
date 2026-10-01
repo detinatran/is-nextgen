@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { asset } from "@/lib/paths";
+import { uploadVideo } from "@/lib/upload";
+import VideoUpload from "./VideoUpload";
 
 const endpoint = process.env.NEXT_PUBLIC_REGISTER_ENDPOINT || "";
 
-type State = "idle" | "sending" | "done" | "error";
+type State = "idle" | "uploading" | "sending" | "done" | "error";
 
 const schools = [
   "Trường Quốc tế - ĐHQGHN",
@@ -27,6 +29,9 @@ const labelCls = "block text-[15px] font-semibold text-navy";
 export default function RegisterForm({ deadline }: { deadline: string }) {
   const [state, setState] = useState<State>("idle");
   const [closed, setClosed] = useState(false);
+  const [video, setVideo] = useState<File | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [errorText, setErrorText] = useState("");
 
   useEffect(() => {
     setClosed(Date.now() > new Date(deadline).getTime());
@@ -36,10 +41,23 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    if (data.get("website")) return; // bẫy bot
+    if (data.get("website") || !video) return; // bẫy bot / chưa chọn video
     data.delete("website");
     data.set("submittedAt", new Date().toISOString());
     data.set("shareProfile", data.get("shareProfile") ? "Có" : "Không");
+
+    setErrorText("");
+    try {
+      setState("uploading");
+      setProgress(0);
+      const owner = `${data.get("fullName")} - ${data.get("studentId")}`;
+      data.set("videoUrl", await uploadVideo(endpoint, video, owner, setProgress));
+    } catch {
+      setState("error");
+      setProgress(null);
+      setErrorText("Không tải được video lên. Kiểm tra kết nối mạng và thử lại.");
+      return;
+    }
 
     setState("sending");
     try {
@@ -50,9 +68,12 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
         body: new URLSearchParams(data as unknown as Record<string, string>),
       });
       setState("done");
+      setVideo(null);
+      setProgress(null);
       form.reset();
     } catch {
       setState("error");
+      setErrorText("Video đã tải lên nhưng chưa gửi được thông tin. Kiểm tra kết nối mạng và bấm gửi lại.");
     }
   }
 
@@ -77,7 +98,7 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
     <form onSubmit={onSubmit} className="card p-6 sm:p-8">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={asset("/images/logo.png")} alt="" className="mb-6 h-12 w-auto" />
-      <fieldset disabled={unavailable || state === "sending"} className="grid gap-4 sm:grid-cols-2">
+      <fieldset disabled={unavailable || state === "uploading" || state === "sending"} className="grid gap-4 sm:grid-cols-2">
         <legend className="sr-only">Thông tin đăng ký</legend>
 
         <label className="sm:col-span-2">
@@ -137,16 +158,7 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
           <input name="nationality" defaultValue="Việt Nam" className={field} />
         </label>
 
-        <label className="sm:col-span-2">
-          <span className={labelCls}>Link video giới thiệu (tối đa 90 giây) *</span>
-          <input
-            name="videoUrl"
-            type="url"
-            required
-            placeholder="https://drive.google.com/... hoặc YouTube (chế độ không công khai)"
-            className={field}
-          />
-        </label>
+        <VideoUpload file={video} onChange={setVideo} progress={state === "uploading" ? progress : null} />
 
         {/* Bẫy bot: người dùng không thấy ô này */}
         <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
@@ -161,7 +173,11 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
         </label>
 
         <button type="submit" className="btn-primary w-full py-3.5 disabled:translate-y-0 disabled:opacity-60 sm:col-span-2">
-          {state === "sending" ? "Đang gửi..." : "Gửi đăng ký"}
+          {state === "uploading"
+            ? `Đang tải video... ${Math.round((progress ?? 0) * 100)}%`
+            : state === "sending"
+              ? "Đang gửi..."
+              : "Gửi đăng ký"}
         </button>
       </fieldset>
 
@@ -172,7 +188,7 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
       )}
       {state === "error" && (
         <p className="mt-4 text-center text-[15px] font-medium text-orange-ink" role="alert">
-          Không gửi được đăng ký. Kiểm tra kết nối mạng và thử lại.
+          {errorText}
         </p>
       )}
     </form>

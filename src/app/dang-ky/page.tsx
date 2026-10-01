@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Đăng ký dự thi | IS-NextGen Man
 const checklist = [
   "Thông tin cá nhân và mã số sinh viên",
   "Video tối đa 90 giây giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố",
-  "Link video để chế độ ai có link đều xem được (Google Drive hoặc YouTube không công khai)",
+  "File video (MP4, MOV...) dưới 300 MB, tải lên ngay trong form",
   "Thẻ sinh viên hoặc giấy xác nhận để xuất trình ở các vòng thi trực tiếp",
 ];
 

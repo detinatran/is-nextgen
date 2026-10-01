@@ -1,41 +1,26 @@
-import Carousel from "@/components/Carousel";
 import Eyebrow from "@/components/Eyebrow";
-import Photo from "@/components/Photo";
 import { personas } from "@/content/site";
-import { asset } from "@/lib/paths";
 
 export default function Personas() {
   return (
-    <section
-      className="relative overflow-hidden bg-mist bg-cover bg-center pt-14 pb-16"
-      style={{ backgroundImage: `linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.3) 35%, rgb(243 247 253 / 0.85)), url(${asset("/images/generated/soft-bg.webp")})` }}
-    >
-      <div className="container-x">
-        <div className="reveal">
+    <section className="bg-white py-16 lg:py-24">
+      <div className="container-x grid gap-12 lg:grid-cols-[1fr_2fr]">
+        <div className="reveal lg:sticky lg:top-28 lg:self-start">
           <Eyebrow>Chân dung nhà quản trị</Eyebrow>
-          <h2 className="h2-section mt-4">
-            Bạn có phải nhà quản trị <br className="hidden sm:block" />
-            chúng tôi đang tìm?
-          </h2>
+          <h2 className="h2-section mt-4">Bạn có phải nhà quản trị chúng tôi đang tìm?</h2>
+          <p className="lead mt-4">
+            Sáu nhóm năng lực được chấm xuyên suốt bốn vòng thi. Mỗi nhóm có năm mức hành vi quan sát được.
+          </p>
         </div>
-
-        <div className="reveal mt-8 -mx-2">
-          <Carousel label="Sáu nhóm năng lực" slideClassName="w-full px-2 md:w-1/2" dots>
-            {personas.map((p, i) => (
-              <article key={p.title} className="card flex h-full flex-col overflow-hidden sm:flex-row">
-                <Photo src={p.image} alt="" className="aspect-[4/3] w-full shrink-0 sm:aspect-auto sm:w-[38%]" imgClassName="object-[50%_25%]" />
-                <div className="flex flex-col px-6 py-5">
-                  <span aria-hidden className="font-serif text-4xl leading-none text-orange">
-                    “
-                  </span>
-                  <p className="mt-1 flex-1 text-base leading-relaxed text-ink">{p.body}</p>
-                  <h3 className="mt-4 text-[17px] font-bold text-navy">{p.title}</h3>
-                  <p className="mt-0.5 text-sm text-muted">Nhóm năng lực {String(i + 1).padStart(2, "0")} · chấm ở cả bốn vòng</p>
-                </div>
-              </article>
-            ))}
-          </Carousel>
-        </div>
+        <ol className="grid gap-x-10 sm:grid-cols-2">
+          {personas.map((p, i) => (
+            <li key={p.title} className="reveal border-t border-line py-6" style={{ "--delay": `${(i % 2) * 80}ms` } as React.CSSProperties}>
+              <span className="text-sm font-semibold text-orange-ink tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="mt-2 text-lg font-bold text-navy">{p.title}</h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted">{p.body}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

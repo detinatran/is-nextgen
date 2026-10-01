@@ -17,6 +17,7 @@ typeset -A P MODE INPUT CHECK
 
 # ---- Ảnh cảnh lớn ----
 P[theme-ai]="A young Vietnamese businessman in a navy suit seen from behind, over-the-shoulder, standing on a modern rooftop plaza at sunrise looking at a futuristic city skyline. Floating translucent holographic glass UI panels around him showing the words 'AI', 'Strategy' and 'Innovation' plus small business icons. Warm golden sun flare in the center, blue sky, reflective floor. $SCENE Photorealistic, cinematic. No other text, no logos."
+P[theme-seminar]="Documentary-style candid photo, not staged: a small group of Vietnamese university students in casual smart clothes around a seminar table in a plain university classroom, one student explaining something on a laptop while two others look at a printed chart and take handwritten notes, a lecturer listening at the side. Natural window light, muted realistic colors, slight film grain, shallow depth of field, shot on a 35mm lens. No holograms, no floating UI, no glowing effects, no text, no logos. Landscape 3:2."
 P[values-bg]="Wide panoramic website banner background: deep navy-blue twilight sky, majestic rocky mountain peaks on the right lit by a warm golden sunrise glow on the horizon, faint futuristic skyscraper silhouettes in the middle distance, dark trees in the lower-left corner, soft clouds. The left half is darker and calm for overlaying white text. $SCENE $PHOTO"
 P[timeline-bg]="Wide panoramic website banner background at dusk: deep navy-blue sky on the left fading to a warm orange sunset on the right, layered blue mountain ranges, a winding highway with golden light trails curving from the right toward the lower center, a modern city with one tall landmark skyscraper on the right, trees with golden leaves in the lower-right corner. The left side is darker and uncluttered for white text. $SCENE $PHOTO"
 P[footer-bg]="Night city skyline background for a website footer: dark navy-blue tones, illuminated modern skyscrapers on the right half with warm window lights, a wide road leading toward the city, a lone young man in a suit seen from behind standing on the road looking at the city, subtle blue haze. The left 40 percent is very dark navy and empty. $SCENE $PHOTO"
@@ -52,7 +53,7 @@ P[icons-gold]="Four separate luxurious 3D golden emblem icons arranged in a 2 by
 P[icons-light]="Eight separate glossy 3D icons arranged in a grid of 4 columns by 2 rows with generous equal spacing, each centered in its own cell, on a pure white background (#FFFFFF), minimal shadows. Top row from left to right: a blue brain, an orange glowing light bulb, a purple group of three people, a golden trophy cup. Bottom row from left to right: a golden crown, a red and gold medal with ribbon, a golden star medal, a red award badge with ribbon. Modern clean 3D icon style. No text. $SCENE"
 
 MODE=(
-  theme-ai photo values-bg photo timeline-bg photo footer-bg photo about-city photo cta-students key-orange
+  theme-ai photo theme-seminar photo values-bg photo timeline-bg photo footer-bg photo about-city photo cta-students key-orange
   trophy cutout round-case photo round-pitch photo
   personas-a pair personas-b pair personas-c pair
   hero-wide photo

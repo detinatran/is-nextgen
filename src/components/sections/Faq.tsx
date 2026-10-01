@@ -6,8 +6,8 @@ import { faqs } from "@/content/site";
 
 export default function Faq() {
   return (
-    <section id="hoi-dap" className="relative overflow-hidden bg-white pt-12 pb-24">
-      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-56 w-full object-cover object-bottom opacity-80" />
+    <section id="hoi-dap" className="relative overflow-hidden bg-white py-16 pb-28 lg:py-24 lg:pb-32">
+      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full object-cover object-bottom opacity-70" />
       <div className="container-x relative grid items-start gap-10 lg:grid-cols-[1fr_1.6fr]">
         <div className="reveal">
           <Eyebrow>Câu hỏi thường gặp</Eyebrow>
@@ -22,7 +22,7 @@ export default function Faq() {
         </div>
         <div className="reveal space-y-3">
           {faqs.map((f) => (
-            <details key={f.q} className="group rounded-xl border border-[#eadfce] bg-[#fbf6ef] transition open:bg-white open:shadow-card">
+            <details key={f.q} className="group rounded-xl border border-line bg-white transition open:border-navy/20">
               <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-base font-semibold text-navy [&::-webkit-details-marker]:hidden">
                 <Icon name={f.icon} className="h-5 w-5 shrink-0 text-orange-ink" />
                 <span className="flex-1">{f.q}</span>

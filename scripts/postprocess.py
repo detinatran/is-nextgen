@@ -53,9 +53,7 @@ def cutout(arr: np.ndarray) -> np.ndarray:
     # Viền mềm: alpha tăng dần theo khoảng cách tới vùng nền
     dist = ndimage.distance_transform_edt(~bg)
     alpha = np.clip(dist / 3, 0, 1)
-    # Bóng đổ nhạt sát nền: giữ một phần theo độ đậm
-    soft = np.clip((255 - rgb.min(-1)) / 60, 0, 1)
-    alpha = np.where(bg, soft * 0.6, alpha)
+    alpha = np.where(bg, 0, alpha)
     return np.dstack([rgb, alpha * 255]).astype("uint8")
 
 

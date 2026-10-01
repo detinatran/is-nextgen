@@ -10,9 +10,8 @@ const forEveryone = [
 
 export default function Prizes() {
   return (
-    <section id="giai-thuong" className="relative overflow-hidden bg-cream py-16 lg:py-24">
-      <Art src="/images/generated/deco-peach-waves.webp" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="container-x relative">
+    <section id="giai-thuong" className="bg-cream py-16 lg:py-24">
+      <div className="container-x">
         <div className="reveal max-w-3xl">
           <Eyebrow>Giải thưởng</Eyebrow>
           <h2 className="h2-section mt-4">

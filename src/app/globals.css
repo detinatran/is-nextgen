@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #12305e;
+  --color-navy-deep: #0b1f43;
+  --color-navy-soft: #1c427e;
+  --color-gold: #e3a93b;
+  --color-gold-soft: #f6e3b8;
+  --color-orange: #ef7f29;
+  --color-coral: #f0603c;
+  --color-rust: #b8461f;
+  --color-cream: #f5f1ea;
+  --color-teal: #2ba59b;
+  --color-ink: #0f1f3d;
+  --color-muted: #5b6577;
+  --color-line: #e3ddd2;
+
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-gold text-navy-deep;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+@utility eyebrow {
+  @apply font-mono text-xs font-medium tracking-[0.25em] uppercase;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+@utility btn-gold {
+  @apply btn bg-gold text-navy-deep hover:bg-[#f0b94f] focus-visible:outline-gold;
+}
+@utility btn-ghost {
+  @apply btn border border-white/40 text-white hover:border-white hover:bg-white/10 focus-visible:outline-white;
+}
+@utility btn-navy {
+  @apply btn bg-navy text-white hover:bg-navy-soft focus-visible:outline-navy;
+}
+
+/* Hoạ tiết dự phòng khi chưa có ảnh minh hoạ */
+.photo-fallback {
+  background:
+    radial-gradient(circle at 20% 25%, rgb(227 169 59 / 0.35), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgb(240 96 60 / 0.3), transparent 45%),
+    repeating-linear-gradient(135deg, rgb(255 255 255 / 0.06) 0 2px, transparent 2px 14px),
+    linear-gradient(135deg, var(--color-navy-soft), var(--color-navy-deep));
+}
+
+/* Hiệu ứng xuất hiện khi cuộn; chỉ ẩn khi trình duyệt chạy JS */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--delay, 0ms);
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

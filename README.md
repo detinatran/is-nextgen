@@ -12,14 +12,24 @@ npm run dev        # http://localhost:3000
 npm run build      # xuất web tĩnh ra out/
 ```
 
+## Các trang
+
+| Đường dẫn | Nội dung |
+| --- | --- |
+| `/` | Landing page: hero, giới thiệu, chủ đề, bốn vòng thi, giá trị, năng lực, lộ trình, giải thưởng, đồng hành, FAQ |
+| `/the-le/` | Thể lệ đầy đủ: đối tượng, chi tiết từng vòng, khung năng lực, nguyên tắc chấm, hoạt động bên lề, lịch, bình chọn |
+| `/ket-qua/` | Kết quả từng vòng |
+| `/dang-ky/` | Form đăng ký dự thi |
+
 ## Sửa nội dung
 
 | Muốn sửa | File |
 | --- | --- |
-| Chữ, số liệu, vòng thi, giải thưởng, lộ trình, FAQ, hạn đăng ký, liên hệ | [src/content/site.ts](src/content/site.ts) |
+| Chữ, số liệu, vòng thi, giải thưởng, lộ trình, FAQ, hạn đăng ký, liên hệ, mạng xã hội, video giới thiệu | [src/content/site.ts](src/content/site.ts) |
+| Logo nhà tài trợ | Thêm file vào `public/images/sponsors/` rồi khai báo trong mảng `sponsors` của `site.ts` |
 | Kết quả từng vòng (không cần build lại) | [public/data/results.json](public/data/results.json) hoặc Google Sheet, xem [docs/google-apps-script.md](docs/google-apps-script.md) |
 | Màu sắc, font | [src/app/globals.css](src/app/globals.css) (`@theme`) |
-| Banner, logo | `public/images/banner.webp`, `public/images/crest.png` (bản gốc trong `assets/`) |
+| Banner, logo | `public/images/banner.webp`, `logo.png`, `logo-white.png`, `organizers.png` (bản gốc trong `assets/`) |
 
 Những chỗ cần Ban Tổ chức điền đều có ghi chú `TODO(BTC)` trong `site.ts`: hạn đăng ký chính thức, email, số điện thoại, fanpage, hồ sơ tài trợ.
 
@@ -40,7 +50,7 @@ Xem [.env.example](.env.example).
 
 ## Ảnh minh hoạ
 
-Ảnh trong `public/images/generated/` được sinh bằng Codex CLI. Ảnh nào chưa có thì trang tự hiện hoạ tiết thương hiệu thay thế. Để sinh các ảnh còn thiếu:
+Ảnh trong `public/images/generated/` được sinh bằng Codex CLI. Ảnh nào chưa có thì trang tự hiện hoạ tiết hoặc nền màu thương hiệu thay thế. Danh sách ảnh và câu lệnh mô tả nằm trong script. Để sinh các ảnh còn thiếu:
 
 ```bash
 ./scripts/gen-images.sh
@@ -51,8 +61,9 @@ Xem [.env.example](.env.example).
 ```
 src/
   app/            layout, trang chủ, CSS
-  components/     Header, Countdown, Photo, form, kết quả...
-    sections/     từng khối của landing page
+  app/the-le, app/ket-qua, app/dang-ky   các trang con
+  components/     Header, Icon, Carousel, Countdown, Photo, form, kết quả...
+    sections/     từng khối của landing page và footer
   content/        toàn bộ nội dung chữ
   lib/            tải kết quả, xử lý đường dẫn
 public/

@@ -1,19 +1,37 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { nav, site } from "@/content/site";
 import { asset } from "@/lib/paths";
+import Icon from "./Icon";
+
+/** Theo dõi section đang hiển thị để gạch chân mục menu tương ứng (chỉ trên trang chủ). */
+function useActiveSection(enabled: boolean) {
+  const [active, setActive] = useState("top");
+  useEffect(() => {
+    if (!enabled) return;
+    const ids = nav.map((n) => n.id);
+    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-35% 0px -55% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [enabled]);
+  return active;
+}
 
 export default function Header() {
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const activeSection = useActiveSection(onHome);
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -21,66 +39,72 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const isActive = (item: (typeof nav)[number]) =>
+    onHome ? item.id === activeSection : pathname.startsWith(`/${item.id}`);
+
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled || open ? "bg-navy-deep/95 shadow-lg shadow-black/15 backdrop-blur" : "bg-navy-deep"
-      }`}
-    >
-      <div className="container-x flex h-16 items-center justify-between gap-4">
-        <a href="#top" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset("/images/crest.png")} alt="Trường Quốc tế - ĐHQGHN" className="h-10 w-auto shrink-0" />
-          <span className="min-w-0 leading-tight">
-            <span className="block truncate text-sm font-extrabold tracking-wide text-white">{site.shortName}</span>
-            <span className="block truncate text-[11px] text-white/65">{site.organizer}</span>
-          </span>
-        </a>
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div className="mx-auto max-w-[77rem] lg:px-8">
+        <div className="flex h-14 items-center justify-between gap-4 border border-t-0 border-white/10 bg-navy/85 px-4 shadow-xl shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-b-2xl">
+          <Link href="/#top" className="flex min-w-0 items-center" onClick={() => setOpen(false)}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-8 w-auto" />
+          </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Điều hướng chính">
-          {nav.map((item) => (
-            <a key={item.href} href={item.href} className="text-sm text-white/80 transition hover:text-gold">
-              {item.label}
-            </a>
-          ))}
-          <a href="#dang-ky" className="btn-gold px-5 py-2.5">
-            Đăng ký dự thi
-          </a>
-        </nav>
-
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center text-white lg:hidden"
-          aria-label={open ? "Đóng menu" : "Mở menu"}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
-          </svg>
-        </button>
-      </div>
-
-      {open && (
-        <nav id="mobile-nav" className="border-t border-white/10 lg:hidden" aria-label="Điều hướng di động">
-          <div className="container-x flex flex-col py-3">
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Điều hướng chính">
             {nav.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                className="py-3 text-base text-white/85 hover:text-gold"
+                aria-current={isActive(item) ? "true" : undefined}
+                className={`relative px-3 py-2 text-sm transition after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-orange after:transition-transform ${
+                  isActive(item) ? "font-semibold text-white after:scale-x-100" : "text-white/75 after:scale-x-0 hover:text-white"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Link href="/dang-ky/" className="btn-primary hidden px-5 py-2 sm:inline-flex">
+              Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10 lg:hidden"
+              aria-label={open ? "Đóng menu" : "Mở menu"}
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              onClick={() => setOpen((v) => !v)}
+            >
+              <Icon name={open ? "x" : "menu"} className="h-6 w-6" strokeWidth={2} />
+            </button>
+          </div>
+        </div>
+
+        {open && (
+          <nav
+            id="mobile-nav"
+            className="border-x border-b border-white/10 bg-navy/95 px-4 pb-4 backdrop-blur-md sm:px-6 lg:hidden"
+            aria-label="Điều hướng di động"
+          >
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`block border-b border-white/5 py-3 text-base ${isActive(item) ? "font-semibold text-orange-soft" : "text-white/85"}`}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
-            <a href="#dang-ky" className="btn-gold mt-2 mb-2" onClick={() => setOpen(false)}>
-              Đăng ký dự thi
-            </a>
-          </div>
-        </nav>
-      )}
+            <Link href="/dang-ky/" className="btn-primary mt-4 w-full" onClick={() => setOpen(false)}>
+              Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+          </nav>
+        )}
+      </div>
     </header>
   );
 }

@@ -13,9 +13,16 @@ function diff(target: number): Parts | null {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+const units: [keyof Parts, string][] = [
+  ["d", "Ngày"],
+  ["h", "Giờ"],
+  ["m", "Phút"],
+  ["s", "Giây"],
+];
+
 export default function Countdown({ deadline }: { deadline: string }) {
   const target = new Date(deadline).getTime();
-  // null trước khi hydrate để tránh lệch giữa HTML tĩnh và client
+  // undefined trước khi hydrate để HTML tĩnh và client khớp nhau
   const [parts, setParts] = useState<Parts | null | undefined>(undefined);
 
   useEffect(() => {
@@ -25,24 +32,17 @@ export default function Countdown({ deadline }: { deadline: string }) {
   }, [target]);
 
   if (parts === null) {
-    return <p className="font-mono text-sm text-gold">Đã hết hạn đăng ký</p>;
+    return <p className="py-4 text-center text-base font-semibold text-gold">Đã hết hạn đăng ký</p>;
   }
 
-  const units: [keyof Parts, string][] = [
-    ["d", "ngày"],
-    ["h", "giờ"],
-    ["m", "phút"],
-    ["s", "giây"],
-  ];
-
   return (
-    <div className="flex gap-2" role="timer" aria-label="Thời gian còn lại để đăng ký">
+    <div className="grid grid-cols-4 gap-2 sm:gap-3" role="timer" aria-label="Thời gian còn lại để đăng ký">
       {units.map(([key, label]) => (
-        <div key={key} className="min-w-16 border border-white/15 bg-white/5 px-3 py-2 text-center">
-          <div className="font-mono text-2xl font-medium text-white tabular-nums">
+        <div key={key} className="rounded-lg border border-white/15 bg-white/[0.06] px-1 py-1.5 text-center">
+          <div className="text-[1.4rem] leading-tight font-bold text-white tabular-nums">
             {parts ? (key === "d" ? parts.d : pad(parts[key])) : "--"}
           </div>
-          <div className="text-[11px] tracking-wide text-white/60 uppercase">{label}</div>
+          <div className="text-xs text-white/70">{label}</div>
         </div>
       ))}
     </div>

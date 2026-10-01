@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google";
+import { Be_Vietnam_Pro, Dancing_Script } from "next/font/google";
 import { site } from "@/content/site";
 import { asset } from "@/lib/paths";
 import "./globals.css";
@@ -11,10 +11,10 @@ const beVietnam = Be_Vietnam_Pro({
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const dancing = Dancing_Script({
   subsets: ["latin", "vietnamese"],
-  weight: ["400", "500"],
-  variable: "--font-jetbrains",
+  weight: ["600", "700"],
+  variable: "--font-dancing",
   display: "swap",
 });
 
@@ -35,16 +35,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#12305e",
+  themeColor: "#0b1f4d",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${beVietnam.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+    <html lang="vi" className={`${beVietnam.variable} ${dancing.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
-      <body>{children}</body>
+      {/* Tiện ích trình duyệt (Grammarly...) chèn thuộc tính vào body */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

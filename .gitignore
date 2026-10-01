@@ -10,3 +10,8 @@ next-env.d.ts
 # Tài liệu nội bộ
 *.docx
 *.pdf
+__pycache__/
+
+# File ghi chú cho trợ lý AI do `next dev` tự sinh
+AGENTS.md
+CLAUDE.md

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { asset } from "@/lib/paths";
 
 const endpoint = process.env.NEXT_PUBLIC_REGISTER_ENDPOINT || "";
 
@@ -20,8 +21,8 @@ const schools = [
 ];
 
 const field =
-  "mt-1.5 w-full border border-line bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-navy focus:ring-2 focus:ring-navy/15";
-const labelCls = "block text-sm font-semibold text-navy";
+  "mt-1.5 w-full rounded-xl border border-line bg-mist/50 px-4 py-3 text-base text-ink outline-none transition placeholder:text-slate-400 focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/10";
+const labelCls = "block text-[15px] font-semibold text-navy";
 
 export default function RegisterForm({ deadline }: { deadline: string }) {
   const [state, setState] = useState<State>("idle");
@@ -57,13 +58,13 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
 
   if (state === "done") {
     return (
-      <div className="bg-white p-8 text-center shadow-xl shadow-black/10" role="status">
-        <p className="eyebrow text-rust">Đã nhận đăng ký</p>
+      <div className="card p-8 text-center" role="status">
+        <p className="eyebrow justify-center">Đã nhận đăng ký</p>
         <h3 className="mt-3 text-2xl font-bold text-navy">Cảm ơn bạn!</h3>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Ban Tổ chức sẽ gửi email xác nhận và hướng dẫn làm bài Vòng 1 tới địa chỉ bạn đã đăng ký.
+          Ban Tổ chức sẽ gửi email xác nhận và hướng dẫn làm bài Vòng Đơn tới địa chỉ bạn đã đăng ký.
         </p>
-        <button type="button" className="btn-navy mt-6" onClick={() => setState("idle")}>
+        <button type="button" className="btn-outline mt-6" onClick={() => setState("idle")}>
           Đăng ký cho người khác
         </button>
       </div>
@@ -73,7 +74,9 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
   const unavailable = closed || !endpoint;
 
   return (
-    <form onSubmit={onSubmit} className="bg-white p-6 shadow-xl shadow-black/10 sm:p-8">
+    <form onSubmit={onSubmit} className="card p-6 sm:p-8">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={asset("/images/logo.png")} alt="" className="mb-6 h-12 w-auto" />
       <fieldset disabled={unavailable || state === "sending"} className="grid gap-4 sm:grid-cols-2">
         <legend className="sr-only">Thông tin đăng ký</legend>
 
@@ -148,27 +151,27 @@ export default function RegisterForm({ deadline }: { deadline: string }) {
         {/* Bẫy bot: người dùng không thấy ô này */}
         <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
-        <label className="flex items-start gap-3 text-sm text-muted sm:col-span-2">
-          <input name="confirm" type="checkbox" required className="mt-0.5 h-4 w-4 accent-navy" />
+        <label className="flex items-start gap-3 text-[15px] text-muted sm:col-span-2">
+          <input name="confirm" type="checkbox" required className="mt-0.5 h-4 w-4 accent-orange" />
           <span>Tôi là sinh viên đại học chính quy còn trong thời gian đào tạo và cam kết thông tin trên là chính xác. *</span>
         </label>
-        <label className="flex items-start gap-3 text-sm text-muted sm:col-span-2">
-          <input name="shareProfile" type="checkbox" className="mt-0.5 h-4 w-4 accent-navy" />
+        <label className="flex items-start gap-3 text-[15px] text-muted sm:col-span-2">
+          <input name="shareProfile" type="checkbox" className="mt-0.5 h-4 w-4 accent-orange" />
           <span>Tôi đồng ý cho Ban Tổ chức chia sẻ hồ sơ năng lực của tôi với doanh nghiệp đồng hành.</span>
         </label>
 
-        <button type="submit" className="btn-navy w-full py-3.5 disabled:opacity-60 sm:col-span-2">
+        <button type="submit" className="btn-primary w-full py-3.5 disabled:translate-y-0 disabled:opacity-60 sm:col-span-2">
           {state === "sending" ? "Đang gửi..." : "Gửi đăng ký"}
         </button>
       </fieldset>
 
       {unavailable && (
-        <p className="mt-4 text-center text-sm text-rust" role="note">
+        <p className="mt-4 text-center text-[15px] font-medium text-orange-ink" role="note">
           {closed ? "Đã hết hạn đăng ký mùa I." : "Cổng đăng ký sẽ mở trong Lễ phát động (tuần 2 tháng 10/2026)."}
         </p>
       )}
       {state === "error" && (
-        <p className="mt-4 text-center text-sm text-rust" role="alert">
+        <p className="mt-4 text-center text-[15px] font-medium text-orange-ink" role="alert">
           Không gửi được đăng ký. Kiểm tra kết nối mạng và thử lại.
         </p>
       )}

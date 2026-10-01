@@ -1,52 +1,58 @@
-import SectionHeading from "@/components/SectionHeading";
-import { organizers, site, sponsorTiers } from "@/content/site";
+import Carousel from "@/components/Carousel";
+import Eyebrow from "@/components/Eyebrow";
+import Icon from "@/components/Icon";
+import { partners, site, sponsors } from "@/content/site";
+import { asset } from "@/lib/paths";
 
 export default function Partners() {
-  const sponsorHref = site.contact.sponsorDeck || (site.contact.email ? `mailto:${site.contact.email}` : "#dang-ky");
+  const sponsorHref = site.contact.sponsorDeck || (site.contact.email ? `mailto:${site.contact.email}` : "");
+  const items = [
+    ...partners.map((p) => ({ ...p, kind: "partner" as const })),
+    ...sponsors.map((s) => ({ ...s, ink: false, kind: "sponsor" as const })),
+    ...(sponsors.length ? [] : [{ name: "Nhà tài trợ", kind: "slot" as const }, { name: "Nhà tài trợ", kind: "slot" as const }]),
+  ];
+
   return (
-    <section id="dong-hanh" className="py-20 lg:py-28">
+    <section id="dong-hanh" className="bg-white pt-16 pb-8">
       <div className="container-x">
-        <SectionHeading index="06" label="Đồng hành" title="Đơn vị tổ chức và đồng hành" />
-
-        <ul className="reveal mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {organizers.map((o) => (
-            <li key={o} className="border-l-4 border-navy bg-cream px-4 py-3 text-sm font-semibold text-navy">
-              {o}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-12 space-y-6">
-          {sponsorTiers.map((t) => (
-            <div key={t.tier} className="reveal">
-              <p className="eyebrow text-muted">{t.tier}</p>
-              <div
-                className={`mt-2 grid gap-3 ${
-                  t.slots === 1 ? "grid-cols-1" : t.slots === 2 ? "sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-4"
-                }`}
-              >
-                {Array.from({ length: t.slots }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`flex items-center justify-center border border-dashed border-line bg-cream/60 text-xs text-muted ${
-                      t.slots === 1 ? "h-28" : t.slots === 2 ? "h-24" : "h-20"
-                    }`}
-                  >
-                    Vị trí logo nhà tài trợ
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="reveal flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <Eyebrow>Đơn vị tổ chức và đồng hành</Eyebrow>
+            <p className="mt-2 text-base text-muted">Cùng nhau kiến tạo thế hệ quản trị tương lai</p>
+          </div>
+          {sponsorHref && (
+            <a href={sponsorHref} className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-orange-ink hover:gap-2.5">
+              Trở thành nhà tài trợ <Icon name="arrowRight" className="h-4 w-4" />
+            </a>
+          )}
         </div>
 
-        <a
-          href={sponsorHref}
-          className="reveal mt-8 inline-flex items-center gap-2 text-sm font-bold text-navy underline underline-offset-4 hover:text-orange"
-        >
-          Trở thành đơn vị đồng hành
-          <span aria-hidden>→</span>
-        </a>
+        <div className="reveal mt-6 -mx-2">
+          <Carousel label="Đơn vị tổ chức và đồng hành" slideClassName="w-1/2 px-2 sm:w-1/3 lg:w-1/6">
+            {items.map((p, i) =>
+              p.kind === "slot" ? (
+                <div
+                  key={`slot-${i}`}
+                  className="flex h-28 flex-col items-center justify-center rounded-xl border border-dashed border-orange/30 bg-cream/60 px-3 text-center"
+                >
+                  <Icon name="handshake" className="h-6 w-6 text-orange/70" />
+                  <span className="mt-2 text-[13px] font-semibold text-muted">{p.name}</span>
+                  <span className="text-xs text-muted">Đang cập nhật</span>
+                </div>
+              ) : (
+                <div key={p.name} className="card flex h-28 flex-col items-center justify-center gap-2 rounded-xl px-3 text-center shadow-none">
+                  {p.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={asset(p.logo)} alt="" className={`h-11 w-auto max-w-full object-contain ${p.ink ? "logo-ink" : ""}`} />
+                  ) : (
+                    <Icon name="landmark" className="h-7 w-7 text-navy-soft" strokeWidth={1.5} />
+                  )}
+                  <span className="text-[13px] leading-tight font-semibold text-navy">{p.name}</span>
+                </div>
+              ),
+            )}
+          </Carousel>
+        </div>
       </div>
     </section>
   );

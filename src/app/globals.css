@@ -1,63 +1,110 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #12305e;
-  --color-navy-deep: #0b1f43;
-  --color-navy-soft: #1c427e;
-  --color-gold: #e3a93b;
-  --color-gold-soft: #f6e3b8;
-  --color-orange: #ef7f29;
-  --color-coral: #f0603c;
-  --color-rust: #b8461f;
-  --color-cream: #f5f1ea;
-  --color-teal: #2ba59b;
+  --color-navy-deep: #071533;
+  --color-navy: #0b1f4d;
+  --color-navy-soft: #16357a;
+  --color-brand: #1f5be0;
+  --color-sky: #8cc1ff;
+  --color-orange: #f26b1d;
+  --color-orange-ink: #d4500c;
+  --color-orange-soft: #ff9a3c;
+  --color-gold: #f5b83d;
+  --color-cream: #fff6ec;
+  --color-mist: #f3f7fd;
   --color-ink: #0f1f3d;
-  --color-muted: #5b6577;
-  --color-line: #e3ddd2;
+  --color-muted: #475266;
+  --color-line: #e6ebf3;
 
   --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-script: var(--font-dancing), cursive;
+
+  --shadow-card: 0 18px 40px -22px rgb(11 31 77 / 0.35);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 6rem;
   }
   body {
     @apply bg-white font-sans text-ink antialiased;
   }
   ::selection {
-    @apply bg-gold text-navy-deep;
+    @apply bg-orange text-white;
   }
 }
 
 @utility container-x {
-  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  @apply mx-auto w-full max-w-[77rem] px-4 sm:px-6 lg:px-8;
+}
+@utility h2-section {
+  @apply text-[1.9rem] leading-[1.18] font-bold text-balance text-navy sm:text-[2.5rem];
+}
+@utility lead {
+  @apply text-base leading-relaxed text-muted sm:text-[17px];
 }
 @utility eyebrow {
-  @apply font-mono text-xs font-medium tracking-[0.25em] uppercase;
+  @apply flex items-center gap-2 text-[13px] font-bold tracking-[0.12em] text-orange-ink uppercase;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition
+    focus-visible:outline-2 focus-visible:outline-offset-2;
 }
-@utility btn-gold {
-  @apply btn bg-gold text-navy-deep hover:bg-[#f0b94f] focus-visible:outline-gold;
+@utility btn-primary {
+  @apply btn bg-linear-to-r from-[#ff8a3c] to-[#f0501e] text-white shadow-lg shadow-orange/30
+    hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange/40 focus-visible:outline-orange;
 }
-@utility btn-ghost {
-  @apply btn border border-white/40 text-white hover:border-white hover:bg-white/10 focus-visible:outline-white;
+@utility btn-outline {
+  @apply btn border border-navy/30 text-navy hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-navy;
 }
-@utility btn-navy {
-  @apply btn bg-navy text-white hover:bg-navy-soft focus-visible:outline-navy;
+@utility btn-glass {
+  @apply btn border border-white/50 bg-white/10 text-white backdrop-blur hover:bg-white/20 focus-visible:outline-white;
+}
+@utility btn-white {
+  @apply btn bg-white text-orange-ink shadow-lg shadow-black/10 hover:-translate-y-0.5 focus-visible:outline-white;
+}
+@utility card {
+  @apply rounded-2xl border border-line/70 bg-white shadow-card;
+}
+@utility text-gradient-orange {
+  @apply bg-linear-to-r from-[#f47a22] to-[#d4450c] bg-clip-text text-transparent;
+}
+/* Chữ trắng đặt trên ảnh: đổ bóng mềm để không chìm vào nền */
+@utility text-on-photo {
+  text-shadow:
+    0 1px 2px rgb(7 21 51 / 0.55),
+    0 2px 14px rgb(7 21 51 / 0.55);
+}
+
+/* Logo trắng hiển thị thành màu navy trên nền sáng */
+.logo-ink {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(46%) saturate(3420%) hue-rotate(214deg) brightness(91%);
 }
 
 /* Hoạ tiết dự phòng khi chưa có ảnh minh hoạ */
 .photo-fallback {
   background:
-    radial-gradient(circle at 20% 25%, rgb(227 169 59 / 0.35), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgb(240 96 60 / 0.3), transparent 45%),
-    repeating-linear-gradient(135deg, rgb(255 255 255 / 0.06) 0 2px, transparent 2px 14px),
-    linear-gradient(135deg, var(--color-navy-soft), var(--color-navy-deep));
+    radial-gradient(circle at 22% 25%, rgb(245 184 61 / 0.35), transparent 42%),
+    radial-gradient(circle at 80% 80%, rgb(242 107 29 / 0.3), transparent 45%),
+    linear-gradient(135deg, #2f6bf0, var(--color-navy));
+}
+
+/* Nền dải tối (giá trị, lộ trình, footer) khi ảnh chưa có vẫn đẹp */
+.band-fallback {
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(ellipse 60% 80% at 85% 60%, rgb(242 107 29 / 0.35), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 20%, rgb(31 91 224 / 0.45), transparent 60%),
+    linear-gradient(180deg, var(--color-navy-deep), var(--color-navy) 60%, var(--color-navy-soft));
+}
+
+/* Thanh cuộn ngang ẩn cho carousel */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Hiệu ứng xuất hiện khi cuộn; chỉ ẩn khi trình duyệt chạy JS */

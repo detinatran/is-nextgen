@@ -1,19 +1,21 @@
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
+import WaveLine from "@/components/WaveLine";
 import { values } from "@/content/site";
 import { asset } from "@/lib/paths";
 
 export default function Values() {
   return (
     <section
-      className="bg-mist bg-cover py-20 lg:py-28"
+      className="relative bg-mist bg-cover"
       style={{
         // Mờ dần về trắng ở trên và dưới để nối liền với các section kề bên
-        backgroundImage: `linear-gradient(180deg, #fff, rgb(255 255 255 / 0.2) 22%, rgb(255 255 255 / 0.2) 78%, #fff), linear-gradient(90deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 55%), url(${asset("/images/generated/soft-bg.webp")})`,
+        backgroundImage: `linear-gradient(90deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 50%), linear-gradient(180deg, rgb(214 228 246 / 0.35), rgb(255 237 214 / 0.25)), url(${asset("/images/generated/soft-bg.webp")})`,
         backgroundPosition: "center 60%",
       }}
     >
-      <div className="container-x grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+      <WaveLine className="absolute inset-x-0 top-0" />
+      <div className="container-x grid gap-12 py-24 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:py-32">
         <div className="reveal">
           <Eyebrow>Giá trị mang lại</Eyebrow>
           <h2 className="h2-section mt-4">
@@ -25,7 +27,7 @@ export default function Values() {
           {values.items.map((v, i) => (
             <li
               key={v.title}
-              className="reveal bg-white/85 p-6 backdrop-blur-sm"
+              className="reveal bg-white/90 p-6"
               style={{ "--delay": `${i * 80}ms` } as React.CSSProperties}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-lg border border-orange/25 bg-cream text-orange-ink">
@@ -37,6 +39,7 @@ export default function Values() {
           ))}
         </ul>
       </div>
+      <WaveLine flip className="absolute inset-x-0 bottom-0" />
     </section>
   );
 }

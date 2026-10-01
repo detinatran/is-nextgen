@@ -7,7 +7,7 @@ import { faqs } from "@/content/site";
 export default function Faq() {
   return (
     <section id="hoi-dap" className="relative overflow-hidden bg-white py-16 pb-28 lg:py-24 lg:pb-32">
-      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full object-cover object-bottom opacity-70" />
+      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-64 w-full object-cover object-bottom opacity-70 blur-[2px] [mask-image:linear-gradient(to_bottom,transparent,black_55%)]" />
       <div className="container-x relative grid items-start gap-10 lg:grid-cols-[1fr_1.6fr]">
         <div className="reveal">
           <Eyebrow>Câu hỏi thường gặp</Eyebrow>

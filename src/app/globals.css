@@ -119,7 +119,50 @@
   opacity: 1;
   transform: none;
 }
+/* Timeline: đường kẻ chạy dần, chấm bật lên khi section xuất hiện */
+.js .tl .tl-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s ease-out;
+  transition-delay: calc(var(--i) * 0.45s + 0.2s);
+}
+.js .tl .tl-dot {
+  transform: translateY(-50%) scale(0);
+  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition-delay: calc(var(--i) * 0.45s + 0.15s);
+}
+.js .tl.is-visible .tl-line {
+  transform: scaleX(1);
+}
+.js .tl.is-visible .tl-dot {
+  transform: translateY(-50%) scale(1);
+}
+@keyframes tl-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.tl-pulse {
+  animation: tl-pulse 1.8s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .js .tl .tl-line,
+  .js .tl .tl-dot {
+    transition: none;
+    transform: translateY(-50%) scale(1);
+  }
+  .js .tl .tl-line {
+    transform: none;
+  }
+  .tl-pulse {
+    animation: none;
+  }
   html {
     scroll-behavior: auto;
   }

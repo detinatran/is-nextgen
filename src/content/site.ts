@@ -203,12 +203,13 @@ export const personas = [
   },
 ];
 
-export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold" }[] = [
-  { date: "10 - 01.11.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange" },
-  { date: "Tuần 4 · 11/2026", title: "Vòng Sơ loại", icon: "messages", tone: "blue" },
-  { date: "Tuần 2 · 12/2026", title: "Vòng Bán kết", icon: "inbox", tone: "red" },
-  { date: "Tuần 4 · 12/2026", title: "Vòng Chung kết", icon: "trophy", tone: "gold" },
-];
+// until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
+export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
+  { date: "10 - 01.11.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-11-01T23:59:00+07:00" },
+  { date: "Tuần 4 · 11/2026", title: "Vòng Sơ loại", icon: "messages", tone: "blue", until: "2026-11-29T23:59:00+07:00" },
+  { date: "Tuần 2 · 12/2026", title: "Vòng Bán kết", icon: "inbox", tone: "red", until: "2026-12-13T23:59:00+07:00" },
+  { date: "Tuần 4 · 12/2026", title: "Vòng Chung kết", icon: "trophy", tone: "gold", until: "2026-12-27T23:59:00+07:00" },
+]
 
 // Lộ trình đầy đủ, hiển thị ở trang Thể lệ
 export const timeline = [

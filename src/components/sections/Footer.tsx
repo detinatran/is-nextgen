@@ -7,16 +7,21 @@ import { asset } from "@/lib/paths";
 function CtaBand() {
   return (
     <div className="relative z-10">
-      <div className="relative overflow-visible bg-orange">
+      <div className="relative overflow-visible bg-linear-to-r from-[#ff9a3c] via-[#f7812a] to-orange shadow-2xl shadow-orange/30">
+        <div className="absolute inset-0 overflow-hidden">
+          <Art src="/images/generated/cta-bg.webp" className="pointer-events-none h-full w-full object-cover" />
+          {/* Lớp phủ giữ chữ trắng dễ đọc trên các vệt sáng của nền */}
+          <div aria-hidden className="absolute inset-0 bg-linear-to-r from-[#f07a24]/70 via-[#f07a24]/35 to-transparent" />
+        </div>
         <div className="container-x relative grid items-center gap-5 py-8 lg:grid-cols-[1fr_1.1fr_auto] lg:py-0">
           <div className="lg:py-10">
-            <h2 className="text-[1.9rem] font-bold text-white sm:text-[2.4rem]">Đã sẵn sàng bứt phá?</h2>
-            <p className="mt-3 max-w-md text-base leading-relaxed text-white/95 sm:text-[17px]">
+            <h2 className="text-[1.9rem] font-bold text-white [text-shadow:0_1px_3px_rgb(140_45_0/0.35)] sm:text-[2.4rem]">Đã sẵn sàng bứt phá?</h2>
+            <p className="mt-3 max-w-md text-base leading-relaxed font-medium text-white [text-shadow:0_1px_2px_rgb(140_45_0/0.35)] sm:text-[17px]">
               Hãy trở thành một phần của IS-NextGen Manager 2026 và viết nên hành trình quản trị của riêng bạn!
             </p>
           </div>
           <div className="relative hidden self-stretch lg:block">
-            <svg aria-hidden viewBox="0 0 160 60" className="absolute top-6 -left-16 z-10 h-12 w-32 text-white/85" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <svg aria-hidden viewBox="0 0 160 60" className="absolute top-6 -left-16 h-12 w-32 text-white/85" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
               <path d="M2 44c30-2 52-10 74-22 18-10 34 2 22 14s-30-2-12-14c14-9 36-12 58-6" />
               <path d="M140 12l6 4-7 3" />
             </svg>

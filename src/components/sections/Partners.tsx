@@ -1,3 +1,4 @@
+import Carousel from "@/components/Carousel";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import { partners, site, sponsors } from "@/content/site";
@@ -10,8 +11,6 @@ export default function Partners() {
     ...sponsors.map((s) => ({ ...s, ink: false, kind: "sponsor" as const })),
     ...(sponsors.length ? [] : [{ name: "Nhà tài trợ", kind: "slot" as const }, { name: "Nhà tài trợ", kind: "slot" as const }]),
   ];
-  // Mỗi bản lặp phải rộng hơn màn hình để băng chuyền không hở khoảng trống
-  const row = items.length < 10 ? [...items, ...items] : items;
 
   return (
     <section id="dong-hanh" className="bg-white pt-16 pb-8">
@@ -27,37 +26,32 @@ export default function Partners() {
             </a>
           )}
         </div>
-      </div>
 
-      {/* Băng chuyền: danh sách lặp 2 lần, chạy sang trái liên tục, dừng khi rê chuột */}
-      <div className="marquee reveal mt-8" aria-label="Đơn vị tổ chức và đồng hành">
-        <div className="marquee-track">
-          {[0, 1].map((copy) => (
-            <ul key={copy} className="flex shrink-0 gap-4 pr-4" aria-hidden={copy === 1 || undefined}>
-              {row.map((p, i) =>
-                p.kind === "slot" ? (
-                  <li
-                    key={i}
-                    className="flex h-28 w-48 shrink-0 flex-col items-center justify-center rounded-xl border border-dashed border-orange/30 bg-cream/60 px-3 text-center"
-                  >
-                    <Icon name="handshake" className="h-6 w-6 text-orange/70" />
-                    <span className="mt-2 text-[13px] font-semibold text-muted">{p.name}</span>
-                    <span className="text-xs text-muted">Đang cập nhật</span>
-                  </li>
-                ) : (
-                  <li key={i} className="card flex h-28 w-48 shrink-0 flex-col items-center justify-center gap-2 rounded-xl px-3 text-center transition hover:border-orange/40">
-                    {p.logo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={asset(p.logo)} alt="" className={`h-11 w-auto max-w-full object-contain ${p.ink ? "logo-ink" : ""}`} />
-                    ) : (
-                      <Icon name="landmark" className="h-7 w-7 text-navy-soft" strokeWidth={1.5} />
-              )}
-                    <span className="text-[13px] leading-tight font-semibold text-navy">{p.name}</span>
-                  </li>
-                ),
-              )}
-            </ul>
-          ))}
+        <div className="reveal mt-6 -mx-2">
+          <Carousel label="Đơn vị tổ chức và đồng hành" slideClassName="w-1/2 px-2 sm:w-1/3 lg:w-1/6">
+            {items.map((p, i) =>
+              p.kind === "slot" ? (
+                <div
+                  key={`slot-${i}`}
+                  className="flex h-28 flex-col items-center justify-center rounded-xl border border-dashed border-orange/30 bg-cream/60 px-3 text-center"
+                >
+                  <Icon name="handshake" className="h-6 w-6 text-orange/70" />
+                  <span className="mt-2 text-[13px] font-semibold text-muted">{p.name}</span>
+                  <span className="text-xs text-muted">Đang cập nhật</span>
+                </div>
+              ) : (
+                <div key={p.name} className="card flex h-28 flex-col items-center justify-center gap-2 rounded-xl px-3 text-center shadow-none">
+                  {p.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={asset(p.logo)} alt="" className={`h-11 w-auto max-w-full object-contain ${p.ink ? "logo-ink" : ""}`} />
+                  ) : (
+                    <Icon name="landmark" className="h-7 w-7 text-navy-soft" strokeWidth={1.5} />
+                  )}
+                  <span className="text-[13px] leading-tight font-semibold text-navy">{p.name}</span>
+                </div>
+              ),
+            )}
+          </Carousel>
         </div>
       </div>
     </section>

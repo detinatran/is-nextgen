@@ -3,68 +3,69 @@ import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import { minorPrizes, prizeTotal, prizes } from "@/content/site";
 
-const forEveryone = [
-  "Giấy chứng nhận tham dự vòng trong, được doanh nghiệp đồng hành công nhận khi xét hồ sơ thực tập và tuyển dụng",
-  "Báo cáo năng lực cá nhân bản điện tử: điểm mạnh, điểm cần cải thiện và gợi ý phát triển",
-];
+function TrophyFallback() {
+  return (
+    <div className="relative mx-auto flex aspect-square w-56 items-center justify-center" aria-hidden>
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgb(245_184_61/0.45),transparent_65%)]" />
+      <Icon name="trophy" className="relative h-28 w-28 text-gold" strokeWidth={1.2} />
+    </div>
+  );
+}
 
 export default function Prizes() {
   return (
-    <section id="giai-thuong" className="bg-cream py-16 lg:py-24">
-      <div className="container-x">
-        <div className="reveal max-w-3xl">
-          <Eyebrow>Giải thưởng</Eyebrow>
-          <h2 className="h2-section mt-4">
-            Tổng giá trị <span className="text-orange-ink">{prizeTotal}</span>
-          </h2>
-          <p className="lead mt-4">
-            Giá trị nghề nghiệp là chính: suất thực tập, vé vào thẳng vòng phỏng vấn cuối và giấy chứng nhận được doanh nghiệp
-            đồng hành công nhận.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <ul className="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
+    <section
+      id="giai-thuong"
+      className="relative overflow-hidden py-16 lg:py-20"
+      style={{
+        background:
+          "radial-gradient(ellipse 60% 70% at 85% 50%, rgb(255 214 170 / 0.55), transparent 70%), radial-gradient(ellipse 50% 60% at 0% 100%, rgb(255 190 140 / 0.35), transparent 70%), linear-gradient(180deg, #fff9f3, #fff3e6)",
+      }}
+    >
+      <Art src="/images/generated/deco-peach-waves.webp" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-70" />
+      <div className="container-x relative grid items-center gap-10 lg:grid-cols-[1.5fr_1fr]">
+        <div>
+          <div className="reveal">
+            <Eyebrow>Giải thưởng</Eyebrow>
+            <h2 className="h2-section mt-4">
+              Tổng giá trị <span className="text-gradient-orange">{prizeTotal}</span>
+            </h2>
+            <p className="lead mt-4 max-w-2xl">
+              Giá trị nghề nghiệp là chính: suất thực tập, vé vào thẳng vòng phỏng vấn cuối và giấy chứng nhận được doanh nghiệp đồng hành công nhận.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {prizes.map((p, i) => (
-              <li
+              <article
                 key={p.rank}
-                className="reveal group relative bg-white p-6 transition-colors duration-300 hover:bg-cream"
+                className={`card reveal px-5 py-5 ${p.featured ? "border-l-4 border-l-orange" : ""}`}
                 style={{ "--delay": `${i * 80}ms` } as React.CSSProperties}
               >
-                {/* Vạch cam chạy ra khi rê chuột */}
-                <span aria-hidden className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-orange transition-transform duration-300 group-hover:scale-x-100" />
                 <p className="flex items-center gap-2 text-[15px] font-semibold text-navy">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-cream text-orange-ink transition duration-300 group-hover:-rotate-6 group-hover:scale-110 group-hover:bg-orange group-hover:text-white">
-                    <Icon name={p.icon} className="h-4 w-4" strokeWidth={2} />
-                  </span>
+                  <Art
+                    src={`/images/generated/icon-light-${i + 5}.webp`}
+                    className="h-7 w-7 object-contain"
+                    fallback={<Icon name={p.icon} className="h-4 w-4 text-orange" strokeWidth={2} />}
+                  />
                   {p.rank}
-                  <span className="font-normal text-muted">· {p.qty}</span>
                 </p>
-                <p className="mt-3 text-[1.75rem] leading-none font-bold text-navy transition-all duration-300 group-hover:translate-x-1 group-hover:text-orange-ink">{p.amount}</p>
-                <ul className="mt-4 space-y-1">
+                <p className="mt-2 text-[1.6rem] leading-tight font-extrabold text-navy">{p.amount}</p>
+                <ul className="mt-3 space-y-1">
                   {p.perks.map((perk) => (
-                    <li key={perk} className="text-[15px] leading-snug text-muted">
+                    <li key={perk} className="flex gap-1.5 text-sm leading-snug text-muted">
+                      <span aria-hidden>•</span>
                       {perk}
                     </li>
                   ))}
                 </ul>
-              </li>
+              </article>
             ))}
-          </ul>
+          </div>
+          <p className="reveal mt-5 text-[15px] text-muted">{minorPrizes}</p>
+        </div>
 
-          <aside className="reveal group flex flex-col rounded-xl bg-navy p-7 text-white transition-shadow duration-300 hover:shadow-2xl hover:shadow-navy/30" style={{ "--delay": "150ms" } as React.CSSProperties}>
-            <Art src="/images/generated/trophy.webp" className="mx-auto -mt-2 mb-4 w-56 object-contain transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-105" />
-            <p className="text-sm font-semibold tracking-[0.14em] text-gold uppercase">Cho mọi thí sinh vòng trong</p>
-            <ul className="mt-5 space-y-4">
-              {forEveryone.map((t) => (
-                <li key={t} className="flex gap-3 text-[15px] leading-relaxed text-white/90">
-                  <Icon name="check" className="mt-1 h-4 w-4 shrink-0 text-gold" strokeWidth={2.4} />
-                  {t}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-auto border-t border-white/15 pt-5 text-[15px] leading-relaxed text-white/75">{minorPrizes}</p>
-          </aside>
+        <div className="reveal" style={{ "--delay": "150ms" } as React.CSSProperties}>
+          <Art src="/images/generated/trophy.webp" className="w-full object-contain lg:scale-125" fallback={<TrophyFallback />} />
         </div>
       </div>
     </section>

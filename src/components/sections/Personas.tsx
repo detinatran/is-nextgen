@@ -7,7 +7,7 @@ import { asset } from "@/lib/paths";
 export default function Personas() {
   return (
     <section
-      className="relative overflow-hidden bg-mist bg-cover bg-center py-16 lg:py-20"
+      className="relative overflow-hidden bg-mist bg-cover bg-center pt-14 pb-16"
       style={{ backgroundImage: `linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.3) 35%, rgb(243 247 253 / 0.85)), url(${asset("/images/generated/soft-bg.webp")})` }}
     >
       <div className="container-x">

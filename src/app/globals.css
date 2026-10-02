@@ -10,7 +10,7 @@
   --color-orange-ink: #d4500c;
   --color-orange-soft: #ff9a3c;
   --color-gold: #f5b83d;
-  --color-cream: #f7f5f1;
+  --color-cream: #fff6ec;
   --color-mist: #f3f7fd;
   --color-ink: #0f1f3d;
   --color-muted: #475266;
@@ -45,14 +45,15 @@
   @apply text-base leading-relaxed text-muted sm:text-[17px];
 }
 @utility eyebrow {
-  @apply flex items-center gap-3 text-[13px] font-semibold tracking-[0.14em] text-orange-ink uppercase;
+  @apply flex items-center gap-2 text-[13px] font-bold tracking-[0.12em] text-orange-ink uppercase;
 }
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition
     focus-visible:outline-2 focus-visible:outline-offset-2;
 }
 @utility btn-primary {
-  @apply btn bg-orange text-white hover:bg-orange-ink focus-visible:outline-orange;
+  @apply btn bg-linear-to-r from-[#ff8a3c] to-[#f0501e] text-white shadow-lg shadow-orange/30
+    hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange/40 focus-visible:outline-orange;
 }
 @utility btn-outline {
   @apply btn border border-navy/30 text-navy hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-navy;
@@ -61,13 +62,13 @@
   @apply btn border border-white/50 bg-white/10 text-white backdrop-blur hover:bg-white/20 focus-visible:outline-white;
 }
 @utility btn-white {
-  @apply btn bg-white text-orange-ink hover:bg-cream focus-visible:outline-white;
+  @apply btn bg-white text-orange-ink shadow-lg shadow-black/10 hover:-translate-y-0.5 focus-visible:outline-white;
 }
 @utility card {
-  @apply rounded-xl border border-line bg-white;
+  @apply rounded-2xl border border-line/70 bg-white shadow-card;
 }
 @utility text-gradient-orange {
-  @apply text-orange-ink;
+  @apply bg-linear-to-r from-[#f47a22] to-[#d4450c] bg-clip-text text-transparent;
 }
 /* Chữ trắng đặt trên ảnh: đổ bóng mềm để không chìm vào nền */
 @utility text-on-photo {

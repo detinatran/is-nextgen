@@ -138,6 +138,44 @@
   }
 }
 
+/* Mục đếm ngược: số lật khi đổi, ảnh nền phóng chậm, nút đăng ký toả sóng */
+@keyframes cd-tick {
+  from {
+    transform: translateY(-55%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.cd-tick {
+  animation: cd-tick 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14) translateX(-1.5%);
+  }
+}
+.kenburns {
+  animation: kenburns 18s ease-in-out infinite alternate;
+}
+@keyframes cta-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(242 107 29 / 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 16px rgb(242 107 29 / 0);
+  }
+}
+.cta-pulse {
+  animation: cta-pulse 2s ease-out infinite;
+}
+
 /* Timeline: đường kẻ chạy dần, chấm bật lên khi section xuất hiện */
 .js .tl .tl-line {
   transform: scaleX(0);
@@ -179,7 +217,10 @@
   .js .tl .tl-line {
     transform: none;
   }
-  .tl-pulse {
+  .tl-pulse,
+  .cd-tick,
+  .kenburns,
+  .cta-pulse {
     animation: none;
   }
   .marquee {

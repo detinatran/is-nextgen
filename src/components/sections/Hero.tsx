@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Art from "@/components/Art";
-import Countdown from "@/components/Countdown";
 import Icon from "@/components/Icon";
 import { heroStats, site } from "@/content/site";
 import { asset } from "@/lib/paths";
@@ -144,12 +143,12 @@ export default function Hero() {
         <Ctas className="mt-6 flex-wrap justify-center" />
       </div>
 
-      {/* Số liệu và đếm ngược, vắt ngang mép dưới ảnh */}
+      {/* Số liệu, vắt ngang mép dưới ảnh */}
       <div className="container-x relative z-10 pb-10 lg:-mt-20 lg:pb-0">
-        <div className="grid gap-4 lg:-mx-8 lg:grid-cols-[1fr_19rem]">
+        <div className="lg:-mx-8">
           <div className="grid grid-cols-2 rounded-2xl border border-white/10 bg-linear-to-br from-navy to-navy-soft p-2 shadow-2xl shadow-navy-deep/40 sm:grid-cols-4 sm:p-3">
             {heroStats.map((s, i) => (
-              <div key={s.label} className={`flex flex-col gap-2 px-4 py-2.5 sm:px-5 lg:flex-row lg:items-center lg:gap-3 ${i > 0 ? "sm:border-l sm:border-white/15" : ""}`}>
+              <div key={s.label} className={`flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-center lg:gap-4 ${i > 0 ? "sm:border-l sm:border-white/15" : ""}`}>
                 <Icon name={s.icon} className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.6} />
                 <div>
                   <div className={`text-[1.6rem] leading-none font-bold ${s.tone ? toneClass[s.tone] : "text-white"}`}>{s.value}</div>
@@ -157,13 +156,6 @@ export default function Hero() {
                 </div>
               </div>
             ))}
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-linear-to-br from-navy to-navy-soft px-4 py-3 shadow-2xl shadow-navy-deep/40">
-            <p className="text-center text-xs font-semibold tracking-[0.15em] text-white/90 uppercase">Thời hạn đăng ký</p>
-            <div className="mt-2">
-              <Countdown deadline={site.registrationDeadline} />
-            </div>
-            <p className="mt-2 text-center text-xs text-white/70">{site.registrationDeadlineLabel}</p>
           </div>
         </div>
       </div>

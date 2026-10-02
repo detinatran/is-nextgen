@@ -1,5 +1,6 @@
 import SiteShell from "@/components/SiteShell";
 import About from "@/components/sections/About";
+import Deadline from "@/components/sections/Deadline";
 import Faq from "@/components/sections/Faq";
 import Hero from "@/components/sections/Hero";
 import Milestones from "@/components/sections/Milestones";
@@ -14,6 +15,7 @@ export default function Home() {
   return (
     <SiteShell>
       <Hero />
+      <Deadline />
       <About />
       <Theme />
       <Rounds />

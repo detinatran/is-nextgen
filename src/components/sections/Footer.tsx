@@ -20,6 +20,9 @@ const text = {
     terms: "Điều khoản & thể lệ",
     results: "Kết quả",
     language: "Ngôn ngữ",
+    qrTitle: "Quét mã để truy cập",
+    qrAlt: "Mã QR dẫn tới nextgen.vnuis.edu.vn",
+    qrDownload: "Tải mã QR",
   },
   en: {
     ctaTitle: "Ready to break through?",
@@ -34,6 +37,9 @@ const text = {
     terms: "Terms & rules",
     results: "Results",
     language: "Language",
+    qrTitle: "Scan to visit",
+    qrAlt: "QR code linking to nextgen.vnuis.edu.vn",
+    qrDownload: "Download QR code",
   },
 };
 
@@ -180,14 +186,33 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
             </ul>
           </nav>
 
-          <p
-            aria-hidden
-            className="hidden -rotate-[10deg] self-end pr-10 text-right font-script text-5xl leading-[0.95] text-white/90 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] lg:block"
-          >
-            Be the
-            <br />
-            &nbsp;&nbsp;&nbsp;NextGen
-          </p>
+          <div className="flex flex-col gap-8 md:col-span-3 lg:col-span-1 lg:items-end">
+            <div className="flex w-max items-center gap-4 rounded-2xl bg-white/10 p-3 pr-5 ring-1 ring-white/15 backdrop-blur-sm">
+              {/* Nền trắng và lề quanh mã để máy ảnh điện thoại quét được */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={asset("/images/qr-nextgen.png")} alt={t.qrAlt} width={112} height={112} className="h-28 w-28 rounded-lg bg-white p-1.5" />
+              <div>
+                <p className="text-[15px] font-semibold text-white">{t.qrTitle}</p>
+                <p className="mt-0.5 text-[13px] text-white/70">nextgen.vnuis.edu.vn</p>
+                <a
+                  href={asset("/images/qr-nextgen.png")}
+                  download="IS-NextGen-Manager-QR.png"
+                  className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold hover:text-white"
+                >
+                  <Icon name="arrowUp" className="h-3.5 w-3.5 rotate-180" strokeWidth={2.2} />
+                  {t.qrDownload}
+                </a>
+              </div>
+            </div>
+            <p
+              aria-hidden
+              className="hidden -rotate-[10deg] pr-10 text-right font-script text-5xl leading-[0.95] text-white/90 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] lg:block"
+            >
+              Be the
+              <br />
+              &nbsp;&nbsp;&nbsp;NextGen
+            </p>
+          </div>
         </div>
         <div className="container-x relative">
           <div className="border-t border-white/15 py-5 text-center text-[13px] text-white/70">© 2026 IS-NextGen Manager. All rights reserved.</div>

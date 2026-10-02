@@ -33,7 +33,7 @@ export default function Partners({ lang }: { lang: Lang }) {
           )}
         </div>
 
-        <div className="reveal mt-6 -mx-2">
+        <div className="reveal mt-6 -mx-2 sm:mx-0 lg:-mx-2">
           <Carousel lang={lang} label={t.eyebrow} slideClassName="w-1/2 px-2 sm:w-1/3 lg:w-1/6">
             {items.map((p, i) =>
               p.kind === "slot" ? (

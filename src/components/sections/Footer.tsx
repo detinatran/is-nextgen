@@ -1,10 +1,44 @@
 import Link from "next/link";
 import Art from "@/components/Art";
 import Icon, { type IconName } from "@/components/Icon";
-import { site } from "@/content/site";
+import LangSwitch from "@/components/LangSwitch";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
-function CtaBand() {
+const text = {
+  vi: {
+    ctaTitle: "Đã sẵn sàng bứt phá?",
+    ctaBody: "Hãy trở thành một phần của IS-NextGen Manager 2026 và viết nên hành trình quản trị của riêng bạn!",
+    register: "Đăng ký ngay",
+    emailSoon: "Email Ban Tổ chức (sắp cập nhật)",
+    soon: "Sắp cập nhật",
+    links: "Liên kết",
+    support: "Hỗ trợ",
+    linkItems: [["/#top", "Trang chủ"], ["/#gioi-thieu", "Giới thiệu"], ["/the-le/", "Thể lệ"], ["/#giai-thuong", "Giải thưởng"]],
+    contact: "Liên hệ",
+    terms: "Điều khoản & thể lệ",
+    results: "Kết quả",
+    language: "Ngôn ngữ",
+  },
+  en: {
+    ctaTitle: "Ready to break through?",
+    ctaBody: "Become part of IS-NextGen Manager 2026 and write your own management journey!",
+    register: "Register now",
+    emailSoon: "Organizing Committee email (coming soon)",
+    soon: "Coming soon",
+    links: "Links",
+    support: "Support",
+    linkItems: [["/#top", "Home"], ["/#gioi-thieu", "About"], ["/the-le/", "Rules"], ["/#giai-thuong", "Prizes"]],
+    contact: "Contact",
+    terms: "Terms & rules",
+    results: "Results",
+    language: "Language",
+  },
+};
+
+function CtaBand({ lang }: { lang: Lang }) {
+  const t = text[lang];
   return (
     <div className="relative z-10">
       <div className="relative overflow-visible bg-linear-to-r from-[#ff9a3c] via-[#f7812a] to-orange shadow-2xl shadow-orange/30">
@@ -15,9 +49,9 @@ function CtaBand() {
         </div>
         <div className="container-x relative grid items-center gap-5 py-8 lg:grid-cols-[1fr_1.1fr_auto] lg:py-0">
           <div className="lg:py-10">
-            <h2 className="text-[1.9rem] font-bold text-white [text-shadow:0_1px_3px_rgb(140_45_0/0.35)] sm:text-[2.4rem]">Đã sẵn sàng bứt phá?</h2>
+            <h2 className="text-[1.9rem] font-bold text-white [text-shadow:0_1px_3px_rgb(140_45_0/0.35)] sm:text-[2.4rem]">{t.ctaTitle}</h2>
             <p className="mt-3 max-w-md text-base leading-relaxed font-medium text-white [text-shadow:0_1px_2px_rgb(140_45_0/0.35)] sm:text-[17px]">
-              Hãy trở thành một phần của IS-NextGen Manager 2026 và viết nên hành trình quản trị của riêng bạn!
+              {t.ctaBody}
             </p>
           </div>
           <div className="relative hidden self-stretch lg:block">
@@ -31,8 +65,8 @@ function CtaBand() {
               className="pointer-events-none absolute inset-x-0 -top-14 bottom-0 h-[calc(100%+3.5rem)] w-full object-cover object-[50%_18%] [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]"
             />
           </div>
-          <Link href="/dang-ky/" className="btn-white w-max px-8 py-3.5 text-base">
-            Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+          <Link href={localePath(lang, "/dang-ky/")} className="btn-white w-max px-8 py-3.5 text-base">
+            {t.register} <Icon name="arrowRight" className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -43,12 +77,15 @@ function CtaBand() {
 const linkCls = "text-[15px] text-white/85 transition hover:text-white";
 const socialIcons: IconName[] = ["facebook", "linkedin", "youtube", "tiktok"];
 
-export default function Footer({ cta = true }: { cta?: boolean }) {
+export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean }) {
+  const { site } = getContent(lang);
+  const t = text[lang];
+  const href = (path: string) => localePath(lang, path);
   const { email, phone } = site.contact;
-  const contactHref = email ? `mailto:${email}` : "/#hoi-dap";
+  const contactHref = email ? `mailto:${email}` : href("/#hoi-dap");
   return (
     <>
-      {cta && <CtaBand />}
+      {cta && <CtaBand lang={lang} />}
       <footer
         className={`band-fallback relative overflow-hidden bg-cover bg-right text-white pt-14`}
         style={{
@@ -72,7 +109,7 @@ export default function Footer({ cta = true }: { cta?: boolean }) {
                     {email}
                   </a>
                 ) : (
-                  <span className="text-white/65">Email Ban Tổ chức (sắp cập nhật)</span>
+                  <span className="text-white/65">{t.emailSoon}</span>
                 )}
               </li>
               {phone && (
@@ -92,25 +129,24 @@ export default function Footer({ cta = true }: { cta?: boolean }) {
                     <Icon name={name} className="h-5 w-5" />
                   </a>
                 ) : (
-                  <span key={name} className="text-white/50" title="Sắp cập nhật">
+                  <span key={name} className="text-white/50" title={t.soon}>
                     <Icon name={name} className="h-5 w-5" />
                   </span>
                 );
               })}
             </div>
+            <div className="mt-6 flex items-center gap-3">
+              <span className="text-[13px] text-white/70">{t.language}</span>
+              <LangSwitch />
+            </div>
           </div>
 
-          <nav aria-label="Liên kết">
-            <p className="text-base font-semibold text-gold">Liên kết</p>
+          <nav aria-label={t.links}>
+            <p className="text-base font-semibold text-gold">{t.links}</p>
             <ul className="mt-4 space-y-2.5">
-              {[
-                ["/#top", "Trang chủ"],
-                ["/#gioi-thieu", "Giới thiệu"],
-                ["/the-le/", "Thể lệ"],
-                ["/#giai-thuong", "Giải thưởng"],
-              ].map(([href, label]) => (
-                <li key={href}>
-                  <Link href={href} className={linkCls}>
+              {t.linkItems.map(([path, label]) => (
+                <li key={path}>
+                  <Link href={href(path)} className={linkCls}>
                     {label}
                   </Link>
                 </li>
@@ -118,27 +154,27 @@ export default function Footer({ cta = true }: { cta?: boolean }) {
             </ul>
           </nav>
 
-          <nav aria-label="Hỗ trợ">
-            <p className="text-base font-semibold text-gold">Hỗ trợ</p>
+          <nav aria-label={t.support}>
+            <p className="text-base font-semibold text-gold">{t.support}</p>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/#hoi-dap" className={linkCls}>
+                <Link href={href("/#hoi-dap")} className={linkCls}>
                   FAQ
                 </Link>
               </li>
               <li>
                 <a href={contactHref} className={linkCls}>
-                  Liên hệ
+                  {t.contact}
                 </a>
               </li>
               <li>
-                <Link href="/the-le/" className={linkCls}>
-                  Điều khoản & thể lệ
+                <Link href={href("/the-le/")} className={linkCls}>
+                  {t.terms}
                 </Link>
               </li>
               <li>
-                <Link href="/ket-qua/" className={linkCls}>
-                  Kết quả
+                <Link href={href("/ket-qua/")} className={linkCls}>
+                  {t.results}
                 </Link>
               </li>
             </ul>

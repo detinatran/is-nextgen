@@ -135,7 +135,7 @@ export const rounds = [
 
 export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "presentation"];
 
-export const roundsIntro =
+export const roundsIntro: string =
   "Mỗi vòng thi là một thử thách khác nhau, giúp bạn phát triển từ tư duy đến kỹ năng thực chiến dưới sự đánh giá của giảng viên và doanh nghiệp.";
 
 export const experiences = [
@@ -223,7 +223,7 @@ export const timeline = [
   { date: "01/2027", title: "Báo cáo năng lực", body: "Gửi báo cáo cá nhân tới thí sinh từ Vòng Sơ loại" },
 ];
 
-export const prizeTotal = "14.500.000 đồng";
+export const prizeTotal: string = "14.500.000 đồng";
 
 export const prizes: { rank: string; qty: string; amount: string; perks: string[]; icon: IconName; featured?: boolean }[] = [
   {
@@ -239,7 +239,7 @@ export const prizes: { rank: string; qty: string; amount: string; perks: string[
   { rank: "Cá nhân xuất sắc", qty: "01 thí sinh", amount: "1.500.000đ", perks: ["01 suất thực tập", "Kỷ niệm chương"], icon: "star" },
 ];
 
-export const minorPrizes =
+export const minorPrizes: string =
   "Ngoài ra có hai giải phụ (Tinh thần hợp tác, Trình bày tiếng Anh xuất sắc) và giải Đội thi được yêu thích nhất, mỗi giải 1.000.000 đồng.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
@@ -261,7 +261,7 @@ export const eligibility = [
   "Khuyến khích sinh viên quốc tế đang học tại Việt Nam đăng ký.",
 ];
 
-export const eligibilityNote =
+export const eligibilityNote: string =
   "Là sinh viên hệ đại học chính quy, còn trong thời gian đào tạo tại thời điểm đăng ký; xuất trình thẻ sinh viên hoặc giấy xác nhận của trường khi dự các vòng thi trực tiếp.";
 
 export const competencies = personas.map((p) => ({ name: p.title, body: p.body }));

@@ -3,13 +3,21 @@ import Art from "@/components/Art";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
-import { about, site } from "@/content/site";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 
-function VideoCard() {
+const text = {
+  vi: { eyebrow: "Về IS-NextGen Manager 2026", register: "Đăng ký ngay", more: "Tìm hiểu thêm", watch: "Xem video giới thiệu", soon: "Video giới thiệu · sắp ra mắt", alt: "Toà nhà văn phòng hiện đại" },
+  en: { eyebrow: "About IS-NextGen Manager 2026", register: "Register now", more: "Learn more", watch: "Watch the intro video", soon: "Intro video · coming soon", alt: "Modern office towers" },
+};
+
+function VideoCard({ lang }: { lang: Lang }) {
+  const { site } = getContent(lang);
+  const t = text[lang];
   const inner = (
     <Photo
       src="/images/generated/about-city.webp"
-      alt="Toà nhà văn phòng hiện đại"
+      alt={t.alt}
       className="aspect-[1.9/1] w-full rounded-2xl shadow-card"
       imgClassName="transition duration-700 group-hover:scale-105"
     >
@@ -19,12 +27,12 @@ function VideoCard() {
       </span>
       <div className="absolute bottom-4 left-5">
         <p className="text-base font-bold text-white">IS-NextGen Manager 2026</p>
-        <p className="text-[13px] text-white/85">{site.videoUrl ? "Xem video giới thiệu" : "Video giới thiệu · sắp ra mắt"}</p>
+        <p className="text-[13px] text-white/85">{site.videoUrl ? t.watch : t.soon}</p>
       </div>
     </Photo>
   );
   return site.videoUrl ? (
-    <a href={site.videoUrl} target="_blank" rel="noopener noreferrer" className="group block" aria-label="Xem video giới thiệu">
+    <a href={site.videoUrl} target="_blank" rel="noopener noreferrer" className="group block" aria-label={t.watch}>
       {inner}
     </a>
   ) : (
@@ -32,7 +40,9 @@ function VideoCard() {
   );
 }
 
-export default function About() {
+export default function About({ lang }: { lang: Lang }) {
+  const { about } = getContent(lang);
+  const t = text[lang];
   return (
     <section id="gioi-thieu" className="relative overflow-hidden bg-linear-to-b from-white to-mist pt-16 pb-16 lg:pt-20">
       <Art src="/images/generated/deco-blue-waves.webp" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-60" />
@@ -40,23 +50,23 @@ export default function About() {
       <div className="container-x relative">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
           <div className="reveal">
-            <Eyebrow>Về IS-NextGen Manager 2026</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
             <h2 className="h2-section mt-4">
               {about.title[0]} {about.title[1]}
               <span className="text-gradient-orange">{about.title[2]}</span>
             </h2>
             <p className="lead mt-4 max-w-xl">{about.body}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/dang-ky/" className="btn-primary">
-                Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+              <Link href={localePath(lang, "/dang-ky/")} className="btn-primary">
+                {t.register} <Icon name="arrowRight" className="h-4 w-4" />
               </Link>
-              <Link href="/the-le/" className="btn-outline">
-                Tìm hiểu thêm
+              <Link href={localePath(lang, "/the-le/")} className="btn-outline">
+                {t.more}
               </Link>
             </div>
           </div>
           <div className="reveal" style={{ "--delay": "120ms" } as React.CSSProperties}>
-            <VideoCard />
+            <VideoCard lang={lang} />
           </div>
         </div>
 

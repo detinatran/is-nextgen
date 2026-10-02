@@ -1,10 +1,12 @@
 import Art from "@/components/Art";
 import Icon from "@/components/Icon";
-import { values } from "@/content/site";
+import { getContent } from "@/content";
+import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import Wave from "./Wave";
 
-export default function Values() {
+export default function Values({ lang }: { lang: Lang }) {
+  const { values } = getContent(lang);
   return (
     <section
       className="band-fallback relative -mt-16 overflow-hidden bg-cover bg-center pt-28 pb-32 text-white lg:pt-32 lg:pb-36"
@@ -29,7 +31,7 @@ export default function Values() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-[#ffe08a] to-[#d98b16] text-[10px] text-navy-deep">
               <Icon name="star" className="h-3 w-3" strokeWidth={2.5} />
             </span>
-            Giá trị mang lại
+            {lang === "en" ? "What you gain" : "Giá trị mang lại"}
           </p>
           <h2 className="text-on-photo mt-4 text-[1.9rem] leading-[1.18] font-bold sm:text-[2.5rem]">
             {values.title[0]}

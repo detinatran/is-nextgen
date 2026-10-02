@@ -1,6 +1,7 @@
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import { milestones } from "@/content/site";
+import { getContent } from "@/content";
+import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const tone = {
@@ -11,7 +12,9 @@ const tone = {
 };
 const dot = { orange: "bg-[#f5a54a]", blue: "bg-sky", red: "bg-[#ff6b5a]", gold: "bg-gold" };
 
-export default function Milestones() {
+export default function Milestones({ lang }: { lang: Lang }) {
+  const { milestones } = getContent(lang);
+  const en = lang === "en";
   return (
     <section
       id="lo-trinh"
@@ -22,8 +25,8 @@ export default function Milestones() {
     >
       <div className="container-x relative">
         <div className="reveal">
-          <Eyebrow light>Lộ trình cuộc thi</Eyebrow>
-          <h2 className="text-on-photo mt-4 text-[1.9rem] leading-[1.18] font-bold sm:text-[2.5rem]">Các mốc thời gian quan trọng</h2>
+          <Eyebrow light>{en ? "Competition roadmap" : "Lộ trình cuộc thi"}</Eyebrow>
+          <h2 className="text-on-photo mt-4 text-[1.9rem] leading-[1.18] font-bold sm:text-[2.5rem]">{en ? "Key dates" : "Các mốc thời gian quan trọng"}</h2>
         </div>
 
         <div className="relative mt-10">

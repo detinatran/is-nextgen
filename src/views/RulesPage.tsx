@@ -1,23 +1,71 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import PageHero from "@/components/PageHero";
 import SiteShell from "@/components/SiteShell";
-import {
-  competencies,
-  eligibility,
-  eligibilityNote,
-  judgingRules,
-  moreFaqs,
-  roundIcons,
-  rounds,
-  sideEvents,
-  timeline,
-  votingRules,
-} from "@/content/site";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Thể lệ | IS-NextGen Manager Challenge 2026" };
+export const rulesText = {
+  vi: {
+    heroEyebrow: "Thể lệ cuộc thi",
+    heroTitle: "Thể lệ",
+    heroLead: "Bốn vòng thi, một khung sáu năng lực. Mọi vòng đều có tiêu chí và thang điểm công bố trước.",
+    whoEyebrow: "Đối tượng",
+    whoTitle: "Ai được tham gia?",
+    formatEyebrow: "Thể thức",
+    formatTitle: "Bốn vòng thi",
+    compEyebrow: "Khung năng lực",
+    compTitle: "Sáu nhóm năng lực được chấm",
+    compLead:
+      "Mỗi nhóm được mô tả bằng 05 mức hành vi quan sát được. Giám khảo ghi nhận hành vi cụ thể, sau đó quy đổi ra điểm theo bảng quy đổi thống nhất.",
+    aiEyebrow: "Vòng Bán kết và Chung kết",
+    aiTitle: "Được dùng AI, nhưng phải giải trình",
+    aiBody:
+      "Khai báo bạn đã dùng công cụ như thế nào, phần nào là kết quả của công cụ, phần nào là phán đoán của bạn, và vì sao giữ hay bác bỏ từng gợi ý. Điểm số tập trung vào phần giải trình.",
+    judgingEyebrow: "Nguyên tắc chấm thi",
+    sideEyebrow: "Hoạt động bên lề",
+    sideTitle: "Gặp doanh nghiệp trước khi bước vào nghề",
+    when: "Thời gian:",
+    who: "Thành phần:",
+    timelineEyebrow: "Lộ trình",
+    timelineTitle: "Lịch đầy đủ mùa I",
+    voteEyebrow: "Giải phụ",
+    voteTitle: "Thể lệ bình chọn Đội thi được yêu thích nhất",
+    faqEyebrow: "Hỏi đáp",
+    faqTitle: "Câu hỏi khác",
+    register: "Đăng ký dự thi",
+  },
+  en: {
+    heroEyebrow: "Competition rules",
+    heroTitle: "Rules",
+    heroLead: "Four rounds, one six-competency framework. Every round has criteria and scoring published in advance.",
+    whoEyebrow: "Eligibility",
+    whoTitle: "Who can take part?",
+    formatEyebrow: "Format",
+    formatTitle: "Four rounds",
+    compEyebrow: "Competency framework",
+    compTitle: "Six competency areas assessed",
+    compLead:
+      "Each area is described by 05 levels of observable behaviour. Judges record specific behaviours, then convert them into scores using a shared conversion table.",
+    aiEyebrow: "Semi-final and Grand Final",
+    aiTitle: "AI is allowed, but you must explain it",
+    aiBody:
+      "State how you used each tool, which parts came from the tool and which from your own judgement, and why you kept or rejected each suggestion. Scoring focuses on that explanation.",
+    judgingEyebrow: "Judging principles",
+    sideEyebrow: "Side events",
+    sideTitle: "Meet employers before you start your career",
+    when: "When:",
+    who: "Who:",
+    timelineEyebrow: "Roadmap",
+    timelineTitle: "Full Season I schedule",
+    voteEyebrow: "Special award",
+    voteTitle: "Fan Favorite Team voting rules",
+    faqEyebrow: "Q&A",
+    faqTitle: "More questions",
+    register: "Register to compete",
+  },
+};
 
 function Block({ id, eyebrow, title, children }: { id?: string; eyebrow: string; title: string; children: React.ReactNode }) {
   return (
@@ -29,16 +77,15 @@ function Block({ id, eyebrow, title, children }: { id?: string; eyebrow: string;
   );
 }
 
-export default function RulesPage() {
+export default function RulesPage({ lang }: { lang: Lang }) {
+  const { competencies, eligibility, eligibilityNote, judgingRules, moreFaqs, roundIcons, rounds, sideEvents, timeline, votingRules } =
+    getContent(lang);
+  const t = rulesText[lang];
   return (
-    <SiteShell>
-      <PageHero
-        eyebrow="Thể lệ cuộc thi"
-        title="Thể lệ"
-        lead="Bốn vòng thi, một khung sáu năng lực. Mọi vòng đều có tiêu chí và thang điểm công bố trước."
-      />
+    <SiteShell lang={lang}>
+      <PageHero lang={lang} eyebrow={t.heroEyebrow} title={t.heroTitle} lead={t.heroLead} />
       <div className="container-x space-y-20 py-16 lg:py-20">
-        <Block eyebrow="Đối tượng" title="Ai được tham gia?">
+        <Block eyebrow={t.whoEyebrow} title={t.whoTitle}>
           <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
             <ul className="card space-y-3 p-6">
               {eligibility.map((e) => (
@@ -52,7 +99,7 @@ export default function RulesPage() {
           </div>
         </Block>
 
-        <Block eyebrow="Thể thức" title="Bốn vòng thi">
+        <Block eyebrow={t.formatEyebrow} title={t.formatTitle}>
           <div className="space-y-4">
             {rounds.map((r, i) => (
               <article id={`vong-${i + 1}`} key={r.no} className="card scroll-mt-28 overflow-hidden md:flex">
@@ -78,10 +125,9 @@ export default function RulesPage() {
           </div>
         </Block>
 
-        <Block eyebrow="Khung năng lực" title="Sáu nhóm năng lực được chấm">
+        <Block eyebrow={t.compEyebrow} title={t.compTitle}>
           <p className="-mt-2 mb-6 max-w-3xl text-muted">
-            Mỗi nhóm được mô tả bằng 05 mức hành vi quan sát được. Giám khảo ghi nhận hành vi cụ thể, sau đó quy đổi ra điểm theo
-            bảng quy đổi thống nhất.
+            {t.compLead}
           </p>
           <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {competencies.map((c, i) => (
@@ -96,16 +142,15 @@ export default function RulesPage() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <aside className="reveal relative overflow-hidden rounded-2xl bg-linear-to-br from-navy to-navy-soft p-7 text-white sm:p-9">
-            <Eyebrow light>Vòng Bán kết và Chung kết</Eyebrow>
-            <h2 className="mt-3 text-2xl font-bold">Được dùng AI, nhưng phải giải trình</h2>
+            <Eyebrow light>{t.aiEyebrow}</Eyebrow>
+            <h2 className="mt-3 text-2xl font-bold">{t.aiTitle}</h2>
             <p className="mt-4 text-base leading-relaxed text-white/90">
-              Khai báo bạn đã dùng công cụ như thế nào, phần nào là kết quả của công cụ, phần nào là phán đoán của bạn, và vì sao
-              giữ hay bác bỏ từng gợi ý. Điểm số tập trung vào phần giải trình.
+              {t.aiBody}
             </p>
             <Icon name="sparkles" className="absolute -right-4 -bottom-4 h-36 w-36 text-white/5" />
           </aside>
           <aside className="card reveal p-7 sm:p-9">
-            <Eyebrow>Nguyên tắc chấm thi</Eyebrow>
+            <Eyebrow>{t.judgingEyebrow}</Eyebrow>
             <ul className="mt-4 space-y-3">
               {judgingRules.map((rule) => (
                 <li key={rule} className="flex gap-3 text-[15px] leading-relaxed text-ink">
@@ -117,7 +162,7 @@ export default function RulesPage() {
           </aside>
         </div>
 
-        <Block eyebrow="Hoạt động bên lề" title="Gặp doanh nghiệp trước khi bước vào nghề">
+        <Block eyebrow={t.sideEyebrow} title={t.sideTitle}>
           <div className="grid gap-5 lg:grid-cols-2">
             {sideEvents.map((e) => (
               <article key={e.tag} className="card p-6 sm:p-7">
@@ -125,11 +170,11 @@ export default function RulesPage() {
                 <h3 className="mt-2 text-xl font-bold text-navy">{e.title}</h3>
                 <dl className="mt-4 space-y-1 text-[15px]">
                   <div className="flex gap-2">
-                    <dt className="shrink-0 font-semibold text-navy">Thời gian:</dt>
+                    <dt className="shrink-0 font-semibold text-navy">{t.when}</dt>
                     <dd className="text-muted">{e.when}</dd>
                   </div>
                   <div className="flex gap-2">
-                    <dt className="shrink-0 font-semibold text-navy">Thành phần:</dt>
+                    <dt className="shrink-0 font-semibold text-navy">{t.who}</dt>
                     <dd className="text-muted">{e.who}</dd>
                   </div>
                 </dl>
@@ -139,7 +184,7 @@ export default function RulesPage() {
           </div>
         </Block>
 
-        <Block id="lo-trinh" eyebrow="Lộ trình" title="Lịch đầy đủ mùa I">
+        <Block id="lo-trinh" eyebrow={t.timelineEyebrow} title={t.timelineTitle}>
           <ol className="relative space-y-5 border-l-2 border-orange/25 pl-6">
             {timeline.map((t) => (
               <li key={t.title} className="relative">
@@ -152,7 +197,7 @@ export default function RulesPage() {
           </ol>
         </Block>
 
-        <Block eyebrow="Giải phụ" title="Thể lệ bình chọn Đội thi được yêu thích nhất">
+        <Block eyebrow={t.voteEyebrow} title={t.voteTitle}>
           <ul className="card space-y-3 p-6">
             {votingRules.map((v) => (
               <li key={v} className="flex gap-3 text-[15px] leading-relaxed text-ink">
@@ -163,7 +208,7 @@ export default function RulesPage() {
           </ul>
         </Block>
 
-        <Block eyebrow="Hỏi đáp" title="Câu hỏi khác">
+        <Block eyebrow={t.faqEyebrow} title={t.faqTitle}>
           <div className="space-y-3">
             {moreFaqs.map((f) => (
               <details key={f.q} className="card group">
@@ -178,8 +223,8 @@ export default function RulesPage() {
         </Block>
 
         <div className="reveal text-center">
-          <Link href="/dang-ky/" className="btn-primary px-8 py-3.5 text-base">
-            Đăng ký dự thi <Icon name="arrowRight" className="h-4 w-4" />
+          <Link href={localePath(lang, "/dang-ky/")} className="btn-primary px-8 py-3.5 text-base">
+            {t.register} <Icon name="arrowRight" className="h-4 w-4" />
           </Link>
         </div>
       </div>

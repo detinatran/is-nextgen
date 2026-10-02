@@ -2,11 +2,19 @@ import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import { site } from "@/content/site";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 // Ảnh nền: Vitaly Gariev trên Unsplash (unsplash.com/photos/kp7qkHTgSKc), giấy phép Unsplash
-export default function Deadline() {
+const text = {
+  vi: { open: "Đang mở đăng ký", eyebrow: "Thời hạn đăng ký", title: "Cổng đăng ký sẽ đóng sau", deadline: "Hạn chót", note: "Đăng ký cá nhân, không thu lệ phí.", register: "Đăng ký ngay", rules: "Xem thể lệ" },
+  en: { open: "Registration open", eyebrow: "Registration deadline", title: "Registration closes in", deadline: "Deadline", note: "Individual entry, free of charge.", register: "Register now", rules: "View rules" },
+};
+
+export default function Deadline({ lang }: { lang: Lang }) {
+  const { site } = getContent(lang);
+  const t = text[lang];
   return (
     <section id="dem-nguoc" className="bg-white pt-14 pb-2 lg:pt-16">
       <div className="container-x">
@@ -29,26 +37,25 @@ export default function Deadline() {
                   <span className="absolute inline-flex h-full w-full motion-safe:animate-ping rounded-full bg-[#4ade80] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4ade80]" />
                 </span>
-                Đang mở đăng ký
+                {t.open}
               </p>
               <Eyebrow light className="mt-5">
-                Thời hạn đăng ký
+                {t.eyebrow}
               </Eyebrow>
-              <h2 className="mt-3 text-[1.6rem] leading-tight font-bold sm:text-[2rem]">Cổng đăng ký sẽ đóng sau</h2>
+              <h2 className="mt-3 text-[1.6rem] leading-tight font-bold sm:text-[2rem]">{t.title}</h2>
               <p className="mt-3 text-[15px] leading-relaxed text-white/80 sm:text-base">
-                Hạn chót: <strong className="font-semibold text-gold">{site.registrationDeadlineLabel}</strong>. Đăng ký cá nhân, không
-                thu lệ phí.
+                {t.deadline}: <strong className="font-semibold text-gold">{site.registrationDeadlineLabel}</strong>. {t.note}
               </p>
             </div>
             <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-              <Countdown deadline={site.registrationDeadline} large />
+              <Countdown lang={lang} deadline={site.registrationDeadline} large />
             </div>
             <div className="flex flex-wrap gap-3 lg:self-start">
-              <Link href="/dang-ky/" className="btn-primary cta-pulse px-7 py-3">
-                Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+              <Link href={localePath(lang, "/dang-ky/")} className="btn-primary cta-pulse px-7 py-3">
+                {t.register} <Icon name="arrowRight" className="h-4 w-4" />
               </Link>
-              <Link href="/the-le/" className="btn-glass px-6 py-3">
-                Xem thể lệ
+              <Link href={localePath(lang, "/the-le/")} className="btn-glass px-6 py-3">
+                {t.rules}
               </Link>
             </div>
           </div>

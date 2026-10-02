@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Lang } from "@/lib/i18n";
 import Icon from "./Icon";
 
 type Props = {
@@ -8,12 +9,14 @@ type Props = {
   /** Class cho mỗi slide, quyết định số slide hiển thị cùng lúc. */
   slideClassName: string;
   label: string;
+  lang: Lang;
   dots?: boolean;
   arrowsClassName?: string;
 };
 
 /** Carousel cuộn ngang dùng scroll-snap; nút trái/phải và chấm chỉ vị trí. */
-export default function Carousel({ children, slideClassName, label, dots, arrowsClassName = "" }: Props) {
+export default function Carousel({ children, slideClassName, label, lang, dots, arrowsClassName = "" }: Props) {
+  const t = lang === "en" ? { prev: "Previous", next: "Next", page: "Page" } : { prev: "Trước", next: "Sau", page: "Trang" };
   const track = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
@@ -59,10 +62,10 @@ export default function Carousel({ children, slideClassName, label, dots, arrows
       </div>
       {pages > 1 && (
         <>
-          <button type="button" className={`${arrow} -left-5 ${arrowsClassName}`} onClick={() => go(page - 1)} aria-label="Trước">
+          <button type="button" className={`${arrow} -left-5 ${arrowsClassName}`} onClick={() => go(page - 1)} aria-label={t.prev}>
             <Icon name="chevronLeft" />
           </button>
-          <button type="button" className={`${arrow} -right-5 ${arrowsClassName}`} onClick={() => go(page + 1)} aria-label="Sau">
+          <button type="button" className={`${arrow} -right-5 ${arrowsClassName}`} onClick={() => go(page + 1)} aria-label={t.next}>
             <Icon name="chevronRight" />
           </button>
         </>
@@ -74,7 +77,7 @@ export default function Carousel({ children, slideClassName, label, dots, arrows
               key={i}
               type="button"
               onClick={() => go(i)}
-              aria-label={`Trang ${i + 1}`}
+              aria-label={`${t.page} ${i + 1}`}
               aria-current={i === page}
               className={`h-2 rounded-full transition-all ${i === page ? "w-6 bg-navy" : "w-2 bg-navy/20 hover:bg-navy/40"}`}
             />

@@ -2,22 +2,25 @@ import Link from "next/link";
 import Art from "@/components/Art";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import { faqs } from "@/content/site";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 
-export default function Faq() {
+export default function Faq({ lang }: { lang: Lang }) {
+  const { faqs } = getContent(lang);
+  const en = lang === "en";
   return (
     <section id="hoi-dap" className="relative overflow-hidden bg-white pt-12 pb-24">
       <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-72 w-full object-cover object-bottom opacity-80 blur-[2px] [mask-image:linear-gradient(to_bottom,transparent,black_60%)]" />
       <div className="container-x relative grid items-start gap-10 lg:grid-cols-[1fr_1.6fr]">
         <div className="reveal">
-          <Eyebrow>Câu hỏi thường gặp</Eyebrow>
-          <h2 className="h2-section mt-4">Giải đáp những thắc mắc của bạn</h2>
+          <Eyebrow>{en ? "Frequently asked questions" : "Câu hỏi thường gặp"}</Eyebrow>
+          <h2 className="h2-section mt-4">{en ? "Answers to your questions" : "Giải đáp những thắc mắc của bạn"}</h2>
           <p className="lead mt-4">
-            Chưa thấy câu trả lời? Xem{" "}
-            <Link href="/the-le/" className="font-semibold text-orange-ink underline-offset-4 hover:underline">
-              thể lệ chi tiết
+            {en ? "Can't find your answer? See the" : "Chưa thấy câu trả lời? Xem"}{" "}
+            <Link href={localePath(lang, "/the-le/")} className="font-semibold text-orange-ink underline-offset-4 hover:underline">
+              {en ? "full rules" : "thể lệ chi tiết"}
             </Link>{" "}
-            hoặc liên hệ Ban Tổ chức.
+            {en ? "or contact the Organizing Committee." : "hoặc liên hệ Ban Tổ chức."}
           </p>
         </div>
         <div className="reveal space-y-3">

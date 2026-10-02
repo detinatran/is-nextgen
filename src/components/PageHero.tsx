@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import Eyebrow from "./Eyebrow";
 
-type Props = { eyebrow: string; title: string; lead?: string };
+type Props = { lang: Lang; eyebrow: string; title: string; lead?: string };
 
 /** Phần đầu cho các trang con (Thể lệ, Kết quả, Đăng ký). */
-export default function PageHero({ eyebrow, title, lead }: Props) {
+export default function PageHero({ lang, eyebrow, title, lead }: Props) {
   return (
     <section
       className="band-fallback relative overflow-hidden bg-cover bg-center pt-36 pb-20 text-white"
@@ -15,8 +16,8 @@ export default function PageHero({ eyebrow, title, lead }: Props) {
     >
       <div className="container-x relative">
         <nav aria-label="Breadcrumb" className="mb-6 text-sm text-white/75">
-          <Link href="/" className="hover:text-white">
-            Trang chủ
+          <Link href={localePath(lang, "/")} className="hover:text-white">
+            {lang === "en" ? "Home" : "Trang chủ"}
           </Link>
           <span className="mx-2">/</span>
           <span className="text-white/90">{title}</span>

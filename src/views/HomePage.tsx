@@ -10,21 +10,22 @@ import Prizes from "@/components/sections/Prizes";
 import Rounds from "@/components/sections/Rounds";
 import Theme from "@/components/sections/Theme";
 import Values from "@/components/sections/Values";
+import type { Lang } from "@/lib/i18n";
 
-export default function Home() {
+export default function HomePage({ lang }: { lang: Lang }) {
   return (
-    <SiteShell>
-      <Hero />
-      <Deadline />
-      <About />
-      <Theme />
-      <Rounds />
-      <Values />
-      <Personas />
-      <Milestones />
-      <Prizes />
-      <Partners />
-      <Faq />
+    <SiteShell lang={lang}>
+      <Hero lang={lang} />
+      <Deadline lang={lang} />
+      <About lang={lang} />
+      <Theme lang={lang} />
+      <Rounds lang={lang} />
+      <Values lang={lang} />
+      <Personas lang={lang} />
+      <Milestones lang={lang} />
+      <Prizes lang={lang} />
+      <Partners lang={lang} />
+      <Faq lang={lang} />
     </SiteShell>
   );
 }

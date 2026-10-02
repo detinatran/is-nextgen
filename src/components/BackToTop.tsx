@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Lang } from "@/lib/i18n";
 import Icon from "./Icon";
 
-export default function BackToTop() {
+export default function BackToTop({ lang }: { lang: Lang }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 800);
@@ -15,7 +16,7 @@ export default function BackToTop() {
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Lên đầu trang"
+      aria-label={lang === "en" ? "Back to top" : "Lên đầu trang"}
       className={`fixed right-5 bottom-5 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-brand text-white shadow-lg shadow-brand/40 transition hover:-translate-y-0.5 ${
         show ? "opacity-100" : "pointer-events-none opacity-0"
       }`}

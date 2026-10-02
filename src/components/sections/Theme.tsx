@@ -2,11 +2,14 @@ import Art from "@/components/Art";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
-import { themeSection } from "@/content/site";
+import { getContent } from "@/content";
+import type { Lang } from "@/lib/i18n";
 
 const pointIcons = ["sparkles", "briefcase", "lightbulb"] as const;
 
-export default function Theme() {
+export default function Theme({ lang }: { lang: Lang }) {
+  const { themeSection } = getContent(lang);
+  const en = lang === "en";
   return (
     <section className="relative overflow-hidden bg-white py-12 lg:py-0">
       <Art
@@ -17,7 +20,7 @@ export default function Theme() {
       <div className="reveal lg:absolute lg:inset-y-0 lg:left-0 lg:w-[49%]">
         <Photo
           src="/images/generated/theme-ai.webp"
-          alt="Nhà quản trị trẻ nhìn về thành phố với các bảng thông tin AI"
+          alt={en ? "A young manager looking out over the city with AI dashboards" : "Nhà quản trị trẻ nhìn về thành phố với các bảng thông tin AI"}
           className="mx-4 aspect-[3/2] rounded-2xl shadow-card sm:mx-6 lg:mx-0 lg:aspect-auto lg:h-full lg:rounded-l-none lg:rounded-r-[1.75rem]"
         />
         <Art
@@ -43,11 +46,21 @@ export default function Theme() {
         </svg>
 
         <div className="reveal mt-8 lg:mt-0 lg:ml-[53%] lg:py-20" style={{ "--delay": "100ms" } as React.CSSProperties}>
-          <Eyebrow>Chủ đề cuộc thi</Eyebrow>
+          <Eyebrow>{en ? "Competition theme" : "Chủ đề cuộc thi"}</Eyebrow>
           <h2 className="h2-section mt-4">
-            Nhà quản trị
-            <br />
-            trong <span className="text-gradient-orange">kỷ nguyên</span> AI
+            {en ? (
+              <>
+                Managers
+                <br />
+                in the <span className="text-gradient-orange">AI era</span>
+              </>
+            ) : (
+              <>
+                Nhà quản trị
+                <br />
+                trong <span className="text-gradient-orange">kỷ nguyên</span> AI
+              </>
+            )}
           </h2>
           <p className="lead mt-4">{themeSection.body}</p>
           <ul className="mt-6 space-y-3.5">

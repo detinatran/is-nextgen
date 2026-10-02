@@ -1,26 +1,35 @@
 import Link from "next/link";
 import Art from "@/components/Art";
 import Icon from "@/components/Icon";
-import { heroStats, site } from "@/content/site";
+import { getContent } from "@/content";
+import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const toneClass = { sky: "text-sky", gold: "text-gold" } as const;
 
-function Ctas({ className = "", compact }: { className?: string; compact?: boolean }) {
+const text = {
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
+};
+
+function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
+  const t = text[lang];
   const size = compact ? "px-4 py-2 text-sm" : "";
   return (
     <div className={`flex gap-3 ${className}`}>
-      <Link href="/dang-ky/" className={`btn-primary ${size} ${compact ? "w-full" : ""}`}>
-        Đăng ký ngay <Icon name="arrowRight" className="h-4 w-4" />
+      <Link href={localePath(lang, "/dang-ky/")} className={`btn-primary ${size} ${compact ? "w-full" : ""}`}>
+        {t.register} <Icon name="arrowRight" className="h-4 w-4" />
       </Link>
-      <Link href="/#gioi-thieu" className={`btn-glass bg-navy-deep/30 ${size} ${compact ? "w-full" : ""}`}>
-        Tìm hiểu thêm <Icon name="circleArrow" className="h-4 w-4" />
+      <Link href={localePath(lang, "/#gioi-thieu")} className={`btn-glass bg-navy-deep/30 ${size} ${compact ? "w-full" : ""}`}>
+        {t.more} <Icon name="circleArrow" className="h-4 w-4" />
       </Link>
     </div>
   );
 }
 
-export default function Hero() {
+export default function Hero({ lang }: { lang: Lang }) {
+  const { heroStats, site } = getContent(lang);
+  const t = text[lang];
   return (
     <section id="top" className="relative bg-navy-deep pt-14 lg:bg-white lg:pt-0">
       <h1 className="sr-only">
@@ -92,22 +101,22 @@ export default function Hero() {
         {/* Khối giới thiệu bên trái: khung kính tối, đặt sát mép để không đè lên tiêu đề 3D */}
         <div className="absolute top-[30%] left-[3%] hidden w-[15.5rem] rounded-2xl bg-navy-deep/45 p-5 shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl lg:block xl:left-[4%]">
           <p className="text-[1.25rem] leading-snug font-bold whitespace-nowrap text-white">
-            Cuộc thi
+            {t.audience[0]}
             <br />
-            dành cho sinh viên
+            {t.audience[1]}
             <br />
-            trên toàn quốc
+            {t.audience[2]}
           </p>
-          <Ctas className="mt-4 flex-col gap-2" compact />
+          <Ctas lang={lang} className="mt-4 flex-col gap-2" compact />
         </div>
 
         <div className="absolute inset-0 hidden lg:block">
           <div className="container-x relative h-full">
             {/* Đơn vị tổ chức */}
             <div className="absolute top-20 right-8 flex items-center gap-4 rounded-xl bg-navy-deep/55 px-4 py-1.5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
-              <span className="text-xs font-medium text-white/90">Đơn vị tổ chức</span>
+              <span className="text-xs font-medium text-white/90">{t.organizers}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={asset("/images/organizers.png")} alt="Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC" className="h-8 w-auto" />
+              <img src={asset("/images/organizers.png")} alt={t.organizersAlt} className="h-8 w-auto" />
             </div>
 
             {/* Chữ viết tay bên phải */}
@@ -115,11 +124,11 @@ export default function Hero() {
               aria-hidden
               className="absolute top-[25%] right-6 -rotate-[8deg] [text-shadow:0_2px_4px_rgb(7_21_51/0.6),0_4px_20px_rgb(7_21_51/0.5)] text-right font-script text-[clamp(2rem,2.4vw,2.7rem)] leading-[1.05] text-white xl:right-0"
             >
-              Kiến tạo
+              {t.script[0]}
               <br />
-              thế hệ quản trị
+              {t.script[1]}
               <br />
-              tiếp theo
+              {t.script[2]}
             </p>
 
             {/* Tiêu đề phụ đặt trong khung kính trên bục */}
@@ -139,8 +148,8 @@ export default function Hero() {
       <div className="container-x py-8 text-center lg:hidden">
         <p className="text-xl font-extrabold tracking-wide text-white uppercase sm:text-2xl">{site.heroTitle}</p>
         <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-[#ffe2a3] uppercase sm:text-sm">{site.slogan.join(" · ")}</p>
-        <p className="mt-4 text-base text-white/90">Cuộc thi dành cho sinh viên trên toàn quốc</p>
-        <Ctas className="mt-6 flex-wrap justify-center" />
+        <p className="mt-4 text-base text-white/90">{t.audience.join(" ")}</p>
+        <Ctas lang={lang} className="mt-6 flex-wrap justify-center" />
       </div>
 
       {/* Số liệu, vắt ngang mép dưới ảnh */}

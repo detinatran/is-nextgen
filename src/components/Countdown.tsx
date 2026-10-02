@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Lang } from "@/lib/i18n";
 
 type Parts = { d: number; h: number; m: number; s: number };
 
@@ -13,14 +14,14 @@ function diff(target: number): Parts | null {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-const units: [keyof Parts, string][] = [
-  ["d", "Ngày"],
-  ["h", "Giờ"],
-  ["m", "Phút"],
-  ["s", "Giây"],
-];
+const keys: (keyof Parts)[] = ["d", "h", "m", "s"];
+const text = {
+  vi: { units: ["Ngày", "Giờ", "Phút", "Giây"], closed: "Đã hết hạn đăng ký", label: "Thời gian còn lại để đăng ký" },
+  en: { units: ["Days", "Hours", "Minutes", "Seconds"], closed: "Registration has closed", label: "Time left to register" },
+};
 
-export default function Countdown({ deadline, large = false }: { deadline: string; large?: boolean }) {
+export default function Countdown({ lang, deadline, large = false }: { lang: Lang; deadline: string; large?: boolean }) {
+  const t = text[lang];
   const target = new Date(deadline).getTime();
   // undefined trước khi hydrate để HTML tĩnh và client khớp nhau
   const [parts, setParts] = useState<Parts | null | undefined>(undefined);
@@ -33,13 +34,13 @@ export default function Countdown({ deadline, large = false }: { deadline: strin
 
   if (parts === null) {
     return (
-      <p className={`py-4 text-center font-semibold ${large ? "text-2xl text-white" : "text-base text-gold"}`}>Đã hết hạn đăng ký</p>
+      <p className={`py-4 text-center font-semibold ${large ? "text-2xl text-white" : "text-base text-gold"}`}>{t.closed}</p>
     );
   }
 
   return (
-    <div className={`grid grid-cols-4 ${large ? "gap-2 sm:gap-3" : "gap-2 sm:gap-3"}`} role="timer" aria-label="Thời gian còn lại để đăng ký">
-      {units.map(([key, label]) => (
+    <div className={`grid grid-cols-4 ${large ? "gap-2 sm:gap-3" : "gap-2 sm:gap-3"}`} role="timer" aria-label={t.label}>
+      {keys.map((key, i) => (
         <div
           key={key}
           className={
@@ -62,7 +63,7 @@ export default function Countdown({ deadline, large = false }: { deadline: strin
               "--"
             )}
           </div>
-          <div className={large ? "mt-1.5 text-[13px] font-medium text-white/75 sm:text-sm" : "text-xs text-white/70"}>{label}</div>
+          <div className={large ? "mt-1.5 text-[13px] font-medium text-white/75 sm:text-sm" : "text-xs text-white/70"}>{t.units[i]}</div>
         </div>
       ))}
     </div>

@@ -1,10 +1,13 @@
 import Carousel from "@/components/Carousel";
 import Eyebrow from "@/components/Eyebrow";
 import Photo from "@/components/Photo";
-import { personas } from "@/content/site";
+import { getContent } from "@/content";
+import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
-export default function Personas() {
+export default function Personas({ lang }: { lang: Lang }) {
+  const { personas } = getContent(lang);
+  const en = lang === "en";
   return (
     <section
       className="relative overflow-hidden bg-mist bg-cover bg-center pt-14 pb-16"
@@ -12,15 +15,15 @@ export default function Personas() {
     >
       <div className="container-x">
         <div className="reveal">
-          <Eyebrow>Chân dung nhà quản trị</Eyebrow>
+          <Eyebrow>{en ? "Manager profiles" : "Chân dung nhà quản trị"}</Eyebrow>
           <h2 className="h2-section mt-4">
-            Bạn có phải nhà quản trị <br className="hidden sm:block" />
-            chúng tôi đang tìm?
+            {en ? "Are you the manager" : "Bạn có phải nhà quản trị"} <br className="hidden sm:block" />
+            {en ? "we are looking for?" : "chúng tôi đang tìm?"}
           </h2>
         </div>
 
         <div className="reveal mt-8 -mx-2">
-          <Carousel label="Sáu nhóm năng lực" slideClassName="w-full px-2 md:w-1/2" dots>
+          <Carousel lang={lang} label={en ? "Six competency areas" : "Sáu nhóm năng lực"} slideClassName="w-full px-2 md:w-1/2" dots>
             {personas.map((p, i) => (
               <article key={p.title} className="card flex h-full flex-col overflow-hidden sm:flex-row">
                 <Photo src={p.image} alt="" className="aspect-[4/3] w-full shrink-0 sm:aspect-auto sm:w-[38%]" imgClassName="object-[50%_25%]" />
@@ -30,7 +33,7 @@ export default function Personas() {
                   </span>
                   <p className="mt-1 flex-1 text-base leading-relaxed text-ink">{p.body}</p>
                   <h3 className="mt-4 text-[17px] font-bold text-navy">{p.title}</h3>
-                  <p className="mt-0.5 text-sm text-muted">Nhóm năng lực {String(i + 1).padStart(2, "0")} · chấm ở cả bốn vòng</p>
+                  <p className="mt-0.5 text-sm text-muted">{en ? "Competency" : "Nhóm năng lực"} {String(i + 1).padStart(2, "0")} · {en ? "assessed in all four rounds" : "chấm ở cả bốn vòng"}</p>
                 </div>
               </article>
             ))}

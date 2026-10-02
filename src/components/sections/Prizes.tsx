@@ -1,7 +1,8 @@
 import Art from "@/components/Art";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import { minorPrizes, prizeTotal, prizes } from "@/content/site";
+import { getContent } from "@/content";
+import type { Lang } from "@/lib/i18n";
 
 function TrophyFallback() {
   return (
@@ -12,7 +13,9 @@ function TrophyFallback() {
   );
 }
 
-export default function Prizes() {
+export default function Prizes({ lang }: { lang: Lang }) {
+  const { minorPrizes, prizeTotal, prizes } = getContent(lang);
+  const en = lang === "en";
   return (
     <section
       id="giai-thuong"
@@ -26,12 +29,14 @@ export default function Prizes() {
       <div className="container-x relative grid items-center gap-10 lg:grid-cols-[1.5fr_1fr]">
         <div>
           <div className="reveal">
-            <Eyebrow>Giải thưởng</Eyebrow>
+            <Eyebrow>{en ? "Prizes" : "Giải thưởng"}</Eyebrow>
             <h2 className="h2-section mt-4">
-              Tổng giá trị <span className="text-gradient-orange">{prizeTotal}</span>
+              {en ? "Total prize pool" : "Tổng giá trị"} <span className="text-gradient-orange">{prizeTotal}</span>
             </h2>
             <p className="lead mt-4 max-w-2xl">
-              Giá trị nghề nghiệp là chính: suất thực tập, vé vào thẳng vòng phỏng vấn cuối và giấy chứng nhận được doanh nghiệp đồng hành công nhận.
+              {en
+                ? "The real value is your career: internships, a fast track to final interviews and certificates endorsed by our partner companies."
+                : "Giá trị nghề nghiệp là chính: suất thực tập, vé vào thẳng vòng phỏng vấn cuối và giấy chứng nhận được doanh nghiệp đồng hành công nhận."}
             </p>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">

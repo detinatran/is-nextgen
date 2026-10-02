@@ -203,11 +203,12 @@ export const personas = [
   },
 ];
 
-export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold" }[] = [
-  { date: "Oct 10 – Nov 1, 2026", title: "Registration opens", icon: "fileText", tone: "orange" },
-  { date: "Week 4 · Nov 2026", title: "Qualifying Round", icon: "messages", tone: "blue" },
-  { date: "Week 2 · Dec 2026", title: "Semi-final", icon: "inbox", tone: "red" },
-  { date: "Week 4 · Dec 2026", title: "Grand Final", icon: "trophy", tone: "gold" },
+// until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
+export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
+  { date: "Oct 10 – Nov 1, 2026", title: "Registration opens", icon: "fileText", tone: "orange", until: "2026-11-01T23:59:00+07:00" },
+  { date: "Week 4 · Nov 2026", title: "Qualifying Round", icon: "messages", tone: "blue", until: "2026-11-29T23:59:00+07:00" },
+  { date: "Week 2 · Dec 2026", title: "Semi-final", icon: "inbox", tone: "red", until: "2026-12-13T23:59:00+07:00" },
+  { date: "Week 4 · Dec 2026", title: "Grand Final", icon: "trophy", tone: "gold", until: "2026-12-27T23:59:00+07:00" },
 ];
 
 // Full timeline, shown on the Rules page

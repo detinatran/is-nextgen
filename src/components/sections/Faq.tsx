@@ -9,8 +9,8 @@ export default function Faq({ lang }: { lang: Lang }) {
   const { faqs } = getContent(lang);
   const en = lang === "en";
   return (
-    <section id="hoi-dap" className="relative overflow-hidden bg-white pt-12 pb-24">
-      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-72 w-full object-cover object-bottom opacity-80 blur-[2px] [mask-image:linear-gradient(to_bottom,transparent,black_60%)]" />
+    <section id="hoi-dap" className="relative overflow-hidden bg-white py-16 pb-28 lg:py-24 lg:pb-32">
+      <Art src="/images/generated/deco-clouds.webp" className="pointer-events-none absolute inset-x-0 bottom-0 h-64 w-full object-cover object-bottom opacity-70 blur-[2px] [mask-image:linear-gradient(to_bottom,transparent,black_55%)]" />
       <div className="container-x relative grid items-start gap-10 lg:grid-cols-[1fr_1.6fr]">
         <div className="reveal">
           <Eyebrow>{en ? "Frequently asked questions" : "Câu hỏi thường gặp"}</Eyebrow>
@@ -25,7 +25,7 @@ export default function Faq({ lang }: { lang: Lang }) {
         </div>
         <div className="reveal space-y-3">
           {faqs.map((f) => (
-            <details key={f.q} className="group rounded-xl border border-[#eadfce] bg-[#fbf6ef] transition open:bg-white open:shadow-card">
+            <details key={f.q} className="group rounded-2xl border border-line bg-white/90 backdrop-blur-sm transition duration-300 hover:border-orange/30 open:border-navy/20 open:shadow-card">
               <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-base font-semibold text-navy [&::-webkit-details-marker]:hidden">
                 <Icon name={f.icon} className="h-5 w-5 shrink-0 text-orange-ink" />
                 <span className="flex-1">{f.q}</span>

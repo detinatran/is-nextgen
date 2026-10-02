@@ -5,7 +5,7 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
-const toneClass = { sky: "text-sky", gold: "text-gold" } as const;
+const toneClass = { sky: "text-brand", gold: "text-orange-ink" } as const;
 
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
@@ -20,7 +20,7 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
       <Link href={localePath(lang, "/dang-ky/")} className={`btn-primary ${size} ${compact ? "w-full" : ""}`}>
         {t.register} <Icon name="arrowRight" className="h-4 w-4" />
       </Link>
-      <Link href={localePath(lang, "/#gioi-thieu")} className={`btn-glass bg-navy-deep/30 ${size} ${compact ? "w-full" : ""}`}>
+      <Link href={localePath(lang, "/#gioi-thieu")} className={`${compact ? "btn-glass bg-navy-deep/30 w-full" : "btn-outline bg-white"} ${size}`}>
         {t.more} <Icon name="circleArrow" className="h-4 w-4" />
       </Link>
     </div>
@@ -31,7 +31,7 @@ export default function Hero({ lang }: { lang: Lang }) {
   const { heroStats, site } = getContent(lang);
   const t = text[lang];
   return (
-    <section id="top" className="relative bg-navy-deep pt-14 lg:bg-white lg:pt-0">
+    <section id="top" className="relative bg-linear-to-b from-[#eef4fd] to-white pt-14 lg:bg-none lg:bg-white lg:pt-0">
       <h1 className="sr-only">
         {site.name} - {site.viName}
       </h1>
@@ -146,22 +146,24 @@ export default function Hero({ lang }: { lang: Lang }) {
 
       {/* Bản di động: chữ đặt dưới ảnh */}
       <div className="container-x py-8 text-center lg:hidden">
-        <p className="text-xl font-extrabold tracking-wide text-white uppercase sm:text-2xl">{site.heroTitle}</p>
-        <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-[#ffe2a3] uppercase sm:text-sm">{site.slogan.join(" · ")}</p>
-        <p className="mt-4 text-base text-white/90">{t.audience.join(" ")}</p>
+        <p className="text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.heroTitle}</p>
+        <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-orange-ink uppercase sm:text-sm">{site.slogan.join(" · ")}</p>
+        <p className="mt-4 text-base text-muted">{t.audience.join(" ")}</p>
         <Ctas lang={lang} className="mt-6 flex-wrap justify-center" />
       </div>
 
       {/* Số liệu, vắt ngang mép dưới ảnh */}
       <div className="container-x relative z-10 pb-10 lg:-mt-20 lg:pb-0">
         <div className="lg:-mx-8">
-          <div className="grid grid-cols-2 rounded-2xl border border-white/10 bg-linear-to-br from-navy to-navy-soft p-2 shadow-2xl shadow-navy-deep/40 sm:grid-cols-4 sm:p-3">
+          <div className="grid grid-cols-2 rounded-2xl border border-white bg-white/90 p-2 shadow-2xl shadow-navy/15 backdrop-blur-xl sm:grid-cols-4 sm:p-3">
             {heroStats.map((s, i) => (
-              <div key={s.label} className={`flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-center lg:gap-4 ${i > 0 ? "sm:border-l sm:border-white/15" : ""}`}>
-                <Icon name={s.icon} className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.6} />
+              <div key={s.label} className={`flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-center lg:gap-4 ${i > 0 ? "sm:border-l sm:border-line" : ""}`}>
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cream text-orange-ink">
+                  <Icon name={s.icon} className="h-5 w-5" strokeWidth={1.8} />
+                </span>
                 <div>
-                  <div className={`text-[1.6rem] leading-none font-bold ${s.tone ? toneClass[s.tone] : "text-white"}`}>{s.value}</div>
-                  <div className="mt-1 text-[13px] leading-tight text-white/80 lg:whitespace-nowrap">{s.label}</div>
+                  <div className={`text-[1.6rem] leading-none font-bold ${s.tone ? toneClass[s.tone] : "text-navy"}`}>{s.value}</div>
+                  <div className="mt-1 text-[13px] leading-tight text-muted lg:whitespace-nowrap">{s.label}</div>
                 </div>
               </div>
             ))}

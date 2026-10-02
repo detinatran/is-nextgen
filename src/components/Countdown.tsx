@@ -34,7 +34,7 @@ export default function Countdown({ lang, deadline, large = false }: { lang: Lan
 
   if (parts === null) {
     return (
-      <p className={`py-4 text-center font-semibold ${large ? "text-2xl text-white" : "text-base text-gold"}`}>{t.closed}</p>
+      <p className={`py-4 text-center font-semibold ${large ? "text-2xl text-navy" : "text-base text-gold"}`}>{t.closed}</p>
     );
   }
 
@@ -45,12 +45,12 @@ export default function Countdown({ lang, deadline, large = false }: { lang: Lan
           key={key}
           className={
             large
-              ? `overflow-hidden rounded-xl border bg-white/10 px-1 py-3 text-center backdrop-blur-md sm:py-4 ${key === "s" ? "border-orange/70 shadow-[0_0_24px_-4px] shadow-orange/50" : "border-white/20"}`
+              ? `overflow-hidden rounded-2xl border bg-white/85 px-1 py-3 text-center shadow-card backdrop-blur-md sm:py-4 ${key === "s" ? "border-orange/50 shadow-[0_0_24px_-6px] shadow-orange/40" : "border-white"}`
               : "rounded-lg border border-white/15 bg-white/[0.06] px-1 py-1.5 text-center"
           }
         >
           <div
-            className={`leading-none font-bold text-white tabular-nums ${large ? "text-[1.9rem] sm:text-[2.4rem] lg:text-[2.75rem]" : "text-[1.4rem] leading-tight"}`}
+            className={`leading-none font-bold tabular-nums ${large ? (key === "s" ? "text-orange-ink " : "text-navy ") : "text-white "}${large ? "text-[1.9rem] sm:text-[2.4rem] lg:text-[2.75rem]" : "text-[1.4rem] leading-tight"}`}
           >
             {/* key theo giá trị để mỗi lần số đổi thì chạy lại hiệu ứng lật */}
             {large && parts ? (
@@ -63,7 +63,7 @@ export default function Countdown({ lang, deadline, large = false }: { lang: Lan
               "--"
             )}
           </div>
-          <div className={large ? "mt-1.5 text-[13px] font-medium text-white/75 sm:text-sm" : "text-xs text-white/70"}>{t.units[i]}</div>
+          <div className={large ? "mt-1.5 text-[13px] font-medium text-muted sm:text-sm" : "text-xs text-white/70"}>{t.units[i]}</div>
         </div>
       ))}
     </div>

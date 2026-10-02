@@ -18,33 +18,34 @@ export default function Deadline({ lang }: { lang: Lang }) {
   return (
     <section id="dem-nguoc" className="bg-white pt-14 pb-2 lg:pt-16">
       <div className="container-x">
-        <div className="reveal relative overflow-hidden rounded-3xl bg-navy-deep shadow-2xl shadow-navy/25">
+        <div className="reveal relative overflow-hidden rounded-3xl border border-line bg-cream shadow-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={asset("/images/unsplash/countdown-students.webp")}
             alt=""
             loading="lazy"
-            className="kenburns absolute inset-0 h-full w-full object-cover object-[50%_30%]"
+            className="kenburns absolute inset-0 h-full w-full object-cover object-[50%_30%] opacity-60"
           />
-          <div aria-hidden className="absolute inset-0 bg-linear-to-r from-navy-deep via-navy-deep/85 to-navy/55" />
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_85%_50%,rgb(242_107_29/0.22),transparent_60%)]" />
+          {/* Phủ sáng: chữ bên trái nằm trên nền kem, ảnh lộ dần sang phải */}
+          <div aria-hidden className="absolute inset-0 bg-linear-to-r from-[#fff8ef] via-[#fff8ef]/92 to-white/45" />
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_85%_50%,rgb(242_107_29/0.12),transparent_60%)]" />
 
-          <div className="relative grid items-center gap-y-6 p-6 text-white sm:p-8 lg:grid-cols-[1fr_1.15fr] lg:gap-x-12 lg:gap-y-5 lg:px-12 lg:py-10">
+          <div className="relative grid items-center gap-y-6 p-6 text-navy sm:p-8 lg:grid-cols-[1fr_1.15fr] lg:gap-x-12 lg:gap-y-5 lg:px-12 lg:py-10">
             {/* Di động: tiêu đề, đồng hồ, rồi nút. Máy tính: chữ và nút bên trái, đồng hồ bên phải */}
             <div className="lg:self-end">
-              <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[13px] font-semibold ring-1 ring-white/20 backdrop-blur">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[13px] font-semibold text-[#15803d] shadow-sm ring-1 ring-[#4ade80]/40">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full motion-safe:animate-ping rounded-full bg-[#4ade80] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4ade80]" />
                 </span>
                 {t.open}
               </p>
-              <Eyebrow light className="mt-5">
+              <Eyebrow className="mt-5">
                 {t.eyebrow}
               </Eyebrow>
-              <h2 className="mt-3 text-[1.6rem] leading-tight font-bold sm:text-[2rem]">{t.title}</h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-white/80 sm:text-base">
-                {t.deadline}: <strong className="font-semibold text-gold">{site.registrationDeadlineLabel}</strong>. {t.note}
+              <h2 className="mt-3 text-[1.6rem] leading-tight font-bold text-navy sm:text-[2rem]">{t.title}</h2>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted sm:text-base">
+                {t.deadline}: <strong className="font-semibold text-orange-ink">{site.registrationDeadlineLabel}</strong>. {t.note}
               </p>
             </div>
             <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
@@ -54,7 +55,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
               <Link href={localePath(lang, "/dang-ky/")} className="btn-primary cta-pulse px-7 py-3">
                 {t.register} <Icon name="arrowRight" className="h-4 w-4" />
               </Link>
-              <Link href={localePath(lang, "/the-le/")} className="btn-glass px-6 py-3">
+              <Link href={localePath(lang, "/the-le/")} className="btn-outline bg-white/70 px-6 py-3">
                 {t.rules}
               </Link>
             </div>

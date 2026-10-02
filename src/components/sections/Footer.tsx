@@ -6,8 +6,8 @@ import { asset } from "@/lib/paths";
 
 function CtaBand() {
   return (
-    <div className="relative z-10 -mb-14 px-2 sm:px-3">
-      <div className="relative overflow-visible rounded-2xl bg-orange">
+    <div className="relative z-10">
+      <div className="relative overflow-visible bg-orange">
         <div className="container-x relative grid items-center gap-5 py-8 lg:grid-cols-[1fr_1.1fr_auto] lg:py-0">
           <div className="lg:py-10">
             <h2 className="text-[1.9rem] font-bold text-white sm:text-[2.4rem]">Đã sẵn sàng bứt phá?</h2>
@@ -45,7 +45,7 @@ export default function Footer({ cta = true }: { cta?: boolean }) {
     <>
       {cta && <CtaBand />}
       <footer
-        className={`band-fallback relative overflow-hidden bg-cover bg-right text-white ${cta ? "pt-24" : "pt-14"}`}
+        className={`band-fallback relative overflow-hidden bg-cover bg-right text-white pt-14`}
         style={{
           backgroundImage: `linear-gradient(90deg, rgb(7 21 51) 35%, rgb(7 21 51 / 0.85) 55%, rgb(7 21 51 / 0.35)), url(${asset("/images/generated/footer-bg.webp")})`,
         }}

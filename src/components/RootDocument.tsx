@@ -24,10 +24,8 @@ export const viewport: Viewport = {
 /** Thẻ <html> dùng chung cho hai layout gốc (tiếng Việt và tiếng Anh). */
 export default function RootDocument({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   return (
-    <html lang={lang} className={`${beVietnam.variable} ${dancing.variable}`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
-      </head>
+    <html lang={lang} className={`${beVietnam.variable} ${dancing.variable} js`} suppressHydrationWarning>
+      <head />
       {/* Tiện ích trình duyệt (Grammarly...) chèn thuộc tính vào body */}
       <body suppressHydrationWarning>{children}</body>
     </html>

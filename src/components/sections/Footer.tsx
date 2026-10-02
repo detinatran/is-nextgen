@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import Art from "@/components/Art";
 import Icon, { type IconName } from "@/components/Icon";
 import LangSwitch from "@/components/LangSwitch";
@@ -101,7 +102,22 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
             <ul className="mt-5 space-y-3 text-[15px] text-white/85">
               <li className="flex gap-2.5">
                 <Icon name="mapPin" className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                {site.address}
+                <span className="space-y-1">
+                  <span className="block">
+                    {site.address.unit.map((part) => (
+                      <Fragment key={part}>
+                        <span className="whitespace-nowrap">{part}</span>{" "}
+                      </Fragment>
+                    ))}
+                  </span>
+                  <span className="block text-white/70">
+                    {site.address.street.map((part) => (
+                      <Fragment key={part}>
+                        <span className="whitespace-nowrap">{part}</span>{" "}
+                      </Fragment>
+                    ))}
+                  </span>
+                </span>
               </li>
               <li className="flex gap-2.5">
                 <Icon name="mail" className="mt-0.5 h-4 w-4 shrink-0 text-gold" />

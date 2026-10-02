@@ -14,7 +14,11 @@ export const site = {
   // TODO(BTC): thay bằng hạn đăng ký chính thức. Vòng 1 diễn ra tuần 2/11/2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59, 01/11/2026 (dự kiến)",
-  address: "Khoa Kinh tế và Quản lý, Trường Quốc tế - ĐHQGHN, Số 01 Phan Tây Nhạc, Hà Nội",
+  // Mỗi phần tử là một cụm không bị ngắt dòng giữa chừng
+  address: {
+    unit: ["Khoa Kinh tế và Quản lý,", "Trường Quốc tế - ĐHQGHN"],
+    street: ["Toà D2, ĐHQGHN,", "144 Xuân Thuỷ,", "Cầu Giấy, Hà Nội"],
+  },
   // TODO(BTC): điền thông tin liên hệ và mạng xã hội thật; để trống thì ẩn.
   contact: {
     email: "",

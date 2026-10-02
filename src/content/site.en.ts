@@ -14,7 +14,11 @@ export const site = {
   // TODO(BTC): replace with the official registration deadline. Round 1 takes place in week 2 of Nov 2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59 (GMT+7), Nov 1, 2026 (tentative)",
-  address: "Faculty of Economics and Management, VNU International School (VNU-IS), 01 Phan Tây Nhạc, Hanoi",
+  // Each item is a phrase kept on one line
+  address: {
+    unit: ["Faculty of Economics and Management,", "VNU International School (VNU-IS)"],
+    street: ["Building D2, VNU,", "144 Xuan Thuy,", "Cau Giay, Hanoi"],
+  },
   // TODO(BTC): fill in real contact and social media details; leave empty to hide.
   contact: {
     email: "",

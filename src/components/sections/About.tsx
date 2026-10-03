@@ -75,12 +75,7 @@ export default function About({ lang }: { lang: Lang }) {
         <ol className="mt-16 grid gap-x-8 gap-y-10 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
           {about.features.map((f, i) => (
             <li key={f.title} className="reveal" style={{ "--delay": `${i * 80}ms` } as React.CSSProperties}>
-              <div className="flex items-end justify-between">
-                <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-orange/25 bg-cream text-orange-ink">
-                  <Icon name={f.icon} className="h-6 w-6" strokeWidth={1.6} />
-                </span>
-                <span className="text-sm font-semibold text-orange-ink tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-              </div>
+              <span className="text-[1.75rem] leading-none font-bold text-orange tabular-nums">{String(i + 1).padStart(2, "0")}</span>
               <h3 className="mt-3 text-lg leading-snug font-bold text-navy">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-muted">{f.body}</p>
             </li>

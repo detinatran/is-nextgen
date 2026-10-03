@@ -45,17 +45,17 @@ export const nav = [
   { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
 ];
 
+// Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "users", value: "250+", label: "Thí sinh tham dự" },
-  { icon: "landmark", value: "04", label: "Vòng thi hấp dẫn", tone: "sky" },
-  { icon: "trophy", value: "14.5tr", label: "Tổng giá trị giải thưởng", tone: "gold" },
-  // Kế hoạch: 6-8 giám khảo Vòng 2-3, 05 giám khảo chung kết, 02-03 giảng viên cố vấn
-  { icon: "star", value: "10+", label: "Chuyên gia đồng hành" },
+  { icon: "briefcase", value: "Thực tập", label: "Cơ hội thực tập tại doanh nghiệp" },
+  { icon: "handshake", value: "Kết nối", label: "Gặp gỡ, kết nối cùng doanh nghiệp", tone: "sky" },
+  { icon: "landmark", value: "04 vòng", label: "Thi thực chiến, chấm theo năng lực", tone: "gold" },
+  { icon: "users", value: "ThS · TS", label: "Chuyên gia & doanh nghiệp đồng hành" },
 ];
 
 export const about = {
-  title: ["Cuộc thi đa năng lực, đa tầm nhìn", "cho ", "thế hệ quản trị tương lai"],
-  body: "IS-NextGen Manager 2026 là sân chơi học thuật, nơi sinh viên trên toàn quốc được thử thách tư duy, rèn luyện kỹ năng và kiến tạo những giải pháp quản trị sáng tạo trong bối cảnh kỷ nguyên AI.",
+  title: ["Cuộc thi Quản trị Thực chiến Đầu tiên", "ứng dụng ", "Khung Năng lực Hành vi & Trí tuệ Nhân tạo (AI)"],
+  body: "IS-NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật thường niên dành cho sinh viên toàn quốc. Thông qua hệ thống bốn vòng thi từ kiểm tra năng lực, thảo luận nhóm thực chiến cho đến giải bài toán quản trị trực tiếp từ doanh nghiệp đồng hành, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn nhận Báo cáo năng lực cá nhân, tham gia chuyến quan sát thực tế tại tập đoàn lớn và mở rộng cánh cửa nghề nghiệp tại các doanh nghiệp hàng đầu.",
   features: [
     {
       icon: "brain" as IconName,
@@ -85,7 +85,7 @@ export const about = {
 };
 
 export const themeSection = {
-  body: "AI đang tái định hình mọi lĩnh vực, từ cách chúng ta học tập, làm việc đến cách doanh nghiệp vận hành. IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm những nhà quản trị trẻ có tư duy mới, kỹ năng mới và khả năng tạo ra giá trị thật cho xã hội.",
+  body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
   points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi"],
   quote: "Không chỉ là một cuộc thi, mà còn là hành trình khám phá và khẳng định bản thân.",
 };

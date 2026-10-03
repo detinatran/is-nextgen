@@ -8,8 +8,8 @@ import { asset } from "@/lib/paths";
 const toneClass = { sky: "text-brand", gold: "text-orange-ink" } as const;
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", season: "Chủ đề Mùa 1", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", season: "Season 1 theme", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -133,11 +133,12 @@ export default function Hero({ lang }: { lang: Lang }) {
 
             {/* Tiêu đề phụ đặt trong khung kính trên bục */}
             <div className="absolute top-[64%] left-1/2 w-max -translate-x-1/2 rounded-xl bg-navy-deep/45 px-7 py-2.5 text-center shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
-              <p className="text-[clamp(1.2rem,1.65vw,1.8rem)] leading-tight font-extrabold tracking-wide text-white uppercase">
-                {site.heroTitle}
+              <p className="text-[clamp(0.65rem,0.75vw,0.8rem)] font-semibold tracking-[0.22em] text-[#ffe2a3] uppercase">{t.season}</p>
+              <p className="mt-0.5 text-[clamp(1.2rem,1.65vw,1.8rem)] leading-tight font-extrabold tracking-wide text-white uppercase">
+                {site.themeEn}
               </p>
-              <p className="mt-1 text-[clamp(0.75rem,0.9vw,0.95rem)] font-semibold tracking-[0.16em] text-[#ffe2a3] uppercase">
-                {site.slogan.join(" · ")}
+              <p className="mt-1 text-[clamp(0.75rem,0.9vw,0.95rem)] font-semibold tracking-[0.16em] text-white/85 uppercase">
+                {lang === "en" ? site.slogan.join(" · ") : site.heroTitle}
               </p>
             </div>
           </div>
@@ -146,8 +147,11 @@ export default function Hero({ lang }: { lang: Lang }) {
 
       {/* Bản di động: chữ đặt dưới ảnh */}
       <div className="container-x py-8 text-center lg:hidden">
-        <p className="text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.heroTitle}</p>
-        <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-orange-ink uppercase sm:text-sm">{site.slogan.join(" · ")}</p>
+        <p className="text-xs font-semibold tracking-[0.2em] text-orange-ink uppercase">{t.season}</p>
+        <p className="mt-1 text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.themeEn}</p>
+        <p className="mt-1.5 text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:text-sm">
+          {lang === "en" ? site.slogan.join(" · ") : site.heroTitle}
+        </p>
         <p className="mt-4 text-base text-muted">{t.audience.join(" ")}</p>
         <Ctas lang={lang} className="mt-6 flex-wrap justify-center" />
       </div>
@@ -163,7 +167,7 @@ export default function Hero({ lang }: { lang: Lang }) {
                 </span>
                 <div>
                   <div className={`text-[1.6rem] leading-none font-bold ${s.tone ? toneClass[s.tone] : "text-navy"}`}>{s.value}</div>
-                  <div className="mt-1 text-[13px] leading-tight text-muted lg:whitespace-nowrap">{s.label}</div>
+                  <div className="mt-1 text-[13px] leading-snug text-muted">{s.label}</div>
                 </div>
               </div>
             ))}

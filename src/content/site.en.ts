@@ -45,17 +45,17 @@ export const nav = [
   { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
 ];
 
+// Season 1 has no past numbers, so we highlight benefits instead
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "users", value: "250+", label: "Expected participants" },
-  { icon: "landmark", value: "04", label: "Challenging rounds", tone: "sky" },
-  { icon: "trophy", value: "14.5M", label: "Total prize pool (VND)", tone: "gold" },
-  // Plan: 6-8 judges for Rounds 2-3, 05 Grand Final judges, 02-03 faculty mentors
-  { icon: "star", value: "10+", label: "Expert judges & mentors" },
+  { icon: "briefcase", value: "Internships", label: "With partner companies" },
+  { icon: "handshake", value: "Network", label: "Meet and connect with employers", tone: "sky" },
+  { icon: "landmark", value: "04 rounds", label: "Real-world, competency-based", tone: "gold" },
+  { icon: "users", value: "Experts", label: "PhD & Master's faculty, industry leaders" },
 ];
 
 export const about = {
-  title: ["A competition of many skills and perspectives", "for ", "tomorrow's managers"],
-  body: "IS-NextGen Manager 2026 is an academic competition where students from across Vietnam put their thinking to the test, sharpen their skills and build creative management solutions for the AI era.",
+  title: ["The first hands-on management competition", "built on ", "a Behavioral Competency Framework & AI"],
+  body: "Organized by the Faculty of Economics and Management, VNU International School, IS-NextGen Manager 2026 is an annual academic competition for students nationwide. Across four rounds, from an aptitude test and hands-on group discussion to solving a real management problem set by a partner company, you will build systems thinking, the ability to decide with incomplete information, and the confidence to apply artificial intelligence (AI) in management. You will also receive a Personal Competency Report, join a field visit to a leading corporation and open doors to careers at top companies.",
   features: [
     {
       icon: "brain" as IconName,
@@ -85,7 +85,7 @@ export const about = {
 };
 
 export const themeSection = {
-  body: "AI is reshaping every field, from how we learn and work to how businesses operate. IS-NextGen Manager 2026 sets out to find young managers with a new mindset, new skills and the ability to create real value for society.",
+  body: "Artificial intelligence (AI) is reshaping how every business operates. IS-NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
   points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions"],
   quote: "More than a competition, it is a journey of self-discovery and self-affirmation.",
 };

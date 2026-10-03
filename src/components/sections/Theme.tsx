@@ -5,6 +5,7 @@ import Photo from "@/components/Photo";
 import { getContent } from "@/content";
 import type { Lang } from "@/lib/i18n";
 
+// Ảnh: Vitaly Gariev trên Unsplash (unsplash.com/photos/YyJNda7nsPo), giấy phép Unsplash
 export default function Theme({ lang }: { lang: Lang }) {
   const { themeSection } = getContent(lang);
   const en = lang === "en";
@@ -16,8 +17,8 @@ export default function Theme({ lang }: { lang: Lang }) {
       />
       <div className="container-x relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <Photo
-          src="/images/generated/theme-seminar.webp"
-          alt={en ? "Students discussing a management case in class" : "Sinh viên thảo luận một tình huống quản trị trong lớp học"}
+          src="/images/unsplash/theme-team.webp"
+          alt={en ? "A young team discussing a business plan in a modern office" : "Nhóm nhân sự trẻ thảo luận phương án kinh doanh trong văn phòng"}
           className="reveal aspect-[4/3] rounded-2xl shadow-card"
         />
 

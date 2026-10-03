@@ -21,7 +21,7 @@ export const site = {
   },
   // TODO(BTC): điền thông tin liên hệ và mạng xã hội thật; để trống thì ẩn.
   contact: {
-    email: "",
+    email: "nextgen@vnuis.edu.vn",
     phone: "",
     fanpage: "",
     sponsorDeck: "",

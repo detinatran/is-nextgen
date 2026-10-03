@@ -21,7 +21,7 @@ export const site = {
   },
   // TODO(BTC): fill in real contact and social media details; leave empty to hide.
   contact: {
-    email: "",
+    email: "nextgen@vnuis.edu.vn",
     phone: "",
     fanpage: "",
     sponsorDeck: "",

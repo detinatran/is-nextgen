@@ -6,8 +6,8 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", season: "Chủ đề Mùa 1", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", season: "Season 1 theme", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -131,8 +131,7 @@ export default function Hero({ lang }: { lang: Lang }) {
 
             {/* Tiêu đề phụ đặt trong khung kính trên bục */}
             <div className="absolute top-[64%] left-1/2 w-max -translate-x-1/2 rounded-xl bg-navy-deep/45 px-7 py-2.5 text-center shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
-              <p className="text-[clamp(0.65rem,0.75vw,0.8rem)] font-semibold tracking-[0.22em] text-[#ffe2a3] uppercase">{t.season}</p>
-              <p className="mt-0.5 text-[clamp(1.2rem,1.65vw,1.8rem)] leading-tight font-extrabold tracking-wide text-white uppercase">
+              <p className="text-[clamp(1.2rem,1.65vw,1.8rem)] leading-tight font-extrabold tracking-wide text-white uppercase">
                 {site.themeEn}
               </p>
               <p className="mt-1 text-[clamp(0.75rem,0.9vw,0.95rem)] font-semibold tracking-[0.16em] text-white/85 uppercase">
@@ -145,8 +144,7 @@ export default function Hero({ lang }: { lang: Lang }) {
 
       {/* Bản di động: chữ đặt dưới ảnh */}
       <div className="container-x py-8 text-center lg:hidden">
-        <p className="text-xs font-semibold tracking-[0.2em] text-orange-ink uppercase">{t.season}</p>
-        <p className="mt-1 text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.themeEn}</p>
+        <p className="text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.themeEn}</p>
         <p className="mt-1.5 text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:text-sm">
           {lang === "en" ? site.slogan.join(" · ") : site.heroTitle}
         </p>

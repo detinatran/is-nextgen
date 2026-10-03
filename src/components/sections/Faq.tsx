@@ -15,7 +15,7 @@ export default function Faq({ lang }: { lang: Lang }) {
           <span aria-hidden className="block h-1.5 w-14 rounded-full bg-linear-to-r from-orange to-[#ffb057]" />
           <h2 className="h2-section mt-4">{en ? "Answers to your questions" : "Giải đáp những thắc mắc của bạn"}</h2>
           <p className="lead mt-4">
-            {en ? "Common questions about IS-NextGen Manager 2026. Need more? See the" : "Những câu hỏi thường gặp về cuộc thi IS-NextGen Manager 2026. Cần thêm? Xem"}{" "}
+            {en ? "Common questions about NextGen Manager 2026. Need more? See the" : "Những câu hỏi thường gặp về cuộc thi NextGen Manager 2026. Cần thêm? Xem"}{" "}
             <Link href={localePath(lang, "/the-le/")} className="font-semibold text-orange-ink underline-offset-4 hover:underline">
               {en ? "full rules" : "thể lệ chi tiết"}
             </Link>{" "}

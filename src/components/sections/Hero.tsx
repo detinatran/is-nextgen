@@ -161,7 +161,7 @@ export default function Hero({ lang }: { lang: Lang }) {
                 <Icon name={s.icon} className="h-6 w-6" strokeWidth={1.9} />
               </span>
               <div className="min-w-0">
-                <p className="text-[1.05rem] leading-tight font-bold text-navy sm:text-lg">{s.value}</p>
+                <p className="text-[0.95rem] leading-tight font-bold whitespace-nowrap text-navy sm:text-lg">{s.value}</p>
                 <p className="mt-0.5 text-[13px] leading-snug text-muted">{s.label}</p>
               </div>
             </li>

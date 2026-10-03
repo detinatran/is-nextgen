@@ -10,7 +10,7 @@ import { asset } from "@/lib/paths";
 const text = {
   vi: {
     ctaTitle: "Đã sẵn sàng bứt phá?",
-    ctaBody: "Tham gia IS-NextGen Manager 2026 ngay hôm nay để kiến tạo hành trình sự nghiệp của riêng bạn.",
+    ctaBody: "Tham gia NextGen Manager 2026 ngay hôm nay để kiến tạo hành trình sự nghiệp của riêng bạn.",
     register: "Đăng ký ngay",
     emailSoon: "Email Ban Tổ chức (sắp cập nhật)",
     soon: "Sắp cập nhật",
@@ -27,7 +27,7 @@ const text = {
   },
   en: {
     ctaTitle: "Ready to break through?",
-    ctaBody: "Join IS-NextGen Manager 2026 today and build your own career journey.",
+    ctaBody: "Join NextGen Manager 2026 today and build your own career journey.",
     register: "Register now",
     emailSoon: "Organizing Committee email (coming soon)",
     soon: "Coming soon",
@@ -212,7 +212,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                 <p className="mt-0.5 text-[13px] text-white/70">nextgen.vnuis.edu.vn</p>
                 <a
                   href={asset("/images/qr-nextgen.png")}
-                  download="IS-NextGen-Manager-QR.png"
+                  download="NextGen-Manager-QR.png"
                   className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold hover:text-white"
                 >
                   <Icon name="arrowUp" className="h-3.5 w-3.5 rotate-180" strokeWidth={2.2} />
@@ -224,7 +224,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
         </div>
         <div className="container-x relative">
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 py-5 text-[13px] text-white/60">
-            <span>© 2026 IS-NextGen Manager. All rights reserved.</span>
+            <span>© 2026 NextGen Manager. All rights reserved.</span>
             <span className="flex items-center gap-3">
               <Link href={href("/the-le/")} className="hover:text-white">
                 {t.terms}

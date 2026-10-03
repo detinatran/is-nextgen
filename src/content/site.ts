@@ -3,14 +3,14 @@
 import type { IconName } from "@/components/Icon";
 
 export const site = {
-  name: "IS-NextGen Manager Challenge 2026",
+  name: "NextGen Manager Challenge 2026",
   viName: "Nhà Quản trị trong Kỷ nguyên mới",
   theme: "Chân dung Nhà quản trị trong kỷ nguyên AI",
   themeEn: "The Manager in the AI Era",
   heroTitle: "Nhà quản trị trong kỷ nguyên AI",
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
-  hashtag: "#ISNextGenManager",
+  hashtag: "#NextGenManager",
   // TODO(BTC): thay bằng hạn đăng ký chính thức. Vòng 1 diễn ra tuần 2/11/2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59, 01/11/2026 (dự kiến)",
@@ -47,7 +47,7 @@ export const nav = [
 
 export const hero = {
   eyebrow: "Cuộc thi quản trị thực chiến · Mùa 1",
-  title: ["IS-NEXTGEN", "MANAGER 2026"],
+  title: ["NEXTGEN", "MANAGER 2026"],
   theme: "The Manager in the AI Era",
   tagline: "Nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
 };
@@ -57,12 +57,12 @@ export const heroStats: { icon: IconName; value: string; label: string; tone?: "
   { icon: "briefcase", value: "Thực tập", label: "tại doanh nghiệp đồng hành" },
   { icon: "handshake", value: "Kết nối", label: "với chuyên gia và lãnh đạo doanh nghiệp" },
   { icon: "fileChart", value: "04 vòng", label: "thi thực chiến, chấm theo năng lực" },
-  { icon: "users", value: "ThS · TS", label: "giảng viên và doanh nghiệp đồng hành" },
+  { icon: "users", value: "GS · PGS · TS", label: "và đại diện doanh nghiệp đồng hành" },
 ];
 
 export const about = {
   title: ["Cuộc thi Quản trị Thực chiến Đầu tiên", "ứng dụng ", "Khung Năng lực Hành vi & Trí tuệ Nhân tạo (AI)"],
-  body: "IS-NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật thường niên dành cho sinh viên toàn quốc. Thông qua hệ thống bốn vòng thi từ kiểm tra năng lực, thảo luận nhóm thực chiến cho đến giải bài toán quản trị trực tiếp từ doanh nghiệp đồng hành, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn nhận Báo cáo năng lực cá nhân, tham gia chuyến quan sát thực tế tại tập đoàn lớn và mở rộng cánh cửa nghề nghiệp tại các doanh nghiệp hàng đầu.",
+  body: "NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật dành cho sinh viên toàn quốc. Thông qua hệ thống bốn vòng thi từ kiểm tra năng lực, thảo luận nhóm thực chiến cho đến giải bài toán quản trị trực tiếp từ doanh nghiệp đồng hành, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn nhận Báo cáo năng lực cá nhân, tham gia chuyến quan sát thực tế tại tập đoàn lớn và mở rộng cánh cửa nghề nghiệp tại các doanh nghiệp hàng đầu.",
   features: [
     {
       icon: "brain" as IconName,
@@ -94,7 +94,7 @@ export const about = {
 // Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..4
 export const perks = {
   eyebrow: "Về cuộc thi",
-  title: "Những trải nghiệm chỉ có tại IS-NextGen Manager",
+  title: "Những trải nghiệm chỉ có tại NextGen Manager",
   lead: "Cuộc thi quản trị thực chiến giúp bạn phát triển năng lực toàn diện, kết nối sâu rộng và tạo giá trị thật cho sự nghiệp tương lai.",
   items: [
     { title: "Thi thực chiến", body: "Giải tình huống thật của doanh nghiệp, chấm theo Khung năng lực hành vi chuẩn hoá: 06 nhóm năng lực, 05 mức hành vi.", href: "/the-le/" },
@@ -117,7 +117,7 @@ export const journey = {
 };
 
 export const themeSection = {
-  body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
+  body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
   points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi", "Sẵn sàng dẫn dắt trong môi trường toàn cầu"],
   quote: "Không chỉ là một cuộc thi, mà còn là hành trình khám phá và khẳng định bản thân.",
 };
@@ -292,14 +292,14 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
-    tag: "IS-NextGen Business Trip",
+    tag: "NextGen Business Trip",
     title: "Tham quan doanh nghiệp hàng đầu",
     when: "Tuần 1 tháng 12/2026 · khoảng 04 giờ",
     who: "16 thí sinh vượt qua Vòng Sơ loại",
     body: "Tham quan không gian làm việc, nghe doanh nghiệp giới thiệu mô hình tổ chức và văn hoá, toạ đàm với nhà quản lý cấp trung về cách ra quyết định. Sau chuyến đi, mỗi thí sinh viết một bản ghi nhận ngắn (không quá 300 từ) làm tư liệu cho phần bảo vệ Vòng Bán kết.",
   },
   {
-    tag: "IS-NextGen Networking Dinner",
+    tag: "NextGen Networking Dinner",
     title: "Tiệc tối kết nối doanh nghiệp",
     when: "Sau Vòng Bán kết, trước Chung kết · khoảng 120 phút",
     who: "Thí sinh vòng trong, doanh nghiệp, giám khảo, cựu sinh viên",
@@ -310,7 +310,7 @@ export const sideEvents = [
 export const votingRules = [
   "03 đội chung kết, mỗi đội nộp 01 video giới thiệu tối đa 90 giây sau buổi giao đề.",
   "Video của 03 đội được đăng cùng lúc trên fanpage chính thức; bình chọn trong 03 ngày.",
-  "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #ISNextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
+  "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #NextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
   "Nghiêm cấm tài khoản ảo, công cụ tăng tương tác hoặc mua bán lượt tương tác. Giải độc lập, không tính vào điểm thi.",
 ];
 

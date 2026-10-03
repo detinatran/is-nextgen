@@ -7,8 +7,8 @@ import { asset } from "@/lib/paths";
 
 // Ảnh nền: Vitaly Gariev trên Unsplash (unsplash.com/photos/kp7qkHTgSKc), giấy phép Unsplash
 const text = {
-  vi: { title: "Cổng đăng ký sẽ đóng sau", lead: "Đừng bỏ lỡ cơ hội trở thành một phần của IS-NextGen Manager 2026!", deadline: "Hạn chót", register: "Đăng ký ngay", rules: "Xem chi tiết" },
-  en: { title: "Registration closes in", lead: "Don't miss your chance to be part of IS-NextGen Manager 2026!", deadline: "Deadline", register: "Register now", rules: "View details" },
+  vi: { title: "Cổng đăng ký sẽ đóng sau", lead: "Đừng bỏ lỡ cơ hội trở thành một phần của NextGen Manager 2026!", deadline: "Hạn chót", register: "Đăng ký ngay", rules: "Xem chi tiết" },
+  en: { title: "Registration closes in", lead: "Don't miss your chance to be part of NextGen Manager 2026!", deadline: "Deadline", register: "Register now", rules: "View details" },
 };
 
 export default function Deadline({ lang }: { lang: Lang }) {

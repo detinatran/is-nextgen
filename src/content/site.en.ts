@@ -3,14 +3,14 @@
 import type { IconName } from "@/components/Icon";
 
 export const site = {
-  name: "IS-NextGen Manager Challenge 2026",
+  name: "NextGen Manager Challenge 2026",
   viName: "Managers for a New Era",
   theme: "Portrait of a Manager in the AI Era",
   themeEn: "The Manager in the AI Era",
   heroTitle: "Managers in the AI Era",
   slogan: ["New Mindset", "New Skills", "Real Value"],
   tagline: "Shaping the next generation of managers",
-  hashtag: "#ISNextGenManager",
+  hashtag: "#NextGenManager",
   // TODO(BTC): replace with the official registration deadline. Round 1 takes place in week 2 of Nov 2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59 (GMT+7), Nov 1, 2026 (tentative)",
@@ -47,7 +47,7 @@ export const nav = [
 
 export const hero = {
   eyebrow: "Hands-on management competition · Season 1",
-  title: ["IS-NEXTGEN", "MANAGER 2026"],
+  title: ["NEXTGEN", "MANAGER 2026"],
   theme: "The Manager in the AI Era",
   tagline: "Shaping the next generation of managers",
 };
@@ -57,12 +57,12 @@ export const heroStats: { icon: IconName; value: string; label: string; tone?: "
   { icon: "briefcase", value: "Internships", label: "at partner companies" },
   { icon: "handshake", value: "Network", label: "with experts and business leaders" },
   { icon: "fileChart", value: "04 rounds", label: "real-world, competency-based" },
-  { icon: "users", value: "Experts", label: "PhD & Master's faculty, industry leaders" },
+  { icon: "users", value: "Experts", label: "Professors, PhDs and industry leaders" },
 ];
 
 export const about = {
   title: ["The first hands-on management competition", "built on ", "a Behavioral Competency Framework & AI"],
-  body: "Organized by the Faculty of Economics and Management, VNU International School, IS-NextGen Manager 2026 is an annual academic competition for students nationwide. Across four rounds, from an aptitude test and hands-on group discussion to solving a real management problem set by a partner company, you will build systems thinking, the ability to decide with incomplete information, and the confidence to apply artificial intelligence (AI) in management. You will also receive a Personal Competency Report, join a field visit to a leading corporation and open doors to careers at top companies.",
+  body: "Organized by the Faculty of Economics and Management, VNU International School, NextGen Manager 2026 is an academic competition for students nationwide. Across four rounds, from an aptitude test and hands-on group discussion to solving a real management problem set by a partner company, you will build systems thinking, the ability to decide with incomplete information, and the confidence to apply artificial intelligence (AI) in management. You will also receive a Personal Competency Report, join a field visit to a leading corporation and open doors to careers at top companies.",
   features: [
     {
       icon: "brain" as IconName,
@@ -91,10 +91,10 @@ export const about = {
   ],
 };
 
-// "Only at IS-NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
+// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
 export const perks = {
   eyebrow: "About the competition",
-  title: "Experiences you only get at IS-NextGen Manager",
+  title: "Experiences you only get at NextGen Manager",
   lead: "A hands-on management competition that builds well-rounded skills, deep connections and real value for your future career.",
   items: [
     { title: "Real-world challenges", body: "Solve real company cases, scored on a standardized behavioral framework: 06 competency areas, 05 behaviour levels.", href: "/the-le/" },
@@ -117,7 +117,7 @@ export const journey = {
 };
 
 export const themeSection = {
-  body: "Artificial intelligence (AI) is reshaping how every business operates. IS-NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
+  body: "Artificial intelligence (AI) is reshaping how every business operates. NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
   points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions", "Ready to lead in a global environment"],
   quote: "More than a competition, it is a journey of self-discovery and self-affirmation.",
 };
@@ -292,14 +292,14 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
-    tag: "IS-NextGen Business Trip",
+    tag: "NextGen Business Trip",
     title: "Visit a leading company",
     when: "Week 1 of Dec 2026 · about 04 hours",
     who: "The 16 candidates who pass the Qualifying Round",
     body: "Tour the workplace, learn about the company's organizational model and culture, and join a talk with middle managers on how they make decisions. Afterwards, each candidate writes a short reflection (max. 300 words) to use as material for their Semi-final defense.",
   },
   {
-    tag: "IS-NextGen Networking Dinner",
+    tag: "NextGen Networking Dinner",
     title: "Business networking dinner",
     when: "After the Semi-final, before the Grand Final · about 120 minutes",
     who: "Finalists, partner companies, judges and alumni",
@@ -310,7 +310,7 @@ export const sideEvents = [
 export const votingRules = [
   "Each of the 03 finalist teams submits 01 introduction video of up to 90 seconds after the final case is released.",
   "All 03 videos are posted at the same time on the official fanpage; voting runs for 03 days.",
-  "01 reaction = 01 point; 01 public share with the hashtag #ISNextGenManager = 02 points. Only accounts following the fanpage count, and each account may share each video once.",
+  "01 reaction = 01 point; 01 public share with the hashtag #NextGenManager = 02 points. Only accounts following the fanpage count, and each account may share each video once.",
   "Fake accounts, engagement-boosting tools and buying or selling interactions are strictly prohibited. This award is separate and does not count toward competition scores.",
 ];
 

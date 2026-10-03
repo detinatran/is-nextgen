@@ -66,7 +66,9 @@ export default function Header() {
       <div className="mx-auto max-w-[77rem] lg:px-8">
         <div
           className={`flex h-16 items-center justify-between gap-4 border border-t-0 px-4 transition-all duration-300 sm:px-6 lg:rounded-b-2xl ${
-            solid ? "border-white/10 bg-navy/85 shadow-xl shadow-navy-deep/20 backdrop-blur-md" : "border-transparent bg-transparent"
+            solid
+              ? "border-white/10 bg-navy/85 shadow-xl shadow-navy-deep/20 backdrop-blur-md"
+              : "border-white/10 bg-navy/85 shadow-xl shadow-navy-deep/20 backdrop-blur-md lg:border-transparent lg:bg-transparent lg:shadow-none lg:backdrop-blur-none"
           }`}
         >
           <Link href={href("/#top")} className="flex min-w-0 items-center" onClick={() => setOpen(false)}>

@@ -176,6 +176,18 @@
   animation: cta-pulse 2s ease-out infinite;
 }
 
+/* Điểm nhấn: các chấm mức năng lực sáng dần khi thẻ xuất hiện */
+.hl-dot {
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+  transition-delay: calc(var(--d, 0) * 35ms + 200ms);
+}
+.js .reveal:not(.is-visible) .hl-dot.on {
+  opacity: 0.25;
+  transform: scale(0.6);
+}
+
 /* Timeline: đường kẻ chạy dần, chấm bật lên khi section xuất hiện */
 .js .tl .tl-line {
   transform: scaleX(0);
@@ -216,6 +228,9 @@
   }
   .js .tl .tl-line {
     transform: none;
+  }
+  .hl-dot {
+    transition: none;
   }
   .tl-pulse,
   .cd-tick,

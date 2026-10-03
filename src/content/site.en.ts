@@ -84,6 +84,55 @@ export const about = {
   ],
 };
 
+// Season 1 highlights: experiences unique to the competition, shown as feature cards
+export const highlights = {
+  eyebrow: "Season 1 highlights",
+  title: "Experiences you only get at IS-NextGen Manager",
+  lead: "More than an exam: you are assessed like a real management trainee candidate and step into the corporate world during the season.",
+  framework: {
+    tag: "Standardized",
+    title: "Standardized behavioral competency framework",
+    body: "Every round is scored on the same framework: judges record specific behaviours and convert them into scores, transparently and fairly.",
+    stats: [
+      { value: "06", label: "competency areas" },
+      { value: "05", label: "observable behaviour levels" },
+      { value: "02+", label: "independent judges per round" },
+    ],
+    // Short names of the 06 competency areas for the infographic
+    areas: ["Analysis & decisions", "Systems thinking", "Leadership & influence", "Collaboration", "Ethics & responsibility", "Presentation"],
+  },
+  fastTrack: {
+    tag: "For the Champion",
+    title: "Fast track to the Management Trainee final interview",
+    body: "Skip the screening rounds of a partner company's management trainee program.",
+    extra: "Plus 01 internship for the Outstanding Individual award",
+    image: "/images/generated/hl-mt.webp",
+  },
+  items: [
+    {
+      tag: "Qualifying Round",
+      title: "Leaderless group discussion",
+      body: "Groups of six get a case with conflicting interests and no appointed leader. Leadership shows up naturally.",
+      facts: ["Groups of 06", "40 minutes", "No leader"],
+      image: "/images/generated/hl-lgd.webp",
+    },
+    {
+      tag: "IS-NextGen Business Trip",
+      title: "Visit a leading company",
+      body: "See a real workplace, hear how the company is organized and talk with managers about how they make decisions.",
+      facts: ["16 contestants", "Week 1 · Dec 2026", "About 04 hours"],
+      image: "/images/generated/hl-trip.webp",
+    },
+    {
+      tag: "IS-NextGen Networking Dinner",
+      title: "Networking dinner with employers",
+      body: "Meet companies, judges and alumni. Each contestant gives a 01-minute introduction, then joins themed tables.",
+      facts: ["After the Semi-final", "120 minutes", "05 themed tables"],
+      image: "/images/generated/hl-dinner.webp",
+    },
+  ],
+};
+
 export const themeSection = {
   body: "Artificial intelligence (AI) is reshaping how every business operates. IS-NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
   points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions"],

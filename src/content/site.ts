@@ -84,6 +84,55 @@ export const about = {
   ],
 };
 
+// Điểm nhấn Mùa 1: các trải nghiệm riêng của cuộc thi, trình bày dạng thẻ nổi bật
+export const highlights = {
+  eyebrow: "Điểm nhấn Mùa 1",
+  title: "Những trải nghiệm chỉ có tại IS-NextGen Manager",
+  lead: "Không chỉ là bài thi: bạn được đánh giá như một ứng viên quản trị viên tập sự thực thụ và bước vào thế giới doanh nghiệp ngay trong mùa giải.",
+  framework: {
+    tag: "Chuẩn hoá",
+    title: "Khung năng lực hành vi chuẩn hoá",
+    body: "Mọi vòng thi đều chấm trên cùng một khung: giám khảo ghi nhận hành vi cụ thể rồi quy đổi ra điểm, minh bạch và công bằng.",
+    stats: [
+      { value: "06", label: "nhóm năng lực" },
+      { value: "05", label: "mức hành vi quan sát được" },
+      { value: "02+", label: "giám khảo chấm độc lập mỗi vòng" },
+    ],
+    // Tên ngắn của 06 nhóm năng lực cho infographic
+    areas: ["Phân tích & ra quyết định", "Tư duy hệ thống", "Lãnh đạo & ảnh hưởng", "Hợp tác & giao tiếp", "Đạo đức & trách nhiệm", "Trình bày & ngôn ngữ"],
+  },
+  fastTrack: {
+    tag: "Dành cho Quán quân",
+    title: "Vào thẳng vòng phỏng vấn cuối Management Trainee",
+    body: "Bỏ qua các vòng sơ tuyển của chương trình quản trị viên tập sự tại doanh nghiệp đồng hành.",
+    extra: "Kèm 01 suất thực tập cho giải Cá nhân xuất sắc",
+    image: "/images/generated/hl-mt.webp",
+  },
+  items: [
+    {
+      tag: "Vòng Sơ loại",
+      title: "Thảo luận nhóm không người dẫn",
+      body: "Nhóm 06 người nhận một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm. Năng lực dẫn dắt lộ ra một cách tự nhiên.",
+      facts: ["Nhóm 06 người", "40 phút", "Không trưởng nhóm"],
+      image: "/images/generated/hl-lgd.webp",
+    },
+    {
+      tag: "IS-NextGen Business Trip",
+      title: "Tham quan doanh nghiệp hàng đầu",
+      body: "Quan sát thực tế không gian làm việc, nghe doanh nghiệp chia sẻ mô hình tổ chức và toạ đàm với nhà quản lý về cách ra quyết định.",
+      facts: ["16 thí sinh", "Tuần 1 · 12/2026", "Khoảng 04 giờ"],
+      image: "/images/generated/hl-trip.webp",
+    },
+    {
+      tag: "IS-NextGen Networking Dinner",
+      title: "Tiệc tối kết nối doanh nghiệp",
+      body: "Gặp gỡ doanh nghiệp, giám khảo và cựu sinh viên. Mỗi thí sinh có 01 phút tự giới thiệu trước khi kết nối tại các bàn chủ đề.",
+      facts: ["Sau Bán kết", "120 phút", "05 bàn chủ đề"],
+      image: "/images/generated/hl-dinner.webp",
+    },
+  ],
+};
+
 export const themeSection = {
   body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
   points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi"],

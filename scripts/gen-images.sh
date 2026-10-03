@@ -40,6 +40,13 @@ P[wave-hero]="Abstract website design element on a pure black background (#00000
 P[wave-mist-top]="Abstract website section divider on a pure black background (#000000). The top 35 percent of the image is solid pure white. Below it the white dissolves downward into soft wispy cloud-like mist forming a gently undulating wavy edge across the full width, with soft cloud tufts and a subtle pale-blue tint, fading completely into pure black in the bottom 40 percent. No text, no objects. $SCENE"
 P[wave-mist-bottom]="Abstract website section divider on a pure black background (#000000). The bottom 35 percent of the image is solid pure white. Above it, white soft misty clouds rise upward forming one wide gentle wave that is higher on the left and lower on the right, with faint pale snowy mountain silhouettes emerging from the mist on the right. The top 40 percent is pure black. No text. $SCENE"
 
+# ---- Điểm nhấn Mùa 1 (ảnh tư liệu tự nhiên, tránh vẻ "AI") ----
+DOC="Documentary-style candid photo, not staged, of Vietnamese university students in smart casual or business attire. Natural light, muted realistic colors, slight film grain, shallow depth of field, shot on a 35mm lens. No holograms, no floating UI, no glowing effects, no text, no logos, no watermarks. Landscape 3:2."
+P[hl-lgd]="Six students seated around a round meeting table having a lively leaderless group discussion with printed case documents and sticky notes, nobody standing at the head of the table, two assessors with clipboards observing quietly in the soft-focus background of a bright university meeting room. $DOC"
+P[hl-trip]="A small group of students on a company visit walking through the bright open-plan office of a large corporation, a friendly middle-aged manager in a blazer guiding them and gesturing toward the workspace, glass walls and plants, students holding notebooks. $DOC"
+P[hl-dinner]="An evening networking dinner in a hotel function room with round tables and warm ambient lighting, students in formal attire talking and shaking hands with business professionals, name badges, glasses of juice, relaxed genuine smiles. $DOC"
+P[hl-mt]="A final job interview in a corporate glass-walled meeting room: a confident young student candidate in a suit shaking hands across the table with a panel of three senior managers, city view through the window, documents and a laptop on the table. $DOC"
+
 # ---- Hoạ tiết nền (tách nền trắng thành trong suốt) ----
 P[deco-blue-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): elegant translucent light-blue silk ribbons and glassy flowing wave shapes sweeping in from the left edge and from the right edge, soft gradients from sky blue to white, subtle glossy highlights. The center 50 percent of the image is completely empty pure white. No text. $SCENE"
 P[deco-peach-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): translucent peach and soft orange silk ribbons and flowing wave layers, faint pale peach mountain silhouettes in the distance on the left, warm glowing light in the upper right, airy and delicate. The center-left area is mostly empty white. No text. $SCENE"
@@ -60,6 +67,7 @@ MODE=(
   wave-hero black wave-mist-top black wave-mist-bottom black
   deco-blue-waves white deco-peach-waves white deco-clouds white rounds-bg white soft-bg photo cta-bg photo
   icons-gold grid:2x2:black icons-light grid:4x2:white
+  hl-lgd photo hl-trip photo hl-dinner photo hl-mt photo
 )
 # Tên file kiểm tra đã sinh hay chưa (mặc định <tên>.webp)
 CHECK=(personas-a persona-1 personas-b persona-3 personas-c persona-5 icons-gold icon-value-1 icons-light icon-light-1)
@@ -76,6 +84,7 @@ ORDER=(
   personas-a personas-b personas-c
   icons-gold icons-light deco-clouds
   soft-bg rounds-bg cta-bg
+  hl-lgd hl-trip hl-dinner hl-mt
 )
 
 done_already() { [[ -f "$OUT/${CHECK[$1]:-$1}.webp" ]]; }

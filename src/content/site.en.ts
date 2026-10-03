@@ -38,18 +38,25 @@ export const site = {
 
 export const nav = [
   { href: "/#top", label: "Home", id: "top" },
-  { href: "/#gioi-thieu", label: "About", id: "gioi-thieu" },
-  { href: "/#the-le", label: "Rules", id: "the-le" },
+  { href: "/#gioi-thieu", label: "Competition", id: "gioi-thieu" },
+  { href: "/#trai-nghiem", label: "Experience", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Timeline", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Prizes", id: "giai-thuong" },
-  { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
+  { href: "/the-le/", label: "Rules", id: "the-le" },
 ];
+
+export const hero = {
+  eyebrow: "Hands-on management competition · Season 1",
+  title: ["IS-NEXTGEN", "MANAGER 2026"],
+  theme: "The Manager in the AI Era",
+  tagline: "Shaping the next generation of managers",
+};
 
 // Season 1 has no past numbers, so we highlight benefits instead
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "briefcase", value: "Internships", label: "With partner companies" },
-  { icon: "handshake", value: "Network", label: "Meet and connect with employers", tone: "sky" },
-  { icon: "landmark", value: "04 rounds", label: "Real-world, competency-based", tone: "gold" },
+  { icon: "briefcase", value: "Internships", label: "at partner companies" },
+  { icon: "handshake", value: "Network", label: "with experts and business leaders" },
+  { icon: "fileChart", value: "04 rounds", label: "real-world, competency-based" },
   { icon: "users", value: "Experts", label: "PhD & Master's faculty, industry leaders" },
 ];
 
@@ -84,58 +91,34 @@ export const about = {
   ],
 };
 
-// Season 1 highlights: experiences unique to the competition, shown as feature cards
-export const highlights = {
-  eyebrow: "Season 1 highlights",
+// "Only at IS-NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
+export const perks = {
+  eyebrow: "About the competition",
   title: "Experiences you only get at IS-NextGen Manager",
-  lead: "More than an exam: you are assessed like a real management trainee candidate and step into the corporate world during the season.",
-  framework: {
-    tag: "Standardized",
-    title: "Standardized behavioral competency framework",
-    body: "Every round is scored on the same framework: judges record specific behaviours and convert them into scores, transparently and fairly.",
-    stats: [
-      { value: "06", label: "competency areas" },
-      { value: "05", label: "observable behaviour levels" },
-      { value: "02+", label: "independent judges per round" },
-    ],
-    // Short names of the 06 competency areas for the infographic
-    areas: ["Analysis & decisions", "Systems thinking", "Leadership & influence", "Collaboration", "Ethics & responsibility", "Presentation"],
-  },
-  fastTrack: {
-    tag: "For the Champion",
-    title: "Fast track to the Management Trainee final interview",
-    body: "Skip the screening rounds of a partner company's management trainee program.",
-    extra: "Plus 01 internship for the Outstanding Individual award",
-    image: "/images/generated/hl-mt.webp",
-  },
+  lead: "A hands-on management competition that builds well-rounded skills, deep connections and real value for your future career.",
   items: [
-    {
-      tag: "Qualifying Round",
-      title: "Leaderless group discussion",
-      body: "Groups of six get a case with conflicting interests and no appointed leader. Leadership shows up naturally.",
-      facts: ["Groups of 06", "40 minutes", "No leader"],
-      image: "/images/generated/hl-lgd.webp",
-    },
-    {
-      tag: "IS-NextGen Business Trip",
-      title: "Visit a leading company",
-      body: "See a real workplace, hear how the company is organized and talk with managers about how they make decisions.",
-      facts: ["16 contestants", "Week 1 · Dec 2026", "About 04 hours"],
-      image: "/images/generated/hl-trip.webp",
-    },
-    {
-      tag: "IS-NextGen Networking Dinner",
-      title: "Networking dinner with employers",
-      body: "Meet companies, judges and alumni. Each contestant gives a 01-minute introduction, then joins themed tables.",
-      facts: ["After the Semi-final", "120 minutes", "05 themed tables"],
-      image: "/images/generated/hl-dinner.webp",
-    },
+    { title: "Real-world challenges", body: "Solve real company cases, scored on a standardized behavioral framework: 06 competency areas, 05 behaviour levels.", href: "/the-le/" },
+    { title: "Internships & careers", body: "Internships and a fast track to the Management Trainee final interview.", href: "/#giai-thuong" },
+    { title: "A strong network", body: "Meet companies, judges and students from across the country.", href: "/#trai-nghiem" },
+    { title: "Well-rounded growth", body: "Get a Personal Competency Report and build systems thinking and confidence with AI.", href: "/the-le/" },
+  ],
+};
+
+// "Your journey": the key activities of the season
+export const journey = {
+  title: "Your journey",
+  more: "See the full rules",
+  items: [
+    { title: "Leaderless group discussion", body: "Groups of six solve a case with conflicting interests, with no appointed leader.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Solve a management case with AI", body: "Handle a manager's in-tray: AI is allowed, but every decision must be explained.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Company visit & talks", body: "See a real workplace and learn directly from managers.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Join the talent community", body: "A networking dinner with companies, judges and alumni.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
   ],
 };
 
 export const themeSection = {
   body: "Artificial intelligence (AI) is reshaping how every business operates. IS-NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
-  points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions"],
+  points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions", "Ready to lead in a global environment"],
   quote: "More than a competition, it is a journey of self-discovery and self-affirmation.",
 };
 
@@ -191,35 +174,15 @@ export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "present
 export const roundsIntro =
   "Each round is a different challenge, helping you grow from sharp thinking to real-world skills, assessed by faculty and industry experts.";
 
-export const experiences = [
-  {
-    image: "/images/generated/round-case.webp",
-    title: "Analyze management cases",
-    body: "Numerical and logical reasoning tests plus an executive in-tray case: set priorities, make decisions, justify them.",
-    href: "/the-le/#vong-1",
-  },
-  {
-    image: "/images/generated/round-2.webp",
-    title: "Work in teams like a real company",
-    body: "Groups of six, a case with conflicting interests, and no one appointed as team leader.",
-    href: "/the-le/#vong-2",
-  },
-  {
-    image: "/images/generated/round-pitch.webp",
-    title: "Pitch to a panel of experts",
-    body: "Three finalist teams present and defend their solutions before a panel including business leaders, partly in English.",
-    href: "/the-le/#vong-4",
-  },
-];
-
 export const values = {
-  title: ["Build your capabilities,", "lead your future career"],
-  body: "Gain knowledge, grow your network and seize career opportunities with our partner companies, plus a personal competency report for every candidate.",
+  eyebrow: "Investing in your future",
+  title: ["Build your capabilities –", "lead your career"],
+  body: "A total prize pool of 14,500,000 VND, plus internships, a fast track to final interviews and a Personal Competency Report for advanced-round contestants.",
   items: [
     { icon: "fileChart" as IconName, title: "Practical knowledge", body: "From experts and businesses" },
-    { icon: "target" as IconName, title: "Well-rounded skills", body: "Analysis · Creativity · Leadership" },
-    { icon: "handshake" as IconName, title: "A quality network", body: "Connect with peers, mentors, recruiters" },
-    { icon: "rocket" as IconName, title: "Growth opportunities", body: "Internships, jobs and valuable prizes" },
+    { icon: "briefcase" as IconName, title: "Internships & real projects", body: "Experience a real workplace" },
+    { icon: "handshake" as IconName, title: "A strong network", body: "With talented peers and companies" },
+    { icon: "rocket" as IconName, title: "Career opportunities", body: "Open doors to your future career" },
   ],
 };
 

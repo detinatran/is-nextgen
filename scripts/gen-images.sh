@@ -47,6 +47,11 @@ P[hl-trip]="A small group of students on a company visit walking through the bri
 P[hl-dinner]="An evening networking dinner in a hotel function room with round tables and warm ambient lighting, students in formal attire talking and shaking hands with business professionals, name badges, glasses of juice, relaxed genuine smiles. $DOC"
 P[hl-mt]="A final job interview in a corporate glass-walled meeting room: a confident young student candidate in a suit shaking hands across the table with a panel of three senior managers, city view through the window, documents and a laptop on the table. $DOC"
 
+# ---- Giao diện mới theo reference (10/2026) ----
+P[hero-team]="Wide cinematic website hero photograph, landscape 16:9. A modern riverside business district at bright late-afternoon with glass skyscrapers, blue sky with soft white clouds, warm golden sunlight from the right, calm river water reflecting the buildings in the lower part. On the right half of the frame, four young Vietnamese professionals in business attire (two women, two men; dark navy suits and a beige blazer, white shirts) stand side by side shown from the waist up, smiling confidently and looking up toward the upper left. Behind them a very large translucent frosted-glass upward arrow rises out of the skyline. The left 45 percent of the frame is calmer: sky, distant towers and water with a soft blue haze, suitable for overlaying white text. Photorealistic, natural skin tones, crisp detail, no text, no logos, no watermark."
+P[exp-icons]="Four separate small isometric 3D icons arranged in a 2 by 2 grid with generous equal spacing, each centered in its own quadrant, on a pure white background (#FFFFFF), soft matte clay style with gentle soft shadows, limited palette of warm orange (#F26B1D) and royal blue (#1F5BE0) with white. Top-left (orange): a presentation board on a small stand with a tiny speaker figure. Top-right (blue): a small office building with an ID badge and clipboard. Bottom-left (orange): three rising bar chart columns with small connected people nodes. Bottom-right (blue): a rocket launching beside a small globe. Clean, modern, friendly, consistent lighting. No text. Landscape 3:2."
+P[band-mountains]="Very light high-key panoramic banner photograph of snowy mountain peaks: pale blue-grey rocky snow-capped peaks appear only at the far left and far right edges, the center of the image is soft white mist and hazy pale sky, bright and airy, very low contrast so dark text placed over the middle stays readable. No people, no text. Wide landscape 3:1."
+
 # ---- Hoạ tiết nền (tách nền trắng thành trong suốt) ----
 P[deco-blue-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): elegant translucent light-blue silk ribbons and glassy flowing wave shapes sweeping in from the left edge and from the right edge, soft gradients from sky blue to white, subtle glossy highlights. The center 50 percent of the image is completely empty pure white. No text. $SCENE"
 P[deco-peach-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): translucent peach and soft orange silk ribbons and flowing wave layers, faint pale peach mountain silhouettes in the distance on the left, warm glowing light in the upper right, airy and delicate. The center-left area is mostly empty white. No text. $SCENE"
@@ -68,12 +73,13 @@ MODE=(
   deco-blue-waves white deco-peach-waves white deco-clouds white rounds-bg white soft-bg photo cta-bg photo
   icons-gold grid:2x2:black icons-light grid:4x2:white
   hl-lgd photo hl-trip photo hl-dinner photo hl-mt photo
+  hero-team photo exp-icons grid:2x2:white band-mountains photo
 )
 # Tên file kiểm tra đã sinh hay chưa (mặc định <tên>.webp)
-CHECK=(personas-a persona-1 personas-b persona-3 personas-c persona-5 icons-gold icon-value-1 icons-light icon-light-1)
+CHECK=(exp-icons exp-icon-1 personas-a persona-1 personas-b persona-3 personas-c persona-5 icons-gold icon-value-1 icons-light icon-light-1)
 # Tên đầu ra khác tên asset
 typeset -A OUTNAME
-OUTNAME=(personas-a persona personas-b persona personas-c persona icons-gold icon-value icons-light icon-light)
+OUTNAME=(exp-icons exp-icon personas-a persona personas-b persona personas-c persona icons-gold icon-value icons-light icon-light)
 
 ORDER=(
   theme-ai values-bg timeline-bg

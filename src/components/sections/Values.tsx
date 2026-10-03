@@ -1,6 +1,4 @@
-import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
-import WaveLine from "@/components/WaveLine";
 import { getContent } from "@/content";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
@@ -9,39 +7,38 @@ export default function Values({ lang }: { lang: Lang }) {
   const { values } = getContent(lang);
   return (
     <section
-      className="relative bg-mist bg-cover"
+      className="relative bg-[#eef3f9] bg-cover bg-center py-14 lg:py-16"
       style={{
-        // Mờ dần về trắng ở trên và dưới để nối liền với các section kề bên
-        backgroundImage: `linear-gradient(90deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 50%), linear-gradient(180deg, rgb(214 228 246 / 0.35), rgb(255 237 214 / 0.25)), url(${asset("/images/generated/soft-bg.webp")})`,
-        backgroundPosition: "center 60%",
+        // Phủ trắng nhẹ ở giữa để chữ tối luôn dễ đọc trên nền núi
+        backgroundImage: `linear-gradient(90deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.25) 50%, rgb(255 255 255 / 0.1)), url(${asset("/images/generated/band-mountains.webp")})`,
       }}
     >
-      <WaveLine className="absolute inset-x-0 top-0" />
-      <div className="container-x grid gap-12 py-24 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:py-32">
+      <div className="container-x grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
         <div className="reveal">
-          <Eyebrow>{lang === "en" ? "What you gain" : "Giá trị mang lại"}</Eyebrow>
-          <h2 className="h2-section mt-4">
+          <p className="text-[13px] font-bold tracking-[0.16em] text-orange uppercase">{values.eyebrow}</p>
+          <h2 className="h2-section mt-3">
             {values.title[0]} {values.title[1]}
           </h2>
-          <p className="lead mt-4 max-w-md">{values.body}</p>
+          <p className="lead mt-4 max-w-lg">{values.body}</p>
         </div>
-        <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-card sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {values.items.map((v, i) => (
             <li
               key={v.title}
-              className="reveal bg-white/90 p-6 transition-colors duration-300 hover:bg-white"
+              className="reveal flex items-center gap-4 rounded-2xl bg-white/95 p-4 shadow-card ring-1 ring-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
               style={{ "--delay": `${i * 80}ms` } as React.CSSProperties}
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg border border-orange/25 bg-cream text-orange-ink">
-                <Icon name={v.icon} className="h-5 w-5" strokeWidth={1.6} />
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange">
+                <Icon name={v.icon} className="h-6 w-6" strokeWidth={1.8} />
               </span>
-              <h3 className="mt-4 text-[17px] font-semibold text-navy">{v.title}</h3>
-              <p className="mt-1 text-[15px] text-muted">{v.body}</p>
+              <div>
+                <h3 className="text-[15px] font-bold text-navy">{v.title}</h3>
+                <p className="mt-0.5 text-[13px] leading-snug text-muted">{v.body}</p>
+              </div>
             </li>
           ))}
         </ul>
       </div>
-      <WaveLine flip className="absolute inset-x-0 bottom-0" />
     </section>
   );
 }

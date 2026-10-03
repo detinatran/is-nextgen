@@ -38,19 +38,26 @@ export const site = {
 
 export const nav = [
   { href: "/#top", label: "Trang chủ", id: "top" },
-  { href: "/#gioi-thieu", label: "Giới thiệu", id: "gioi-thieu" },
-  { href: "/#the-le", label: "Thể lệ", id: "the-le" },
+  { href: "/#gioi-thieu", label: "Cuộc thi", id: "gioi-thieu" },
+  { href: "/#trai-nghiem", label: "Trải nghiệm", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Lộ trình", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Giải thưởng", id: "giai-thuong" },
-  { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
+  { href: "/the-le/", label: "Thể lệ", id: "the-le" },
 ];
+
+export const hero = {
+  eyebrow: "Cuộc thi quản trị thực chiến · Mùa 1",
+  title: ["IS-NEXTGEN", "MANAGER 2026"],
+  theme: "The Manager in the AI Era",
+  tagline: "Nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
+};
 
 // Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "briefcase", value: "Thực tập", label: "Cơ hội thực tập tại doanh nghiệp" },
-  { icon: "handshake", value: "Kết nối", label: "Gặp gỡ, kết nối cùng doanh nghiệp", tone: "sky" },
-  { icon: "landmark", value: "04 vòng", label: "Thi thực chiến, chấm theo năng lực", tone: "gold" },
-  { icon: "users", value: "ThS · TS", label: "Chuyên gia & doanh nghiệp đồng hành" },
+  { icon: "briefcase", value: "Thực tập", label: "tại doanh nghiệp đồng hành" },
+  { icon: "handshake", value: "Kết nối", label: "với chuyên gia và lãnh đạo doanh nghiệp" },
+  { icon: "fileChart", value: "04 vòng", label: "thi thực chiến, chấm theo năng lực" },
+  { icon: "users", value: "ThS · TS", label: "giảng viên và doanh nghiệp đồng hành" },
 ];
 
 export const about = {
@@ -84,58 +91,34 @@ export const about = {
   ],
 };
 
-// Điểm nhấn Mùa 1: các trải nghiệm riêng của cuộc thi, trình bày dạng thẻ nổi bật
-export const highlights = {
-  eyebrow: "Điểm nhấn Mùa 1",
+// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..4
+export const perks = {
+  eyebrow: "Về cuộc thi",
   title: "Những trải nghiệm chỉ có tại IS-NextGen Manager",
-  lead: "Không chỉ là bài thi: bạn được đánh giá như một ứng viên quản trị viên tập sự thực thụ và bước vào thế giới doanh nghiệp ngay trong mùa giải.",
-  framework: {
-    tag: "Chuẩn hoá",
-    title: "Khung năng lực hành vi chuẩn hoá",
-    body: "Mọi vòng thi đều chấm trên cùng một khung: giám khảo ghi nhận hành vi cụ thể rồi quy đổi ra điểm, minh bạch và công bằng.",
-    stats: [
-      { value: "06", label: "nhóm năng lực" },
-      { value: "05", label: "mức hành vi quan sát được" },
-      { value: "02+", label: "giám khảo chấm độc lập mỗi vòng" },
-    ],
-    // Tên ngắn của 06 nhóm năng lực cho infographic
-    areas: ["Phân tích & ra quyết định", "Tư duy hệ thống", "Lãnh đạo & ảnh hưởng", "Hợp tác & giao tiếp", "Đạo đức & trách nhiệm", "Trình bày & ngôn ngữ"],
-  },
-  fastTrack: {
-    tag: "Dành cho Quán quân",
-    title: "Vào thẳng vòng phỏng vấn cuối Management Trainee",
-    body: "Bỏ qua các vòng sơ tuyển của chương trình quản trị viên tập sự tại doanh nghiệp đồng hành.",
-    extra: "Kèm 01 suất thực tập cho giải Cá nhân xuất sắc",
-    image: "/images/generated/hl-mt.webp",
-  },
+  lead: "Cuộc thi quản trị thực chiến giúp bạn phát triển năng lực toàn diện, kết nối sâu rộng và tạo giá trị thật cho sự nghiệp tương lai.",
   items: [
-    {
-      tag: "Vòng Sơ loại",
-      title: "Thảo luận nhóm không người dẫn",
-      body: "Nhóm 06 người nhận một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm. Năng lực dẫn dắt lộ ra một cách tự nhiên.",
-      facts: ["Nhóm 06 người", "40 phút", "Không trưởng nhóm"],
-      image: "/images/generated/hl-lgd.webp",
-    },
-    {
-      tag: "IS-NextGen Business Trip",
-      title: "Tham quan doanh nghiệp hàng đầu",
-      body: "Quan sát thực tế không gian làm việc, nghe doanh nghiệp chia sẻ mô hình tổ chức và toạ đàm với nhà quản lý về cách ra quyết định.",
-      facts: ["16 thí sinh", "Tuần 1 · 12/2026", "Khoảng 04 giờ"],
-      image: "/images/generated/hl-trip.webp",
-    },
-    {
-      tag: "IS-NextGen Networking Dinner",
-      title: "Tiệc tối kết nối doanh nghiệp",
-      body: "Gặp gỡ doanh nghiệp, giám khảo và cựu sinh viên. Mỗi thí sinh có 01 phút tự giới thiệu trước khi kết nối tại các bàn chủ đề.",
-      facts: ["Sau Bán kết", "120 phút", "05 bàn chủ đề"],
-      image: "/images/generated/hl-dinner.webp",
-    },
+    { title: "Thi thực chiến", body: "Giải tình huống thật của doanh nghiệp, chấm theo Khung năng lực hành vi chuẩn hoá: 06 nhóm năng lực, 05 mức hành vi.", href: "/the-le/" },
+    { title: "Thực tập & cơ hội nghề nghiệp", body: "Suất thực tập và vé vào thẳng vòng phỏng vấn cuối chương trình Management Trainee.", href: "/#giai-thuong" },
+    { title: "Kết nối mạng lưới", body: "Gặp gỡ doanh nghiệp, giám khảo và cộng đồng sinh viên toàn quốc.", href: "/#trai-nghiem" },
+    { title: "Phát triển toàn diện", body: "Nhận Báo cáo năng lực cá nhân, rèn tư duy hệ thống và bản lĩnh ứng dụng AI.", href: "/the-le/" },
+  ],
+};
+
+// "Hành trình trải nghiệm": các hoạt động nổi bật trong mùa giải
+export const journey = {
+  title: "Hành trình trải nghiệm",
+  more: "Xem toàn bộ thể lệ",
+  items: [
+    { title: "Thảo luận nhóm không người dẫn", body: "Nhóm 06 người cùng giải một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Giải bài toán quản trị cùng AI", body: "Xử lý hộp thư của nhà quản lý: được dùng AI nhưng phải giải trình từng quyết định.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Quan sát môi trường làm việc thực tế và học hỏi trực tiếp từ nhà quản lý.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Kết nối cộng đồng nhân tài", body: "Tiệc tối Networking cùng doanh nghiệp, giám khảo và cựu sinh viên.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
   ],
 };
 
 export const themeSection = {
   body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
-  points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi"],
+  points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi", "Sẵn sàng dẫn dắt trong môi trường toàn cầu"],
   quote: "Không chỉ là một cuộc thi, mà còn là hành trình khám phá và khẳng định bản thân.",
 };
 
@@ -191,35 +174,15 @@ export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "present
 export const roundsIntro: string =
   "Mỗi vòng thi là một thử thách khác nhau, giúp bạn phát triển từ tư duy đến kỹ năng thực chiến dưới sự đánh giá của giảng viên và doanh nghiệp.";
 
-export const experiences = [
-  {
-    image: "/images/generated/round-case.webp",
-    title: "Phân tích tình huống quản trị",
-    body: "Bài kiểm tra tư duy số liệu, logic và tình huống hộp thư điều hành: sắp thứ tự ưu tiên, ra quyết định, giải trình.",
-    href: "/the-le/#vong-1",
-  },
-  {
-    image: "/images/generated/round-2.webp",
-    title: "Làm việc nhóm như ở doanh nghiệp",
-    body: "Nhóm sáu người, tình huống có xung đột lợi ích, không ai được chỉ định làm trưởng nhóm.",
-    href: "/the-le/#vong-2",
-  },
-  {
-    image: "/images/generated/round-pitch.webp",
-    title: "Thuyết trình trước hội đồng chuyên gia",
-    body: "Ba đội chung kết trình bày và phản biện trước hội đồng có lãnh đạo doanh nghiệp, có phần bằng tiếng Anh.",
-    href: "/the-le/#vong-4",
-  },
-];
-
 export const values = {
-  title: ["Sẵn sàng năng lực,", "dẫn lối sự nghiệp tương lai"],
-  body: "Tìm kiếm tri thức, mở rộng mạng lưới và nắm bắt cơ hội nghề nghiệp cùng doanh nghiệp đồng hành, kèm báo cáo năng lực cá nhân cho mỗi thí sinh.",
+  eyebrow: "Đầu tư cho tương lai",
+  title: ["Sẵn sàng năng lực –", "Dẫn lối sự nghiệp"],
+  body: "Tổng giá trị giải thưởng 14.500.000 đồng, cùng suất thực tập, vé vào thẳng vòng phỏng vấn cuối và Báo cáo năng lực cá nhân cho thí sinh vòng trong.",
   items: [
     { icon: "fileChart" as IconName, title: "Kiến thức thực tiễn", body: "Từ chuyên gia và doanh nghiệp" },
-    { icon: "target" as IconName, title: "Kỹ năng toàn diện", body: "Phân tích · Sáng tạo · Lãnh đạo" },
-    { icon: "handshake" as IconName, title: "Mạng lưới chất lượng", body: "Kết nối bạn bè, mentor, nhà tuyển dụng" },
-    { icon: "rocket" as IconName, title: "Cơ hội phát triển", body: "Thực tập, tuyển dụng, giải thưởng giá trị" },
+    { icon: "briefcase" as IconName, title: "Thực tập & dự án thật", body: "Trải nghiệm môi trường thực tế" },
+    { icon: "handshake" as IconName, title: "Kết nối mạng lưới", body: "Với cộng đồng nhân tài & doanh nghiệp" },
+    { icon: "rocket" as IconName, title: "Cơ hội nghề nghiệp", body: "Mở rộng cánh cửa sự nghiệp tương lai" },
   ],
 };
 

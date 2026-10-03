@@ -10,13 +10,13 @@ import { asset } from "@/lib/paths";
 const text = {
   vi: {
     ctaTitle: "Đã sẵn sàng bứt phá?",
-    ctaBody: "Hãy trở thành một phần của IS-NextGen Manager 2026 và viết nên hành trình quản trị của riêng bạn!",
+    ctaBody: "Tham gia IS-NextGen Manager 2026 ngay hôm nay để kiến tạo hành trình sự nghiệp của riêng bạn.",
     register: "Đăng ký ngay",
     emailSoon: "Email Ban Tổ chức (sắp cập nhật)",
     soon: "Sắp cập nhật",
-    links: "Liên kết",
+    links: "Về cuộc thi",
     support: "Hỗ trợ",
-    linkItems: [["/#top", "Trang chủ"], ["/#gioi-thieu", "Giới thiệu"], ["/the-le/", "Thể lệ"], ["/#giai-thuong", "Giải thưởng"]],
+    linkItems: [["/#gioi-thieu", "Giới thiệu"], ["/#trai-nghiem", "Trải nghiệm"], ["/#lo-trinh", "Lộ trình"], ["/#giai-thuong", "Giải thưởng"]],
     contact: "Liên hệ",
     terms: "Điều khoản & thể lệ",
     results: "Kết quả",
@@ -27,13 +27,13 @@ const text = {
   },
   en: {
     ctaTitle: "Ready to break through?",
-    ctaBody: "Become part of IS-NextGen Manager 2026 and write your own management journey!",
+    ctaBody: "Join IS-NextGen Manager 2026 today and build your own career journey.",
     register: "Register now",
     emailSoon: "Organizing Committee email (coming soon)",
     soon: "Coming soon",
-    links: "Links",
+    links: "The competition",
     support: "Support",
-    linkItems: [["/#top", "Home"], ["/#gioi-thieu", "About"], ["/the-le/", "Rules"], ["/#giai-thuong", "Prizes"]],
+    linkItems: [["/#gioi-thieu", "About"], ["/#trai-nghiem", "Experience"], ["/#lo-trinh", "Timeline"], ["/#giai-thuong", "Prizes"]],
     contact: "Contact",
     terms: "Terms & rules",
     results: "Results",
@@ -48,7 +48,10 @@ function CtaBand({ lang }: { lang: Lang }) {
   const t = text[lang];
   return (
     <div className="relative z-10">
-      <div className="relative overflow-visible bg-orange">
+      <div className="relative overflow-visible bg-linear-to-r from-[#ff8a3c] to-orange">
+        <div className="absolute inset-0 overflow-hidden">
+          <Art src="/images/generated/cta-bg.webp" className="pointer-events-none h-full w-full object-cover opacity-70" />
+        </div>
         <div className="container-x relative grid items-center gap-5 py-8 lg:grid-cols-[1fr_1.1fr_auto] lg:py-0">
           <div className="lg:py-10">
             <h2 className="text-[1.9rem] font-bold text-white sm:text-[2.4rem]">{t.ctaTitle}</h2>
@@ -76,7 +79,7 @@ function CtaBand({ lang }: { lang: Lang }) {
   );
 }
 
-const linkCls = "text-[15px] text-white/85 transition hover:text-white";
+const linkCls = "text-[15px] text-white/70 transition hover:text-white";
 const socialIcons: IconName[] = ["facebook", "linkedin", "youtube", "tiktok"];
 
 export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean }) {
@@ -88,12 +91,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
   return (
     <>
       {cta && <CtaBand lang={lang} />}
-      <footer
-        className={`band-fallback relative overflow-hidden bg-cover bg-right text-white pt-14`}
-        style={{
-          backgroundImage: `linear-gradient(90deg, rgb(7 21 51) 35%, rgb(7 21 51 / 0.85) 55%, rgb(7 21 51 / 0.35)), url(${asset("/images/generated/footer-bg.webp")})`,
-        }}
-      >
+      <footer className="relative overflow-hidden bg-[#0b1a3d] pt-14 text-white">
         <div className="container-x relative grid gap-10 pb-8 md:grid-cols-[1.4fr_0.6fr_0.8fr] lg:grid-cols-[1.3fr_0.5fr_0.7fr_1.2fr]">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -138,16 +136,23 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                 </li>
               )}
             </ul>
-            <div className="mt-5 flex gap-5">
+            <div className="mt-5 flex gap-3">
               {socialIcons.map((name) => {
                 const url = site.socials[name as keyof typeof site.socials];
                 return url ? (
-                  <a key={name} href={url} target="_blank" rel="noopener noreferrer" aria-label={name} className="text-white/80 transition hover:text-orange">
-                    <Icon name={name} className="h-5 w-5" />
+                  <a
+                    key={name}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-white/40 transition hover:bg-white hover:text-navy"
+                  >
+                    <Icon name={name} className="h-4 w-4" />
                   </a>
                 ) : (
-                  <span key={name} className="text-white/50" title={t.soon}>
-                    <Icon name={name} className="h-5 w-5" />
+                  <span key={name} className="flex h-10 w-10 items-center justify-center rounded-full text-white/45 ring-1 ring-white/20" title={t.soon}>
+                    <Icon name={name} className="h-4 w-4" />
                   </span>
                 );
               })}
@@ -159,7 +164,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
           </div>
 
           <nav aria-label={t.links}>
-            <p className="text-base font-semibold text-gold">{t.links}</p>
+            <p className="text-base font-semibold text-white">{t.links}</p>
             <ul className="mt-4 space-y-2.5">
               {t.linkItems.map(([path, label]) => (
                 <li key={path}>
@@ -172,7 +177,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
           </nav>
 
           <nav aria-label={t.support}>
-            <p className="text-base font-semibold text-gold">{t.support}</p>
+            <p className="text-base font-semibold text-white">{t.support}</p>
             <ul className="mt-4 space-y-2.5">
               <li>
                 <Link href={href("/#hoi-dap")} className={linkCls}>
@@ -215,18 +220,21 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                 </a>
               </div>
             </div>
-            <p
-              aria-hidden
-              className="hidden -rotate-[10deg] pr-10 text-right font-script text-5xl leading-[0.95] text-white/90 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] lg:block"
-            >
-              Be the
-              <br />
-              &nbsp;&nbsp;&nbsp;NextGen
-            </p>
           </div>
         </div>
         <div className="container-x relative">
-          <div className="border-t border-white/15 py-5 text-center text-[13px] text-white/70">© 2026 IS-NextGen Manager. All rights reserved.</div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 py-5 text-[13px] text-white/60">
+            <span>© 2026 IS-NextGen Manager. All rights reserved.</span>
+            <span className="flex items-center gap-3">
+              <Link href={href("/the-le/")} className="hover:text-white">
+                {t.terms}
+              </Link>
+              <span aria-hidden>|</span>
+              <Link href={href("/ket-qua/")} className="hover:text-white">
+                {t.results}
+              </Link>
+            </span>
+          </div>
         </div>
       </footer>
     </>

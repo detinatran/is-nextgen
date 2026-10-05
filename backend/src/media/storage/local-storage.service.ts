@@ -18,7 +18,7 @@ export class LocalStorageService implements StorageAdapter {
   async store(tmpPath: string, objectKey: string): Promise<void> {
     this.assertObjectKey(objectKey);
     const dest = this.pathFor(objectKey);
-    // Create the object's full parent chain (object keys are `v/<uuid>`).
+    // Create the object's full parent chain (keys are `v/<uuid>` or `p/<uuid>`).
     await mkdir(dirname(dest), { recursive: true });
     try {
       await copyFile(tmpPath, dest, fsConstants.COPYFILE_EXCL);
@@ -42,7 +42,9 @@ export class LocalStorageService implements StorageAdapter {
   }
 
   private assertObjectKey(objectKey: string): void {
-    if (!/^v\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(objectKey)) {
+    // `v/` = intro video evidence, `p/` = personal photo for PR usage.
+    if (!/^p\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(objectKey) &&
+        !/^v\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(objectKey)) {
       throw AppException.validation('Invalid object key');
     }
   }

@@ -10,6 +10,7 @@ import {
   type RegistrationResponse,
 } from './dto/registration.dto';
 import { RegistrationsService } from './registrations.service';
+import { RegistrationFormService } from './registration-form.service';
 import {
   RegistrationCapabilityGuard,
   RequireRegistrationScope,
@@ -18,7 +19,16 @@ import {
 @ApiTags('registrations')
 @Controller()
 export class RegistrationsController {
-  constructor(private readonly registrations: RegistrationsService) {}
+  constructor(
+    private readonly registrations: RegistrationsService,
+    private readonly registrationForm: RegistrationFormService,
+  ) {}
+
+  /** Public form copy: consent statements, withdrawal notice, media limits. */
+  @Get('registration-form-config')
+  async formConfig(): Promise<Record<string, unknown>> {
+    return this.registrationForm.getFormConfig();
+  }
 
   /** FR-13: anonymous draft registration; capability tokens authorize later access. */
   @Post('registration-drafts')

@@ -86,6 +86,52 @@ export class MediaController {
     }
   }
 
+  /** Personal photo for PR usage (multipart). JPEG/PNG/WebP, one READY photo per registration. */
+  @Post('registrations/:registrationId/photos')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiSecurity('registrationToken')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+      required: ['file'],
+    },
+  })
+  @UseGuards(RegistrationCapabilityGuard)
+  @RequireRegistrationScope('DRAFT_UPLOAD')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => cb(null, join(tmpdir(), 'isng-uploads')),
+        filename: (_req, _file, cb) => cb(null, `${randomUUID()}.upload`),
+      }),
+      limits: { files: 1, fileSize: MULTER_HARD_CAP_BYTES },
+    }),
+  )
+  @SkipThrottle()
+  async createPhotoUpload(
+    @Param('registrationId', ParseUUIDPipe) registrationId: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<UploadStatus> {
+    if (!file) throw AppException.validation('Multipart field "file" is required');
+    const maxBytes = this.config.getOrThrow<number>('photoMaxBytes');
+    if (file.size > maxBytes) {
+      throw new AppException(413, ErrorCodes.PHOTO_TOO_LARGE, 'Photo exceeds the size limit');
+    }
+    try {
+      return await this.media.createPhotoUpload(
+        registrationId,
+        file.path,
+        req.registrationAuth!,
+        req.correlationId ?? 'unknown',
+      );
+    } finally {
+      await this.validator.cleanupTemp(file.path);
+    }
+  }
+
   @Post('uploads/:uploadId/finalization')
   @HttpCode(HttpStatus.OK)
   @ApiSecurity('registrationToken')

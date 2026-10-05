@@ -12,11 +12,13 @@ import { PrismaService } from '../database/prisma.service';
 import { MediaValidationService } from './media-validation.service';
 import { LocalStorageService } from './storage/local-storage.service';
 import type { RegistrationAuthContext } from '../common/http/request-context';
+import type { Tx } from '../common/idempotency/idempotency.service';
 
 const UPLOAD_TTL_MS = 48 * 3_600_000;
 
 export interface UploadStatus {
   uploadId: string;
+  kind: 'VIDEO' | 'PHOTO';
   state: 'INITIATED' | 'UPLOADING' | 'VALIDATING' | 'READY' | 'REJECTED' | 'EXPIRED';
   rejectionReason?: string;
   mediaObjectId?: string;
@@ -91,6 +93,69 @@ export class MediaService {
     }
     this.logger.log(`media upload stored correlationId=${correlationId}`);
     return { uploadId: upload.id, state: 'VALIDATING' };
+  }
+
+  /**
+   * One-shot personal photo upload (PR usage, max 1 READY per registration).
+   * Validated server-side by magic bytes; the new READY photo supersedes the
+   * previous one (old row → EXPIRED) so exactly-one always holds. Bytes are
+   * sealed against overwrite exactly like video evidence.
+   */
+  async createPhotoUpload(
+    registrationId: string,
+    tmpFilePath: string,
+    grant: RegistrationAuthContext,
+    correlationId: string,
+  ): Promise<UploadStatus> {
+    this.assertGrant(grant, registrationId, 'DRAFT_UPLOAD');
+    const registration = await this.prisma.registrations.findUnique({ where: { id: registrationId } });
+    if (!registration) throw AppException.notFound('Registration not found');
+    if (registration.state !== 'DRAFT') {
+      throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration is sealed');
+    }
+
+    const outcome = await this.validator.validatePhoto(tmpFilePath, {
+      maxBytes: this.config.getOrThrow('photoMaxBytes'),
+    });
+    if (outcome.status === 'REJECTED') {
+      // No evidence row for garbage bytes; the frontend gets a machine code to fix.
+      this.logger.log(`photo rejected reason=${outcome.reason} correlationId=${correlationId}`);
+      if (outcome.reason === 'PHOTO_TOO_LARGE') {
+        throw new AppException(413, ErrorCodes.PHOTO_TOO_LARGE, 'Photo exceeds the size limit');
+      }
+      throw new AppException(400, ErrorCodes.PHOTO_INVALID_FORMAT, 'Photo must be JPEG, PNG or WebP');
+    }
+
+    const objectKey = `p/${randomUUID()}`;
+    return this.prisma.$transaction(async (tx) => {
+      const upload = await tx.media_uploads.create({
+        data: {
+          registration_id: registrationId,
+          object_key: objectKey,
+          state: 'READY',
+          expires_at: new Date(Date.now() + UPLOAD_TTL_MS),
+        },
+      });
+      // Exactly-one READY photo: supersede any previous one.
+      await tx.media_uploads.updateMany({
+        where: {
+          registration_id: registrationId,
+          state: 'READY',
+          object_key: { startsWith: 'p/' },
+          id: { not: upload.id },
+        },
+        data: { state: 'EXPIRED' },
+      });
+      await this.audit.record(tx, {
+        action: 'media.photo_ready',
+        target_type: 'media_upload',
+        target_id: upload.id,
+        correlation_id: correlationId,
+        metadata: { sizeBytes: outcome.sizeBytes, mimeType: outcome.mimeType },
+      });
+      await this.storage.store(tmpFilePath, objectKey);
+      return this.statusFor(upload.id, tx);
+    });
   }
 
   async finalizeUpload(
@@ -215,15 +280,16 @@ export class MediaService {
     return { videoBound: true, mediaObjectId };
   }
 
-  private async statusFor(uploadId: string): Promise<UploadStatus> {
-    const upload = await this.prisma.media_uploads.findUniqueOrThrow({
+  private async statusFor(uploadId: string, client: Tx | PrismaService = this.prisma): Promise<UploadStatus> {
+    const upload = await client.media_uploads.findUniqueOrThrow({
       where: { id: uploadId },
     });
-    const mediaObject = await this.prisma.media_objects.findUnique({
+    const mediaObject = await client.media_objects.findUnique({
       where: { upload_id: uploadId },
     });
     return {
       uploadId: upload.id,
+      kind: upload.object_key.startsWith('p/') ? 'PHOTO' : 'VIDEO',
       state: upload.state as UploadStatus['state'],
       rejectionReason: upload.rejection_reason ?? undefined,
       mediaObjectId: mediaObject?.id,

@@ -17,14 +17,14 @@ import { Type } from 'class-transformer';
 const SAFE_TEXT = /^[^\u0000-\u001f\u007f]*$/;
 
 export class ConsentInputDto {
-  @ApiProperty({ example: 'V1-2026' })
+  @ApiProperty({ example: 'MEDIA-V1-2026', description: 'Wording version the candidate actually saw' })
   @IsString()
   @MinLength(1)
   @MaxLength(50)
   @Matches(SAFE_TEXT)
   wordingVersion!: string;
 
-  @ApiProperty({ description: 'Must be true to register' })
+  @ApiProperty()
   @IsBoolean()
   granted!: boolean;
 }
@@ -97,6 +97,18 @@ export class CreateRegistrationDraftDto {
   @ValidateNested()
   @Type(() => ConsentInputDto)
   consent!: ConsentInputDto;
+
+  @ApiProperty({ type: ConsentInputDto, description: 'Media usage consent (agree = true / decline = false); declining only excludes the Favorite Candidate award' })
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => ConsentInputDto)
+  mediaUsageConsent!: ConsentInputDto;
+
+  @ApiProperty({ type: ConsentInputDto, description: 'Event coverage commitment (BTC records/photographs at events; 1-year retention); must be true' })
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => ConsentInputDto)
+  eventCoverageConsent!: ConsentInputDto;
 }
 
 export class UpdateRegistrationDto {
@@ -164,6 +176,18 @@ export class UpdateRegistrationDto {
   @MaxLength(300)
   @Matches(SAFE_TEXT)
   facebook?: string;
+
+  @ApiPropertyOptional({ type: ConsentInputDto, description: 'New media usage answer; consent rows are append-only' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ConsentInputDto)
+  mediaUsageConsent?: ConsentInputDto;
+
+  @ApiPropertyOptional({ type: ConsentInputDto, description: 'New event coverage answer; consent rows are append-only' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ConsentInputDto)
+  eventCoverageConsent?: ConsentInputDto;
 }
 
 export class SubmitRegistrationDto {
@@ -208,6 +232,17 @@ export interface RegistrationResponse {
     sizeBytes: number | null;
     durationSeconds: number | null;
   } | null;
+  photo: {
+    uploadId: string;
+    state: 'READY' | 'EXPIRED';
+  } | null;
+  consents: {
+    purpose: 'DATA_PROCESSING' | 'MEDIA_USAGE' | 'EVENT_COVERAGE';
+    granted: boolean;
+    wordingVersion: string;
+    recordedAt: string;
+  }[];
+  favoriteCandidateEligible: boolean;
   candidateCode: string | null;
 }
 
@@ -215,5 +250,22 @@ export interface SubmissionResponse {
   candidateCode: string;
   status: 'SUBMITTED';
   submittedAt: string;
+  favoriteCandidateEligible: boolean;
   nextSteps: string[];
+}
+
+export interface RegistrationFormConfig {
+  video: { maxBytes: number; maxDurationSeconds: number; acceptedType: string };
+  photo: { maxBytes: number; acceptedTypes: string[]; statement: string };
+  consents: {
+    eventCoverage: { wordingVersion: string; statement: string; required: boolean };
+    mediaUsage: {
+      wordingVersion: string;
+      statement: string;
+      declineStatement: string;
+      withdrawalNotice: string;
+      required: boolean;
+    };
+  };
+  favoriteCandidateNotice: string;
 }

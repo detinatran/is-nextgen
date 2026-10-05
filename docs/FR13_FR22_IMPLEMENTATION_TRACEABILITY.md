@@ -5,6 +5,9 @@ Status legend: PASS = code + unit/integration/contract/concurrency tests green.
 | FR | Module | Endpoint(s) | Service | Database tables | Tests | Status |
 |----|--------|-------------|---------|-----------------|-------|--------|
 | FR-13 | registrations | POST /api/v1/registration-drafts; GET/PATCH /api/v1/registrations/:id | RegistrationsService.createDraft/updateRegistration/getRegistration; RegistrationCapabilityGuard | candidates, candidate_profiles, registrations, consents, registration_access_grants, duplicate_reviews(+_registrations), competitions | integration/registration.spec.ts (8) | PASS |
+| PR media | registrations | GET /api/v1/registration-form-config | RegistrationFormService (server-driven wording: consent statements, withdrawal notice, favorite-candidate rule, media limits) | — (constants + config) | integration/registration.spec.ts | PASS |
+| PR media | media | POST /api/v1/registrations/:registrationId/photos | MediaService.createPhotoUpload (magic-byte JPEG/PNG/WebP validation; exactly-one READY photo via supersede; `p/` object keys) | media_uploads | integration/registration.spec.ts (6) | PASS |
+| PR media | registrations | draft/PATCH consent fields; submission preconditions | RegistrationsService.recordConsents / resolveCurrentConsentsInTx (append-only consent evidence; latest answer per purpose wins) | consents | integration/registration.spec.ts (4) | PASS |
 | FR-14 | media | POST /api/v1/registrations/:registrationId/uploads | MediaService.createUpload + LocalStorageService | media_uploads, registrations | integration/media.spec.ts | PASS |
 | FR-15 | media | POST /api/v1/uploads/:uploadId/finalization; GET /api/v1/uploads/:uploadId | MediaService.finalizeUpload + MediaValidationService (ffprobe) | media_uploads, media_objects | integration/media.spec.ts (5, in-container) | PASS |
 | FR-15 | media | PUT /api/v1/registrations/:registrationId/video-binding | MediaService.bindVideo | registration_videos, media_objects | integration/media.spec.ts | PASS |
@@ -25,6 +28,9 @@ Status legend: PASS = code + unit/integration/contract/concurrency tests green.
 ## Invariants honored (frozen schema)
 
 - `command_receipts`, `submissions`, `attempt_scores`, `media_objects`, `consents`, `audit_events`: inserted once, never updated.
+- Consent evidence is append-only: a changed answer appends a new `consents` row (latest `recorded_at` per purpose wins). Withdrawal-by-email is later recorded the same way by the BTC (admin flow, out of candidate scope).
+- `MEDIA_USAGE` consent may be declined (either value accepted); `favoriteCandidateEligible` derives from it (required for the "Thí sinh được yêu thích nhất" award). `EVENT_COVERAGE` (BTC coverage + 1-year retention) must be granted to submit.
+- Personal photos never enter `media_objects` (its frozen CHECKs are video-specific: `mime_type='video/mp4'`, duration ≤120 s). Photos live as READY `media_uploads` rows with `p/<uuid>` object keys; exactly one READY photo per registration is enforced by the service (new upload supersedes the previous). Optional V1.1 amendment (owner decision, NOT applied): allow image MIME + nullable duration in `media_objects`.
 - Replay of idempotent commands reconstructs outcomes from domain state (receipts are immutable evidence).
 - `attempts` rows are insert-only; finalization is the only transition (attempt_guard).
 - Answer/flag writes respect revision arithmetic enforced by `answer_guard` (revision 1 on insert, +1 on update, cutoff by `clock_timestamp()`).

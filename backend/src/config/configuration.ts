@@ -8,6 +8,8 @@ export interface AppConfig {
   mediaStorageDir: string;
   uploadMaxBytes: number;
   videoMaxDurationSeconds: number;
+  photoMaxBytes: number;
+  contactEmail: string;
   smtpUrl: string;
   mailFrom: string;
   fixturesEnabled: boolean;
@@ -39,6 +41,8 @@ export default (): AppConfig => ({
   mediaStorageDir: process.env.MEDIA_STORAGE_DIR ?? './.data/media',
   uploadMaxBytes: num(process.env.UPLOAD_MAX_BYTES, 500_000_000),
   videoMaxDurationSeconds: num(process.env.VIDEO_MAX_DURATION_SECONDS, 120),
+  photoMaxBytes: num(process.env.PHOTO_MAX_BYTES, 10_000_000),
+  contactEmail: process.env.CONTACT_EMAIL ?? 'btc@isnextgen.local',
   smtpUrl: process.env.SMTP_URL ?? '',
   mailFrom: process.env.MAIL_FROM ?? 'IS-NextGen <no-reply@isnextgen.local>',
   fixturesEnabled: bool(process.env.FIXTURES_ENABLED, process.env.NODE_ENV !== 'production'),

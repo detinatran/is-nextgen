@@ -11,6 +11,7 @@ import {
   resetDatabase,
   seedReadyVideo,
   setupExam,
+  uploadPhoto,
   type TestContext,
 } from '../integration/helpers/test-kit';
 
@@ -50,8 +51,10 @@ describe('frontend API contract', () => {
   }
 
   it('captures the full candidate journey as sanitized fixtures', async () => {
-    // 1) Registration draft + video + submission.
+    // 1) Registration draft + photo + video + submission.
     const draft = await createDraft(ctx);
+    const photo = await uploadPhoto(ctx, draft);
+    expect(photo.status).toBe(201);
     await seedReadyVideo(ctx, draft.registrationId);
     const submit = await ctx.http
       .post(`/api/v1/registrations/${draft.registrationId}/submission`)

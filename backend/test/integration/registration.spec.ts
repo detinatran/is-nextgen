@@ -1,5 +1,14 @@
 import { randomUUID } from 'node:crypto';
-import { createDraft, createTestApp, destroyTestApp, resetDatabase, seedReadyVideo, type TestContext } from './helpers/test-kit';
+import {
+  createDraft,
+  createTestApp,
+  destroyTestApp,
+  resetDatabase,
+  seedReadyPhoto,
+  seedReadyVideo,
+  uploadPhoto,
+  type TestContext,
+} from './helpers/test-kit';
 
 describe('FR-13/FR-16 registration + confirmation', () => {
   let ctx: TestContext;
@@ -86,8 +95,9 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(patched.body.profile.major).toBe('Data Science');
   });
 
-  it('refuses submission without a READY bound video', async () => {
+  it('refuses submission without a READY bound video (photo present)', async () => {
     const draft = await createDraft(ctx);
+    await seedReadyPhoto(ctx, draft.registrationId);
     const res = await ctx.http
       .post(`/api/v1/registrations/${draft.registrationId}/submission`)
       .set('x-registration-token', draft.profileToken)
@@ -97,9 +107,10 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(res.body.error.code).toBe('STATE_CONFLICT');
   });
 
-  it('submits authoritatively with video, issues candidate code, replays idempotently', async () => {
+  it('submits authoritatively with video + photo, issues candidate code, replays idempotently', async () => {
     const draft = await createDraft(ctx);
     await seedReadyVideo(ctx, draft.registrationId);
+    await seedReadyPhoto(ctx, draft.registrationId);
     const key = randomUUID();
 
     const first = await ctx.http
@@ -138,6 +149,7 @@ describe('FR-13/FR-16 registration + confirmation', () => {
   it('refuses a second submission attempt under a new key', async () => {
     const draft = await createDraft(ctx);
     await seedReadyVideo(ctx, draft.registrationId);
+    await seedReadyPhoto(ctx, draft.registrationId);
     const first = await ctx.http
       .post(`/api/v1/registrations/${draft.registrationId}/submission`)
       .set('x-registration-token', draft.profileToken)
@@ -158,11 +170,166 @@ describe('FR-13/FR-16 registration + confirmation', () => {
   it('requires an Idempotency-Key for submission', async () => {
     const draft = await createDraft(ctx);
     await seedReadyVideo(ctx, draft.registrationId);
+    await seedReadyPhoto(ctx, draft.registrationId);
     const res = await ctx.http
       .post(`/api/v1/registrations/${draft.registrationId}/submission`)
       .set('x-registration-token', draft.profileToken)
       .send();
     expect(res.status).toBe(400);
+  });
+
+  it('rejects submission when the personal photo is missing', async () => {
+    const draft = await createDraft(ctx);
+    await seedReadyVideo(ctx, draft.registrationId);
+    const res = await ctx.http
+      .post(`/api/v1/registrations/${draft.registrationId}/submission`)
+      .set('x-registration-token', draft.profileToken)
+      .set('Idempotency-Key', randomUUID())
+      .send();
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('STATE_CONFLICT');
+    expect(res.body.error.message).toContain('photo');
+  });
+
+  it('uploads a real photo through the API (magic-byte validation)', async () => {
+    const draft = await createDraft(ctx);
+    const up = await uploadPhoto(ctx, draft);
+    expect(up.status).toBe(201);
+    expect(up.body.state).toBe('READY');
+    expect(up.body.kind).toBe('PHOTO');
+
+    const view = await ctx.http
+      .get(`/api/v1/registrations/${draft.registrationId}`)
+      .set('x-registration-token', draft.profileToken);
+    expect(view.body.photo.uploadId).toBe(up.body.uploadId);
+  });
+
+  it('rejects non-image bytes with PHOTO_INVALID_FORMAT and stores nothing', async () => {
+    const draft = await createDraft(ctx);
+    const res = await ctx.http
+      .post(`/api/v1/registrations/${draft.registrationId}/photos`)
+      .set('x-registration-token', draft.uploadToken)
+      .attach('file', Buffer.from('definitely not an image'), {
+        filename: 'photo.png',
+        contentType: 'image/png',
+      });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('PHOTO_INVALID_FORMAT');
+    expect(
+      await ctx.prisma.media_uploads.count({
+        where: { registration_id: draft.registrationId, state: 'READY' },
+      }),
+    ).toBe(0);
+  });
+
+  it('accepts JPEG content regardless of extension sniffing results', async () => {
+    const draft = await createDraft(ctx);
+    const jpeg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64, 0x11)]);
+    const up = await ctx.http
+      .post(`/api/v1/registrations/${draft.registrationId}/photos`)
+      .set('x-registration-token', draft.uploadToken)
+      .attach('file', jpeg, { filename: 'photo.jpg', contentType: 'image/jpeg' });
+    expect(up.status).toBe(201);
+    expect(up.body.kind).toBe('PHOTO');
+  });
+
+  it('replaces the photo: exactly one READY photo survives', async () => {
+    const draft = await createDraft(ctx);
+    const first = await uploadPhoto(ctx, draft);
+    const second = await uploadPhoto(ctx, draft);
+    expect(first.status).toBe(201);
+    expect(second.status).toBe(201);
+    expect(second.body.uploadId).not.toBe(first.body.uploadId);
+    const readyPhotos = await ctx.prisma.media_uploads.count({
+      where: { registration_id: draft.registrationId, state: 'READY', object_key: { startsWith: 'p/' } },
+    });
+    expect(readyPhotos).toBe(1);
+    const view = await ctx.http
+      .get(`/api/v1/registrations/${draft.registrationId}`)
+      .set('x-registration-token', draft.profileToken);
+    expect(view.body.photo.uploadId).toBe(second.body.uploadId);
+  });
+
+  it('records the two PR consents at draft time and derives favoriteCandidateEligible', async () => {
+    // Declining media usage is accepted; eligibility becomes false.
+    const declined = await createDraft(ctx, {
+      mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false },
+    });
+    const viewDeclined = await ctx.http
+      .get(`/api/v1/registrations/${declined.registrationId}`)
+      .set('x-registration-token', declined.profileToken);
+    const byPurposeDeclined = Object.fromEntries(
+      viewDeclined.body.consents.map((c: { purpose: string; granted: boolean }) => [c.purpose, c.granted]),
+    );
+    expect(byPurposeDeclined['MEDIA_USAGE']).toBe(false);
+    expect(byPurposeDeclined['EVENT_COVERAGE']).toBe(true);
+    expect(viewDeclined.body.favoriteCandidateEligible).toBe(false);
+
+    // Agreeing keeps the candidate eligible for the Favorite Candidate award.
+    const agreed = await createDraft(ctx);
+    const viewAgreed = await ctx.http
+      .get(`/api/v1/registrations/${agreed.registrationId}`)
+      .set('x-registration-token', agreed.profileToken);
+    expect(viewAgreed.body.favoriteCandidateEligible).toBe(true);
+  });
+
+  it('appends a new immutable consent row when the answer changes, preserving history', async () => {
+    const draft = await createDraft(ctx, {
+      mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: true },
+    });
+    const changed = await ctx.http
+      .patch(`/api/v1/registrations/${draft.registrationId}`)
+      .set('x-registration-token', draft.profileToken)
+      .send({ mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false } });
+    expect(changed.status).toBe(200);
+    expect(changed.body.favoriteCandidateEligible).toBe(false);
+
+    const history = await ctx.prisma.consents.findMany({
+      where: { registration_id: draft.registrationId, purpose: 'MEDIA_USAGE' },
+      orderBy: { recorded_at: 'asc' },
+    });
+    expect(history).toHaveLength(2);
+    expect(history[0].granted).toBe(true);
+    expect(history[1].granted).toBe(false);
+  });
+
+  it('blocks submission when the event coverage commitment is not accepted', async () => {
+    const draft = await createDraft(ctx, {
+      eventCoverageConsent: { wordingVersion: 'EVENT-V1-2026', granted: false },
+    });
+    await seedReadyVideo(ctx, draft.registrationId);
+    await seedReadyPhoto(ctx, draft.registrationId);
+    const res = await ctx.http
+      .post(`/api/v1/registrations/${draft.registrationId}/submission`)
+      .set('x-registration-token', draft.profileToken)
+      .set('Idempotency-Key', randomUUID())
+      .send();
+    expect(res.status).toBe(400);
+    expect(res.body.error.message).toContain('Event coverage');
+  });
+
+  it('submission with declined media usage still succeeds and reports ineligibility', async () => {
+    const draft = await createDraft(ctx, {
+      mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false },
+    });
+    await seedReadyVideo(ctx, draft.registrationId);
+    await seedReadyPhoto(ctx, draft.registrationId);
+    const res = await ctx.http
+      .post(`/api/v1/registrations/${draft.registrationId}/submission`)
+      .set('x-registration-token', draft.profileToken)
+      .set('Idempotency-Key', randomUUID())
+      .send();
+    expect(res.status).toBe(201);
+    expect(res.body.favoriteCandidateEligible).toBe(false);
+  });
+
+  it('exposes the public form copy (consent statements, withdrawal notice, favorite-candidate rule)', async () => {
+    const res = await ctx.http.get('/api/v1/registration-form-config');
+    expect(res.status).toBe(200);
+    expect(res.body.consents.mediaUsage.withdrawalNotice).toContain('@');
+    expect(res.body.consents.eventCoverage.statement).toContain('01 năm');
+    expect(res.body.favoriteCandidateNotice).toContain('Thí sinh được yêu thích nhất');
+    expect(res.body.photo.acceptedTypes).toEqual(['image/jpeg', 'image/png', 'image/webp']);
   });
 
   it('flags duplicate signals for review without rejecting', async () => {

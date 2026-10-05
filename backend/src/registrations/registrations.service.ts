@@ -20,6 +20,14 @@ const NEXT_STEPS = [
   'Đăng nhập và vào bài thi đúng theo lịch thi được phân.',
 ];
 
+export type ConsentPurpose = 'DATA_PROCESSING' | 'MEDIA_USAGE' | 'EVENT_COVERAGE';
+
+interface ConsentSnapshot {
+  granted: boolean;
+  wordingVersion: string;
+  recordedAt: Date;
+}
+
 function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -39,7 +47,10 @@ function cleanText(value: string): string {
 }
 
 /**
- * FR-13 competition registration and FR-16 authoritative confirmation.
+ * FR-13 competition registration and FR-16 authoritative confirmation,
+ * extended with the PR-media requirements: one personal photo (validated by
+ * magic bytes, exactly one READY per registration) and append-only consent
+ * evidence (MEDIA_USAGE may be declined; EVENT_COVERAGE is the commitment).
  * Duplicate signals only flag a review; they never merge or reject.
  */
 @Injectable()
@@ -90,14 +101,19 @@ export class RegistrationsService {
       const registration = await tx.registrations.create({
         data: { competition_id: competition.id, candidate_id: candidate.id, state: 'DRAFT' },
       });
-      await tx.consents.create({
-        data: {
-          registration_id: registration.id,
-          purpose: 'DATA_PROCESSING',
-          wording_version: dto.consent.wordingVersion,
-          granted: true,
+      await this.recordConsents(tx, registration.id, [
+        { purpose: 'DATA_PROCESSING', granted: true, wordingVersion: dto.consent.wordingVersion },
+        {
+          purpose: 'EVENT_COVERAGE',
+          granted: dto.eventCoverageConsent.granted,
+          wordingVersion: dto.eventCoverageConsent.wordingVersion,
         },
-      });
+        {
+          purpose: 'MEDIA_USAGE',
+          granted: dto.mediaUsageConsent.granted,
+          wordingVersion: dto.mediaUsageConsent.wordingVersion,
+        },
+      ]);
 
       const profileGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'READ_EDIT_PROFILE');
       const uploadGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'DRAFT_UPLOAD');
@@ -141,6 +157,11 @@ export class RegistrationsService {
     const videoObject = video
       ? await this.prisma.media_objects.findUnique({ where: { id: video.media_object_id } })
       : null;
+    const photo = await this.prisma.media_uploads.findFirst({
+      where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'p/' } },
+      orderBy: { created_at: 'desc' },
+    });
+    const consents = await this.resolveCurrentConsentsInTx(this.prisma, registration.id);
     return {
       registrationId: registration.id,
       status: registration.state as 'DRAFT' | 'SUBMITTED',
@@ -169,6 +190,14 @@ export class RegistrationsService {
             durationSeconds: Number(videoObject.duration_seconds),
           }
         : null,
+      photo: photo ? { uploadId: photo.id, state: 'READY' as const } : null,
+      consents: [...consents.entries()].map(([purpose, c]) => ({
+        purpose: purpose as ConsentPurpose,
+        granted: c.granted,
+        wordingVersion: c.wordingVersion,
+        recordedAt: c.recordedAt.toISOString(),
+      })),
+      favoriteCandidateEligible: consents.get('MEDIA_USAGE')?.granted === true,
       candidateCode: candidate.candidate_code,
     };
   }
@@ -199,23 +228,49 @@ export class RegistrationsService {
         patch.phone = cleanText(dto.phone);
         patch.phone_normalized = normalizePhone(dto.phone);
       }
-      if (Object.keys(patch).length === 0) {
-        throw AppException.validation('At least one profile field is required');
+
+      // Consent rows are append-only evidence: a new answer appends a new row.
+      const consentAppends: {
+        purpose: 'MEDIA_USAGE' | 'EVENT_COVERAGE';
+        granted: boolean;
+        wordingVersion: string;
+      }[] = [];
+      if (dto.mediaUsageConsent !== undefined) {
+        consentAppends.push({
+          purpose: 'MEDIA_USAGE',
+          granted: dto.mediaUsageConsent.granted,
+          wordingVersion: dto.mediaUsageConsent.wordingVersion,
+        });
       }
-      await tx.candidate_profiles.update({
-        where: { candidate_id: registration.candidate_id },
-        data: { ...patch, revision: { increment: 1 }, updated_at: new Date() },
-      });
-      await tx.registrations.update({
-        where: { id: registration.id },
-        data: { revision: { increment: 1 }, updated_at: new Date() },
-      });
+      if (dto.eventCoverageConsent !== undefined) {
+        consentAppends.push({
+          purpose: 'EVENT_COVERAGE',
+          granted: dto.eventCoverageConsent.granted,
+          wordingVersion: dto.eventCoverageConsent.wordingVersion,
+        });
+      }
+      if (Object.keys(patch).length === 0 && consentAppends.length === 0) {
+        throw AppException.validation('At least one profile field or consent answer is required');
+      }
+      if (consentAppends.length > 0) {
+        await this.recordConsents(tx, registration.id, consentAppends);
+      }
+      if (Object.keys(patch).length > 0) {
+        await tx.candidate_profiles.update({
+          where: { candidate_id: registration.candidate_id },
+          data: { ...patch, revision: { increment: 1 }, updated_at: new Date() },
+        });
+        await tx.registrations.update({
+          where: { id: registration.id },
+          data: { revision: { increment: 1 }, updated_at: new Date() },
+        });
+      }
       await this.audit.record(tx, {
         action: 'registration.profile_updated',
         target_type: 'registration',
         target_id: registration.id,
         correlation_id: correlationId,
-        metadata: { fields: Object.keys(patch) },
+        metadata: { fields: Object.keys(patch), consents: consentAppends.map((c) => c.purpose) },
       });
     });
     return this.getRegistration(registrationId);
@@ -223,8 +278,11 @@ export class RegistrationsService {
 
   /**
    * FR-16: one transaction establishes the authoritative submission.
-   * The candidate code, submission evidence and notification intent commit
-   * atomically; the response is only returned after PostgreSQL COMMIT.
+   * Preconditions: complete profile, consents resolved (DATA_PROCESSING and
+   * EVENT_COVERAGE granted; MEDIA_USAGE either), exactly one READY bound
+   * video AND exactly one READY personal photo. The candidate code, evidence
+   * snapshot and notification intent commit atomically; the response is only
+   * returned after PostgreSQL COMMIT.
    */
   async submitRegistration(
     registrationId: string,
@@ -249,9 +307,11 @@ export class RegistrationsService {
           const candidate = await tx.candidates.findUniqueOrThrow({
             where: { id: committed.candidate_id },
           });
+          const committedConsents = await this.resolveCurrentConsentsInTx(tx, committed.id);
           return this.buildSubmissionResponse(
             candidate.candidate_code as string,
             committed.submitted_at as Date,
+            committedConsents.get('MEDIA_USAGE')?.granted === true,
           );
         }
         throw AppException.conflict(
@@ -266,9 +326,11 @@ export class RegistrationsService {
         const candidate = await tx.candidates.findUniqueOrThrow({
           where: { id: registration.candidate_id },
         });
+        const consents = await this.resolveCurrentConsentsInTx(tx, registration.id);
         return this.buildSubmissionResponse(
           candidate.candidate_code as string,
           registration.submitted_at as Date,
+          consents.get('MEDIA_USAGE')?.granted === true,
         );
       }
 
@@ -287,23 +349,43 @@ export class RegistrationsService {
       if (missing.length > 0) {
         throw AppException.validation('Registration profile is incomplete', { missingFields: missing });
       }
-      const consent = await tx.consents.findFirst({
-        where: { registration_id: registration.id, granted: true },
-      });
-      if (!consent) {
-        throw AppException.validation('Consent record is required');
-      }
 
-      const readyCount = await tx.media_uploads.count({
-        where: { registration_id: registration.id, state: 'READY' },
+      // Consents (latest answer per purpose wins; rows are append-only evidence):
+      // - DATA_PROCESSING must be granted (registration itself)
+      // - EVENT_COVERAGE must be granted (the commitment: BTC coverage + 1-year retention)
+      // - MEDIA_USAGE may be true or false; declining only excludes the
+      //   Favorite Candidate award (favoriteCandidateEligible derives from it).
+      const consents = await this.resolveCurrentConsentsInTx(tx, registration.id);
+      const dataProcessing = consents.get('DATA_PROCESSING');
+      const eventCoverage = consents.get('EVENT_COVERAGE');
+      const mediaUsage = consents.get('MEDIA_USAGE');
+      if (!dataProcessing) throw AppException.validation('Data processing consent is required');
+      if (!dataProcessing.granted) throw AppException.validation('Data processing consent must be granted');
+      if (!eventCoverage) throw AppException.validation('Event coverage consent is required');
+      if (!eventCoverage.granted) {
+        throw AppException.validation('Event coverage commitment must be accepted');
+      }
+      if (!mediaUsage) throw AppException.validation('Media usage consent answer is required');
+
+      const readyVideoCount = await tx.media_uploads.count({
+        where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'v/' } },
       });
       const binding = await tx.registration_videos.findUnique({
         where: { registration_id: registration.id },
       });
-      if (readyCount !== 1 || !binding) {
+      if (readyVideoCount !== 1 || !binding) {
         throw AppException.conflict(
           ErrorCodes.STATE_CONFLICT,
           'Submission requires exactly one READY private video',
+        );
+      }
+      const readyPhotoCount = await tx.media_uploads.count({
+        where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'p/' } },
+      });
+      if (readyPhotoCount !== 1) {
+        throw AppException.conflict(
+          ErrorCodes.STATE_CONFLICT,
+          'Submission requires exactly one READY personal photo',
         );
       }
 
@@ -319,13 +401,28 @@ export class RegistrationsService {
         });
       }
 
+      const photoUpload = await tx.media_uploads.findFirstOrThrow({
+        where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'p/' } },
+        select: { id: true },
+      });
+
       const submittedAt = new Date();
       await tx.registrations.update({
         where: { id: registration.id },
         data: {
           state: 'SUBMITTED',
           submitted_at: submittedAt,
-          submitted_profile: this.submittedProfileSnapshot(profile),
+          submitted_profile: {
+            ...this.submittedProfileSnapshot(profile),
+            photoUploadId: photoUpload.id,
+            consents: Object.fromEntries(
+              [...consents.entries()].map(([purpose, c]) => [
+                purpose,
+                { granted: c.granted, wordingVersion: c.wordingVersion },
+              ]),
+            ),
+            favoriteCandidateEligible: mediaUsage?.granted === true,
+          } as Prisma.InputJsonValue,
           revision: { increment: 1 },
           updated_at: submittedAt,
         },
@@ -353,7 +450,7 @@ export class RegistrationsService {
         metadata: { candidateCode },
       });
 
-      const response = this.buildSubmissionResponse(candidateCode, submittedAt);
+      const response = this.buildSubmissionResponse(candidateCode, submittedAt, mediaUsage?.granted === true);
       return response;
     });
 
@@ -361,13 +458,66 @@ export class RegistrationsService {
     return outcome;
   }
 
-  private buildSubmissionResponse(candidateCode: string, submittedAt: Date): SubmissionResponse {
+  private buildSubmissionResponse(
+    candidateCode: string,
+    submittedAt: Date,
+    favoriteCandidateEligible: boolean,
+  ): SubmissionResponse {
     return {
       candidateCode,
       status: 'SUBMITTED',
       submittedAt: submittedAt.toISOString(),
+      favoriteCandidateEligible,
       nextSteps: NEXT_STEPS,
     };
+  }
+
+  /**
+   * Records append-only consent evidence. Explicit recorded_at values offset
+   * by 1ms keep same-transaction appends strictly ordered (PG timestamptz is
+   * microsecond-precision; `now()` within one transaction would tie).
+   */
+  private async recordConsents(
+    tx: Tx,
+    registrationId: string,
+    list: { purpose: ConsentPurpose; granted: boolean; wordingVersion: string }[],
+  ): Promise<void> {
+    const base = Date.now();
+    await Promise.all(
+      list.map((c, index) =>
+        tx.consents.create({
+          data: {
+            registration_id: registrationId,
+            purpose: c.purpose,
+            wording_version: c.wordingVersion,
+            granted: c.granted,
+            recorded_at: new Date(base + index),
+          },
+        }),
+      ),
+    );
+  }
+
+  private async resolveCurrentConsentsInTx(
+    tx: Tx,
+    registrationId: string,
+  ): Promise<Map<ConsentPurpose, ConsentSnapshot>> {
+    const rows = await tx.consents.findMany({
+      where: { registration_id: registrationId },
+      orderBy: [{ recorded_at: 'desc' }],
+    });
+    const latest = new Map<ConsentPurpose, ConsentSnapshot>();
+    for (const row of rows) {
+      const purpose = row.purpose as ConsentPurpose;
+      if (!latest.has(purpose)) {
+        latest.set(purpose, {
+          granted: row.granted,
+          wordingVersion: row.wording_version,
+          recordedAt: row.recorded_at,
+        });
+      }
+    }
+    return latest;
   }
 
   private mandatoryProfileFields(profile: {
@@ -405,7 +555,7 @@ export class RegistrationsService {
     phone: string | null;
     phone_normalized: string | null;
     facebook: string | null;
-  }): Prisma.InputJsonValue {
+  }): Record<string, unknown> {
     return {
       fullName: profile.full_name,
       dateOfBirth: profile.date_of_birth ? profile.date_of_birth.toISOString().slice(0, 10) : null,
@@ -417,7 +567,7 @@ export class RegistrationsService {
       phone: profile.phone,
       phoneNormalized: profile.phone_normalized,
       facebook: profile.facebook,
-    } as Prisma.InputJsonValue;
+    };
   }
 
   /** Duplicate heuristics flag review rows only — never auto-merge or auto-reject. */

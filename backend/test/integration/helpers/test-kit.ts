@@ -150,7 +150,7 @@ export async function createDraft(
       registration_closes_at: new Date(Date.now() + 30 * 86_400_000),
     },
   });
-  const res = await ctx.http.post('/api/v1/registration-drafts').send({
+  const payload = {
     competitionCode,
     fullName: 'Nguyen Van Test',
     dateOfBirth: '2004-05-12',
@@ -161,15 +161,51 @@ export async function createDraft(
     email: overrides['email'] ?? `draft-${randomUUID().slice(0, 8)}@example.com`,
     phone: '0901234567',
     facebook: 'https://facebook.com/fixture',
-    consent: { wordingVersion: 'V1-2026', granted: true },
+    consent: { wordingVersion: 'DATA-V1-2026', granted: true },
+    mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: true },
+    eventCoverageConsent: { wordingVersion: 'EVENT-V1-2026', granted: true },
     ...overrides,
-  });
+  };
+  const res = await ctx.http.post('/api/v1/registration-drafts').send(payload);
   if (res.status !== 201) throw new Error(`draft failed: ${res.status} ${JSON.stringify(res.body)}`);
   return {
     registrationId: res.body.registrationId,
     profileToken: res.body.capability.profileToken,
     uploadToken: res.body.capability.uploadToken,
   };
+}
+
+/** Minimal valid PNG (1x1 transparent pixel) used as a personal photo fixture. */
+export const TINY_PNG = Buffer.from(
+  '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489' +
+    '0000000d49444154789c6260000000060005' + '27de41ba0000000049454e44ae426082',
+  'hex',
+);
+
+/** Real photo upload through the API (magic-byte validation, works on any host). */
+export async function uploadPhoto(
+  ctx: TestContext,
+  draft: DraftRegistration,
+  file: Buffer = TINY_PNG,
+): Promise<{ status: number; body: Record<string, unknown> }> {
+  const res = await ctx.http
+    .post(`/api/v1/registrations/${draft.registrationId}/photos`)
+    .set('x-registration-token', draft.uploadToken)
+    .attach('file', file, { filename: 'photo.png', contentType: 'image/png' });
+  return { status: res.status, body: res.body as Record<string, unknown> };
+}
+
+/** DB-level photo fixture for tests that do not exercise the upload path. */
+export async function seedReadyPhoto(ctx: TestContext, registrationId: string): Promise<string> {
+  const upload = await ctx.prisma.media_uploads.create({
+    data: {
+      registration_id: registrationId,
+      object_key: `p/${randomUUID()}`,
+      state: 'READY',
+      expires_at: new Date(Date.now() + 48 * 3_600_000),
+    },
+  });
+  return upload.id;
 }
 
 /**

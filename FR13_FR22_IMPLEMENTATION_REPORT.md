@@ -17,6 +17,17 @@ PASS
 - FR-21 Answer saving (optimistic revisions, REVISION_CONFLICT, review flags, reload/reconnect recovery)
 - FR-22 Manual submission + timeout finalization (shared finalizer; worker sweep + opportunistic reconcile) + automatic scoring (MAX rule)
 
+## PR media & consent extension (owner amendment, 2026-10-05)
+
+Registered later requirements for the public registration launch — all inside the frozen DB:
+
+- **Personal photo (01 bức ảnh cá nhân)** for PR usage: `POST /api/v1/registrations/:registrationId/photos` (multipart, DRAFT_UPLOAD capability). Real server-side validation by magic bytes (JPEG/PNG/WebP — extension and browser MIME never trusted), default cap 10 MB (`PHOTO_MAX_BYTES`), machine codes `PHOTO_INVALID_FORMAT` / `PHOTO_TOO_LARGE`. Exactly one READY photo per registration: a new upload supersedes the previous one (old row → EXPIRED), bytes sealed against overwrite (`p/<uuid>` keys). Required for submission alongside the video. Photos intentionally do NOT enter `media_objects` (frozen CHECKs are video-specific) — an optional owner-approved V1.1 amendment could relax those CHECKs later; not applied.
+- **Two consent commitments** (append-only `consents` rows, wording versions recorded as evidence):
+  - `EVENT_COVERAGE` — the commitment that BTC may record/photograph at events for media, 1-year retention; must be granted to submit.
+  - `MEDIA_USAGE` — the agree/disagree checkbox ("Tôi đồng ý…/Tôi không đồng ý"); declining is accepted and only excludes the Favorite Candidate award. `favoriteCandidateEligible` is derived and returned by the registration + submission responses. Withdrawal anytime by email (notice served by the API; BTC records withdrawal later as a new consent row).
+- **Frontend form copy served by the API**: `GET /api/v1/registration-form-config` returns the exact consent statements, decline statement, withdrawal notice (configurable `CONTACT_EMAIL`), favorite-candidate notice, and media limits — one source of truth so the form always matches the backend rules.
+- Submission evidence (`registrations.submitted_profile`) now snapshots `photoUploadId`, the resolved consent state and `favoriteCandidateEligible` in the same atomic transaction.
+
 ## Architecture compliance
 
 - Thin controllers (parse/auth/call service/map response) — all business rules in services
@@ -29,8 +40,10 @@ PASS
 Base URL: `http://localhost:3001/api/v1` — full artifact: `backend/openapi.json` (28 paths)
 
 - POST /registration-drafts
+- GET /registration-form-config
 - GET|PATCH /registrations/:registrationId
 - POST /registrations/:registrationId/uploads
+- POST /registrations/:registrationId/photos
 - PUT /registrations/:registrationId/video-binding
 - POST /registrations/:registrationId/submission (Idempotency-Key)
 - POST /uploads/:uploadId/finalization; GET /uploads/:uploadId
@@ -46,11 +59,11 @@ Base URL: `http://localhost:3001/api/v1` — full artifact: `backend/openapi.jso
 - Lint: PASS (`eslint --max-warnings 0`, zero warnings)
 - Typecheck: PASS (`tsc --noEmit`)
 - Unit: PASS 9/9
-- Integration: PASS 62/62 (run in Docker; includes ffprobe media validation; Windows host runs the same suite with media tests skipped when ffmpeg is absent)
+- Integration: PASS 72/72 (run in Docker; includes ffprobe media validation and the photo/consent coverage; Windows host runs the same suite with video-media tests skipped when ffmpeg is absent — photo validation is pure magic bytes and runs everywhere)
 - Contract: PASS 1/1 (journey snapshot; 8 sanitized fixtures in `backend/test/fixtures/api/`)
 - Concurrency: PASS 5/5 (C1 double-start, C2 cross-assignment, C3 save-vs-submit, C4 save-vs-timeout, C5 takeover-vs-old-writer)
 - Frozen DB regression: PASS 103/103 (`database/test/run_validation.py`, PostgreSQL 16.13, disposable container)
-- Docker smoke: PASS (`docker compose up backend`; /health/ready OK; workers processed scoring + email intents end-to-end via MailPit)
+- Docker smoke: PASS (`docker compose up backend`; /health/ready OK; /registration-form-config serves the consent copy; workers processed scoring + email intents end-to-end via MailPit)
 
 ## Security checks
 

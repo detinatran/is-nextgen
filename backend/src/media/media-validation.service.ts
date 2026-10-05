@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { stat, unlink } from 'node:fs/promises';
+import { stat, unlink, open } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { AppException } from '../common/errors/app-error';
@@ -12,7 +12,9 @@ export type MediaRejectionReason =
   | 'VIDEO_TOO_LARGE'
   | 'VIDEO_TOO_LONG'
   | 'VIDEO_INVALID_FORMAT'
-  | 'VIDEO_VALIDATION_FAILED';
+  | 'VIDEO_VALIDATION_FAILED'
+  | 'PHOTO_TOO_LARGE'
+  | 'PHOTO_INVALID_FORMAT';
 
 export type MediaValidationOutcome =
   | {
@@ -25,6 +27,39 @@ export type MediaValidationOutcome =
       status: 'REJECTED';
       reason: MediaRejectionReason;
     };
+
+export type PhotoValidationOutcome =
+  | {
+      status: 'READY';
+      sizeBytes: number;
+      mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+      checksumSha256: string;
+    }
+  | { status: 'REJECTED'; reason: 'PHOTO_TOO_LARGE' | 'PHOTO_INVALID_FORMAT' };
+
+interface PhotoMagic {
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+  test: (b: Buffer) => boolean;
+}
+
+const PHOTO_MAGICS: PhotoMagic[] = [
+  // JPEG: FF D8 FF
+  { mimeType: 'image/jpeg', test: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  {
+    mimeType: 'image/png',
+    test: (b) =>
+      b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
+      b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a,
+  },
+  // WEBP: RIFF....WEBP
+  {
+    mimeType: 'image/webp',
+    test: (b) =>
+      b.subarray(0, 4).toString('latin1') === 'RIFF' &&
+      b.subarray(8, 12).toString('latin1') === 'WEBP',
+  },
+];
 
 interface FfprobeFormat {
   format_name?: string;
@@ -85,6 +120,37 @@ export class MediaValidationService {
     }
     const checksumSha256 = await this.sha256File(filePath);
     return { status: 'READY', sizeBytes, durationSeconds: Math.round(duration * 1000) / 1000, checksumSha256 };
+  }
+
+  /**
+   * Personal photo validation for PR usage: content sniffing by magic bytes
+   * (never the extension or browser MIME), exact size from the filesystem.
+   */
+  async validatePhoto(
+    filePath: string,
+    limits: { maxBytes: number },
+  ): Promise<PhotoValidationOutcome> {
+    let sizeBytes: number;
+    let header: Buffer;
+    try {
+      sizeBytes = (await stat(filePath)).size;
+      const handle = await open(filePath, 'r');
+      try {
+        const buf = Buffer.alloc(16);
+        await handle.read(buf, 0, 16, 0);
+        header = buf;
+      } finally {
+        await handle.close();
+      }
+    } catch {
+      return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
+    }
+    if (sizeBytes > limits.maxBytes) return { status: 'REJECTED', reason: 'PHOTO_TOO_LARGE' };
+    if (sizeBytes < 1) return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
+    const magic = PHOTO_MAGICS.find((m) => m.test(header));
+    if (!magic) return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
+    const checksumSha256 = await this.sha256File(filePath);
+    return { status: 'READY', sizeBytes, mimeType: magic.mimeType, checksumSha256 };
   }
 
   async cleanupTemp(tmpPath: string | undefined): Promise<void> {

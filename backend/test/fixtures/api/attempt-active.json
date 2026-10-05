@@ -1,0 +1,116 @@
+{
+  "attempt": {
+    "id": "96435744-d05d-404d-b250-bc623d19c309",
+    "ordinal": 1,
+    "state": "ACTIVE",
+    "startedAt": "2026-10-05T06:50:36.496Z",
+    "deadlineAt": "2026-10-05T07:50:36.496Z",
+    "serverTime": "2026-10-05T06:50:36.757Z"
+  },
+  "form": [
+    {
+      "deliveredQuestionId": "422c8113-65ac-4b4f-920e-fd06348a9be4",
+      "position": 1,
+      "prompt": "Fixture question 1: choose the correct option",
+      "points": 2,
+      "options": [
+        {
+          "deliveredOptionId": "72b1964f-5a66-4693-a921-83da7faee10b",
+          "position": 1,
+          "text": "Option 1 for question 1"
+        },
+        {
+          "deliveredOptionId": "2970e028-cd16-4f67-8b04-e61ddde2ba24",
+          "position": 2,
+          "text": "Option 2 for question 1"
+        },
+        {
+          "deliveredOptionId": "c3902de0-ac8e-4a6b-80e5-c956af59b7d4",
+          "position": 3,
+          "text": "Option 3 for question 1"
+        },
+        {
+          "deliveredOptionId": "5679e285-17ce-4adf-a97e-f6cb54c2fabb",
+          "position": 4,
+          "text": "Option 4 for question 1"
+        }
+      ]
+    },
+    {
+      "deliveredQuestionId": "65d10e2e-fe9a-4f8d-bbb6-9b468a38ef9f",
+      "position": 2,
+      "prompt": "Fixture question 2: choose the correct option",
+      "points": 2,
+      "options": [
+        {
+          "deliveredOptionId": "a8821cb2-1a8c-4945-857d-2f2c4eeeaf56",
+          "position": 1,
+          "text": "Option 1 for question 2"
+        },
+        {
+          "deliveredOptionId": "c6dee6ed-1bac-4c12-aa67-2adda9f05bc8",
+          "position": 2,
+          "text": "Option 2 for question 2"
+        },
+        {
+          "deliveredOptionId": "5da56687-e331-4df3-9784-3e65fe28c259",
+          "position": 3,
+          "text": "Option 3 for question 2"
+        },
+        {
+          "deliveredOptionId": "0e03ca83-0ed3-4c58-a897-1c222fa726f4",
+          "position": 4,
+          "text": "Option 4 for question 2"
+        }
+      ]
+    },
+    {
+      "deliveredQuestionId": "49bc6749-8e3e-4586-87bd-aa19940e10bb",
+      "position": 3,
+      "prompt": "Fixture question 3: choose the correct option",
+      "points": 2,
+      "options": [
+        {
+          "deliveredOptionId": "11846e14-9378-4563-917f-b5930a2f3309",
+          "position": 1,
+          "text": "Option 1 for question 3"
+        },
+        {
+          "deliveredOptionId": "c99820e9-2728-4282-87ef-7c17673d629b",
+          "position": 2,
+          "text": "Option 2 for question 3"
+        },
+        {
+          "deliveredOptionId": "7fd3fdd4-1296-4bb0-8a7d-7507ac4d90ea",
+          "position": 3,
+          "text": "Option 3 for question 3"
+        },
+        {
+          "deliveredOptionId": "db436f28-f264-4a64-b695-da625ec41c41",
+          "position": 4,
+          "text": "Option 4 for question 3"
+        }
+      ]
+    }
+  ],
+  "candidateState": [
+    {
+      "deliveredQuestionId": "422c8113-65ac-4b4f-920e-fd06348a9be4",
+      "selectedOptionId": null,
+      "answerRevision": 0,
+      "reviewFlag": false
+    },
+    {
+      "deliveredQuestionId": "65d10e2e-fe9a-4f8d-bbb6-9b468a38ef9f",
+      "selectedOptionId": null,
+      "answerRevision": 0,
+      "reviewFlag": false
+    },
+    {
+      "deliveredQuestionId": "49bc6749-8e3e-4586-87bd-aa19940e10bb",
+      "selectedOptionId": null,
+      "answerRevision": 0,
+      "reviewFlag": false
+    }
+  ]
+}

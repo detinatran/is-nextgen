@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "REVISION_CONFLICT",
+    "message": "Answer revision conflict",
+    "correlationId": "a962858f-544a-4481-822c-68cdb61de5e2",
+    "details": {
+      "currentRevision": 1
+    }
+  }
+}

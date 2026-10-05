@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: isnextgen
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d isnextgen"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  mailpit:
+    image: axllent/mailpit:v1.24
+    ports:
+      - "127.0.0.1:8025:8025" # web UI for outgoing mail inspection (dev only)
+    environment:
+      MP_MAX_MESSAGES: 500
+
+  backend:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mailpit:
+        condition: service_started
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/isnextgen?schema=public
+      REDIS_URL: redis://redis:6379
+      SMTP_URL: smtp://mailpit:1025
+      MAIL_FROM: "IS-NextGen <no-reply@isnextgen.local>"
+      MEDIA_STORAGE_DIR: /var/lib/isnextgen/media
+      COOKIE_SECURE: "false"
+      FIXTURES_ENABLED: "true"
+      FIXTURES_TOKEN: dev-fixtures-token
+      SWAGGER_ENABLED: "true"
+    volumes:
+      - media:/var/lib/isnextgen/media
+    ports:
+      - "127.0.0.1:3001:3001"
+
+  # Full integration + contract + media suite inside Linux (ffprobe available).
+  integration-tests:
+    build:
+      context: .
+      target: test
+    profiles: ["test"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/isnextgen?schema=public
+      WORKERS_DISABLED: "1"
+      MEDIA_STORAGE_DIR: /tmp/isng-test-media
+      FIXTURES_ENABLED: "true"
+      FIXTURES_TOKEN: test-fixtures-token
+    command: sh -c "npx prisma migrate deploy && npx jest --config test/jest-integration.config.js --runInBand && npx jest --config test/jest-contract.config.js --runInBand"
+
+volumes:
+  pgdata:
+  media:

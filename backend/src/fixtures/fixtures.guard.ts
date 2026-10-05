@@ -13,7 +13,7 @@ export class FixturesGuard implements CanActivate {
   constructor(private readonly config: ConfigService<AppConfig>) {}
 
   canActivate(context: ExecutionContext): boolean {
-    if (!this.config.get('fixturesEnabled', false)) return false; // Nest converts false to 403; controller re-checks for 404.
+    if (this.config.get('env') === 'production' || !this.config.get('fixturesEnabled', false)) return false;
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const provided = request.header('x-fixtures-token') ?? '';
     const expected = this.config.getOrThrow('fixturesToken');

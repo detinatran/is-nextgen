@@ -193,7 +193,7 @@ describe('FR-17/FR-18 candidate authentication', () => {
 
     const logout = await ctx.http
       .post('/api/v1/auth/logout')
-      .set('Cookie', session.cookies.session)
+      .set(authed(session.cookies))
       .send();
     expect(logout.status).toBe(204);
 

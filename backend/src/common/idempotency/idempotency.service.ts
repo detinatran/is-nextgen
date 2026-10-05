@@ -24,12 +24,14 @@ export interface ReceiptClaim {
   actor_user_id?: string | null;
   resource_type: string;
   resource_id: string;
+  result_metadata?: Prisma.InputJsonValue;
 }
 
 export interface ReceiptOutcome {
   /** True when a receipt already exists: the caller must reconstruct the committed outcome from domain state. */
   replayed: boolean;
   receiptCreatedAt: Date | null;
+  resultMetadata: Prisma.JsonValue;
 }
 
 /**
@@ -62,11 +64,11 @@ export class IdempotencyService {
           actor_user_id: c.actor_user_id ?? null,
           resource_type: c.resource_type,
           resource_id: c.resource_id,
-          result_metadata: {},
+          result_metadata: c.result_metadata ?? {},
         },
       });
       await tx.$executeRawUnsafe(`RELEASE SAVEPOINT ${savepoint}`);
-      return { replayed: false, receiptCreatedAt: null };
+      return { replayed: false, receiptCreatedAt: null, resultMetadata: {} };
     } catch (e) {
       await tx.$executeRawUnsafe(`ROLLBACK TO SAVEPOINT ${savepoint}`);
       if (!this.isUniqueViolation(e)) throw e;
@@ -90,7 +92,7 @@ export class IdempotencyService {
           'Idempotency key reused with a different request payload',
         );
       }
-      return { replayed: true, receiptCreatedAt: existing.created_at };
+      return { replayed: true, receiptCreatedAt: existing.created_at, resultMetadata: existing.result_metadata };
     }
   }
 

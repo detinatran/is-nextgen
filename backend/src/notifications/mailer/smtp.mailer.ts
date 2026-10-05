@@ -18,6 +18,6 @@ export class SmtpMailer implements Mailer {
       subject: message.subject,
       text: message.text,
     });
-    this.logger.log(`smtp sent to=${message.to}`);
+    this.logger.log('smtp notification sent');
   }
 }

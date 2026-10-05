@@ -104,11 +104,11 @@ export class CreateRegistrationDraftDto {
   @Type(() => ConsentInputDto)
   mediaUsageConsent!: ConsentInputDto;
 
-  @ApiProperty({ type: ConsentInputDto, description: 'Event coverage commitment (BTC records/photographs at events; 1-year retention); must be true' })
-  @IsDefined()
+  @ApiPropertyOptional({ type: ConsentInputDto, deprecated: true, description: 'Legacy evidence only; MEDIA_USAGE is the communication decision, agree or decline' })
+  @IsOptional()
   @ValidateNested()
   @Type(() => ConsentInputDto)
-  eventCoverageConsent!: ConsentInputDto;
+  eventCoverageConsent?: ConsentInputDto;
 }
 
 export class UpdateRegistrationDto {
@@ -258,9 +258,17 @@ export interface RegistrationFormConfig {
   video: { maxBytes: number; maxDurationSeconds: number; acceptedType: string };
   photo: { maxBytes: number; acceptedTypes: string[]; statement: string };
   consents: {
-    eventCoverage: { wordingVersion: string; statement: string; required: boolean };
+    eventCoverage: { wordingVersion: string; statement: string; required: boolean; deprecated: boolean; description: string };
     mediaUsage: {
       wordingVersion: string;
+      purpose: string;
+      description: string;
+      selectionRequired: boolean;
+      defaultSelection: null;
+      choices: { decision: string; granted: boolean }[];
+      withdrawalContactEmail: string;
+      retention: { anchor: string; period: string };
+      cleanupEnforced: boolean;
       statement: string;
       declineStatement: string;
       withdrawalNotice: string;

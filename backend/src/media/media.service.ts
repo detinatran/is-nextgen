@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -61,6 +61,9 @@ export class MediaService {
     correlationId: string,
   ): Promise<{ uploadId: string; state: 'VALIDATING' }> {
     this.assertGrant(grant, registrationId, 'DRAFT_UPLOAD');
+    if ((await stat(tmpFilePath)).size > this.config.getOrThrow<number>('uploadMaxBytes')) {
+      throw new AppException(413, ErrorCodes.VIDEO_TOO_LARGE, 'Video exceeds the size limit');
+    }
     const registration = await this.prisma.registrations.findUnique({ where: { id: registrationId } });
     if (!registration) throw AppException.notFound('Registration not found');
     if (registration.state !== 'DRAFT') {
@@ -128,6 +131,12 @@ export class MediaService {
 
     const objectKey = `p/${randomUUID()}`;
     return this.prisma.$transaction(async (tx) => {
+      // Serialize replacement and submission on the registration boundary.
+      const [locked] = await tx.$queryRaw<{ state: string }[]>`
+        SELECT state FROM registrations WHERE id=${registrationId}::uuid FOR UPDATE`;
+      if (!locked || locked.state !== 'DRAFT') {
+        throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration is sealed');
+      }
       const upload = await tx.media_uploads.create({
         data: {
           registration_id: registrationId,

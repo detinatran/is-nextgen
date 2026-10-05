@@ -6,6 +6,7 @@ import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { AppModule } from '../../../src/app.module';
 import { PrismaService } from '../../../src/database/prisma.service';
+import { assertDisposableTestDatabase } from '../assert-disposable-database';
 
 export interface TestContext {
   app: INestApplication;
@@ -56,6 +57,9 @@ ON CONFLICT(role_id,permission_id) DO NOTHING`,
 
 /** Disposes all business rows; keeps the frozen schema and Prisma bookkeeping. */
 export async function resetDatabase(prisma: PrismaService): Promise<void> {
+  const expected = assertDisposableTestDatabase();
+  const [actual] = await prisma.$queryRaw<{ name: string }[]>`SELECT current_database() AS name`;
+  if (actual.name !== expected) throw new Error('Test database identity mismatch; refusing to truncate');
   const tables = (await prisma.$queryRawUnsafe(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '_prisma_migrations'`)) as Array<{ tablename: string }>;
   const names = tables.map((t) => `"${t.tablename}"`).join(', ');
   if (names) {
@@ -178,7 +182,7 @@ export async function createDraft(
 /** Minimal valid PNG (1x1 transparent pixel) used as a personal photo fixture. */
 export const TINY_PNG = Buffer.from(
   '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489' +
-    '0000000d49444154789c6260000000060005' + '27de41ba0000000049454e44ae426082',
+    '0000000d49444154789c63f8cfc0f01f00050001ff89993d1d0000000049454e44ae426082',
   'hex',
 );
 

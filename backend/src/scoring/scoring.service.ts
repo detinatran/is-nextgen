@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, type async_intents } from '@prisma/client';
 import { AuditService } from '../common/audit/audit.service';
 import { PrismaService } from '../database/prisma.service';
 
@@ -100,16 +100,12 @@ export class ScoringService {
   /** Worker dispatch: lease SCORING intents and process each exactly-once-enough. */
   async processPendingScoring(correlationId = 'scoring-worker'): Promise<number> {
     const leased = await this.prisma.$transaction(async (tx) => {
-      const intents = await tx.async_intents.findMany({
-        where: {
-          kind: 'SCORING',
-          status: { in: ['PENDING', 'RETRY_PENDING'] },
-          available_at: { lte: new Date() },
-          OR: [{ lease_until: null }, { lease_until: { lte: new Date() } }],
-        },
-        orderBy: { available_at: 'asc' },
-        take: 20,
-      });
+      const intents = await tx.$queryRaw<async_intents[]>`
+        SELECT * FROM async_intents WHERE kind='SCORING'
+        AND available_at<=clock_timestamp()
+        AND ((status IN ('PENDING','RETRY_PENDING') AND (lease_until IS NULL OR lease_until<=clock_timestamp()))
+          OR (status='RUNNING' AND lease_until<=clock_timestamp()))
+        ORDER BY available_at LIMIT 20 FOR UPDATE SKIP LOCKED`;
       if (intents.length > 0) {
         await tx.async_intents.updateMany({
           where: { id: { in: intents.map((i) => i.id) } },
@@ -126,7 +122,7 @@ export class ScoringService {
           where: { id: intent.id },
           data: { status: 'SUCCEEDED', completed_at: new Date(), lease_until: null },
         });
-      } catch (e) {
+      } catch {
         const attempts = intent.attempts_used + 1;
         const failed = attempts >= MAX_ATTEMPTS;
         await this.prisma.async_intents.update({
@@ -139,7 +135,7 @@ export class ScoringService {
           },
         });
         this.logger.warn(
-          `scoring attempt failed intentId=${intent.id} resource=${intent.resource_id} attempt=${attempts} failed=${failed}: ${e instanceof Error ? e.message : String(e)}`,
+          `scoring attempt failed intentId=${intent.id} resource=${intent.resource_id} attempt=${attempts} failed=${failed}`,
         );
       }
     }

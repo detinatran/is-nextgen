@@ -17,6 +17,9 @@ export class SaveAnswerDto {
   mutationId!: string;
 }
 
+/** Submission accepts no answer properties; enforced by the global whitelist. */
+export class EmptySubmissionDto {}
+
 export class ReviewFlagDto {
   @ApiProperty()
   @IsBoolean()

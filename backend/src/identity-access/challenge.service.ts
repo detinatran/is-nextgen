@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createHash, randomInt, timingSafeEqual } from 'node:crypto';
+import type { auth_challenges } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { PrismaService } from '../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -80,12 +81,11 @@ export class ChallengeService {
     code: string,
   ): Promise<{ userId: string | null; emailNormalized: string }> {
     const now = new Date();
-    return this.prisma.$transaction(async (tx) => {
-      const open = await tx.auth_challenges.findMany({
-        where: { purpose, consumed_at: null, expires_at: { gt: now } },
-        orderBy: { created_at: 'desc' },
-        take: 5,
-      });
+    const consumed = await this.prisma.$transaction(async (tx) => {
+      const open = await tx.$queryRaw<auth_challenges[]>`
+        SELECT * FROM auth_challenges WHERE purpose=${purpose}
+        AND consumed_at IS NULL AND expires_at>clock_timestamp()
+        ORDER BY created_at DESC LIMIT 5 FOR UPDATE`;
       const hash = sha256(code);
       const match = open.find((c) => hashesEqual(c.verifier_hash, hash));
       if (!match) {
@@ -97,10 +97,13 @@ export class ChallengeService {
             data: { attempts_used: used, ...(used >= newest.attempts_limit ? { consumed_at: now } : {}) },
           });
         }
-        throw AppException.authRequired('Invalid or expired verification code');
+        // Return normally so the rejection counter commits. Throw only afterwards.
+        return null;
       }
       await tx.auth_challenges.update({ where: { id: match.id }, data: { consumed_at: now } });
       return { userId: match.user_id, emailNormalized: match.email_normalized };
     });
+    if (!consumed) throw AppException.authRequired('Invalid or expired verification code');
+    return consumed;
   }
 }

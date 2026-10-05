@@ -103,11 +103,11 @@ export class RegistrationsService {
       });
       await this.recordConsents(tx, registration.id, [
         { purpose: 'DATA_PROCESSING', granted: true, wordingVersion: dto.consent.wordingVersion },
-        {
-          purpose: 'EVENT_COVERAGE',
+        ...(dto.eventCoverageConsent ? [{
+          purpose: 'EVENT_COVERAGE' as const,
           granted: dto.eventCoverageConsent.granted,
           wordingVersion: dto.eventCoverageConsent.wordingVersion,
-        },
+        }] : []),
         {
           purpose: 'MEDIA_USAGE',
           granted: dto.mediaUsageConsent.granted,
@@ -352,19 +352,14 @@ export class RegistrationsService {
 
       // Consents (latest answer per purpose wins; rows are append-only evidence):
       // - DATA_PROCESSING must be granted (registration itself)
-      // - EVENT_COVERAGE must be granted (the commitment: BTC coverage + 1-year retention)
+      // - EVENT_COVERAGE is legacy evidence, never a general registration gate.
       // - MEDIA_USAGE may be true or false; declining only excludes the
       //   Favorite Candidate award (favoriteCandidateEligible derives from it).
       const consents = await this.resolveCurrentConsentsInTx(tx, registration.id);
       const dataProcessing = consents.get('DATA_PROCESSING');
-      const eventCoverage = consents.get('EVENT_COVERAGE');
       const mediaUsage = consents.get('MEDIA_USAGE');
       if (!dataProcessing) throw AppException.validation('Data processing consent is required');
       if (!dataProcessing.granted) throw AppException.validation('Data processing consent must be granted');
-      if (!eventCoverage) throw AppException.validation('Event coverage consent is required');
-      if (!eventCoverage.granted) {
-        throw AppException.validation('Event coverage commitment must be accepted');
-      }
       if (!mediaUsage) throw AppException.validation('Media usage consent answer is required');
 
       const readyVideoCount = await tx.media_uploads.count({

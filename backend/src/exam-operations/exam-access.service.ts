@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import type { Prisma } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { ErrorCodes } from '../common/errors/error-codes';
 import { AuditService } from '../common/audit/audit.service';
@@ -114,6 +116,7 @@ export class ExamAccessService {
   ): Promise<AttemptStartedResponse> {
     const candidateId = await this.candidateIdForUser(userId);
     const requestHash = this.idempotency.hashRequest({ assignmentId });
+    const newAttemptId = randomUUID();
     const claim = {
       scope_key: `attempt-start:${assignmentId}`,
       idempotency_key: idempotencyKey,
@@ -121,11 +124,15 @@ export class ExamAccessService {
       actor_user_id: userId,
       resource_type: 'assignment',
       resource_id: assignmentId,
+      result_metadata: { attemptId: newAttemptId },
     };
 
     try {
       const result = await this.prisma.$transaction(
         async (tx) => {
+          // Known receipt keys confer no resource access.
+          const owned = await tx.candidate_assignments.findFirst({ where: { id: assignmentId, candidate_id: candidateId } });
+          if (!owned) throw AppException.notFound('Assignment not found');
           const receipt = await this.idempotency.claim(tx, claim, requestHash);
           if (receipt.replayed) {
             // command_receipts is immutable evidence: rebuild the committed
@@ -133,7 +140,7 @@ export class ExamAccessService {
             if (!receipt.receiptCreatedAt) {
               throw AppException.conflict(ErrorCodes.IDEMPOTENCY_CONFLICT, 'Concurrent idempotent start');
             }
-            return this.reconstructStart(assignmentId, receipt.receiptCreatedAt);
+            return this.reconstructStart(assignmentId, candidateId, receipt.resultMetadata);
           }
 
           // Serialize concurrent starts of the same assignment on the row lock.
@@ -197,6 +204,7 @@ export class ExamAccessService {
         const deadlineAt = new Date(startedAt.getTime() + exam.duration_seconds * 1000);
         const attempt = await tx.attempts.create({
           data: {
+            id: newAttemptId,
             assignment_id: assignment.id,
             candidate_id: candidateId,
             ordinal: used + 1,
@@ -295,8 +303,8 @@ export class ExamAccessService {
             },
           },
         });
-        if (receipt && receipt.request_hash === requestHash) {
-          return this.reconstructStart(assignmentId, receipt.created_at);
+        if (receipt && receipt.request_hash === requestHash && receipt.actor_user_id === userId) {
+          return this.reconstructStart(assignmentId, candidateId, receipt.result_metadata);
         }
       }
       throw e;
@@ -304,17 +312,18 @@ export class ExamAccessService {
   }
 
   /** Rebuilds a committed start outcome from domain state (receipt is immutable). */
-  private async reconstructStart(assignmentId: string, receiptCreatedAt: Date): Promise<AttemptStartedResponse> {
+  private async reconstructStart(assignmentId: string, candidateId: string, metadata: Prisma.JsonValue): Promise<AttemptStartedResponse> {
     return this.prisma.$transaction(async (tx) => {
-      // The receipt is inserted moments BEFORE its attempt; accept a small
-      // clock tolerance and take the earliest attempt in that window.
+      const attemptId = metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+        ? metadata['attemptId'] : null;
+      if (typeof attemptId !== 'string') {
+        throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Legacy start receipt requires operational reconciliation');
+      }
       const attempt = await tx.attempts.findFirst({
         where: {
+          id: attemptId,
           assignment_id: assignmentId,
-          started_at: {
-            gte: new Date(receiptCreatedAt.getTime() - 1_000),
-            lte: new Date(receiptCreatedAt.getTime() + 5_000),
-          },
+          candidate_id: candidateId,
         },
         orderBy: { ordinal: 'asc' },
       });

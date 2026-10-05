@@ -50,6 +50,35 @@ describe('frontend API contract', () => {
     }
   }
 
+  it('captures photo validation and the explicit communication-consent contract', async () => {
+    const config = await ctx.http.get('/api/v1/registration-form-config');
+    expect(config.status).toBe(200);
+    expect(config.body.consents.mediaUsage).toMatchObject({ purpose: 'MEDIA_USAGE', selectionRequired: true,
+      defaultSelection: null, withdrawalContactEmail: 'nextgen@vnuis.edu.vn',
+      retention: { anchor: 'OFFICIAL_COMPETITION_END', period: 'P1Y' } });
+    expect(config.body.consents.mediaUsage.choices).toEqual([
+      { decision: 'AGREE', granted: true }, { decision: 'DISAGREE', granted: false },
+    ]);
+    snapshot('registration-form-config.json', config.body);
+    const draft = await createDraft(ctx, {
+      mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false },
+      eventCoverageConsent: undefined,
+    });
+    const valid = await uploadPhoto(ctx, draft); expect(valid.status).toBe(201);
+    assertNoForbiddenFields(valid.body); snapshot('media-photo-ready.json', valid.body);
+    const invalid = await uploadPhoto(ctx, draft, Buffer.from('not an image'));
+    expect(invalid.status).toBe(400);
+    expect(invalid.body.error).toMatchObject({ code: 'PHOTO_INVALID_FORMAT' });
+    assertNoForbiddenFields(invalid.body); snapshot('media-validation-error.json', invalid.body);
+    const view = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`).set('x-registration-token', draft.profileToken);
+    expect(view.body.favoriteCandidateEligible).toBe(false);
+    expect(view.body.consents.map((c: { purpose: string }) => c.purpose).sort()).toEqual(['DATA_PROCESSING', 'MEDIA_USAGE']);
+    assertNoForbiddenFields(view.body); snapshot('registration-draft-profile.json', view.body);
+    snapshot('communication-consent-declined.json', {
+      consents: view.body.consents, favoriteCandidateEligible: view.body.favoriteCandidateEligible,
+    });
+  });
+
   it('captures the full candidate journey as sanitized fixtures', async () => {
     // 1) Registration draft + photo + video + submission.
     const draft = await createDraft(ctx);

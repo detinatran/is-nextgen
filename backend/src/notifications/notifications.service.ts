@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, notification_intents } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { MAILER } from './mailer/mailer.tokens';
 import type { Mailer } from './mailer/mailer.interface';
@@ -53,15 +53,11 @@ export class NotificationsService {
   /** One dispatch sweep. Lease-protected so multiple workers never double-send. */
   async dispatchPending(now = new Date()): Promise<number> {
     const leased = await this.prisma.$transaction(async (tx) => {
-      const intents = await tx.notification_intents.findMany({
-        where: {
-          status: { in: ['PENDING', 'RETRY_PENDING'] },
-          available_at: { lte: now },
-          OR: [{ lease_until: null }, { lease_until: { lte: now } }],
-        },
-        orderBy: { available_at: 'asc' },
-        take: 20,
-      });
+      const intents = await tx.$queryRaw<notification_intents[]>`
+        SELECT * FROM notification_intents WHERE available_at<=${now}::timestamptz
+        AND ((status IN ('PENDING','RETRY_PENDING') AND (lease_until IS NULL OR lease_until<=${now}::timestamptz))
+          OR (status='SENDING' AND lease_until<=${now}::timestamptz))
+        ORDER BY available_at LIMIT 20 FOR UPDATE SKIP LOCKED`;
       if (intents.length > 0) {
         await tx.notification_intents.updateMany({
           where: { id: { in: intents.map((i) => i.id) } },

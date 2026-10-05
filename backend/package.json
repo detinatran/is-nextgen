@@ -12,6 +12,7 @@
     "test": "jest --config test/jest-unit.config.js",
     "test:integration": "jest --config test/jest-integration.config.js --runInBand",
     "test:contract": "jest --config test/jest-contract.config.js --runInBand",
+    "test:release-gate": "jest --config test/jest-release-gate.config.js --runInBand",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "openapi": "ts-node -P tsconfig.json scripts/generate-openapi.ts",

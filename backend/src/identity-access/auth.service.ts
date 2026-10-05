@@ -135,12 +135,17 @@ export class AuthService {
     const resolved = await this.sessions.resolve(sessionToken);
     if (!resolved) return;
     await this.prisma.$transaction(async (tx) => {
+      // Serialize release with takeover/save using the same attempt gate.
+      await tx.$queryRaw`
+        SELECT a.id FROM attempts a JOIN candidates c ON c.id=a.candidate_id
+        WHERE c.user_id=${resolved.userId}::uuid AND a.state='ACTIVE'
+        ORDER BY a.id FOR UPDATE OF a`;
       await tx.auth_sessions.updateMany({
         where: { id: resolved.sessionId, revoked_at: null },
         data: { revoked_at: new Date() },
       });
       // Release writer authority; active attempt remains and reconnect uses takeover.
-      await tx.active_exam_sessions.deleteMany({ where: { user_id: resolved.userId } });
+      await tx.active_exam_sessions.deleteMany({ where: { user_id: resolved.userId, auth_session_id: resolved.sessionId } });
       await this.audit.record(tx, {
         actor_user_id: resolved.userId,
         action: 'auth.logout',

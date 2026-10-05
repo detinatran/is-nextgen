@@ -68,6 +68,7 @@ interface FfprobeFormat {
 
 interface FfprobeOutput {
   format?: FfprobeFormat;
+  streams?: { codec_type?: string }[];
 }
 
 /**
@@ -94,7 +95,7 @@ export class MediaValidationService {
     try {
       const { stdout } = await execFileAsync(
         'ffprobe',
-        ['-v', 'error', '-print_format', 'json', '-show_format', filePath],
+        ['-v', 'error', '-protocol_whitelist', 'file', '-print_format', 'json', '-show_format', '-show_streams', filePath],
         { timeout: 30_000, maxBuffer: 1024 * 1024 },
       );
       probe = JSON.parse(stdout) as FfprobeOutput;
@@ -108,7 +109,16 @@ export class MediaValidationService {
     }
 
     const formatName = probe.format?.format_name ?? '';
-    if (!formatName.split(',').includes('mp4')) {
+    // ffprobe shares its MOV/MP4/3GP demuxer name. Inspect the actual ftyp brand
+    // and require a video stream; MIME/extension and the demuxer name are insufficient.
+    const handle = await open(filePath, 'r');
+    const brandHeader = Buffer.alloc(12);
+    try { await handle.read(brandHeader, 0, 12, 0); } finally { await handle.close(); }
+    const brand = brandHeader.subarray(8, 12).toString('latin1');
+    if (!formatName.split(',').includes('mp4') ||
+        brandHeader.subarray(4, 8).toString('latin1') !== 'ftyp' ||
+        brand === 'qt  ' || /^3g[p2]/.test(brand) ||
+        !probe.streams?.some((s) => s.codec_type === 'video')) {
       return { status: 'REJECTED', reason: 'VIDEO_INVALID_FORMAT' };
     }
     const duration = Number(probe.format?.duration);
@@ -149,6 +159,20 @@ export class MediaValidationService {
     if (sizeBytes < 1) return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
     const magic = PHOTO_MAGICS.find((m) => m.test(header));
     if (!magic) return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
+    try {
+      // Decode a frame rather than accepting a forged header. Only local file
+      // input is permitted; duration/output/time are bounded and stderr is private.
+      await execFileAsync('ffmpeg', [
+        '-v', 'error', '-xerror', '-nostdin', '-threads', '1',
+        '-protocol_whitelist', 'file', '-i', filePath,
+        '-map', '0:v:0', '-frames:v', '1', '-f', 'null', '-',
+      ], { timeout: 30_000, maxBuffer: 1024 * 1024 });
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
+        throw AppException.dependencyUnavailable('Photo validation is unavailable');
+      }
+      return { status: 'REJECTED', reason: 'PHOTO_INVALID_FORMAT' };
+    }
     const checksumSha256 = await this.sha256File(filePath);
     return { status: 'READY', sizeBytes, mimeType: magic.mimeType, checksumSha256 };
   }

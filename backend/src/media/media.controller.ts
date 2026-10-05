@@ -20,12 +20,11 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AppException } from '../common/errors/app-error';
-import { ErrorCodes } from '../common/errors/error-codes';
 import type { AuthenticatedRequest } from '../common/http/request-context';
 import { MediaService, type UploadStatus } from './media.service';
 import { MediaValidationService } from './media-validation.service';
+import { BindVideoDto } from './dto/bind-video.dto';
 import { RegistrationCapabilityGuard, RequireRegistrationScope } from '../registrations/registration-capability.guard';
 
 // Multer hard cap; the configured limit is enforced precisely after receipt.
@@ -37,7 +36,6 @@ export class MediaController {
   constructor(
     private readonly media: MediaService,
     private readonly validator: MediaValidationService,
-    private readonly config: ConfigService,
   ) {}
 
   /** FR-14: direct private upload (multipart). MP4, <=120 s, <=500,000,000 bytes. */
@@ -70,10 +68,6 @@ export class MediaController {
     @Req() req: AuthenticatedRequest,
   ): Promise<{ uploadId: string; state: string }> {
     if (!file) throw AppException.validation('Multipart field "file" is required');
-    const maxBytes = this.config.getOrThrow<number>('uploadMaxBytes');
-    if (file.size > maxBytes) {
-      throw new AppException(413, ErrorCodes.VIDEO_TOO_LARGE, 'Video exceeds the size limit');
-    }
     try {
       return await this.media.createUpload(
         registrationId,
@@ -116,10 +110,6 @@ export class MediaController {
     @Req() req: AuthenticatedRequest,
   ): Promise<UploadStatus> {
     if (!file) throw AppException.validation('Multipart field "file" is required');
-    const maxBytes = this.config.getOrThrow<number>('photoMaxBytes');
-    if (file.size > maxBytes) {
-      throw new AppException(413, ErrorCodes.PHOTO_TOO_LARGE, 'Photo exceeds the size limit');
-    }
     try {
       return await this.media.createPhotoUpload(
         registrationId,
@@ -158,12 +148,9 @@ export class MediaController {
   @RequireRegistrationScope('READ_EDIT_PROFILE')
   async bindVideo(
     @Param('registrationId', ParseUUIDPipe) registrationId: string,
-    @Body() body: { mediaObjectId?: string },
+    @Body() body: BindVideoDto,
     @Req() req: AuthenticatedRequest,
   ): Promise<{ videoBound: boolean; mediaObjectId: string }> {
-    if (!body?.mediaObjectId || typeof body.mediaObjectId !== 'string') {
-      throw AppException.validation('mediaObjectId is required');
-    }
     return this.media.bindVideo(registrationId, body.mediaObjectId, req.registrationAuth!, req.correlationId ?? 'unknown');
   }
 }

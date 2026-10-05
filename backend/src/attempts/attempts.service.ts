@@ -419,6 +419,8 @@ export class AttemptsService {
   ): Promise<SubmissionResponse> {
     const requestHash = this.idempotency.hashRequest({ attemptId });
     const result = await this.prisma.$transaction(async (tx) => {
+      // Ownership is checked for every replay, before consulting a known receipt.
+      const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
       const claim = {
         scope_key: `attempt-submit:${attemptId}`,
         idempotency_key: idempotencyKey,
@@ -433,7 +435,6 @@ export class AttemptsService {
         return this.finalization.buildCommittedResult(tx, attemptId);
       }
 
-      const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
       if (attempt.state === 'FINALIZED') {
         return this.finalization.buildCommittedResult(tx, attemptId);
       }

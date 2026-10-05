@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { AppConfig } from '../config/configuration';
+import { COMMUNICATION_MEDIA_POLICY, WITHDRAWAL_CONTACT_EMAIL } from './communication-media.policy';
 
 export type ConsentPurpose = 'DATA_PROCESSING' | 'MEDIA_USAGE' | 'EVENT_COVERAGE';
 
@@ -20,7 +21,6 @@ export class RegistrationFormService {
   constructor(private readonly config: ConfigService<AppConfig>) {}
 
   getFormConfig() {
-    const contactEmail = this.config.getOrThrow('contactEmail');
     return {
       video: {
         maxBytes: this.config.getOrThrow('uploadMaxBytes'),
@@ -38,14 +38,24 @@ export class RegistrationFormService {
           wordingVersion: CURRENT_WORDING_VERSIONS.EVENT_COVERAGE,
           statement:
             'Ban Tổ chức ghi hình, chụp ảnh tại các vòng thi và sự kiện của Cuộc thi, sử dụng cho mục đích truyền thông về Cuộc thi trên fanpage, website, ấn phẩm in và báo chí. Hình ảnh được lưu trong 01 năm kể từ ngày kết thúc Cuộc thi.',
-          required: true,
+          required: false,
+          deprecated: true,
+          description: 'Legacy event wording; MEDIA_USAGE is the communication-use decision.',
         },
         mediaUsage: {
           wordingVersion: CURRENT_WORDING_VERSIONS.MEDIA_USAGE,
+          purpose: COMMUNICATION_MEDIA_POLICY.purpose,
+          description: 'Ban Tổ chức có thể ghi hình, chụp ảnh tại các vòng thi và sự kiện của Cuộc thi và sử dụng hình ảnh/video cho mục đích truyền thông về Cuộc thi trên fanpage, website, ấn phẩm in và báo chí. Hình ảnh được lưu trong 01 năm kể từ ngày kết thúc Cuộc thi.',
+          selectionRequired: true,
+          defaultSelection: null,
+          choices: [{ decision: 'AGREE', granted: true }, { decision: 'DISAGREE', granted: false }],
+          withdrawalContactEmail: WITHDRAWAL_CONTACT_EMAIL,
+          retention: COMMUNICATION_MEDIA_POLICY.retention,
+          cleanupEnforced: COMMUNICATION_MEDIA_POLICY.cleanupEnforced,
           statement:
             'Tôi đồng ý cho Ban Tổ chức sử dụng hình ảnh, video của tôi cho mục đích truyền thông nêu trên.',
           declineStatement: 'Tôi không đồng ý.',
-          withdrawalNotice: `Bạn có thể rút lại sự đồng ý bất cứ lúc nào bằng cách gửi email tới ${contactEmail}.`,
+          withdrawalNotice: `Bạn có thể rút lại sự đồng ý bất cứ lúc nào bằng cách gửi email tới ${WITHDRAWAL_CONTACT_EMAIL}.`,
           required: false,
         },
       },

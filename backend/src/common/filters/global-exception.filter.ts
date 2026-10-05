@@ -66,10 +66,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = exception.message;
       }
     } else {
-      // Full detail server-side only.
+      // Query/validation errors may contain credentials or PII in their message.
       this.logger.error(
         `unhandled_error path=${request.originalUrl ?? request.url} correlationId=${correlationId}`,
-        exception instanceof Error ? exception.stack : String(exception),
       );
     }
 

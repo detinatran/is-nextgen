@@ -93,6 +93,9 @@ export class AttemptFinalizationService {
         SELECT * FROM attempts WHERE id = ${attemptId}::uuid FOR UPDATE`;
       const attempt = rows[0];
       if (!attempt || attempt.state !== 'ACTIVE') return null;
+      const [cutoff] = await tx.$queryRaw<{ overdue: boolean }[]>`
+        SELECT clock_timestamp() >= ${attempt.deadline_at}::timestamptz AS overdue`;
+      if (!cutoff.overdue) return null;
       const result = await this.finalizeInTx(tx, attempt, 'TIMEOUT', correlationId);
       this.logger.log(`attempt finalized by timeout attemptId=${attemptId}`);
       return result;

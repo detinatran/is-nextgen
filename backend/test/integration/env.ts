@@ -1,7 +1,6 @@
 // Test environment — must be set before any app code loads.
 process.env['NODE_ENV'] = 'test';
-process.env['DATABASE_URL'] =
-  process.env['DATABASE_URL'] ?? 'postgresql://postgres:postgres@127.0.0.1:5432/isnextgen?schema=public';
+// DATABASE_URL is explicit and checked by global-setup/resetDatabase.
 process.env['WORKERS_DISABLED'] = '1';
 process.env['MEDIA_STORAGE_DIR'] = './.data/test-media';
 process.env['FIXTURES_ENABLED'] = 'true';

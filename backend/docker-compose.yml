@@ -56,23 +56,38 @@ services:
     ports:
       - "127.0.0.1:3001:3001"
 
-  # Full integration + contract + media suite inside Linux (ffprobe available).
+  postgres-test:
+    image: postgres:16-alpine
+    profiles: ["test"]
+    environment:
+      POSTGRES_PASSWORD: disposable-test-only
+      POSTGRES_DB: isnextgen_integration_test_compose
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d isnextgen_integration_test_compose"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Tests use a separate tmpfs database, never the application's persistent DB.
   integration-tests:
     build:
       context: .
       target: test
     profiles: ["test"]
     depends_on:
-      postgres:
+      postgres-test:
         condition: service_healthy
     environment:
       NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/isnextgen?schema=public
+      DATABASE_URL: postgresql://postgres:disposable-test-only@postgres-test:5432/isnextgen_integration_test_compose?schema=public
+      ISNEXTGEN_DISPOSABLE_TEST: "1"
       WORKERS_DISABLED: "1"
       MEDIA_STORAGE_DIR: /tmp/isng-test-media
       FIXTURES_ENABLED: "true"
       FIXTURES_TOKEN: test-fixtures-token
-    command: sh -c "npx prisma migrate deploy && npx jest --config test/jest-integration.config.js --runInBand && npx jest --config test/jest-contract.config.js --runInBand"
+    command: sh -c "npx jest --config test/jest-integration.config.js --runInBand && npx jest --config test/jest-contract.config.js --runInBand"
 
 volumes:
   pgdata:

@@ -31,6 +31,7 @@ async function bootstrap(): Promise<void> {
       .setTitle('IS-NextGen Backend API')
       .setDescription('Candidate flow FR-13..FR-22 (NestJS + Prisma + PostgreSQL)')
       .setVersion('1.0')
+      .addSecurity('cookie', { type: 'apiKey', in: 'cookie', name: 'isng_session' })
       .addApiKey({ type: 'apiKey', name: 'x-registration-token', in: 'header' }, 'registrationToken')
       .addApiKey({ type: 'apiKey', name: 'x-fixtures-token', in: 'header' }, 'fixturesToken')
       .build();

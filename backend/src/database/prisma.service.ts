@@ -6,7 +6,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    super({ log: [{ emit: 'stdout', level: 'error' }] });
+    // Prisma's query error text may include parameter values. The application
+    // filter logs only safe classification/correlation, never raw query inputs.
+    super({ log: [] });
   }
 
   async onModuleInit(): Promise<void> {

@@ -26,7 +26,7 @@ export class LocalStorageService implements StorageAdapter {
       if ((e as NodeJS.ErrnoException).code === 'EEXIST') {
         throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Storage object key collision');
       }
-      throw AppException.dependencyUnavailable(`Storage write failed: ${String(e)}`);
+      throw AppException.dependencyUnavailable('Private media storage is unavailable');
     }
     await unlink(tmpPath).catch(() => undefined);
   }

@@ -6,7 +6,7 @@ import { AuthGuard } from '../identity-access/guards/auth.guard';
 import { CsrfGuard } from '../identity-access/guards/csrf.guard';
 import { requireIdempotencyKey } from '../exam-operations/assignments.controller';
 import { AttemptsService } from './attempts.service';
-import { SaveAnswerDto, ReviewFlagDto } from './dto/attempt.dto';
+import { SaveAnswerDto, ReviewFlagDto, EmptySubmissionDto } from './dto/attempt.dto';
 import type {
   AnswerSavedResponse,
   AttemptView,
@@ -71,6 +71,7 @@ export class AttemptsController {
   @UseGuards(CsrfGuard)
   @SkipThrottle()
   async submit(
+    @Body() _body: EmptySubmissionDto,
     @Param('attemptId', ParseUUIDPipe) attemptId: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<SubmissionResponse> {

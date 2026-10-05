@@ -7,7 +7,7 @@ import { CSRF_COOKIE, SESSION_COOKIE, type AuthenticatedRequest } from '../commo
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
-import { CsrfGuard } from './guards/csrf.guard';
+import { CsrfGuard, LogoutCsrfGuard } from './guards/csrf.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import type { AuthContext } from '../common/http/request-context';
 import {
@@ -70,6 +70,7 @@ export class AuthController {
 
   /** FR-18: logout never destroys attempt data; the active attempt survives. */
   @Post('logout')
+  @UseGuards(LogoutCsrfGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req: AuthenticatedRequest, @Res({ passthrough: true }) res: Response): Promise<void> {
     const token = req.cookies?.[SESSION_COOKIE] as string | undefined;

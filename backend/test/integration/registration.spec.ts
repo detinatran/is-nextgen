@@ -222,15 +222,15 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     ).toBe(0);
   });
 
-  it('accepts JPEG content regardless of extension sniffing results', async () => {
+  it('rejects a forged JPEG header without a decodable image', async () => {
     const draft = await createDraft(ctx);
     const jpeg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64, 0x11)]);
     const up = await ctx.http
       .post(`/api/v1/registrations/${draft.registrationId}/photos`)
       .set('x-registration-token', draft.uploadToken)
       .attach('file', jpeg, { filename: 'photo.jpg', contentType: 'image/jpeg' });
-    expect(up.status).toBe(201);
-    expect(up.body.kind).toBe('PHOTO');
+    expect(up.status).toBe(400);
+    expect(up.body.error.code).toBe('PHOTO_INVALID_FORMAT');
   });
 
   it('replaces the photo: exactly one READY photo survives', async () => {
@@ -293,7 +293,7 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(history[1].granted).toBe(false);
   });
 
-  it('blocks submission when the event coverage commitment is not accepted', async () => {
+  it('permits general registration when legacy event coverage is declined', async () => {
     const draft = await createDraft(ctx, {
       eventCoverageConsent: { wordingVersion: 'EVENT-V1-2026', granted: false },
     });
@@ -304,8 +304,7 @@ describe('FR-13/FR-16 registration + confirmation', () => {
       .set('x-registration-token', draft.profileToken)
       .set('Idempotency-Key', randomUUID())
       .send();
-    expect(res.status).toBe(400);
-    expect(res.body.error.message).toContain('Event coverage');
+    expect(res.status).toBe(201);
   });
 
   it('submission with declined media usage still succeeds and reports ineligibility', async () => {

@@ -193,7 +193,7 @@ describe('assessment, autosave and takeover', () => {
       .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
 
     // FR-18: logout releases the writer but keeps the attempt.
-    await ctx.http.post('/api/v1/auth/logout').set('Cookie', cookies.session).send();
+    await ctx.http.post('/api/v1/auth/logout').set(authed(cookies)).send();
     const attemptsLeft = await ctx.prisma.attempts.findUniqueOrThrow({ where: { id: attemptId } });
     expect(attemptsLeft.state).toBe('ACTIVE');
     const answersLeft = await ctx.prisma.answers.count({ where: { attempt_id: attemptId } });

@@ -130,7 +130,7 @@ export const rounds = [
     name: "Hồ sơ và kiểm tra năng lực",
     format: "Cá nhân · Trực tuyến",
     duration: "60 phút",
-    body: "Nộp hồ sơ trực tuyến kèm video tối đa 90 giây trả lời một câu hỏi tình huống quản trị do Ban Tổ chức công bố. Làm bài kiểm tra trực tuyến gồm tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng; thí sinh ngoài Trường dự thi từ xa có giám sát.",
+    body: "Nộp hồ sơ trực tuyến kèm video giới thiệu tối đa 02 phút trả lời một câu hỏi tình huống quản trị do Ban Tổ chức công bố và 01 ảnh cá nhân. Làm bài kiểm tra trực tuyến gồm tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng; thí sinh ngoài Trường dự thi từ xa có giám sát.",
     funnel: "250-300 → 40 thí sinh",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -323,7 +323,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "Hình thức đăng ký như thế nào?",
-    a: "Điền form đăng ký trực tuyến và nộp video tối đa 90 giây trả lời câu hỏi tình huống do Ban Tổ chức công bố. Cuộc thi không thu lệ phí.",
+    a: "Điền form đăng ký trực tuyến và nộp video giới thiệu tối đa 02 phút trả lời câu hỏi tình huống do Ban Tổ chức công bố, kèm 01 ảnh cá nhân. Cuộc thi không thu lệ phí.",
   },
   {
     icon: "usersGroup",

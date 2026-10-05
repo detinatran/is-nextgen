@@ -130,7 +130,7 @@ export const rounds = [
     name: "Application and aptitude test",
     format: "Individual · Online",
     duration: "60 minutes",
-    body: "Submit an online application with a video of up to 90 seconds answering a management case question announced by the Organizing Committee. Then take an online test covering numerical reasoning, logical reasoning and core management knowledge; candidates from outside VNU-IS take it remotely under proctoring.",
+    body: "Submit an online application with an intro video of up to 02 minutes answering a management case question announced by the Organizing Committee, plus 01 personal photo. Then take an online test covering numerical reasoning, logical reasoning and core management knowledge; candidates from outside VNU-IS take it remotely under proctoring.",
     funnel: "250-300 → 40 candidates",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -323,7 +323,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "How do I register?",
-    a: "Fill in the online registration form and submit a video of up to 90 seconds answering a case question announced by the Organizing Committee. Participation is free of charge.",
+    a: "Fill in the online registration form and submit an intro video of up to 02 minutes answering a case question announced by the Organizing Committee, plus 01 personal photo. Participation is free of charge.",
   },
   {
     icon: "usersGroup",

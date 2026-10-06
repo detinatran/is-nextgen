@@ -16,11 +16,11 @@ interface NavGroup {
   }[];
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { collapsed?: boolean; onToggle?: () => void }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(collapsedProp ?? false);
   const sidebarRef = useRef<HTMLElement>(null);
-  const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const navItemsRef = useRef<Array<HTMLAnchorElement | null>>([]);
 
   const navGroups: NavGroup[] = [
     {
@@ -147,7 +147,8 @@ export default function AdminSidebar() {
       if (!sidebarRef.current) return;
       const ctx = gsap.context(() => {
         const sidebar = sidebarRef.current!;
-        const items = navItemsRef.current.filter(Boolean);
+        // Filter out nulls and assert non-null for GSAP
+        const items = navItemsRef.current.filter((el): el is HTMLAnchorElement => el !== null);
 
         const getNavText = () => items.map((item) => item.querySelector(".nav-text")).filter((el): el is Element => el !== null);
         const getNavBadge = () => items.map((item) => item.querySelector(".nav-badge")).filter((el): el is Element => el !== null);
@@ -311,7 +312,7 @@ export default function AdminSidebar() {
     () => {
       if (!sidebarRef.current) return;
       const ctx = gsap.context(() => {
-        const items = navItemsRef.current.filter(Boolean);
+        const items = navItemsRef.current.filter((el): el is HTMLAnchorElement => el !== null);
         if (items.length > 0) {
           gsap.fromTo(
             items,
@@ -332,7 +333,11 @@ export default function AdminSidebar() {
     { scope: sidebarRef, dependencies: [] }
   );
 
-  const handleToggle = () => setCollapsed((prev) => !prev);
+  const handleToggle = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    onToggle?.();
+  };
 
   return (
     <aside

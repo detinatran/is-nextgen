@@ -31,6 +31,10 @@ async function bootstrap(): Promise<void> {
       exposedHeaders: ['x-correlation-id'],
     });
   }
+  // Sau reverse proxy (nginx cùng máy): lấy IP thật của thí sinh cho rate limit và log
+  if (process.env.TRUST_PROXY) {
+    app.set('trust proxy', process.env.TRUST_PROXY);
+  }
   app.setGlobalPrefix('api/v1');
   app.disable('x-powered-by');
   app.enableShutdownHooks();

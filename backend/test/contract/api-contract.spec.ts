@@ -149,7 +149,7 @@ describe('frontend API contract', () => {
       .post(`/api/v1/me/attempts/${start.body.attemptId}/submission`)
       .set(authed(session.cookies))
       .set('Idempotency-Key', randomUUID())
-      .send();
+      .send({ writerGeneration: 1 });
     expect(submitted.status).toBe(200);
     assertNoForbiddenFields(submitted.body);
     snapshot('attempt-finalized.json', submitted.body);

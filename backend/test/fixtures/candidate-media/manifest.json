@@ -1,0 +1,51 @@
+{
+  "valid.mp4": {
+    "sizeBytes": 2239,
+    "sha256": "eb0cf54688c6c0da6346e5bce62fa6b78dd7e2efb288c75f4a4e6245a85c6331",
+    "durationSeconds": 1,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2",
+    "videoCodec": "h264"
+  },
+  "valid-5s.mp4": {
+    "sizeBytes": 11149,
+    "sha256": "29e5f5ee831174bac692254c227a8299ac208cef44a4f8ce13be19e2b3ac0f3c",
+    "durationSeconds": 5,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2",
+    "videoCodec": "h264"
+  },
+  "near120.mp4": {
+    "sizeBytes": 106007,
+    "sha256": "f99ba26cc776354ee3490e676c4cdea070ba35f9b4340b10c9d25e8bf0ff34db",
+    "durationSeconds": 118,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2",
+    "videoCodec": "h264"
+  },
+  "exact120.mp4": {
+    "sizeBytes": 81324,
+    "sha256": "a2f5fe5e5d8de546bdbbfbdc75c916182238014d09b92893ab2cc7e8782420dd",
+    "durationSeconds": 120,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2",
+    "videoCodec": "h264"
+  },
+  "over120.mp4": {
+    "sizeBytes": 81684,
+    "sha256": "7a1a9d89b67ebd19d6488f20cfafabca028e7b0358e14516a6f1105cad26dabb",
+    "durationSeconds": 120.52,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2",
+    "videoCodec": "h264"
+  },
+  "corrupt.mp4": {
+    "sizeBytes": 21,
+    "sha256": "b0046664351d95169bed06ae3790e35464d277a7c935a2331b3993a4f9b12f36",
+    "durationSeconds": null,
+    "formatName": null,
+    "videoCodec": null
+  },
+  "photo.webp": {
+    "sizeBytes": 98,
+    "sha256": "f548752652125eb1badb9abcd1002a450c887b5d740a46849e0374a8410c2221",
+    "durationSeconds": null,
+    "formatName": "webp_pipe",
+    "videoCodec": "webp"
+  }
+}

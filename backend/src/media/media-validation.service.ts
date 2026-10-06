@@ -32,13 +32,13 @@ export type PhotoValidationOutcome =
   | {
       status: 'READY';
       sizeBytes: number;
-      mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+      mimeType: 'image/jpeg' | 'image/png';
       checksumSha256: string;
     }
   | { status: 'REJECTED'; reason: 'PHOTO_TOO_LARGE' | 'PHOTO_INVALID_FORMAT' };
 
 interface PhotoMagic {
-  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+  mimeType: 'image/jpeg' | 'image/png';
   test: (b: Buffer) => boolean;
 }
 
@@ -52,14 +52,7 @@ const PHOTO_MAGICS: PhotoMagic[] = [
       b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
       b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a,
   },
-  // WEBP: RIFF....WEBP
-  {
-    mimeType: 'image/webp',
-    test: (b) =>
-      b.subarray(0, 4).toString('latin1') === 'RIFF' &&
-      b.subarray(8, 12).toString('latin1') === 'WEBP',
-  },
-];
+  ];
 
 interface FfprobeFormat {
   format_name?: string;
@@ -125,7 +118,7 @@ export class MediaValidationService {
     if (!Number.isFinite(duration) || duration <= 0) {
       return { status: 'REJECTED', reason: 'VIDEO_VALIDATION_FAILED' };
     }
-    if (duration > limits.maxDurationSeconds) {
+    if (duration >= limits.maxDurationSeconds) {
       return { status: 'REJECTED', reason: 'VIDEO_TOO_LONG' };
     }
     const checksumSha256 = await this.sha256File(filePath);

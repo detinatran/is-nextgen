@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGSAP } from "@gsap/react";
@@ -21,6 +21,7 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
   const [collapsed, setCollapsed] = useState(collapsedProp ?? false);
   const sidebarRef = useRef<HTMLElement>(null);
   const navItemsRef = useRef<Array<HTMLAnchorElement | null>>([]);
+  const toggleBtnRef = useRef<HTMLButtonElement>(null);
 
   const navGroups: NavGroup[] = [
     {
@@ -347,8 +348,8 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
       }`}
     >
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533]">
-        <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative">
+        <Link href="/admin" className="flex items-center gap-3 overflow-hidden flex-1 justify-center">
           {!collapsed && (
             <div className="brand-text flex flex-col min-w-0 overflow-hidden whitespace-nowrap">
               <span className="font-bold text-white text-sm tracking-wide">IS-NEXTGEN</span>
@@ -357,15 +358,30 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
               </span>
             </div>
           )}
+          {collapsed && (
+            <div className="brand-logo-min transition-all duration-300 flex justify-center items-center">
+              <img
+                src="/images/logo_min.png"
+                alt="IS-NEXTGEN"
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+          )}
         </Link>
+        {/* Premium Toggle Button - Fixed on right edge of sidebar */}
         <button
+          ref={toggleBtnRef}
           onClick={handleToggle}
-          className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
+          className={`absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md flex items-center justify-center cursor-pointer transition-all duration-200 ${
+            collapsed ? "bg-[#0B1F4D] hover:bg-[#16357A]" : "bg-slate-50 hover:bg-slate-100"
+          }`}
           title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
           aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
         >
           <svg
-            className={`w-4 h-4 transform transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}
+            className={`w-4 h-4 transition-transform duration-300 ${
+              collapsed ? "rotate-180 text-white" : "text-slate-600"
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

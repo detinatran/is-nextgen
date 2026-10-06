@@ -164,11 +164,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                   >
                     <Icon name={name} className="h-4 w-4" />
                   </a>
-                ) : (
-                  <span key={name} className="flex h-10 w-10 items-center justify-center rounded-full text-white/45 ring-1 ring-white/20" title={t.soon}>
-                    <Icon name={name} className="h-4 w-4" />
-                  </span>
-                );
+                ) : null; // Mạng xã hội chưa có thì ẩn hẳn
               })}
             </div>
             <div className="mt-6 flex items-center gap-3">

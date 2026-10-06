@@ -115,7 +115,7 @@ export default function DuplicateReviewsPage() {
       key: "id",
       header: "Mã Review",
       width: "120px",
-      render: (row) => <span className="font-mono text-xs font-bold">{row.id}</span>,
+      render: (row) => <span className="font-sans tabular-nums tracking-tight text-xs font-bold">{row.id}</span>,
     },
     {
       key: "conflict",
@@ -125,7 +125,7 @@ export default function DuplicateReviewsPage() {
           <span className="font-bold text-rose-700 text-xs block">
             {row.conflictDetails.field}
           </span>
-          <span className="text-xs text-slate-500 font-mono">
+          <span className="text-xs text-slate-500 font-sans tabular-nums tracking-tight">
             Giá trị trùng: {row.conflictDetails.value}
           </span>
         </div>
@@ -138,7 +138,7 @@ export default function DuplicateReviewsPage() {
         <div className="space-y-1">
           {row.conflictDetails.candidates.map((c, i) => (
             <div key={i} className="text-xs flex items-center gap-2">
-              <span className="font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+              <span className="font-sans tabular-nums tracking-tight font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
                 {c.code}
               </span>
               <span className="font-medium text-slate-900">{c.name}</span>
@@ -175,7 +175,7 @@ export default function DuplicateReviewsPage() {
             Xử lý trùng lặp
           </AdminButton>
         ) : (
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight">
             {row.disposition?.slice(0, 30)}...
           </span>
         ),
@@ -228,13 +228,13 @@ export default function DuplicateReviewsPage() {
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-xs bg-white px-2 py-0.5 rounded border border-slate-300">
+                      <span className="font-sans tabular-nums tracking-tight font-bold text-xs bg-white px-2 py-0.5 rounded border border-slate-300">
                         {c.code}
                       </span>
                       <span className="font-bold text-slate-900 text-sm">{c.name}</span>
                     </div>
                     <p className="text-xs text-slate-500 mt-1">
-                      {c.school} • Nộp lúc: <span className="font-mono text-slate-700">{c.submittedAt}</span>
+                      {c.school} • Nộp lúc: <span className="font-sans tabular-nums tracking-tight text-slate-700">{c.submittedAt}</span>
                     </p>
                   </div>
                   <AdminButton

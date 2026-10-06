@@ -50,7 +50,7 @@ export default function CandidateDetailDrawer({
                   {profile?.full_name || "Chi tiết thí sinh"}
                 </h3>
                 {candidate.candidate_code && (
-                  <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="text-xs font-sans tabular-nums tracking-tight font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                     {candidate.candidate_code}
                   </span>
                 )}
@@ -88,7 +88,7 @@ export default function CandidateDetailDrawer({
               {registration?.submitted_at && (
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-500">Thời điểm nộp:</span>
-                  <span className="font-mono text-slate-800">
+                  <span className="font-sans tabular-nums tracking-tight text-slate-800">
                     {new Date(registration.submitted_at).toLocaleString("vi-VN")}
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export default function CandidateDetailDrawer({
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
                   <span className="text-slate-400 block">Mã số sinh viên (MSSV)</span>
-                  <span className="font-semibold text-slate-900 font-mono">
+                  <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">
                     {profile?.student_id || "Chưa cập nhật"}
                   </span>
                 </div>
@@ -144,13 +144,13 @@ export default function CandidateDetailDrawer({
               <div className="space-y-2 text-xs">
                 <div>
                   <span className="text-slate-400 block">Email chính thức</span>
-                  <span className="font-medium text-[#1F5BE0] font-mono">
+                  <span className="font-medium text-[#1F5BE0] font-sans tabular-nums tracking-tight">
                     {profile?.email || "Chưa cập nhật"}
                   </span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">Số điện thoại</span>
-                  <span className="font-semibold text-slate-900 font-mono">
+                  <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">
                     {profile?.phone || "Chưa cập nhật"}
                   </span>
                 </div>

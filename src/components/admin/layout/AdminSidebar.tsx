@@ -3,8 +3,6 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 
 interface NavGroup {
   title: string;
@@ -16,11 +14,15 @@ interface NavGroup {
   }[];
 }
 
-export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { collapsed?: boolean; onToggle?: () => void }) {
+export default function AdminSidebar({
+  collapsed: collapsedProp,
+  onToggle,
+}: {
+  collapsed?: boolean;
+  onToggle?: () => void;
+}) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(collapsedProp ?? false);
-  const sidebarRef = useRef<HTMLElement>(null);
-  const navItemsRef = useRef<Array<HTMLAnchorElement | null>>([]);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
 
   const navGroups: NavGroup[] = [
@@ -142,198 +144,6 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
     },
   ];
 
-  // Collapse/Expand animation with GSAP
-  useGSAP(
-    () => {
-      if (!sidebarRef.current) return;
-      const ctx = gsap.context(() => {
-        const sidebar = sidebarRef.current!;
-        // Filter out nulls and assert non-null for GSAP
-        const items = navItemsRef.current.filter((el): el is HTMLAnchorElement => el !== null);
-
-        const getNavText = () => items.map((item) => item.querySelector(".nav-text")).filter((el): el is Element => el !== null);
-        const getNavBadge = () => items.map((item) => item.querySelector(".nav-badge")).filter((el): el is Element => el !== null);
-        const getGroupTitle = () => items.map((item) => item.querySelector(".group-title")).filter((el): el is Element => el !== null);
-        const brandText = sidebar.querySelector(".brand-text");
-        const userInfo = sidebar.querySelector(".user-info");
-
-        const navTexts = getNavText();
-        const navBadges = getNavBadge();
-        const groupTitles = getGroupTitle();
-
-        if (collapsed) {
-          // Collapse animation
-          gsap.to(sidebar, {
-            width: "5rem", // w-20 = 80px = 5rem
-            duration: 0.35,
-            ease: "power3.inOut",
-          });
-
-          // Hide text labels with stagger
-          if (navTexts.length) {
-            gsap.to(navTexts, {
-              opacity: 0,
-              width: 0,
-              overflow: "hidden",
-              duration: 0.15,
-              stagger: 0.02,
-              ease: "power2.in",
-            });
-          }
-
-          if (navBadges.length) {
-            gsap.to(navBadges, {
-              opacity: 0,
-              scale: 0.5,
-              duration: 0.15,
-              stagger: 0.02,
-              ease: "power2.in",
-            });
-          }
-
-          if (brandText) {
-            gsap.to(brandText, {
-              opacity: 0,
-              width: 0,
-              overflow: "hidden",
-              duration: 0.15,
-              ease: "power2.in",
-            });
-          }
-
-          if (userInfo) {
-            gsap.to(userInfo, {
-              opacity: 0,
-              width: 0,
-              overflow: "hidden",
-              duration: 0.15,
-              ease: "power2.in",
-            });
-          }
-
-          if (groupTitles.length) {
-            gsap.to(groupTitles, {
-              opacity: 0,
-              height: 0,
-              overflow: "hidden",
-              duration: 0.15,
-              ease: "power2.in",
-            });
-          }
-        } else {
-          // Expand animation
-          gsap.to(sidebar, {
-            width: "16rem", // w-64 = 256px = 16rem
-            duration: 0.45,
-            ease: "power3.out",
-          });
-
-          // Show text labels with stagger
-          if (navTexts.length) {
-            gsap.fromTo(
-              navTexts,
-              { opacity: 0, width: 0, overflow: "hidden" },
-              {
-                opacity: 1,
-                width: "auto",
-                duration: 0.25,
-                stagger: 0.03,
-                ease: "power2.out",
-                delay: 0.15,
-              }
-            );
-          }
-
-          if (navBadges.length) {
-            gsap.fromTo(
-              navBadges,
-              { opacity: 0, scale: 0.5 },
-              {
-                opacity: 1,
-                scale: 1,
-                duration: 0.25,
-                stagger: 0.03,
-                ease: "back.out(1.5)",
-                delay: 0.15,
-              }
-            );
-          }
-
-          if (brandText) {
-            gsap.fromTo(
-              brandText,
-              { opacity: 0, width: 0, overflow: "hidden" },
-              {
-                opacity: 1,
-                width: "auto",
-                duration: 0.25,
-                ease: "power2.out",
-                delay: 0.1,
-              }
-            );
-          }
-
-          if (userInfo) {
-            gsap.fromTo(
-              userInfo,
-              { opacity: 0, width: 0, overflow: "hidden" },
-              {
-                opacity: 1,
-                width: "auto",
-                duration: 0.25,
-                ease: "power2.out",
-                delay: 0.1,
-              }
-            );
-          }
-
-          if (groupTitles.length) {
-            gsap.fromTo(
-              groupTitles,
-              { opacity: 0, height: 0, overflow: "hidden" },
-              {
-                opacity: 1,
-                height: "auto",
-                duration: 0.25,
-                stagger: 0.02,
-                ease: "power2.out",
-                delay: 0.1,
-              }
-            );
-          }
-        }
-      }, sidebarRef);
-      return () => ctx.revert();
-    },
-    { scope: sidebarRef, dependencies: [collapsed] }
-  );
-
-  // Entrance animation for sidebar items on mount
-  useGSAP(
-    () => {
-      if (!sidebarRef.current) return;
-      const ctx = gsap.context(() => {
-        const items = navItemsRef.current.filter((el): el is HTMLAnchorElement => el !== null);
-        if (items.length > 0) {
-          gsap.fromTo(
-            items,
-            { opacity: 0, x: -20 },
-            {
-              opacity: 1,
-              x: 0,
-              duration: 0.5,
-              ease: "power3.out",
-              stagger: 0.04,
-              delay: 0.2,
-            }
-          );
-        }
-      }, sidebarRef);
-      return () => ctx.revert();
-    },
-    { scope: sidebarRef, dependencies: [] }
-  );
-
   const handleToggle = () => {
     const next = !collapsed;
     setCollapsed(next);
@@ -342,33 +152,49 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
 
   return (
     <aside
-      ref={sidebarRef}
-      className={`fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 flex flex-col ${
+      className={`fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 ease-out flex flex-col ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative">
-        <Link href="/admin" className="flex items-center gap-3 overflow-hidden flex-1 justify-center">
-          {!collapsed && (
-            <div className="brand-text flex flex-col min-w-0 overflow-hidden whitespace-nowrap">
-              <span className="font-bold text-white text-sm tracking-wide">IS-NEXTGEN</span>
-              <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase">
-                Admin Manager
-              </span>
-            </div>
-          )}
-          {collapsed && (
-            <div className="brand-logo-min transition-all duration-300 flex justify-center items-center">
-              <img
-                src="/images/logo_min.png"
-                alt="IS-NEXTGEN"
-                className="w-8 h-8 object-contain"
-              />
-            </div>
-          )}
+      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
+        <Link
+          href="/admin"
+          className="flex items-center gap-3 overflow-hidden flex-1 justify-center transition-all duration-300 ease-out"
+        >
+          {/* Expanded Brand Text */}
+          <div
+            className={`brand-text flex flex-col min-w-0 whitespace-nowrap transition-all duration-300 ease-out ${
+              collapsed
+                ? "opacity-0 w-0 overflow-hidden"
+                : "opacity-100 w-auto"
+            }`}
+          >
+            <span className="font-bold text-white text-sm tracking-wide whitespace-nowrap">
+              IS-NEXTGEN
+            </span>
+            <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase whitespace-nowrap">
+              Admin Manager
+            </span>
+          </div>
+
+          {/* Collapsed Mini Logo */}
+          <div
+            className={`brand-logo-min flex justify-center items-center transition-all duration-300 ease-out ${
+              collapsed
+                ? "opacity-100 scale-100 w-auto"
+                : "opacity-0 scale-50 w-0 overflow-hidden"
+            }`}
+          >
+            <img
+              src="/images/logo_min.png"
+              alt="IS-NEXTGEN"
+              className="w-8 h-8 object-contain"
+            />
+          </div>
         </Link>
-        {/* Premium Toggle Button - Fixed on right edge of sidebar */}
+
+        {/* Premium Toggle Button - Fixed on right edge of sidebar, vertical center */}
         <button
           ref={toggleBtnRef}
           onClick={handleToggle}
@@ -379,7 +205,7 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
           aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
         >
           <svg
-            className={`w-4 h-4 transition-transform duration-300 ${
+            className={`w-4 h-4 transition-transform duration-300 ease-out ${
               collapsed ? "rotate-180 text-white" : "text-slate-600"
             }`}
             fill="none"
@@ -395,11 +221,16 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 no-scrollbar">
         {navGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
-            {!collapsed && (
-              <h4 className="group-title px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 overflow-hidden">
-                {group.title}
-              </h4>
-            )}
+            <h4
+              className={`group-title px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 whitespace-nowrap transition-all duration-300 ease-out ${
+                collapsed
+                  ? "opacity-0 h-0 overflow-hidden m-0 p-0"
+                  : "opacity-100 h-auto"
+              }`}
+            >
+              {group.title}
+            </h4>
+
             {group.items.map((item) => {
               // Determine if this item is a parent of any other item in the same group
               const isParent = group.items.some(
@@ -417,18 +248,12 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
                   ? currentPath === itemPath
                   : currentPath === itemPath || currentPath.startsWith(itemPath + "/");
 
-              const navItemRef = (el: HTMLAnchorElement | null) => {
-                navItemsRef.current = navItemsRef.current.filter(Boolean);
-                if (el) navItemsRef.current.push(el);
-              };
-
               return (
                 <Link
                   key={item.href}
-                  ref={navItemRef}
                   href={item.href}
                   title={collapsed ? item.label : undefined}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? "bg-[#16357A] text-white font-semibold shadow-[0_0_0_1px_rgba(31,91,224,0.3)]"
                       : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
@@ -437,15 +262,29 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
                   <span className={`shrink-0 ${isActive ? "text-white" : "text-slate-400"}`}>
                     {item.icon}
                   </span>
-                  {!collapsed && (
-                    <>
-                      <span className="nav-text flex-1 truncate">{item.label}</span>
-                      {item.badge && (
-                        <span className="nav-badge text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold whitespace-nowrap shrink-0">
-                          {item.badge}
-                        </span>
-                      )}
-                    </>
+
+                  {/* Menu Item Text with Smooth Fade & No Wrap */}
+                  <span
+                    className={`nav-text flex-1 whitespace-nowrap transition-all duration-300 ease-out ${
+                      collapsed
+                        ? "opacity-0 w-0 overflow-hidden"
+                        : "opacity-100 w-auto"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+
+                  {/* Badge */}
+                  {item.badge && (
+                    <span
+                      className={`nav-badge text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold whitespace-nowrap shrink-0 transition-all duration-300 ease-out ${
+                        collapsed
+                          ? "opacity-0 scale-50 w-0 overflow-hidden p-0 border-0"
+                          : "opacity-100 scale-100"
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
                   )}
                 </Link>
               );
@@ -460,12 +299,16 @@ export default function AdminSidebar({ collapsed: collapsedProp, onToggle }: { c
           <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-[#1F5BE0]/40">
             AD
           </div>
-          {!collapsed && (
-            <div className="user-info flex-1 min-w-0 overflow-hidden">
-              <p className="text-xs font-semibold text-white truncate">Ban Tổ Chức</p>
-              <p className="text-[11px] text-slate-400 truncate">admin@is-nextgen.edu.vn</p>
-            </div>
-          )}
+          <div
+            className={`user-info flex-1 min-w-0 whitespace-nowrap transition-all duration-300 ease-out ${
+              collapsed
+                ? "opacity-0 w-0 overflow-hidden"
+                : "opacity-100 w-auto"
+            }`}
+          >
+            <p className="text-xs font-semibold text-white truncate whitespace-nowrap">Ban Tổ Chức</p>
+            <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">admin@is-nextgen.edu.vn</p>
+          </div>
         </div>
       </div>
     </aside>

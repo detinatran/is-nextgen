@@ -97,7 +97,7 @@ export default function QuestionImportPage() {
       key: "rowId",
       header: "Dòng",
       width: "70px",
-      render: (row) => <span className="font-mono text-xs font-bold">#{row.rowId}</span>,
+      render: (row) => <span className="font-sans tabular-nums tracking-tight text-xs font-bold">#{row.rowId}</span>,
     },
     {
       key: "prompt",
@@ -107,7 +107,7 @@ export default function QuestionImportPage() {
           <p className="text-xs font-bold text-slate-900 line-clamp-2">{row.prompt}</p>
           <div className="text-[11px] text-slate-500 mt-1">
             Số phương án: <span className="font-semibold text-slate-700">{row.optionsCount}</span> • Đáp án đúng:{" "}
-            <span className="font-bold text-emerald-700 font-mono">{row.correctAnswer}</span>
+            <span className="font-sans tabular-nums tracking-tight font-bold text-emerald-700">{row.correctAnswer}</span>
           </div>
         </div>
       ),

@@ -116,7 +116,7 @@ export default function VideoReviewModal({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="text-xs">Trình phát video xem trước (Private S3 Secure Storage)</p>
-              <p className="text-[11px] text-slate-500 font-mono mt-1">{media.object_key}</p>
+              <p className="text-[11px] text-slate-500 font-sans tabular-nums tracking-tight mt-1">{media.object_key}</p>
             </div>
           )}
         </div>
@@ -126,7 +126,7 @@ export default function VideoReviewModal({
           <div>
             <span className="text-slate-400 block">Thời lượng (Quy định &le; 120s):</span>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-bold text-slate-900 font-mono">
+              <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
                 {media.duration_seconds} giây
               </span>
               <AdminBadge variant={isDurationValid ? "success" : "danger"} size="sm">
@@ -137,7 +137,7 @@ export default function VideoReviewModal({
           <div>
             <span className="text-slate-400 block">Dung lượng file:</span>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-bold text-slate-900 font-mono">
+              <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
                 {(media.size_bytes / (1024 * 1024)).toFixed(2)} MB
               </span>
               <AdminBadge variant={isSizeValid ? "success" : "danger"} size="sm">
@@ -147,7 +147,7 @@ export default function VideoReviewModal({
           </div>
           <div>
             <span className="text-slate-400 block">Định dạng MIME Type:</span>
-            <span className="font-semibold text-slate-800 font-mono">
+            <span className="font-semibold text-slate-800 font-sans tabular-nums tracking-tight">
               {media.mime_type}
             </span>
           </div>
@@ -159,7 +159,7 @@ export default function VideoReviewModal({
           </div>
           <div className="col-span-2 pt-2 border-t border-slate-200">
             <span className="text-slate-400 block">SHA-256 Checksum:</span>
-            <span className="font-mono text-[11px] text-slate-600 break-all select-all">
+            <span className="font-sans tabular-nums tracking-tight text-[11px] text-slate-600 break-all select-all">
               {media.checksum_sha256}
             </span>
           </div>

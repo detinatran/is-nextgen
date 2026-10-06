@@ -137,7 +137,7 @@ export default function AdminLoginPage() {
               maxLength={6}
               value={mfaCode}
               onChange={(e) => setMfaCode(e.target.value)}
-              className="text-center font-mono text-xl tracking-widest font-bold"
+              className="text-center font-sans tabular-nums tracking-tight text-xl font-bold"
               autoFocus
             />
 

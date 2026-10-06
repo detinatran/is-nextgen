@@ -133,7 +133,7 @@ export default function CandidateAssignmentsPage() {
       header: "Mã TS",
       width: "120px",
       render: (row) => (
-        <span className="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">
+        <span className="font-sans tabular-nums tracking-tight text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">
           {row.candidateCode}
         </span>
       ),
@@ -146,7 +146,7 @@ export default function CandidateAssignmentsPage() {
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
             {row.fullName}
           </span>
-          <span className="text-[11px] text-slate-400 font-mono">
+          <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
             MSSV: {row.studentId} • {row.school}
           </span>
         </div>
@@ -203,7 +203,7 @@ export default function CandidateAssignmentsPage() {
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
           Quản lý danh sách thí sinh trong từng ca thi. Mọi thao tác đổi ca đều được lưu vết vào bảng{" "}
-          <span className="font-mono font-semibold text-slate-700">assignment_schedule_history</span>.
+          <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">assignment_schedule_history</span>.
         </p>
       </div>
 

@@ -267,7 +267,7 @@ export default function AdminDashboardPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-bold text-slate-900">{cand.name}</span>
-                      <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap">({cand.code})</span>
+                      <span className="text-[11px] font-sans tabular-nums tracking-tight text-slate-400 whitespace-nowrap">({cand.code})</span>
                     </div>
                     <p className="text-xs text-slate-500">
                       MSSV: {cand.studentId} • {cand.school} ({cand.major})
@@ -325,7 +325,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="mt-2.5 flex items-center justify-between text-xs text-slate-500">
                     <span>Đã phân bổ:</span>
-                    <span className="font-semibold text-slate-900 font-mono tabular-nums">{sch.assigned}</span>
+                    <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">{sch.assigned}</span>
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
                     <div

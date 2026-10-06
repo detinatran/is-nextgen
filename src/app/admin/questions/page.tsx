@@ -207,7 +207,7 @@ export default function QuestionsPage() {
       header: "Phiên bản",
       width: "100px",
       render: (row) => (
-        <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+        <span className="font-sans tabular-nums tracking-tight text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
           v{row.version}
         </span>
       ),
@@ -296,7 +296,7 @@ export default function QuestionsPage() {
               </AdminButton>
             </>
           ) : (
-            <span className="text-[11px] text-slate-400 font-mono italic">
+            <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight italic">
               Bất biến (Locked)
             </span>
           )}

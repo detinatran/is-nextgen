@@ -181,7 +181,7 @@ export default function Round1ScoringPage() {
       align: "center",
       render: (row) => (
         <span
-          className={`font-mono text-xs font-extrabold px-2 py-0.5 rounded ${
+          className={`font-sans tabular-nums tracking-tight text-xs font-extrabold px-2 py-0.5 rounded ${
             row.rank <= 3
               ? "bg-amber-100 text-amber-900 border border-amber-300"
               : row.rank <= 40
@@ -201,7 +201,7 @@ export default function Round1ScoringPage() {
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
             {row.fullName}
           </span>
-          <span className="text-[11px] text-slate-400 font-mono">
+          <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
             {row.candidateCode} • MSSV: {row.studentId} • {row.school}
           </span>
         </div>
@@ -213,10 +213,10 @@ export default function Round1ScoringPage() {
       align: "center",
       render: (row) => (
         <div className="space-y-0.5">
-          <span className="font-mono text-base font-extrabold text-[#0B1F4D] block">
+          <span className="font-sans tabular-nums tracking-tight text-base font-extrabold text-[#0B1F4D] block">
             {row.score.toFixed(1)}
           </span>
-          <span className="text-[11px] text-slate-500 font-mono">
+          <span className="text-[11px] text-slate-500 font-sans tabular-nums tracking-tight">
             {row.correctAnswers} / {row.totalQuestions} câu đúng
           </span>
         </div>
@@ -227,7 +227,7 @@ export default function Round1ScoringPage() {
       header: "Thời gian làm bài (Tie-break)",
       render: (row) => (
         <div className="space-y-0.5">
-          <span className="font-mono text-xs font-semibold text-slate-800 block">
+          <span className="font-sans tabular-nums tracking-tight text-xs font-semibold text-slate-800 block">
             {formatDuration(row.timeTakenSeconds)}
           </span>
           <span className="text-[10px] text-slate-400">Nộp: {row.submittedAt}</span>

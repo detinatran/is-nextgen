@@ -144,7 +144,7 @@ export default function ManualScoringPage() {
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
             {row.fullName}
           </span>
-          <span className="text-[11px] text-slate-400 font-mono">
+          <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
             {row.candidateCode} • {row.roundName}
           </span>
         </div>
@@ -157,14 +157,14 @@ export default function ManualScoringPage() {
         <div className="space-y-1 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-slate-500 w-16">GK A:</span>
-            <span className="font-mono font-bold text-slate-800">
+            <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800">
               {row.reviewerA.score !== null ? `${row.reviewerA.score} đ` : "Chưa chấm"}
             </span>
             <span className="text-[10px] text-slate-400 font-normal">({row.reviewerA.name})</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-slate-500 w-16">GK B:</span>
-            <span className="font-mono font-bold text-slate-800">
+            <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800">
               {row.reviewerB.score !== null ? `${row.reviewerB.score} đ` : "Chưa chấm"}
             </span>
             <span className="text-[10px] text-slate-400 font-normal">({row.reviewerB.name})</span>
@@ -180,7 +180,7 @@ export default function ManualScoringPage() {
           {row.scoreDiff !== null ? (
             <div className="space-y-1">
               <span
-                className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded ${
+                className={`font-sans tabular-nums tracking-tight text-xs font-bold px-1.5 py-0.5 rounded ${
                   row.scoreDiff > 20
                     ? "bg-rose-100 text-rose-800 border border-rose-300"
                     : "bg-slate-100 text-slate-700"
@@ -205,7 +205,7 @@ export default function ManualScoringPage() {
       header: "Điểm chốt",
       align: "center",
       render: (row) => (
-        <span className="font-mono text-base font-extrabold text-[#0B1F4D]">
+        <span className="font-sans tabular-nums tracking-tight text-base font-extrabold text-[#0B1F4D]">
           {row.finalScore !== null ? `${row.finalScore.toFixed(2)}` : "--"}
         </span>
       ),
@@ -264,7 +264,7 @@ export default function ManualScoringPage() {
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
           Khung đánh giá gồm <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>. Hệ thống tự động kích hoạt cờ{" "}
-          <span className="font-mono font-semibold text-rose-700 bg-rose-50 px-1 rounded">NEEDS_THIRD</span> khi độ lệch giữa 2 giám khảo &gt; 20%.
+          <span className="font-sans tabular-nums tracking-tight font-semibold text-rose-700 bg-rose-50 px-1 rounded">NEEDS_THIRD</span> khi độ lệch giữa 2 giám khảo &gt; 20%.
         </p>
       </div>
 
@@ -304,7 +304,7 @@ export default function ManualScoringPage() {
           maxWidth="2xl"
           footer={
             <div className="flex items-center justify-between w-full">
-              <div className="text-xs font-mono text-slate-700">
+              <div className="text-xs font-sans tabular-nums tracking-tight text-slate-700">
                 Tổng điểm quy đổi (Thang 10):{" "}
                 <span className="text-base font-extrabold text-[#0B1F4D]">
                   {calculateTotalScore()} / 10.0

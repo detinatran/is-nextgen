@@ -94,7 +94,7 @@ export default function ExamSchedulesPage() {
       render: (row) => (
         <div>
           <span className="font-bold text-slate-900 text-sm block">{row.name}</span>
-          <span className="text-xs text-slate-500 font-mono">
+          <span className="text-xs text-slate-500 font-sans tabular-nums tracking-tight">
             {new Date(row.opens_at).toLocaleString("vi-VN")} →{" "}
             {new Date(row.closes_at).toLocaleTimeString("vi-VN")} (60 phút)
           </span>
@@ -110,7 +110,7 @@ export default function ExamSchedulesPage() {
           <div className="w-48 space-y-1">
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500">Đã gán:</span>
-              <span className="font-bold text-slate-900 font-mono">
+              <span className="font-sans tabular-nums tracking-tight font-bold text-slate-900">
                 {row.assignedCount} / {row.capacity} ({percent}%)
               </span>
             </div>

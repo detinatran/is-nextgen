@@ -66,7 +66,7 @@ export default function AdminHeader() {
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between transition-all shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
+      className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between transition-all duration-300 ease-out shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
     >
       {/* Left: Breadcrumbs & Title */}
       <div className="flex flex-col min-w-0 flex-1">

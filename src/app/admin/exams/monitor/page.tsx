@@ -149,14 +149,14 @@ export default function LiveExamMonitorPage() {
       render: (row) => (
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200">
+            <span className="font-sans tabular-nums tracking-tight text-xs font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200">
               {row.candidateCode}
             </span>
             <span className="font-bold text-slate-900 text-xs sm:text-sm">
               {row.fullName}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 block mt-0.5 font-mono">
+          <span className="text-[11px] text-slate-400 block mt-0.5 font-sans tabular-nums tracking-tight">
             MSSV: {row.studentId} • {row.scheduleName}
           </span>
         </div>
@@ -169,7 +169,7 @@ export default function LiveExamMonitorPage() {
         const percent = Math.round((row.answeredCount / row.totalQuestions) * 100);
         return (
           <div className="w-40 space-y-1">
-            <div className="flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center justify-between text-xs font-sans tabular-nums tracking-tight">
               <span className="text-slate-600 font-semibold">
                 {row.answeredCount}/{row.totalQuestions}
               </span>
@@ -196,7 +196,7 @@ export default function LiveExamMonitorPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs">
               <span
-                className={`px-1.5 py-0.5 rounded font-mono text-[11px] ${
+                className={`px-1.5 py-0.5 rounded font-sans tabular-nums tracking-tight text-[11px] ${
                   row.tabSwitchCount >= 3
                     ? "bg-rose-100 text-rose-800 font-bold"
                     : "bg-slate-100 text-slate-600"
@@ -205,7 +205,7 @@ export default function LiveExamMonitorPage() {
                 Rời tab: {row.tabSwitchCount}
               </span>
               <span
-                className={`px-1.5 py-0.5 rounded font-mono text-[11px] ${
+                className={`px-1.5 py-0.5 rounded font-sans tabular-nums tracking-tight text-[11px] ${
                   row.copyPasteCount >= 2
                     ? "bg-rose-100 text-rose-800 font-bold"
                     : "bg-slate-100 text-slate-600"
@@ -239,7 +239,7 @@ export default function LiveExamMonitorPage() {
             <AdminBadge variant={variant} size="sm" dot={row.status === "ACTIVE"}>
               {row.status}
             </AdminBadge>
-            <span className="text-[10px] text-slate-400 block font-mono">
+            <span className="text-[10px] text-slate-400 block font-sans tabular-nums tracking-tight">
               {row.lastHeartbeat}
             </span>
           </div>
@@ -277,7 +277,7 @@ export default function LiveExamMonitorPage() {
             </AdminButton>
           </div>
         ) : (
-          <span className="text-xs text-slate-400 font-mono italic">Đã kết thúc</span>
+          <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight italic">Đã kết thúc</span>
         ),
     },
   ];
@@ -298,7 +298,7 @@ export default function LiveExamMonitorPage() {
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
             Theo dõi tiến trình làm bài, phát hiện rời tab (focus_lost), copy/paste và ghi vết vào bảng{" "}
-            <span className="font-mono font-semibold text-slate-700">exam_events</span>.
+            <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">exam_events</span>.
           </p>
         </div>
 
@@ -319,15 +319,15 @@ export default function LiveExamMonitorPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
           <p className="text-xs font-semibold text-slate-500">Đang làm bài (ACTIVE)</p>
-          <p className="text-2xl font-extrabold text-[#1F5BE0] mt-1 font-mono">{totalActive}</p>
+          <p className="text-2xl font-extrabold text-[#1F5BE0] mt-1 font-sans tabular-nums tracking-tight">{totalActive}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
           <p className="text-xs font-semibold text-slate-500">Đã nộp bài (FINALIZED)</p>
-          <p className="text-2xl font-extrabold text-emerald-600 mt-1 font-mono">{totalFinalized}</p>
+          <p className="text-2xl font-extrabold text-emerald-600 mt-1 font-sans tabular-nums tracking-tight">{totalFinalized}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
           <p className="text-xs font-semibold text-slate-500">Cảnh báo vi phạm rời tab/paste</p>
-          <p className="text-2xl font-extrabold text-rose-600 mt-1 font-mono">{totalViolations}</p>
+          <p className="text-2xl font-extrabold text-rose-600 mt-1 font-sans tabular-nums tracking-tight">{totalViolations}</p>
         </div>
       </div>
 

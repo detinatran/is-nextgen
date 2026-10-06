@@ -318,7 +318,7 @@ export default function CandidatesPage() {
       header: "Mã TS",
       width: "120px",
       render: (row) => (
-        <span className="font-mono font-bold text-slate-800 text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+        <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800 text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
           {row.candidate_code || "CHƯA CẤP"}
         </span>
       ),
@@ -329,7 +329,7 @@ export default function CandidatesPage() {
       render: (row) => (
         <div>
           <div className="font-bold text-slate-900">{row.profile.full_name}</div>
-          <div className="text-[11px] text-slate-400 font-mono">
+          <div className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
             MSSV: {row.profile.student_id} • {row.profile.email}
           </div>
         </div>

@@ -15,6 +15,7 @@ import { ExamOperationsModule } from './exam-operations/exam-operations.module';
 import { AttemptsModule } from './attempts/attempts.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { FixturesModule } from './fixtures/fixtures.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FixturesModule } from './fixtures/fixtures.module';
     AttemptsModule,
     ScoringModule,
     FixturesModule,
+    AdminModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

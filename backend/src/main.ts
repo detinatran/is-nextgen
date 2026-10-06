@@ -27,8 +27,10 @@ async function bootstrap(): Promise<void> {
   if (corsOrigins.length > 0) {
     app.enableCors({
       origin: corsOrigins,
-      allowedHeaders: ['Content-Type', 'x-registration-token', 'Idempotency-Key', 'x-correlation-id'],
-      exposedHeaders: ['x-correlation-id'],
+      // credentials: cookie phiên admin/thí sinh khi frontend chạy khác origin (môi trường dev)
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'x-registration-token', 'Idempotency-Key', 'x-correlation-id', 'x-csrf-token', 'Range'],
+      exposedHeaders: ['x-correlation-id', 'Content-Disposition', 'Content-Range', 'Accept-Ranges'],
     });
   }
   // Sau reverse proxy (nginx cùng máy): lấy IP thật của thí sinh cho rate limit và log

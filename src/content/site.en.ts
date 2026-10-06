@@ -22,12 +22,15 @@ export const site = {
   // TODO(BTC): fill in real contact and social media details; leave empty to hide.
   contact: {
     email: "nextgen@vnuis.edu.vn",
-    phone: "",
-    fanpage: "",
+    phone: "0962 132 535",
+    // Người trực hotline
+    hotlineName: "Đào Công Tuấn",
+    hotlineEmail: "tuandc@vnu.edu.vn",
+    fanpage: "https://www.facebook.com/profile.php?id=61595115537350",
     sponsorDeck: "",
   },
   socials: {
-    facebook: "",
+    facebook: "https://www.facebook.com/profile.php?id=61595115537350",
     linkedin: "",
     youtube: "",
     tiktok: "",

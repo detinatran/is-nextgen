@@ -21,6 +21,7 @@ const text = {
     terms: "Điều khoản & thể lệ",
     results: "Kết quả",
     language: "Ngôn ngữ",
+    hotline: "Hotline",
     qrTitle: "Quét mã để truy cập",
     qrAlt: "Mã QR dẫn tới nextgen.vnuis.edu.vn",
     qrDownload: "Tải mã QR",
@@ -38,6 +39,7 @@ const text = {
     terms: "Terms & rules",
     results: "Results",
     language: "Language",
+    hotline: "Hotline",
     qrTitle: "Scan to visit",
     qrAlt: "QR code linking to nextgen.vnuis.edu.vn",
     qrDownload: "Download QR code",
@@ -86,7 +88,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
   const { site } = getContent(lang);
   const t = text[lang];
   const href = (path: string) => localePath(lang, path);
-  const { email, phone } = site.contact;
+  const { email, phone, hotlineName, hotlineEmail } = site.contact;
   const contactHref = email ? `mailto:${email}` : href("/#hoi-dap");
   return (
     <>
@@ -130,9 +132,21 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
               {phone && (
                 <li className="flex gap-2.5">
                   <Icon name="phone" className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                  <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white">
-                    {phone}
-                  </a>
+                  <span>
+                    {t.hotline}:{" "}
+                    <a href={`tel:${phone.replace(/\s/g, "")}`} className="font-semibold text-white hover:text-orange">
+                      {phone}
+                    </a>
+                    {hotlineName && <span className="text-white/70"> · {hotlineName}</span>}
+                    {hotlineEmail && (
+                      <>
+                        <br />
+                        <a href={`mailto:${hotlineEmail}`} className="text-white/70 hover:text-white">
+                          {hotlineEmail}
+                        </a>
+                      </>
+                    )}
+                  </span>
                 </li>
               )}
             </ul>

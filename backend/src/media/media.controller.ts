@@ -145,7 +145,7 @@ export class MediaController {
   @HttpCode(HttpStatus.OK)
   @ApiSecurity('registrationToken')
   @UseGuards(RegistrationCapabilityGuard)
-  @RequireRegistrationScope('READ_EDIT_PROFILE')
+  @RequireRegistrationScope('DRAFT_UPLOAD')
   async bindVideo(
     @Param('registrationId', ParseUUIDPipe) registrationId: string,
     @Body() body: BindVideoDto,

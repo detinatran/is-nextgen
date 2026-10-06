@@ -18,6 +18,7 @@ export interface ResolvedSession {
   email: string;
   status: string;
   reauthenticatedAt: Date;
+  mfaVerifiedAt: Date | null;
 }
 
 /**
@@ -28,7 +29,12 @@ export interface ResolvedSession {
 export class SessionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async issue(userId: string, ttlHours: number): Promise<IssuedSessionTokens> {
+  /**
+   * F05: mfaVerifiedAt is written at creation time — a session is either
+   * created with its MFA proof already committed, or it never carries one.
+   * Pre-MFA Admin authority is impossible by construction.
+   */
+  async issue(userId: string, ttlHours: number, options?: { mfaVerifiedAt?: Date }): Promise<IssuedSessionTokens> {
     const token = randomBytes(32).toString('base64url');
     const csrfToken = randomBytes(24).toString('base64url');
     const expiresAt = new Date(Date.now() + ttlHours * 3_600_000);
@@ -38,6 +44,7 @@ export class SessionService {
         token_hash: sha256(token),
         expires_at: expiresAt,
         reauthenticated_at: new Date(), // login itself is a fresh authentication
+        mfa_verified_at: options?.mfaVerifiedAt ?? null,
       },
     });
     return { token, csrfToken, expiresAt };
@@ -57,6 +64,7 @@ export class SessionService {
       email: user.email,
       status: user.status,
       reauthenticatedAt: session.reauthenticated_at ?? new Date(0),
+      mfaVerifiedAt: session.mfa_verified_at,
     };
   }
 

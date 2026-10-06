@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsString, IsUUID, Matches, MaxLength, MinLength, IsOptional } from 'class-validator';
+
+/** Six-digit email OTP verifiers. The challengeId travels beside them as the locator. */
+const OTP_CODE = /^\d{6}$/;
 
 export class ActivationDto {
-  @ApiProperty({ description: 'OTP code delivered to the provisioned email', example: '123456' })
+  @ApiProperty({ format: 'uuid', description: 'Challenge locator issued with the activation OTP' })
+  @IsUUID()
+  challengeId!: string;
+
+  @ApiProperty({ example: '123456' })
   @IsString()
-  @Matches(/^\d{6}$/, { message: 'token must be a 6-digit code' })
-  token!: string;
+  @Matches(OTP_CODE, { message: 'code must be a 6-digit OTP' })
+  code!: string;
 
   @ApiProperty({ minLength: 10 })
   @IsString()
@@ -35,14 +42,40 @@ export class EmailRequestDto {
   email!: string;
 }
 
-export class TokenDto {
+export class VerificationDto {
+  @ApiProperty({ format: 'uuid', description: 'Challenge locator returned by the request endpoint' })
+  @IsUUID()
+  challengeId!: string;
+
   @ApiProperty({ example: '123456' })
   @IsString()
-  @Matches(/^\d{6}$/, { message: 'token must be a 6-digit code' })
-  token!: string;
+  @Matches(OTP_CODE, { message: 'code must be a 6-digit OTP' })
+  code!: string;
 }
 
-export class PasswordResetDto extends TokenDto {
+/**
+ * F01 contract: the reset identifies ONE challenge explicitly.
+ * `token` is a deprecated alias kept only so legacy token-only requests
+ * fail closed with AUTH_REQUIRED instead of a validation error.
+ */
+export class PasswordResetDto {
+  @ApiProperty({ format: 'uuid', required: true })
+  @IsOptional()
+  @IsUUID()
+  challengeId?: string;
+
+  @ApiProperty({ example: '123456' })
+  @IsOptional()
+  @IsString()
+  @Matches(OTP_CODE, { message: 'code must be a 6-digit OTP' })
+  code?: string;
+
+  @ApiProperty({ example: '123456', deprecated: true, description: 'Legacy alias of code; requests without challengeId always fail closed' })
+  @IsOptional()
+  @IsString()
+  @Matches(OTP_CODE, { message: 'token must be a 6-digit OTP' })
+  token?: string;
+
   @ApiProperty({ minLength: 10 })
   @IsString()
   @MinLength(10, { message: 'password must be at least 10 characters' })

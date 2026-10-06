@@ -78,7 +78,27 @@ export interface ProvisionedUser {
   userId: string;
   candidateId: string;
   activationCode: string;
+  activationChallengeId: string;
   email: string;
+}
+
+/** Requests an OTP flow and returns its challenge locator + emailed code. */
+export async function requestChallenge(
+  ctx: TestContext,
+  kind: 'EMAIL_VERIFY' | 'PASSWORD_RESET',
+  email: string,
+): Promise<{ challengeId: string; code: string }> {
+  const path = kind === 'EMAIL_VERIFY' ? 'email-verification-requests' : 'password-reset-requests';
+  const res = await ctx.http.post(`/api/v1/auth/${path}`).send({ email });
+  if (res.status !== 202) throw new Error(`challenge request failed: ${res.status}`);
+  const intent = await ctx.prisma.notification_intents.findFirst({
+    where: { destination_email: email, template_code: kind },
+    orderBy: { created_at: 'desc' },
+  });
+  return {
+    challengeId: res.body.challengeId as string,
+    code: ((intent?.payload as { code?: string })?.code ?? ''),
+  };
 }
 
 export async function provisionUser(
@@ -136,6 +156,7 @@ export async function setupExam(
 
 export interface DraftRegistration {
   registrationId: string;
+  email: string;
   profileToken: string;
   uploadToken: string;
 }
@@ -174,9 +195,36 @@ export async function createDraft(
   if (res.status !== 201) throw new Error(`draft failed: ${res.status} ${JSON.stringify(res.body)}`);
   return {
     registrationId: res.body.registrationId,
+    email: payload.email as string,
     profileToken: res.body.capability.profileToken,
     uploadToken: res.body.capability.uploadToken,
   };
+}
+
+/**
+ * F03: obtains a VERIFIED READ_EDIT_PROFILE grant through the real recovery
+ * flow (request -> email OTP -> verification). F04 setups use this instead
+ * of the initial draft capability so edit authority is never bypassed.
+ */
+export async function recoverRegistration(
+  ctx: TestContext,
+  draft: DraftRegistration,
+): Promise<{ registrationId: string; profileToken: string; expiresAt: string }> {
+  const request = await ctx.http
+    .post(`/api/v1/registrations/${draft.registrationId}/recovery-requests`)
+    .send({ email: draft.email });
+  if (request.status !== 202) throw new Error(`recovery request failed: ${request.status}`);
+  const intent = await ctx.prisma.notification_intents.findFirstOrThrow({
+    where: { deduplication_key: `challenge:${request.body.challengeId}` },
+  });
+  const code = (intent.payload as { code?: string }).code ?? '';
+  const verification = await ctx.http
+    .post('/api/v1/registrations/recovery/verifications')
+    .send({ challengeId: request.body.challengeId, code });
+  if (verification.status !== 200) {
+    throw new Error(`recovery verification failed: ${verification.status} ${JSON.stringify(verification.body)}`);
+  }
+  return verification.body as { registrationId: string; profileToken: string; expiresAt: string };
 }
 
 /** Minimal valid PNG (1x1 transparent pixel) used as a personal photo fixture. */

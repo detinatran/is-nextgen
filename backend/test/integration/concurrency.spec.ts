@@ -93,7 +93,7 @@ describe('concurrency: competing writers on real PostgreSQL', () => {
       ctx.http
         .put(`/api/v1/me/attempts/${attemptId}/answers/${q.deliveredQuestionId}`)
         .set(authed(cookies))
-        .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() }),
+        .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 }),
       ctx.http
         .post(`/api/v1/me/attempts/${attemptId}/submission`)
         .set(authed(cookies))
@@ -129,7 +129,7 @@ describe('concurrency: competing writers on real PostgreSQL', () => {
       ctx.http
         .put(`/api/v1/me/attempts/${attemptId}/answers/${q.id}`)
         .set(authed(cookies))
-        .send({ selectedOptionId: o.id, expectedRevision: 0, mutationId: randomUUID() }),
+        .send({ selectedOptionId: o.id, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 }),
       finalization.finalizeOverdueAttempt(attemptId, 'c4-test'),
     ]);
 
@@ -157,7 +157,7 @@ describe('concurrency: competing writers on real PostgreSQL', () => {
       ctx.http
         .put(`/api/v1/me/attempts/${attemptId}/answers/${q.deliveredQuestionId}`)
         .set(authed(cookies))
-        .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() }),
+        .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 }),
       ctx.http.post(`/api/v1/me/attempts/${attemptId}/session-takeover`).set(authed(session2.cookies)).send(),
     ]);
 

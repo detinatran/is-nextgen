@@ -9,6 +9,8 @@ export interface AuthContext {
   sessionId: string;
   email: string;
   roles: string[];
+  /** F05: MFA proof timestamp of THIS session; null = not MFA-verified. */
+  mfaVerifiedAt: Date | null;
 }
 
 export interface RegistrationAuthContext {

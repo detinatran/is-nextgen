@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export interface AssignmentSummary {
   assignmentId: string;
   exam: { id: string; round: number; name: string; durationSeconds: number };
@@ -17,12 +19,21 @@ export interface AvailabilityResponse {
   serverTime: string;
 }
 
-export interface AttemptStartedResponse {
-  attemptId: string;
-  assignmentId: string;
-  ordinal: number;
-  state: 'ACTIVE';
-  startedAt: string;
-  deadlineAt: string;
-  serverTime: string;
+export class AttemptStartedResponse {
+  @ApiProperty({ format: 'uuid' })
+  attemptId!: string;
+  @ApiProperty({ format: 'uuid' })
+  assignmentId!: string;
+  @ApiProperty()
+  ordinal!: number;
+  @ApiProperty({ enum: ['ACTIVE'] })
+  state!: 'ACTIVE';
+  @ApiProperty({ format: 'date-time' })
+  startedAt!: string;
+  @ApiProperty({ format: 'date-time' })
+  deadlineAt!: string;
+  @ApiProperty({ format: 'date-time' })
+  serverTime!: string;
+  @ApiProperty({ example: 1 })
+  writerGeneration!: number | null;
 }

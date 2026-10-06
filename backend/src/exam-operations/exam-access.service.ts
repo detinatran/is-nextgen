@@ -280,6 +280,7 @@ export class ExamAccessService {
           startedAt: startedAt.toISOString(),
           deadlineAt: deadlineAt.toISOString(),
           serverTime: new Date().toISOString(),
+          writerGeneration: 1,
         };
         return response;
         },
@@ -333,6 +334,9 @@ export class ExamAccessService {
           'Idempotent start could not resolve the committed attempt',
         );
       }
+      const writer = await tx.active_exam_sessions.findUnique({
+        where: { attempt_id: attempt.id },
+      });
       return {
         attemptId: attempt.id,
         assignmentId,
@@ -341,6 +345,7 @@ export class ExamAccessService {
         startedAt: attempt.started_at.toISOString(),
         deadlineAt: attempt.deadline_at.toISOString(),
         serverTime: new Date().toISOString(),
+        writerGeneration: writer ? Number(writer.writer_generation) : null,
       };
     });
   }

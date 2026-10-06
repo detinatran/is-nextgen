@@ -113,7 +113,7 @@ export class FixturesController {
         where: { deduplication_key: `challenge:${challengeId}` },
       });
       const activationCode = (intent.payload as { code?: string }).code ?? '';
-      return { userId: user.id, candidateId: candidate.id, activationCode };
+      return { userId: user.id, candidateId: candidate.id, activationCode, activationChallengeId: challengeId };
     });
     return result;
   }

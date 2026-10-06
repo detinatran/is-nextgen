@@ -26,10 +26,21 @@ function hashesEqual(a: string, b: string): boolean {
   return ba.length === bb.length && timingSafeEqual(ba, bb);
 }
 
+export interface ConsumedChallenge {
+  challengeId: string;
+  userId: string | null;
+  emailNormalized: string;
+}
+
 /**
- * Email OTP challenges (activation, verification, reset).
+ * Email OTP challenges (activation, verification, reset, MFA, recovery).
  * Only verifier hashes are stored; raw codes live exclusively in the
  * notification pipeline and are never logged or returned by any API.
+ *
+ * F01 invariant: challenges are consumed BY IDENTITY — the caller supplies
+ * the exact challengeId (locator) plus the OTP (verifier). There is no
+ * lookup of accounts/challenges by OTP anywhere: two accounts that happen
+ * to receive the same six-digit code can never cross-authenticate.
  */
 @Injectable()
 export class ChallengeService {
@@ -73,35 +84,53 @@ export class ChallengeService {
   }
 
   /**
-   * Validates and consumes a code. Wrong codes count against the newest open
-   * challenge; exhausting the attempt budget consumes it (fail-closed).
+   * Validates and consumes ONE exact challenge. Row-locked so concurrent
+   * consumers serialize; wrong codes commit a durable attempt against that
+   * challenge (budget exhaustion consumes it, fail-closed). Every failure
+   * mode returns the same generic rejection — no existence or state leaks.
+   *
+   * F01-E: expiry is evaluated against the authoritative PostgreSQL clock
+   * READ AFTER the row lock is held. A challenge that expires while its
+   * consumer waited on the lock is rejected, never consumed.
    */
-  async consume(
+  async consumeById(
+    challengeId: string,
     purpose: ChallengePurpose,
     code: string,
-  ): Promise<{ userId: string | null; emailNormalized: string }> {
-    const now = new Date();
+  ): Promise<ConsumedChallenge> {
     const consumed = await this.prisma.$transaction(async (tx) => {
-      const open = await tx.$queryRaw<auth_challenges[]>`
-        SELECT * FROM auth_challenges WHERE purpose=${purpose}
-        AND consumed_at IS NULL AND expires_at>clock_timestamp()
-        ORDER BY created_at DESC LIMIT 5 FOR UPDATE`;
-      const hash = sha256(code);
-      const match = open.find((c) => hashesEqual(c.verifier_hash, hash));
-      if (!match) {
-        const newest = open[0];
-        if (newest) {
-          const used = newest.attempts_used + 1;
-          await tx.auth_challenges.update({
-            where: { id: newest.id },
-            data: { attempts_used: used, ...(used >= newest.attempts_limit ? { consumed_at: now } : {}) },
-          });
-        }
+      // Row lock first; the authoritative clock is read only after the lock
+      // is held, so expiry-at-lock is decided with PostgreSQL's own time.
+      const rows = await tx.$queryRaw<auth_challenges[]>`
+        SELECT * FROM auth_challenges WHERE id=${challengeId}::uuid FOR UPDATE`;
+      const clockRows = await tx.$queryRaw<{ db_now: Date }[]>`
+        SELECT clock_timestamp() AS db_now`;
+      const challenge = rows[0];
+      const now = clockRows[0]?.db_now ?? new Date();
+      if (
+        !challenge ||
+        challenge.purpose !== purpose ||
+        challenge.consumed_at !== null ||
+        challenge.expires_at <= now ||
+        challenge.attempts_used >= challenge.attempts_limit
+      ) {
+        return null;
+      }
+      if (!hashesEqual(challenge.verifier_hash, sha256(code))) {
+        const used = challenge.attempts_used + 1;
+        await tx.auth_challenges.update({
+          where: { id: challenge.id },
+          data: { attempts_used: used, ...(used >= challenge.attempts_limit ? { consumed_at: now } : {}) },
+        });
         // Return normally so the rejection counter commits. Throw only afterwards.
         return null;
       }
-      await tx.auth_challenges.update({ where: { id: match.id }, data: { consumed_at: now } });
-      return { userId: match.user_id, emailNormalized: match.email_normalized };
+      await tx.auth_challenges.update({ where: { id: challenge.id }, data: { consumed_at: now } });
+      return {
+        challengeId: challenge.id,
+        userId: challenge.user_id,
+        emailNormalized: challenge.email_normalized,
+      };
     });
     if (!consumed) throw AppException.authRequired('Invalid or expired verification code');
     return consumed;

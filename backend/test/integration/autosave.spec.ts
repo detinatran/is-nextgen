@@ -21,6 +21,15 @@ describe('assessment, autosave and takeover', () => {
   let password: string;
   let cookies: SessionCookies;
 
+  // Reads the authoritative writer generation directly from PostgreSQL
+  // (the HTTP exposure of this field is asserted separately in V-F02-01).
+  const genOf = async (id: string): Promise<number> => {
+    const attempt = await ctx.prisma.attempts.findUniqueOrThrow({ where: { id } });
+    const writer = await ctx.prisma.active_exam_sessions.findUniqueOrThrow({
+      where: { candidate_id: attempt.candidate_id },
+    });
+    return Number(writer.writer_generation);
+  };
   beforeAll(async () => {
     ctx = await createTestApp();
   });
@@ -82,21 +91,21 @@ describe('assessment, autosave and takeover', () => {
     const save1 = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(save1.status).toBe(200);
     expect(save1.body.revision).toBe(1);
 
     const save2 = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: opt2, expectedRevision: 1, mutationId: randomUUID() });
+      .send({ selectedOptionId: opt2, expectedRevision: 1, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(save2.status).toBe(200);
     expect(save2.body.revision).toBe(2);
 
     const clear = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: null, expectedRevision: 2, mutationId: randomUUID() });
+      .send({ selectedOptionId: null, expectedRevision: 2, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(clear.status).toBe(200);
     expect(clear.body.revision).toBe(3);
 
@@ -117,11 +126,11 @@ describe('assessment, autosave and takeover', () => {
     await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     const stale = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: opt1, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(stale.status).toBe(409);
     expect(stale.body.error.code).toBe('REVISION_CONFLICT');
     expect(stale.body.error.details.currentRevision).toBe(1);
@@ -135,13 +144,13 @@ describe('assessment, autosave and takeover', () => {
     const badOption = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: foreignOption, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: foreignOption, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(badOption.status).toBe(400);
 
     const foreignQuestion = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${randomUUID()}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(foreignQuestion.status).toBe(404);
   });
 
@@ -151,13 +160,13 @@ describe('assessment, autosave and takeover', () => {
     const flag = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/review-flags/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ flagged: true, expectedRevision: 0 });
+      .send({ flagged: true, expectedRevision: 0, writerGeneration: await genOf(attemptId) });
     expect(flag.status).toBe(200);
     expect(flag.body).toEqual({ flagged: true, revision: 1 });
     const unflag = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/review-flags/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ flagged: false, expectedRevision: 1 });
+      .send({ flagged: false, expectedRevision: 1, writerGeneration: await genOf(attemptId) });
     expect(unflag.status).toBe(200);
     expect(unflag.body.revision).toBe(2);
   });
@@ -168,7 +177,7 @@ describe('assessment, autosave and takeover', () => {
     await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: q0.options[2].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: q0.options[2].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
 
     // New browser: same account logs in again.
     const session2 = await login(ctx, email, password);
@@ -190,7 +199,7 @@ describe('assessment, autosave and takeover', () => {
     await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
 
     // FR-18: logout releases the writer but keeps the attempt.
     await ctx.http.post('/api/v1/auth/logout').set(authed(cookies)).send();
@@ -211,14 +220,14 @@ describe('assessment, autosave and takeover', () => {
     const oldWriter = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${view.form[1].deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: view.form[1].options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: view.form[1].options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(oldWriter.status).toBe(401);
 
     // New writer can save; no new attempt was created.
     const save = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${view.form[1].deliveredQuestionId}`)
       .set(authed(session2.cookies))
-      .send({ selectedOptionId: view.form[1].options[1].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: view.form[1].options[1].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: await genOf(attemptId) });
     expect(save.status).toBe(200);
     const total = await ctx.prisma.attempts.count();
     expect(total).toBe(1);
@@ -243,7 +252,7 @@ describe('assessment, autosave and takeover', () => {
     const oldWriter = await ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${view.form[2].deliveredQuestionId}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: view.form[2].options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: view.form[2].options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(oldWriter.status).toBe(409);
   });
 

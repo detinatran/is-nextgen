@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import argon2 from 'argon2';
 import type { AppConfig } from '../config/configuration';
@@ -10,12 +11,20 @@ import { ChallengeService } from './challenge.service';
 import { SessionService } from './session.service';
 
 export interface LoginResult {
+  kind: 'session';
   userId: string;
   email: string;
   roles: string[];
   sessionToken: string;
   csrfToken: string;
   expiresAt: Date;
+}
+
+export interface MfaRequiredResult {
+  kind: 'mfa_required';
+  userId: string;
+  email: string;
+  challengeId: string;
 }
 
 function normalizeEmail(email: string): string {
@@ -61,12 +70,13 @@ export class AuthService {
     return roles.map((r) => r.code);
   }
 
-  async activate(token: string, password: string, correlationId: string): Promise<{ userId: string; email: string }> {
-    const consumed = await this.challenges.consume('ACTIVATION', token);
+  async activate(challengeId: string, code: string, password: string, correlationId: string): Promise<{ userId: string; email: string }> {
+    const consumed = await this.challenges.consumeById(challengeId, 'ACTIVATION', code);
     const user = await this.prisma.$transaction(async (tx) => {
+      // Identity comes from the exact consumed challenge only.
       const found = consumed.userId
         ? await tx.users.findUnique({ where: { id: consumed.userId } })
-        : await tx.users.findUnique({ where: { email_normalized: consumed.emailNormalized } });
+        : null;
       if (!found) throw AppException.notFound('Account not found');
       if (found.status !== 'PROVISIONED') {
         throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Account is not awaiting activation');
@@ -91,7 +101,7 @@ export class AuthService {
     return { userId: user.id, email: user.email };
   }
 
-  async login(identifier: string, password: string, correlationId: string): Promise<LoginResult> {
+  async login(identifier: string, password: string, correlationId: string): Promise<LoginResult | MfaRequiredResult> {
     const fail = (category: string): AppException => {
       this.logger.log(`auth login failure category=${category} correlationId=${correlationId}`);
       return AppException.authRequired('Invalid credentials');
@@ -109,9 +119,28 @@ export class AuthService {
     if (user.status === 'PROVISIONED') throw fail('NOT_ACTIVATED');
     if (user.status === 'DISABLED') throw fail('DISABLED');
 
+    const roles = await this.roleCodesFor(user.id);
+
+    // F05: ADMIN authority requires a completed email-OTP MFA challenge.
+    // No session (not even a limited one) is issued before MFA succeeds.
+    if (roles.includes('ADMIN')) {
+      const { challengeId } = await this.prisma.$transaction((tx) =>
+        this.challenges.issue(tx, 'MFA', normalizeEmail(user.email), user.id),
+      );
+      await this.audit.record(this.prisma, {
+        actor_user_id: user.id,
+        action: 'auth.login',
+        target_type: 'user',
+        target_id: user.id,
+        correlation_id: correlationId,
+        metadata: { outcome: 'MFA_REQUIRED' },
+      });
+      this.logger.log(`auth login mfa_required correlationId=${correlationId}`);
+      return { kind: 'mfa_required', userId: user.id, email: user.email, challengeId };
+    }
+
     const ttl = this.config.get('sessionTtlHours', 24);
     const { token, csrfToken, expiresAt } = await this.sessions.issue(user.id, ttl);
-    const roles = await this.roleCodesFor(user.id);
 
     await this.audit.record(this.prisma, {
       actor_user_id: user.id,
@@ -122,7 +151,47 @@ export class AuthService {
       metadata: { outcome: 'success' },
     });
     this.logger.log(`auth login success correlationId=${correlationId}`);
-    return { userId: user.id, email: user.email, roles, sessionToken: token, csrfToken, expiresAt };
+    return { kind: 'session', userId: user.id, email: user.email, roles, sessionToken: token, csrfToken, expiresAt };
+  }
+
+  /**
+   * F05 step 2: the exact MFA challenge + OTP promote to a full Admin
+   * session whose mfa_verified_at is committed at creation. Mail delivery
+   * failures can never promote authority — the OTP lives in the durable
+   * notification intent and the session is created only on correct proof.
+   */
+  async verifyAdminMfa(
+    challengeId: string,
+    code: string,
+    correlationId: string,
+  ): Promise<LoginResult> {
+    const consumed = await this.challenges.consumeById(challengeId, 'MFA', code);
+    if (!consumed.userId) {
+      // MFA challenges are always user-bound; unbound proof never promotes.
+      throw AppException.authRequired('Invalid or expired verification code');
+    }
+    const user = await this.prisma.users.findUnique({ where: { id: consumed.userId } });
+    if (!user || user.status !== 'ACTIVE') {
+      throw AppException.authRequired('Invalid or expired verification code');
+    }
+    // Defense in depth: the MFA proof must belong to an actual ADMIN.
+    const roles = await this.roleCodesFor(user.id);
+    if (!roles.includes('ADMIN')) {
+      throw AppException.forbidden('Account does not hold the ADMIN role');
+    }
+    const ttl = this.config.get('sessionTtlHours', 24);
+    const mfaVerifiedAt = new Date();
+    const { token, csrfToken, expiresAt } = await this.sessions.issue(user.id, ttl, { mfaVerifiedAt });
+    await this.audit.record(this.prisma, {
+      actor_user_id: user.id,
+      action: 'auth.admin_mfa_verified',
+      target_type: 'user',
+      target_id: user.id,
+      correlation_id: correlationId,
+      metadata: { challengeId },
+    });
+    this.logger.log(`auth admin mfa verified correlationId=${correlationId}`);
+    return { kind: 'session', userId: user.id, email: user.email, roles, sessionToken: token, csrfToken, expiresAt };
   }
 
   /**
@@ -157,24 +226,30 @@ export class AuthService {
     this.logger.log(`auth logout correlationId=${correlationId}`);
   }
 
-  async requestEmailVerification(email: string, correlationId: string): Promise<void> {
+  /**
+   * Returns a challenge locator for the flow. Unknown/disabled accounts get a
+   * random decoy so the response shape never reveals account existence; the
+   * decoy can never verify because no matching challenge row exists.
+   */
+  async requestEmailVerification(email: string, correlationId: string): Promise<{ challengeId: string }> {
     this.logger.log(`auth email verification requested correlationId=${correlationId}`);
     const normalized = normalizeEmail(email);
     const user = await this.prisma.users.findUnique({ where: { email_normalized: normalized } });
     if (user && user.status !== 'DISABLED') {
-      await this.prisma.$transaction((tx) =>
+      const { challengeId } = await this.prisma.$transaction((tx) =>
         this.challenges.issue(tx, 'EMAIL_VERIFY', normalized, user.id),
       );
+      return { challengeId };
     }
-    // Response is identical whether or not the account exists (no enumeration).
+    return { challengeId: randomUUID() };
   }
 
-  async verifyEmail(token: string): Promise<{ email: string }> {
-    const consumed = await this.challenges.consume('EMAIL_VERIFY', token);
+  async verifyEmail(challengeId: string, code: string): Promise<{ email: string }> {
+    const consumed = await this.challenges.consumeById(challengeId, 'EMAIL_VERIFY', code);
     const user = await this.prisma.$transaction(async (tx) => {
       const found = consumed.userId
         ? await tx.users.findUnique({ where: { id: consumed.userId } })
-        : await tx.users.findUnique({ where: { email_normalized: consumed.emailNormalized } });
+        : null;
       if (!found) throw AppException.notFound('Account not found');
       return tx.users.update({
         where: { id: found.id },
@@ -184,23 +259,31 @@ export class AuthService {
     return { email: user.email };
   }
 
-  async requestPasswordReset(email: string, correlationId: string): Promise<void> {
+  /** Same decoy contract as email verification (no account enumeration). */
+  async requestPasswordReset(email: string, correlationId: string): Promise<{ challengeId: string }> {
     this.logger.log(`auth password reset requested correlationId=${correlationId}`);
     const normalized = normalizeEmail(email);
     const user = await this.prisma.users.findUnique({ where: { email_normalized: normalized } });
     if (user && user.status === 'ACTIVE' && user.password_hash) {
-      await this.prisma.$transaction((tx) =>
+      const { challengeId } = await this.prisma.$transaction((tx) =>
         this.challenges.issue(tx, 'PASSWORD_RESET', normalized, user.id),
       );
+      return { challengeId };
     }
+    return { challengeId: randomUUID() };
   }
 
-  async resetPassword(token: string, newPassword: string, correlationId: string): Promise<void> {
-    const consumed = await this.challenges.consume('PASSWORD_RESET', token);
+  /** F01: reset targets exactly the challenge-bound user; no global OTP lookup. */
+  async resetPassword(challengeId: string | null, code: string, newPassword: string, correlationId: string): Promise<void> {
+    if (!challengeId) {
+      // A code without its challenge locator can never identify an account.
+      throw AppException.authRequired('Invalid or expired verification code');
+    }
+    const consumed = await this.challenges.consumeById(challengeId, 'PASSWORD_RESET', code);
     await this.prisma.$transaction(async (tx) => {
       const user = consumed.userId
         ? await tx.users.findUnique({ where: { id: consumed.userId } })
-        : await tx.users.findUnique({ where: { email_normalized: consumed.emailNormalized } });
+        : null;
       if (!user) throw AppException.notFound('Account not found');
       await tx.users.update({
         where: { id: user.id },

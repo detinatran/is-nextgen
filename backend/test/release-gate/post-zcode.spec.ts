@@ -97,10 +97,11 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
   });
   it('GAP-OTP-BUDGET: an incorrect OTP consumes a durable attempt', async () => {
     const a = await actor();
-    await ctx.http.post('/api/v1/auth/email-verification-requests').send({ email: a.email });
+    const requested = await ctx.http.post('/api/v1/auth/email-verification-requests').send({ email: a.email });
     const challenge = await ctx.prisma.auth_challenges.findFirstOrThrow({ where: { purpose: 'EMAIL_VERIFY' } });
+    expect(challenge.id).toBe(requested.body.challengeId);
     const wrong = createHash('sha256').update('999999').digest('hex') === challenge.verifier_hash ? '888888' : '999999';
-    const res = await ctx.http.post('/api/v1/auth/email-verifications').send({ token: wrong });
+    const res = await ctx.http.post('/api/v1/auth/email-verifications').send({ challengeId: challenge.id, code: wrong });
     expect(res.status).toBe(401);
     expect((await ctx.prisma.auth_challenges.findUniqueOrThrow({ where: { id: challenge.id } })).attempts_used).toBe(1);
   });
@@ -119,7 +120,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
     }, { timeout: 10000 });
     await lockReady;
     const service = ctx.app.get(ChallengeService);
-    const calls = [service.consume('EMAIL_VERIFY', code), service.consume('EMAIL_VERIFY', code)];
+    const calls = [service.consumeById(challenge.id, 'EMAIL_VERIFY', code), service.consumeById(challenge.id, 'EMAIL_VERIFY', code)];
     await new Promise((resolve) => setTimeout(resolve, 250));
     release(); await blocker;
     const results = await Promise.allSettled(calls);
@@ -180,7 +181,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
     const takeover = await ctx.http.post(`/api/v1/me/attempts/${attempt.attemptId}/session-takeover`).set(authed(a.cookies)).send();
     expect(takeover.body.writerGeneration).toBe(2);
     const oldWriter = await ctx.http.put(`/api/v1/me/attempts/${attempt.attemptId}/answers/${q.deliveredQuestionId}`)
-      .set(authed(a.cookies)).send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .set(authed(a.cookies)).send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(oldWriter.status).toBe(409);
   });
   it('GAP-WORKER-RESTART: expired RUNNING scoring lease is recovered', async () => {
@@ -243,7 +244,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
     const before = await ctx.http.get(`/api/v1/me/attempts/${attempt.attemptId}`).set('Cookie', a.cookies.session);
     const q = before.body.form[0];
     expect((await ctx.http.put(`/api/v1/me/attempts/${attempt.attemptId}/answers/${q.deliveredQuestionId}`).set(authed(a.cookies))
-      .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() })).status).toBe(200);
+      .send({ selectedOptionId: q.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 })).status).toBe(200);
     await destroyTestApp(ctx); ctx = await createTestApp();
     const after = await ctx.http.get(`/api/v1/me/attempts/${attempt.attemptId}`).set('Cookie', a.cookies.session);
     expect(after.status).toBe(200);
@@ -289,7 +290,8 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
     const challenge = await ctx.prisma.auth_challenges.create({ data: { user_id: a.userId, email_normalized: a.email,
       purpose: 'EMAIL_VERIFY', verifier_hash: createHash('sha256').update('246810').digest('hex'),
       created_at: new Date(Date.now() - 3600000), expires_at: new Date(Date.now() - 600000) } });
-    const res = await ctx.http.post('/api/v1/auth/email-verifications').send({ token: '246810' });
+    // F07 setup adaptation: the API now requires the exact challenge locator.
+    const res = await ctx.http.post('/api/v1/auth/email-verifications').send({ challengeId: challenge.id, code: '246810' });
     expect(res.status).toBe(401);
     expect((await ctx.prisma.auth_challenges.findUniqueOrThrow({ where: { id: challenge.id } })).consumed_at).toBeNull();
   });

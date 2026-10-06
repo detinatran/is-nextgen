@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsBoolean, IsDefined, ValidateNested,
+  IsBoolean, IsDefined, IsInt, Min, ValidateNested,
   IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
   MinLength,
@@ -112,6 +113,12 @@ export class CreateRegistrationDraftDto {
 }
 
 export class UpdateRegistrationDto {
+  @ApiProperty({ description: 'Registration revision the client last read; stale or absent revisions are rejected with REVISION_CONFLICT' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  expectedRevision?: number;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -209,49 +216,92 @@ export interface RegistrationCapabilityResponse {
   };
 }
 
-export interface RegistrationResponse {
-  registrationId: string;
-  status: 'DRAFT' | 'SUBMITTED';
-  revision: number;
-  competition: { code: string; registrationClosesAt: string };
-  profile: {
-    fullName: string;
-    dateOfBirth: string | null;
-    studentId: string;
-    school: string;
-    department: string;
-    major: string;
-    email: string;
-    phone: string;
-    facebook: string;
-    revision: number;
-  };
-  video: {
-    state: string;
-    mediaObjectId: string | null;
-    sizeBytes: number | null;
-    durationSeconds: number | null;
-  } | null;
-  photo: {
-    uploadId: string;
-    state: 'READY' | 'EXPIRED';
-  } | null;
-  consents: {
-    purpose: 'DATA_PROCESSING' | 'MEDIA_USAGE' | 'EVENT_COVERAGE';
-    granted: boolean;
-    wordingVersion: string;
-    recordedAt: string;
-  }[];
-  favoriteCandidateEligible: boolean;
-  candidateCode: string | null;
+class RegistrationProfileDto {
+  @ApiProperty()
+  fullName!: string;
+  @ApiProperty({ nullable: true, type: String, example: '2004-05-12' })
+  dateOfBirth!: string | null;
+  @ApiProperty()
+  studentId!: string;
+  @ApiProperty()
+  school!: string;
+  @ApiProperty()
+  department!: string;
+  @ApiProperty()
+  major!: string;
+  @ApiProperty()
+  email!: string;
+  @ApiProperty()
+  phone!: string;
+  @ApiProperty()
+  facebook!: string;
+  @ApiProperty()
+  revision!: number;
 }
 
-export interface SubmissionResponse {
-  candidateCode: string;
-  status: 'SUBMITTED';
-  submittedAt: string;
-  favoriteCandidateEligible: boolean;
-  nextSteps: string[];
+class RegistrationVideoDto {
+  @ApiProperty({ example: 'BOUND' })
+  state!: string;
+  @ApiProperty({ nullable: true, type: String, format: 'uuid' })
+  mediaObjectId!: string | null;
+  @ApiProperty({ nullable: true, type: Number })
+  sizeBytes!: number | null;
+  @ApiProperty({ nullable: true, type: Number })
+  durationSeconds!: number | null;
+}
+
+class RegistrationPhotoDto {
+  @ApiProperty({ format: 'uuid' })
+  uploadId!: string;
+  @ApiProperty({ enum: ['READY', 'EXPIRED'] })
+  state!: 'READY' | 'EXPIRED';
+}
+
+class RegistrationConsentDto {
+  @ApiProperty({ enum: ['DATA_PROCESSING', 'MEDIA_USAGE', 'EVENT_COVERAGE'] })
+  purpose!: 'DATA_PROCESSING' | 'MEDIA_USAGE' | 'EVENT_COVERAGE';
+  @ApiProperty()
+  granted!: boolean;
+  @ApiProperty()
+  wordingVersion!: string;
+  @ApiProperty({ format: 'date-time' })
+  recordedAt!: string;
+}
+
+export class RegistrationResponse {
+  @ApiProperty({ format: 'uuid' })
+  registrationId!: string;
+  @ApiProperty({ enum: ['DRAFT', 'SUBMITTED'] })
+  status!: 'DRAFT' | 'SUBMITTED';
+  @ApiProperty({ description: 'ExpectedRevision source for PATCH CAS' })
+  revision!: number;
+  @ApiProperty({ type: Object })
+  competition!: { code: string; registrationClosesAt: string };
+  @ApiProperty({ type: RegistrationProfileDto })
+  profile!: RegistrationProfileDto;
+  @ApiProperty({ nullable: true, type: RegistrationVideoDto })
+  video!: RegistrationVideoDto | null;
+  @ApiProperty({ nullable: true, type: RegistrationPhotoDto })
+  photo!: RegistrationPhotoDto | null;
+  @ApiProperty({ type: [RegistrationConsentDto] })
+  consents!: RegistrationConsentDto[];
+  @ApiProperty()
+  favoriteCandidateEligible!: boolean;
+  @ApiProperty({ nullable: true, type: String, example: 'ISNG-2026-1A2B3C4D' })
+  candidateCode!: string | null;
+}
+
+export class SubmissionResponse {
+  @ApiProperty({ example: 'ISNG-2026-1A2B3C4D' })
+  candidateCode!: string;
+  @ApiProperty({ enum: ['SUBMITTED'] })
+  status!: 'SUBMITTED';
+  @ApiProperty({ format: 'date-time' })
+  submittedAt!: string;
+  @ApiProperty({ description: 'Derived from the active MEDIA_USAGE consent; gates the Favorite Candidate award' })
+  favoriteCandidateEligible!: boolean;
+  @ApiProperty({ type: [String] })
+  nextSteps!: string[];
 }
 
 export interface RegistrationFormConfig {
@@ -276,4 +326,29 @@ export interface RegistrationFormConfig {
     };
   };
   favoriteCandidateNotice: string;
+}
+
+
+export class RegistrationRecoveryRequestDto {
+  @ApiProperty({ example: 'candidate@example.com', description: 'Current registration email; must match the registration exactly' })
+  @IsEmail({}, { message: 'email is not valid' })
+  @MaxLength(255)
+  email!: string;
+}
+
+export class RegistrationRecoveryVerificationDto {
+  @ApiProperty({ format: 'uuid', description: 'Challenge locator issued by the recovery request' })
+  @IsUUID()
+  challengeId!: string;
+
+  @ApiProperty({ example: '123456' })
+  @IsString()
+  @Matches(/^\d{6}$/, { message: 'code must be a 6-digit OTP' })
+  code!: string;
+}
+
+export interface RegistrationRecoveryGrantResponse {
+  registrationId: string;
+  profileToken: string;
+  expiresAt: string;
 }

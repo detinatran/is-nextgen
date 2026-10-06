@@ -133,14 +133,14 @@ describe('frontend API contract', () => {
     const saved = await ctx.http
       .put(`/api/v1/me/attempts/${start.body.attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(session.cookies))
-      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: q0.options[0].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(saved.status).toBe(200);
     snapshot('answer-saved.json', saved.body);
 
     const conflict = await ctx.http
       .put(`/api/v1/me/attempts/${start.body.attemptId}/answers/${q0.deliveredQuestionId}`)
       .set(authed(session.cookies))
-      .send({ selectedOptionId: q0.options[1].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: q0.options[1].deliveredOptionId, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(conflict.status).toBe(409);
     snapshot('error-revision-conflict.json', conflict.body);
 

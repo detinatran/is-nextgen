@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { randomBytes, createHash } from 'node:crypto';
+import { randomBytes, createHash, randomUUID } from 'node:crypto';
 import type { Prisma, registration_access_grants, registrations } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { ErrorCodes } from '../common/errors/error-codes';
 import { AuditService } from '../common/audit/audit.service';
 import { IdempotencyService, type Tx } from '../common/idempotency/idempotency.service';
 import { PrismaService } from '../database/prisma.service';
+import { ChallengeService } from '../identity-access/challenge.service';
 import type {
   CreateRegistrationDraftDto,
   RegistrationResponse,
@@ -61,6 +62,7 @@ export class RegistrationsService {
     private readonly prisma: PrismaService,
     private readonly idempotency: IdempotencyService,
     private readonly audit: AuditService,
+    private readonly challenges: ChallengeService,
   ) {}
 
   async createDraft(
@@ -115,8 +117,11 @@ export class RegistrationsService {
         },
       ]);
 
-      const profileGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'READ_EDIT_PROFILE');
-      const uploadGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'DRAFT_UPLOAD');
+      // F03: the anonymous initial flow receives ONE capability with the
+      // DRAFT_UPLOAD (initial submission) scope. It never asserts verified
+      // email and never becomes long-lived private edit authority; later
+      // read/edit requires the verified recovery flow below.
+      const draftGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'DRAFT_UPLOAD');
       await this.flagDuplicates(tx, registration.id, emailNormalized, cleanText(dto.studentId));
       await this.audit.record(tx, {
         action: 'registration.draft_created',
@@ -125,7 +130,7 @@ export class RegistrationsService {
         correlation_id: correlationId,
         metadata: { competitionCode: competition.code },
       });
-      return { registration, expiresAt: profileGrant.expiresAt, profileToken: profileGrant.token, uploadToken: uploadGrant.token };
+      return { registration, expiresAt: draftGrant.expiresAt, draftToken: draftGrant.token };
     });
 
     this.logger.log(`registration draft created correlationId=${correlationId}`);
@@ -133,8 +138,10 @@ export class RegistrationsService {
       registrationId: result.registration.id,
       status: 'DRAFT',
       capability: {
-        profileToken: result.profileToken,
-        uploadToken: result.uploadToken,
+        uploadToken: result.draftToken,
+        // Deprecated alias of uploadToken kept for initial-flow clients;
+        // both carry the DRAFT_UPLOAD scope only.
+        profileToken: result.draftToken,
         expiresAt: result.expiresAt.toISOString(),
       },
     };
@@ -209,9 +216,25 @@ export class RegistrationsService {
   ): Promise<RegistrationResponse> {
     await this.prisma.$transaction(async (tx) => {
       const registration = await this.lockRegistration(tx, registrationId);
-      if (registration.state !== 'DRAFT') {
-        throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration is immutable');
+
+      // F04: server-authoritative deadline (competition close time) applies
+      // to DRAFT and SUBMITTED registrations alike.
+      const competition = await tx.competitions.findUniqueOrThrow({
+        where: { id: registration.competition_id },
+      });
+      if (new Date() >= competition.registration_closes_at) {
+        throw AppException.conflict(ErrorCodes.DEADLINE_PASSED, 'Registration deadline has passed');
       }
+
+      // F04: optimistic concurrency. An absent or stale revision is a
+      // fail-closed conflict, never a silent overwrite.
+      const currentRevision = Number(registration.revision);
+      if (dto.expectedRevision === undefined || dto.expectedRevision !== currentRevision) {
+        throw AppException.conflict(ErrorCodes.REVISION_CONFLICT, 'Registration revision conflict', {
+          currentRevision,
+        });
+      }
+
       const patch: Prisma.candidate_profilesUpdateInput = {};
       if (dto.fullName !== undefined) patch.full_name = cleanText(dto.fullName);
       if (dto.dateOfBirth !== undefined) patch.date_of_birth = new Date(`${dto.dateOfBirth}T00:00:00Z`);
@@ -221,6 +244,11 @@ export class RegistrationsService {
       if (dto.major !== undefined) patch.major = cleanText(dto.major);
       if (dto.facebook !== undefined) patch.facebook = cleanText(dto.facebook);
       if (dto.email !== undefined) {
+        if (registration.state === 'SUBMITTED') {
+          // Submitted evidence references the submitted email; changing it
+          // requires a fresh verified channel, so it is rejected explicitly.
+          throw AppException.validation('Email cannot be changed after submission');
+        }
         patch.email = cleanText(dto.email);
         patch.email_normalized = normalizeEmail(dto.email);
       }
@@ -229,7 +257,9 @@ export class RegistrationsService {
         patch.phone_normalized = normalizePhone(dto.phone);
       }
 
-      // Consent rows are append-only evidence: a new answer appends a new row.
+      // Consent rows are append-only evidence; answers may change while the
+      // registration is still a draft. Submitted consents are withdrawn by
+      // email (recorded by the BTC), never rewritten here.
       const consentAppends: {
         purpose: 'MEDIA_USAGE' | 'EVENT_COVERAGE';
         granted: boolean;
@@ -249,6 +279,12 @@ export class RegistrationsService {
           wordingVersion: dto.eventCoverageConsent.wordingVersion,
         });
       }
+      if (registration.state === 'SUBMITTED' && consentAppends.length > 0) {
+        throw AppException.conflict(
+          ErrorCodes.STATE_CONFLICT,
+          'Submitted consent evidence is immutable; withdraw by email',
+        );
+      }
       if (Object.keys(patch).length === 0 && consentAppends.length === 0) {
         throw AppException.validation('At least one profile field or consent answer is required');
       }
@@ -260,17 +296,23 @@ export class RegistrationsService {
           where: { candidate_id: registration.candidate_id },
           data: { ...patch, revision: { increment: 1 }, updated_at: new Date() },
         });
-        await tx.registrations.update({
-          where: { id: registration.id },
-          data: { revision: { increment: 1 }, updated_at: new Date() },
-        });
       }
+      // The frozen trigger keeps submitted_profile/submitted_at immutable;
+      // only the mutable current profile and the registration revision move.
+      await tx.registrations.update({
+        where: { id: registration.id },
+        data: { revision: { increment: 1 }, updated_at: new Date() },
+      });
       await this.audit.record(tx, {
         action: 'registration.profile_updated',
         target_type: 'registration',
         target_id: registration.id,
         correlation_id: correlationId,
-        metadata: { fields: Object.keys(patch), consents: consentAppends.map((c) => c.purpose) },
+        metadata: {
+          fields: Object.keys(patch),
+          consents: consentAppends.map((c) => c.purpose),
+          state: registration.state,
+        },
       });
     });
     return this.getRegistration(registrationId);
@@ -629,6 +671,7 @@ export class RegistrationsService {
     registrationId: string,
     emailNormalized: string,
     scope: 'READ_EDIT_PROFILE' | 'DRAFT_UPLOAD',
+    verifiedAt?: Date,
   ): Promise<{ token: string; expiresAt: Date }> {
     const token = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + GRANT_TTL_MS);
@@ -637,12 +680,123 @@ export class RegistrationsService {
         registration_id: registrationId,
         token_hash: sha256(token),
         verified_email_normalized: emailNormalized,
-        email_verified_at: new Date(),
+        // Schema requires a timestamp here: initial draft capabilities record
+        // their issue time (delivery evidence), while recovery grants record
+        // the moment the email ownership was actually proven.
+        email_verified_at: verifiedAt ?? new Date(),
         scope,
         expires_at: expiresAt,
       },
     });
     return { token, expiresAt };
+  }
+
+  /**
+   * F03: verified registration recovery, step 1. The request binds a
+   * REGISTRATION_RECOVERY challenge to the EXACT registration through
+   * immutable audit evidence (same transaction). An unknown or mismatching
+   * email gets a random decoy locator — no account/registration enumeration.
+   */
+  async requestRegistrationRecovery(
+    registrationId: string,
+    email: string,
+    correlationId: string,
+  ): Promise<{ challengeId: string }> {
+    const normalized = normalizeEmail(email);
+    let issued: string | null = null;
+    const registration = await this.prisma.registrations.findUnique({
+      where: { id: registrationId },
+    });
+    if (registration) {
+      const profile = await this.prisma.candidate_profiles.findUnique({
+        where: { candidate_id: registration.candidate_id },
+      });
+      if (profile && profile.email_normalized === normalized) {
+        issued = await this.prisma.$transaction(async (tx) => {
+          const { challengeId } = await this.challenges.issue(
+            tx,
+            'REGISTRATION_RECOVERY',
+            normalized,
+            null,
+          );
+          // The binding row is append-only evidence: this exact challenge
+          // can only ever resolve to this exact registration.
+          await this.audit.record(tx, {
+            action: 'registration.recovery_requested',
+            target_type: 'registration',
+            target_id: registration.id,
+            correlation_id: correlationId,
+            metadata: { challengeId },
+          });
+          return challengeId;
+        });
+      }
+    }
+    return { challengeId: issued ?? randomUUID() };
+  }
+
+  /**
+   * F03: verified registration recovery, step 2. The exact challenge + OTP
+   * resolve the bound registration (never "newest with this email"); the
+   * current registration email must still match the challenge identity.
+   * Issues an opaque, expiring, revocable READ_EDIT_PROFILE grant whose
+   * email_verified_at is the actual proof time. No User is created and no
+   * exam access is granted.
+   */
+  async verifyRegistrationRecovery(
+    challengeId: string,
+    code: string,
+    correlationId: string,
+  ): Promise<{ registrationId: string; profileToken: string; expiresAt: string }> {
+    const consumed = await this.challenges.consumeById(challengeId, 'REGISTRATION_RECOVERY', code);
+    return this.prisma.$transaction(async (tx) => {
+      const bindings = await tx.audit_events.findMany({
+        where: {
+          action: 'registration.recovery_requested',
+          metadata: { path: ['challengeId'], equals: challengeId },
+        },
+        orderBy: { occurred_at: 'desc' },
+        take: 2,
+      });
+      const registrationId = bindings[0]?.target_id ?? null;
+      if (!registrationId) {
+        throw AppException.authRequired('Invalid or expired verification code');
+      }
+      const registration = await tx.registrations.findUnique({
+        where: { id: registrationId },
+      });
+      if (!registration) {
+        throw AppException.authRequired('Invalid or expired verification code');
+      }
+      const profile = await tx.candidate_profiles.findUniqueOrThrow({
+        where: { candidate_id: registration.candidate_id },
+      });
+      if (profile.email_normalized !== consumed.emailNormalized) {
+        throw AppException.conflict(
+          ErrorCodes.STATE_CONFLICT,
+          'Registration email changed since the recovery request',
+        );
+      }
+      const grant = await this.issueGrant(
+        tx,
+        registration.id,
+        profile.email_normalized,
+        'READ_EDIT_PROFILE',
+        new Date(),
+      );
+      await this.audit.record(tx, {
+        action: 'registration.recovery_granted',
+        target_type: 'registration',
+        target_id: registration.id,
+        correlation_id: correlationId,
+        metadata: { challengeId },
+      });
+      return {
+        registrationId: registration.id,
+        profileToken: grant.token,
+        expiresAt: grant.expiresAt.toISOString(),
+      };
+    });
   }
 
   private async loadRegistration(registrationId: string): Promise<registrations> {

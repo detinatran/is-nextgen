@@ -45,11 +45,16 @@ export class AttemptsService {
     return rows[0];
   }
 
-  private assertWriter(authority: {
-    attempt_id: string;
-    auth_session_id: string;
-    user_id: string;
-  } | null, attemptId: string, userId: string, sessionId: string): void {
+  private assertWriterBinding(
+    authority: {
+      attempt_id: string;
+      auth_session_id: string;
+      user_id: string;
+    } | null,
+    attemptId: string,
+    userId: string,
+    sessionId: string,
+  ): void {
     if (
       !authority ||
       authority.attempt_id !== attemptId ||
@@ -60,6 +65,38 @@ export class AttemptsService {
         ErrorCodes.STATE_CONFLICT,
         'Writer authority is held by another session; reconnect via session takeover',
       );
+    }
+  }
+
+  /** F02: supplied generation must equal the authoritative writer generation. */
+  private assertWriterGeneration(
+    authority: { writer_generation?: bigint | number } | null,
+    writerGeneration: number,
+  ): void {
+    if (!authority || Number(authority.writer_generation) !== writerGeneration) {
+      throw AppException.conflict(
+        ErrorCodes.STATE_CONFLICT,
+        'Writer generation conflict; session was taken over',
+        { reason: 'STALE_WRITER_GENERATION' },
+      );
+    }
+  }
+
+  /**
+   * F02: the guard resolves identity BEFORE the transaction; session
+   * revocation/expiry or user disablement can happen while the request waits
+   * on the attempt lock. Authoritative current authority is therefore
+   * re-checked INSIDE the gate, after the attempt row lock, on every
+   * candidate mutation (save, flag, takeover, submit).
+   */
+  private async revalidateWriterAuthority(tx: Tx, sessionId: string, userId: string): Promise<void> {
+    const session = await tx.auth_sessions.findUnique({ where: { id: sessionId } });
+    if (!session || session.revoked_at !== null || session.expires_at <= new Date()) {
+      throw AppException.authRequired('Session is no longer valid');
+    }
+    const user = await tx.users.findUnique({ where: { id: userId } });
+    if (!user || user.status !== 'ACTIVE') {
+      throw AppException.forbidden('Account is not active');
     }
   }
 
@@ -126,6 +163,9 @@ export class AttemptsService {
     const versionToPrompt = new Map(promptSources.map((q) => [q.id, q.prompt]));
     const promptById = new Map(delivered.map((q) => [q.id, versionToPrompt.get(q.question_version_id) ?? '']));
 
+    const writer = await this.prisma.active_exam_sessions.findUnique({
+      where: { candidate_id: attempt.candidate_id },
+    });
     const now = new Date().toISOString();
     return {
       attempt: {
@@ -135,6 +175,7 @@ export class AttemptsService {
         startedAt: attempt.started_at.toISOString(),
         deadlineAt: attempt.deadline_at.toISOString(),
         serverTime: now,
+        writerGeneration: writer ? Number(writer.writer_generation) : null,
       },
       form: questions.map((q) => ({
         deliveredQuestionId: q.id,
@@ -169,12 +210,13 @@ export class AttemptsService {
     sessionId: string,
     attemptId: string,
     deliveredQuestionId: string,
-    dto: { selectedOptionId: string | null; expectedRevision: number; mutationId: string },
+    dto: { selectedOptionId: string | null; expectedRevision: number; mutationId: string; writerGeneration: number },
     correlationId: string,
   ): Promise<AnswerSavedResponse> {
     try {
       return await this.prisma.$transaction(async (tx) => {
         const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
+        await this.revalidateWriterAuthority(tx, sessionId, userId);
         const now = new Date();
         if (attempt.state !== 'ACTIVE') {
           throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Attempt is finalized');
@@ -185,7 +227,8 @@ export class AttemptsService {
         const writer = await tx.active_exam_sessions.findUnique({
           where: { candidate_id: attempt.candidate_id },
         });
-        this.assertWriter(writer, attemptId, userId, sessionId);
+        this.assertWriterBinding(writer, attemptId, userId, sessionId);
+        this.assertWriterGeneration(writer, dto.writerGeneration);
 
         const question = await tx.delivered_questions.findFirst({
           where: { id: deliveredQuestionId, attempt_id: attemptId },
@@ -277,11 +320,12 @@ export class AttemptsService {
     sessionId: string,
     attemptId: string,
     deliveredQuestionId: string,
-    dto: { flagged: boolean; expectedRevision: number },
+    dto: { flagged: boolean; expectedRevision: number; writerGeneration: number },
   ): Promise<{ flagged: boolean; revision: number }> {
     try {
       return await this.prisma.$transaction(async (tx) => {
         const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
+        await this.revalidateWriterAuthority(tx, sessionId, userId);
         const now = new Date();
         if (attempt.state !== 'ACTIVE') {
           throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Attempt is finalized');
@@ -292,7 +336,8 @@ export class AttemptsService {
         const writer = await tx.active_exam_sessions.findUnique({
           where: { candidate_id: attempt.candidate_id },
         });
-        this.assertWriter(writer, attemptId, userId, sessionId);
+        this.assertWriterBinding(writer, attemptId, userId, sessionId);
+        this.assertWriterGeneration(writer, dto.writerGeneration);
 
         const question = await tx.delivered_questions.findFirst({
           where: { id: deliveredQuestionId, attempt_id: attemptId },
@@ -353,6 +398,7 @@ export class AttemptsService {
     const windowMs = this.config.get('reauthWindowSeconds', 300) * 1000;
     return this.prisma.$transaction(async (tx) => {
       const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
+      await this.revalidateWriterAuthority(tx, sessionId, userId);
       const now = new Date();
       if (attempt.state !== 'ACTIVE') {
         throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Attempt is finalized');
@@ -416,11 +462,13 @@ export class AttemptsService {
     attemptId: string,
     idempotencyKey: string,
     correlationId: string,
+    writerGeneration?: number,
   ): Promise<SubmissionResponse> {
     const requestHash = this.idempotency.hashRequest({ attemptId });
     const result = await this.prisma.$transaction(async (tx) => {
       // Ownership is checked for every replay, before consulting a known receipt.
       const attempt = await this.lockOwnedAttempt(tx, attemptId, userId);
+      await this.revalidateWriterAuthority(tx, sessionId, userId);
       const claim = {
         scope_key: `attempt-submit:${attemptId}`,
         idempotency_key: idempotencyKey,
@@ -445,7 +493,12 @@ export class AttemptsService {
       const writer = await tx.active_exam_sessions.findUnique({
         where: { candidate_id: attempt.candidate_id },
       });
-      this.assertWriter(writer, attemptId, userId, sessionId);
+      this.assertWriterBinding(writer, attemptId, userId, sessionId);
+      // FR-22: the current writer can always submit; a SUPPLIED stale
+      // generation is rejected so a takeover cannot be raced past.
+      if (writerGeneration !== undefined) {
+        this.assertWriterGeneration(writer, writerGeneration);
+      }
 
       await this.finalization.finalizeInTx(tx, attempt, 'MANUAL', correlationId);
       return this.finalization.buildCommittedResult(tx, attemptId);

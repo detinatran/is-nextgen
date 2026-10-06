@@ -70,3 +70,70 @@ describe('sha256 receipt identity', () => {
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
   });
 });
+
+describe('writer generation validation (F02)', () => {
+  const attemptsService = new AttemptsService(
+    null as unknown as ConstructorParameters<typeof AttemptsService>[0],
+    null as unknown as ConstructorParameters<typeof AttemptsService>[1],
+    null as unknown as ConstructorParameters<typeof AttemptsService>[2],
+    null as unknown as ConstructorParameters<typeof AttemptsService>[3],
+    null as unknown as ConstructorParameters<typeof AttemptsService>[4],
+  );
+  const serviceRef = attemptsService as unknown as {
+    assertWriterBinding: (
+      authority: { attempt_id: string; auth_session_id: string; user_id: string } | null,
+      attemptId: string,
+      userId: string,
+      sessionId: string,
+    ) => void;
+    assertWriterGeneration: (
+      authority: { writer_generation?: bigint | number } | null,
+      writerGeneration: number,
+    ) => void;
+  };
+  const assertWriterBinding = serviceRef.assertWriterBinding.bind(attemptsService);
+  const assertWriterGeneration = serviceRef.assertWriterGeneration.bind(attemptsService);
+
+  const authority = {
+    attempt_id: 'a0000000-0000-0000-0000-000000000001',
+    user_id: 'u0000000-0000-0000-0000-000000000001',
+    auth_session_id: 's0000000-0000-0000-0000-000000000001',
+    writer_generation: 2n,
+  };
+
+  it('accepts matching writer generation', () => {
+    expect(() => {
+      assertWriterGeneration(authority, 2);
+    }).not.toThrow();
+  });
+
+  it('rejects mismatched writer generation with STATE_CONFLICT and STALE_WRITER_GENERATION reason', () => {
+    expect(() => {
+      assertWriterGeneration(authority, 1);
+    }).toThrow(AppException);
+    try {
+      assertWriterGeneration(authority, 1);
+    } catch (err: unknown) {
+      expect((err as AppException).code).toBe('STATE_CONFLICT');
+      expect((err as AppException).details).toMatchObject({ reason: 'STALE_WRITER_GENERATION' });
+    }
+  });
+
+  it('rejects a missing writer row outright', () => {
+    expect(() => {
+      assertWriterGeneration(null, 1);
+    }).toThrow(AppException);
+  });
+
+  it('binding check requires exact attempt/user/session match', () => {
+    expect(() => {
+      assertWriterBinding(authority, authority.attempt_id, authority.user_id, authority.auth_session_id);
+    }).not.toThrow();
+    expect(() => {
+      assertWriterBinding(authority, authority.attempt_id, authority.user_id, 'other-session');
+    }).toThrow(AppException);
+    expect(() => {
+      assertWriterBinding(null, authority.attempt_id, authority.user_id, authority.auth_session_id);
+    }).toThrow(AppException);
+  });
+});

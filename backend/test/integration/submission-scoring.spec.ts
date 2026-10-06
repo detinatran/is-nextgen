@@ -61,6 +61,7 @@ describe('submission, timeout finalization and automatic scoring', () => {
   }
 
   async function answerQuestion(attemptId: string, q: { deliveredQuestionId: string; options: { deliveredOptionId: string }[] }, optionIndex: number, expectedRevision = 0) {
+    // Fresh attempts expose writer generation 1; takeover never occurs in this suite.
     return ctx.http
       .put(`/api/v1/me/attempts/${attemptId}/answers/${q.deliveredQuestionId}`)
       .set(authed(cookies))
@@ -68,6 +69,7 @@ describe('submission, timeout finalization and automatic scoring', () => {
         selectedOptionId: q.options[optionIndex].deliveredOptionId,
         expectedRevision,
         mutationId: randomUUID(),
+        writerGeneration: 1,
       });
   }
 
@@ -211,7 +213,7 @@ describe('submission, timeout finalization and automatic scoring', () => {
     const save = await ctx.http
       .put(`/api/v1/me/attempts/${overdueAttemptId}/answers/${anyQuestion.id}`)
       .set(authed(cookies))
-      .send({ selectedOptionId: anyOption.id, expectedRevision: 0, mutationId: randomUUID() });
+      .send({ selectedOptionId: anyOption.id, expectedRevision: 0, mutationId: randomUUID(), writerGeneration: 1 });
     expect(save.status).toBe(409);
     expect(save.body.error.code).toBe('DEADLINE_PASSED');
   });

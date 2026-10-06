@@ -3,6 +3,7 @@ import {
   createDraft,
   createTestApp,
   destroyTestApp,
+  recoverRegistration,
   resetDatabase,
   seedReadyPhoto,
   seedReadyVideo,
@@ -64,7 +65,7 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(res.status).toBe(400);
   });
 
-  it('reads and updates the draft only with the profile capability', async () => {
+  it('initial flow reads the draft; private edits require verified recovery (F03/F04)', async () => {
     const draft = await createDraft(ctx);
 
     const anonymous = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`);
@@ -82,15 +83,26 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(got.body.profile.fullName).toBe('Nguyen Van Test');
     expect(got.body.status).toBe('DRAFT');
 
+    // Both capability references are the same DRAFT_UPLOAD grant; the
+    // initial flow can read its own registration with either of them.
     const uploadTokenRead = await ctx.http
       .get(`/api/v1/registrations/${draft.registrationId}`)
       .set('x-registration-token', draft.uploadToken);
-    expect(uploadTokenRead.status).toBe(403); // wrong scope
+    expect(uploadTokenRead.status).toBe(200);
 
-    const patched = await ctx.http
+    // F03: the initial capability is NOT private edit authority.
+    const unverifiedPatch = await ctx.http
       .patch(`/api/v1/registrations/${draft.registrationId}`)
       .set('x-registration-token', draft.profileToken)
-      .send({ major: 'Data Science' });
+      .send({ major: 'Data Science', expectedRevision: 1 });
+    expect([401, 403]).toContain(unverifiedPatch.status);
+
+    // Verified recovery grants the scoped edit authority.
+    const grant = await recoverRegistration(ctx, draft);
+    const patched = await ctx.http
+      .patch(`/api/v1/registrations/${draft.registrationId}`)
+      .set('x-registration-token', grant.profileToken)
+      .send({ major: 'Data Science', expectedRevision: 1 });
     expect(patched.status).toBe(200);
     expect(patched.body.profile.major).toBe('Data Science');
   });
@@ -277,10 +289,11 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     const draft = await createDraft(ctx, {
       mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: true },
     });
+    const grant = await recoverRegistration(ctx, draft);
     const changed = await ctx.http
       .patch(`/api/v1/registrations/${draft.registrationId}`)
-      .set('x-registration-token', draft.profileToken)
-      .send({ mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false } });
+      .set('x-registration-token', grant.profileToken)
+      .send({ mediaUsageConsent: { wordingVersion: 'MEDIA-V1-2026', granted: false }, expectedRevision: 1 });
     expect(changed.status).toBe(200);
     expect(changed.body.favoriteCandidateEligible).toBe(false);
 

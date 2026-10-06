@@ -5,6 +5,8 @@ import { AppException } from '../common/errors/app-error';
 import type { AuthenticatedRequest } from '../common/http/request-context';
 import {
   CreateRegistrationDraftDto,
+  RegistrationRecoveryRequestDto,
+  RegistrationRecoveryVerificationDto,
   SubmissionResponse,
   UpdateRegistrationDto,
   type RegistrationResponse,
@@ -41,16 +43,21 @@ export class RegistrationsController {
     return this.registrations.createDraft(dto, req.correlationId ?? 'unknown');
   }
 
+  /**
+   * F03: initial-flow capability covers reading the own registration (any
+   * scope of the exact registration); private EDIT authority requires the
+   * verified recovery grant (see PATCH).
+   */
   @Get('registrations/:registrationId')
   @ApiSecurity('registrationToken')
   @UseGuards(RegistrationCapabilityGuard)
-  @RequireRegistrationScope('READ_EDIT_PROFILE')
   async getRegistration(
     @Param('registrationId', ParseUUIDPipe) registrationId: string,
   ): Promise<RegistrationResponse> {
     return this.registrations.getRegistration(registrationId);
   }
 
+  /** F03/F04: private edit authority — verified recovery grant + CAS + deadline. */
   @Patch('registrations/:registrationId')
   @ApiSecurity('registrationToken')
   @UseGuards(RegistrationCapabilityGuard)
@@ -63,13 +70,13 @@ export class RegistrationsController {
     return this.registrations.updateRegistration(registrationId, dto, req.correlationId ?? 'unknown');
   }
 
-  /** FR-16: authoritative submission; Idempotency-Key makes it replay-safe. */
+  /** F03: the initial submission belongs to the initial DRAFT_UPLOAD flow. */
   @Post('registrations/:registrationId/submission')
   @HttpCode(HttpStatus.CREATED)
   @ApiSecurity('registrationToken')
   @ApiHeader({ name: 'Idempotency-Key', required: true })
   @UseGuards(RegistrationCapabilityGuard)
-  @RequireRegistrationScope('READ_EDIT_PROFILE')
+  @RequireRegistrationScope('DRAFT_UPLOAD')
   @SkipThrottle()
   async submit(
     @Param('registrationId', ParseUUIDPipe) registrationId: string,
@@ -83,6 +90,44 @@ export class RegistrationsController {
       registrationId,
       idempotencyKey,
       { registrationId },
+      req.correlationId ?? 'unknown',
+    );
+  }
+
+  /**
+   * F03 step 1: request a verified recovery challenge bound to this exact
+   * registration. Unknown or mismatching emails receive a decoy locator.
+   */
+  @Post('registrations/:registrationId/recovery-requests')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async requestRecovery(
+    @Param('registrationId', ParseUUIDPipe) registrationId: string,
+    @Body() dto: RegistrationRecoveryRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{ status: string; challengeId: string }> {
+    const { challengeId } = await this.registrations.requestRegistrationRecovery(
+      registrationId,
+      dto.email,
+      req.correlationId ?? 'unknown',
+    );
+    return { status: 'accepted', challengeId };
+  }
+
+  /**
+   * F03 step 2: exact challenge + OTP grant a scoped READ_EDIT_PROFILE
+   * capability for the bound registration only.
+   */
+  @Post('registrations/recovery/verifications')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async verifyRecovery(
+    @Body() dto: RegistrationRecoveryVerificationDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{ registrationId: string; profileToken: string; expiresAt: string }> {
+    return this.registrations.verifyRegistrationRecovery(
+      dto.challengeId,
+      dto.code,
       req.correlationId ?? 'unknown',
     );
   }

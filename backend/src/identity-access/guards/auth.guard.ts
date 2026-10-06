@@ -32,6 +32,7 @@ export class AuthGuard implements CanActivate {
       sessionId: resolved.sessionId,
       email: resolved.email,
       roles: roleCodes.map((r) => r.code),
+      mfaVerifiedAt: resolved.mfaVerifiedAt,
     };
     request.auth = auth;
     return true;

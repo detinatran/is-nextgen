@@ -22,6 +22,15 @@ async function bootstrap(): Promise<void> {
     res.setHeader('x-correlation-id', correlationId);
     next();
   });
+  // Frontend tĩnh chạy ở origin khác (vd. localhost:3002, nextgen.vnuis.edu.vn): chỉ mở CORS cho các origin khai báo
+  const corsOrigins = (process.env.CORS_ORIGINS ?? '').split(',').map((o) => o.trim()).filter(Boolean);
+  if (corsOrigins.length > 0) {
+    app.enableCors({
+      origin: corsOrigins,
+      allowedHeaders: ['Content-Type', 'x-registration-token', 'Idempotency-Key', 'x-correlation-id'],
+      exposedHeaders: ['x-correlation-id'],
+    });
+  }
   app.setGlobalPrefix('api/v1');
   app.disable('x-powered-by');
   app.enableShutdownHooks();

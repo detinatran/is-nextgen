@@ -6,6 +6,8 @@ import type { Lang } from "@/lib/i18n";
 import Icon from "./Icon";
 
 type Props = {
+  /** Backend chỉ nhận MP4; Apps Script nhận mọi định dạng video */
+  mp4Only?: boolean;
   lang: Lang;
   file: File | null;
   onChange: (file: File | null) => void;
@@ -20,6 +22,7 @@ const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s %
 const text = {
   vi: {
     notVideo: "Vui lòng chọn file video (mp4, mov...).",
+    notMp4: "Vui lòng chọn video định dạng MP4.",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
     tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
     label: `Video giới thiệu (tối đa ${MAX_VIDEO_SECONDS / 60} phút) *`,
@@ -31,6 +34,7 @@ const text = {
   },
   en: {
     notVideo: "Please choose a video file (mp4, mov...).",
+    notMp4: "Please choose an MP4 video.",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
     tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
     label: `Intro video (max ${MAX_VIDEO_SECONDS / 60} minutes) *`,
@@ -42,7 +46,7 @@ const text = {
   },
 };
 
-export default function VideoUpload({ lang, file, onChange, progress }: Props) {
+export default function VideoUpload({ lang, file, onChange, progress, mp4Only = false }: Props) {
   const t = text[lang];
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
@@ -52,7 +56,7 @@ export default function VideoUpload({ lang, file, onChange, progress }: Props) {
   async function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    if (!f.type.startsWith("video/")) return reject(t.notVideo);
+    if (mp4Only ? f.type !== "video/mp4" : !f.type.startsWith("video/")) return reject(mp4Only ? t.notMp4 : t.notVideo);
     if (f.size > MAX_VIDEO_MB * 1024 * 1024) return reject(t.tooBig);
     const d = await readVideoDuration(f);
     // Cho phép lệch 1 giây do cách làm tròn của từng thiết bị
@@ -125,13 +129,13 @@ export default function VideoUpload({ lang, file, onChange, progress }: Props) {
           <div className="pointer-events-none flex flex-col items-center px-4 py-8 text-center">
             <Icon name="arrowUp" className="h-6 w-6 text-orange-ink" strokeWidth={2} />
             <p className="mt-2 text-[15px] font-semibold text-navy">{t.drop}</p>
-            <p className="mt-1 text-sm text-muted">{t.formats}</p>
+            <p className="mt-1 text-sm text-muted">{mp4Only ? t.formats.replace("MP4, MOV, WebM", "MP4") : t.formats}</p>
           </div>
         )}
         <input
           ref={input}
           type="file"
-          accept="video/*"
+          accept={mp4Only ? "video/mp4" : "video/*"}
           required={!file}
           onChange={(e) => pick(e.target.files?.[0])}
           className={`absolute inset-0 cursor-pointer opacity-0 ${file ? "pointer-events-none" : ""}`}

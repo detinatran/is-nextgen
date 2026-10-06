@@ -13,24 +13,27 @@ type Props = {
   progress: number | null;
 };
 
+// Backend chỉ nhận 3 định dạng này (kiểm tra bằng magic bytes)
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 const text = {
   vi: {
     label: "Ảnh cá nhân *",
     hint: "01 ảnh chân dung rõ mặt, dùng cho truyền thông của Cuộc thi.",
-    notImage: "Vui lòng chọn file ảnh (JPG, PNG...).",
+    notImage: "Vui lòng chọn ảnh JPG, PNG hoặc WebP.",
     tooBig: `Ảnh lớn hơn ${MAX_PHOTO_MB} MB. Hãy chọn ảnh nhỏ hơn.`,
     drop: "Kéo thả ảnh vào đây hoặc bấm để chọn",
-    formats: `JPG, PNG, HEIC · tối đa ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG, WebP · tối đa ${MAX_PHOTO_MB} MB`,
     remove: "Bỏ ảnh đã chọn",
     pick: "Chọn ảnh cá nhân",
   },
   en: {
     label: "Personal photo *",
     hint: "01 clear portrait photo, used for the competition's communications.",
-    notImage: "Please choose an image file (JPG, PNG...).",
+    notImage: "Please choose a JPG, PNG or WebP image.",
     tooBig: `The photo is larger than ${MAX_PHOTO_MB} MB. Please choose a smaller one.`,
     drop: "Drag and drop your photo here, or click to choose",
-    formats: `JPG, PNG, HEIC · up to ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG, WebP · up to ${MAX_PHOTO_MB} MB`,
     remove: "Remove selected photo",
     pick: "Choose personal photo",
   },
@@ -52,7 +55,7 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
   function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    if (!f.type.startsWith("image/")) return reject(t.notImage);
+    if (!PHOTO_TYPES.includes(f.type)) return reject(t.notImage);
     if (f.size > MAX_PHOTO_MB * 1024 * 1024) return reject(t.tooBig);
     onChange(f);
   }
@@ -112,7 +115,7 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
         <input
           ref={input}
           type="file"
-          accept="image/*"
+          accept={PHOTO_TYPES.join(",")}
           required={!file}
           onChange={(e) => pick(e.target.files?.[0])}
           className={`absolute inset-0 cursor-pointer opacity-0 ${file ? "pointer-events-none" : ""}`}

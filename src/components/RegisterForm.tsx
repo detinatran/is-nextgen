@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
+import { ApiError, apiBase, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import PhotoUpload from "./PhotoUpload";
 import VideoUpload from "./VideoUpload";
@@ -55,6 +56,24 @@ const text = {
     school: "Trường đang theo học *",
     schoolPh: "Chọn hoặc gõ tên trường",
     major: "Ngành học *",
+    dob: "Ngày sinh *",
+    department: "Khoa/Viện *",
+    facebook: "Link Facebook cá nhân *",
+    facebookPh: "https://facebook.com/ten-cua-ban",
+    creating: "Đang tạo hồ sơ...",
+    checking: "Đang kiểm tra video...",
+    codeLabel: "Mã thí sinh của bạn",
+    errors: {
+      VIDEO_TOO_LONG: "Video dài quá 2 phút. Hãy cắt ngắn rồi gửi lại.",
+      VIDEO_TOO_LARGE: "Video vượt dung lượng cho phép.",
+      VIDEO_INVALID_FORMAT: "Video phải là file MP4.",
+      VIDEO_VALIDATION_FAILED: "Không đọc được video. Hãy xuất lại file MP4 rồi thử lại.",
+      PHOTO_INVALID_FORMAT: "Ảnh phải là JPG, PNG hoặc WebP.",
+      PHOTO_TOO_LARGE: "Ảnh lớn hơn 10 MB.",
+      VALIDATION_FAILED: "Thông tin chưa hợp lệ, vui lòng kiểm tra lại các ô đã nhập.",
+      STATE_CONFLICT: "Cổng đăng ký hiện không mở.",
+      RATE_LIMITED: "Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.",
+    } as Record<string, string>,
     studentId: "Mã số sinh viên *",
     year: "Năm học *",
     choose: "Chọn",
@@ -97,6 +116,24 @@ const text = {
     school: "University *",
     schoolPh: "Choose or type your university",
     major: "Major *",
+    dob: "Date of birth *",
+    department: "Faculty / School *",
+    facebook: "Facebook profile link *",
+    facebookPh: "https://facebook.com/your-name",
+    creating: "Creating your application...",
+    checking: "Checking your video...",
+    codeLabel: "Your candidate code",
+    errors: {
+      VIDEO_TOO_LONG: "The video is longer than 2 minutes. Please trim it and try again.",
+      VIDEO_TOO_LARGE: "The video is larger than allowed.",
+      VIDEO_INVALID_FORMAT: "The video must be an MP4 file.",
+      VIDEO_VALIDATION_FAILED: "We could not read the video. Please export it again as MP4.",
+      PHOTO_INVALID_FORMAT: "The photo must be JPG, PNG or WebP.",
+      PHOTO_TOO_LARGE: "The photo is larger than 10 MB.",
+      VALIDATION_FAILED: "Some details are not valid. Please check your entries.",
+      STATE_CONFLICT: "Registration is not open right now.",
+      RATE_LIMITED: "Too many attempts. Please try again in a few minutes.",
+    } as Record<string, string>,
     studentId: "Student ID *",
     year: "Year of study *",
     choose: "Select",
@@ -125,7 +162,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const [closed, setClosed] = useState(false);
   const [video, setVideo] = useState<File | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [step, setStep] = useState<"photo" | "video">("video");
+  const [step, setStep] = useState<SubmitStep>("video");
+  const [candidateCode, setCandidateCode] = useState("");
   // Trang hiện tại của form: 0 thông tin, 1 ảnh và video, 2 cam kết
   const [page, setPage] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
@@ -166,6 +204,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     data.set("shareProfile", data.get("shareProfile") ? "Có" : "Không");
 
     setErrorText("");
+    if (apiBase) return submitToBackend(form, data);
     try {
       setState("uploading");
       setProgress(0);
@@ -202,11 +241,56 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     }
   }
 
+  // Gửi tới backend NestJS khi có NEXT_PUBLIC_API_URL
+  async function submitToBackend(form: HTMLFormElement, data: FormData) {
+    const get = (k: string) => String(data.get(k) ?? "").trim();
+    setState("uploading");
+    try {
+      const result = await submitRegistration({
+        profile: {
+          fullName: get("fullName"),
+          dateOfBirth: get("dateOfBirth"),
+          studentId: get("studentId"),
+          school: get("school"),
+          department: get("department"),
+          major: get("major"),
+          email: get("email"),
+          phone: get("phone"),
+          facebook: get("facebook"),
+        },
+        dataProcessing: !!data.get("confirm"),
+        mediaUsage: data.get("mediaConsent") === "Đồng ý",
+        photo: photo!,
+        video: video!,
+        onStep: setStep,
+        onProgress: setProgress,
+      });
+      setCandidateCode(result.candidateCode);
+      setState("done");
+      setVideo(null);
+      setPhoto(null);
+      setProgress(null);
+      setPage(0);
+      form.reset();
+    } catch (err) {
+      setState("error");
+      setProgress(null);
+      const code = err instanceof ApiError ? err.code : "";
+      setErrorText(code === "NETWORK" ? t.uploadError : (t.errors[code] ?? `${t.sendError}${err instanceof Error ? ` (${err.message})` : ""}`));
+    }
+  }
+
   if (state === "done") {
     return (
       <div className="card p-8 text-center" role="status">
         <p className="eyebrow justify-center">{t.received}</p>
         <h3 className="mt-3 text-2xl font-bold text-navy">{t.thanks}</h3>
+        {candidateCode && (
+          <p className="mx-auto mt-4 w-max rounded-xl bg-cream px-5 py-3">
+            <span className="block text-xs font-semibold tracking-wider text-muted uppercase">{t.codeLabel}</span>
+            <span className="text-2xl font-bold tracking-wider text-orange-ink">{candidateCode}</span>
+          </p>
+        )}
         <p className="mt-3 text-sm leading-relaxed text-muted">
           {t.doneBody}
         </p>
@@ -217,7 +301,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     );
   }
 
-  const unavailable = closed || !endpoint;
+  const unavailable = closed || (!endpoint && !apiBase);
 
   const busy = state === "uploading" || state === "sending";
   const pageCls = (i: number) => (page === i ? "grid gap-4 sm:grid-cols-2" : "hidden");
@@ -277,12 +361,26 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
           </label>
 
           <label>
+            <span className={labelCls}>{t.dob}</span>
+            <input name="dateOfBirth" type="date" required max="2012-12-31" className={field} />
+          </label>
+          <label>
+            <span className={labelCls}>{t.department}</span>
+            <input name="department" required className={field} />
+          </label>
+
+          <label>
             <span className={labelCls}>{t.major}</span>
             <input name="major" required className={field} />
           </label>
           <label>
             <span className={labelCls}>{t.studentId}</span>
             <input name="studentId" required className={field} />
+          </label>
+
+          <label className="sm:col-span-2">
+            <span className={labelCls}>{t.facebook}</span>
+            <input name="facebook" required placeholder={t.facebookPh} className={field} />
           </label>
 
           <label>
@@ -307,7 +405,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         {/* Bước 2: ảnh và video */}
         <div ref={(el) => { pages.current[1] = el; }} className={pageCls(1)}>
           <PhotoUpload lang={lang} file={photo} onChange={setPhoto} progress={state === "uploading" && step === "photo" ? progress : null} />
-          <VideoUpload lang={lang} file={video} onChange={setVideo} progress={state === "uploading" && step === "video" ? progress : null} />
+          <VideoUpload lang={lang} mp4Only={!!apiBase} file={video} onChange={setVideo} progress={state === "uploading" && step === "video" ? progress : null} />
         </div>
 
         {/* Bước 3: cam kết, đồng ý rồi mới nộp */}
@@ -363,7 +461,13 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
           ) : (
             <button key="submit" type="submit" className="btn-primary flex-1 py-3.5 disabled:translate-y-0 disabled:opacity-60">
               {state === "uploading"
-                ? `${step === "photo" ? t.uploadingPhoto : t.uploading} ${Math.round((progress ?? 0) * 100)}%`
+                ? step === "draft"
+                  ? t.creating
+                  : step === "checking"
+                    ? t.checking
+                    : step === "submit"
+                      ? t.sending
+                      : `${step === "photo" ? t.uploadingPhoto : t.uploading} ${Math.round((progress ?? 0) * 100)}%`
                 : state === "sending"
                   ? t.sending
                   : t.agreeSubmit}

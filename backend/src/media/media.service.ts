@@ -255,7 +255,10 @@ export class MediaService {
     grant: RegistrationAuthContext,
     correlationId: string,
   ): Promise<{ videoBound: boolean; mediaObjectId: string }> {
-    this.assertGrant(grant, registrationId, 'READ_EDIT_PROFILE');
+    // FR-14: binding belongs to the initial upload flow — the same DRAFT_UPLOAD
+    // capability that uploads and finalizes the video. Private profile edit
+    // authority (READ_EDIT_PROFILE) is a separate, verified-recovery scope.
+    this.assertGrant(grant, registrationId, 'DRAFT_UPLOAD');
     const registration = await this.prisma.registrations.findUnique({ where: { id: registrationId } });
     if (!registration) throw AppException.notFound('Registration not found');
     if (registration.state !== 'DRAFT') {

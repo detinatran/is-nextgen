@@ -150,7 +150,7 @@ describe('FR-19 exam access and atomic start', () => {
         .post(`/api/v1/me/attempts/${startRes.body.attemptId}/submission`)
         .set(authed(cookies))
         .set('Idempotency-Key', randomUUID())
-        .send();
+        .send({ writerGeneration: 1 });
       expect(submit.status).toBe(200);
     }
     const fourth = await start(exam.assignmentId);

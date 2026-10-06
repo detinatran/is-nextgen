@@ -6,6 +6,7 @@ import {
   destroyTestApp,
   login,
   provisionUser,
+  recoverRegistration,
   resetDatabase,
   seedReadyVideo,
   setupExam,
@@ -26,14 +27,18 @@ describe('security boundaries', () => {
   });
 
   it('expired registration capability tokens are denied', async () => {
+    // F03: only the VERIFIED recovery grant is a long-lived private
+    // capability; the anonymous draft issues no grant row at all. Expire the
+    // verified grant and confirm its token is denied.
     const draft = await createDraft(ctx);
-    const grant = await ctx.prisma.registration_access_grants.findFirstOrThrow({
+    const grant = await recoverRegistration(ctx, draft);
+    const row = await ctx.prisma.registration_access_grants.findFirstOrThrow({
       where: { registration_id: draft.registrationId, scope: 'READ_EDIT_PROFILE' },
     });
     // Backdate creation so expires_at moves into the past without violating
     // the frozen expires_at > created_at CHECK.
     await ctx.prisma.registration_access_grants.update({
-      where: { id: grant.id },
+      where: { id: row.id },
       data: {
         created_at: new Date(Date.now() - 48 * 3_600_000),
         expires_at: new Date(Date.now() - 24 * 3_600_000),
@@ -41,22 +46,23 @@ describe('security boundaries', () => {
     });
     const res = await ctx.http
       .get(`/api/v1/registrations/${draft.registrationId}`)
-      .set('x-registration-token', draft.profileToken);
+      .set('x-registration-token', grant.profileToken);
     expect(res.status).toBe(401);
   });
 
   it('revoked registration capability tokens are denied', async () => {
     const draft = await createDraft(ctx);
-    const grant = await ctx.prisma.registration_access_grants.findFirstOrThrow({
+    const grant = await recoverRegistration(ctx, draft);
+    const row = await ctx.prisma.registration_access_grants.findFirstOrThrow({
       where: { registration_id: draft.registrationId, scope: 'READ_EDIT_PROFILE' },
     });
     await ctx.prisma.registration_access_grants.update({
-      where: { id: grant.id },
+      where: { id: row.id },
       data: { revoked_at: new Date() },
     });
     const res = await ctx.http
       .get(`/api/v1/registrations/${draft.registrationId}`)
-      .set('x-registration-token', draft.profileToken);
+      .set('x-registration-token', grant.profileToken);
     expect(res.status).toBe(401);
   });
 

@@ -177,10 +177,10 @@ describe('independent post-remediation verification', () => {
     const stale = await post(1); const current = await post(2);
     expect([stale.status, current.status]).toEqual([409, 200]);
   });
-  it('V-F02-current-submit: current writer after takeover can submit through existing empty-body API', async () => {
+  it('V-F02-current-submit: current writer after takeover can submit with the required generation', async () => {
     const e = await exam(); await takeover(e);
     const r = await ctx.http.post(`/api/v1/me/attempts/${e.id}/submission`)
-      .set(authed(e.cookies)).set('Idempotency-Key', randomUUID()).send(); expect(r.status).toBe(200);
+      .set(authed(e.cookies)).set('Idempotency-Key', randomUUID()).send({ writerGeneration: 2 }); expect(r.status).toBe(200);
   });
   it('V-F02-09: different old session rejected, new session succeeds', async () => {
     const e = await exam(); const other = await login(ctx, e.email, password); await takeover(e, other.cookies);
@@ -226,11 +226,14 @@ describe('independent post-remediation verification', () => {
   it('V-F03-05/06/07: existing grants are scoped, expiring, revocable even for same-email duplicates', async () => {
     const email = `duplicate-${randomUUID()}@example.com`;
     const a = await createDraft(ctx, { email }); const b = await createDraft(ctx, { email });
-    expect((await ctx.http.get(`/api/v1/registrations/${b.registrationId}`).set('x-registration-token', a.profileToken)).status).toBe(403);
+    // The anonymous initial capability is not a grant row; the revocable,
+    // expiring capability is the VERIFIED recovery grant.
+    const ga = await recoverRegistration(ctx, a); const gb = await recoverRegistration(ctx, b);
+    expect((await ctx.http.get(`/api/v1/registrations/${b.registrationId}`).set('x-registration-token', ga.profileToken)).status).toBe(403);
     await ctx.prisma.registration_access_grants.updateMany({ where: { registration_id: a.registrationId }, data: { revoked_at: new Date() } });
-    expect((await ctx.http.get(`/api/v1/registrations/${a.registrationId}`).set('x-registration-token', a.profileToken)).status).toBe(401);
+    expect((await ctx.http.get(`/api/v1/registrations/${a.registrationId}`).set('x-registration-token', ga.profileToken)).status).toBe(401);
     await ctx.prisma.registration_access_grants.updateMany({ where: { registration_id: b.registrationId }, data: { created_at: new Date(Date.now() - 60000), expires_at: new Date(Date.now() - 1000) } });
-    expect((await ctx.http.get(`/api/v1/registrations/${b.registrationId}`).set('x-registration-token', b.profileToken)).status).toBe(401);
+    expect((await ctx.http.get(`/api/v1/registrations/${b.registrationId}`).set('x-registration-token', gb.profileToken)).status).toBe(401);
   });
   it('V-F03-04/08-contract: a registration recovery verification flow must actually exist', () => {
     const doc = SwaggerModule.createDocument(ctx.app, new DocumentBuilder().build());

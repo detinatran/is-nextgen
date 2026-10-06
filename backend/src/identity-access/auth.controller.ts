@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiProperty, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOkResponse, ApiProperty, ApiSecurity, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { IsString, Matches } from 'class-validator';
 import type { Response } from 'express';
@@ -28,6 +28,17 @@ export class MfaVerificationDto {
   code!: string;
 }
 
+class SessionUserDto {
+  @ApiProperty({ format: 'uuid' })
+  id!: string;
+
+  @ApiProperty({ example: 'student@example.com' })
+  email!: string;
+
+  @ApiProperty({ type: [String], example: ['STUDENT'] })
+  roles!: string[];
+}
+
 export class MfaRequiredResponse {
   @ApiProperty({ example: 'MFA_REQUIRED', description: 'Machine-readable intermediate login state' })
   status!: 'MFA_REQUIRED';
@@ -37,8 +48,13 @@ export class MfaRequiredResponse {
 }
 
 export class SessionResponse {
+  @ApiProperty({ type: SessionUserDto })
   user!: { id: string; email: string; roles: string[] };
+
+  @ApiProperty({ description: 'CSRF token for this session; also set via the isng_csrf cookie' })
   csrfToken!: string;
+
+  @ApiProperty({ format: 'date-time', nullable: true, required: false, description: 'MFA proof time; Admin sessions only' })
   mfaVerifiedAt?: string;
 }
 
@@ -87,7 +103,16 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
-  @ApiOkResponse({ type: SessionResponse, description: 'Student session (Admins receive MFA_REQUIRED instead)' })
+  @ApiExtraModels(SessionResponse, MfaRequiredResponse)
+  @ApiOkResponse({
+    description: 'Student session, or the MFA_REQUIRED intermediate state for Admins (no session issued yet)',
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(SessionResponse) },
+        { $ref: getSchemaPath(MfaRequiredResponse) },
+      ],
+    },
+  })
   async login(
     @Body() dto: LoginDto,
     @Req() req: AuthenticatedRequest,

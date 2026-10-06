@@ -98,7 +98,7 @@ describe('concurrency: competing writers on real PostgreSQL', () => {
         .post(`/api/v1/me/attempts/${attemptId}/submission`)
         .set(authed(cookies))
         .set('Idempotency-Key', randomUUID())
-        .send(),
+        .send({ writerGeneration: 1 }),
     ]);
 
     const attempt = await ctx.prisma.attempts.findUniqueOrThrow({ where: { id: attemptId } });

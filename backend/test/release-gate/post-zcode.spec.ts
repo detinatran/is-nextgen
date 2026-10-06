@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { COMMUNICATION_MEDIA_POLICY, communicationRetentionUntil, protectedByCommunicationRetention } from '../../src/registrations/communication-media.policy';
 import { authed, createDraft, createTestApp, destroyTestApp, login, provisionUser,
-  resetDatabase, seedReadyPhoto, seedReadyVideo, setupExam, uploadPhoto,
+  recoverRegistration, resetDatabase, seedReadyPhoto, seedReadyVideo, setupExam, uploadPhoto,
   type TestContext, type SessionCookies } from '../integration/helpers/test-kit';
 
 describe('post-ZCode release assertions (failures are release blockers)', () => {
@@ -67,10 +67,10 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
     const a = await actor(); const b = await actor(); const attempt = await start(a.email, a.cookies);
     const key = randomUUID();
     const submitted = await ctx.http.post(`/api/v1/me/attempts/${attempt.attemptId}/submission`)
-      .set(authed(a.cookies)).set('Idempotency-Key', key).send();
+      .set(authed(a.cookies)).set('Idempotency-Key', key).send({ writerGeneration: 1 });
     expect(submitted.status).toBe(200);
     const replay = await ctx.http.post(`/api/v1/me/attempts/${attempt.attemptId}/submission`)
-      .set(authed(b.cookies)).set('Idempotency-Key', key).send();
+      .set(authed(b.cookies)).set('Idempotency-Key', key).send({ writerGeneration: 1 });
     expect(replay.status).toBe(404);
   });
   it('SEC-REPLAY-START: another candidate cannot replay a known start key', async () => {
@@ -135,6 +135,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
   it('NEW-09/11: append-only withdrawal evidence removes eligibility (projection only; no Admin workflow)', async () => {
     const draft = await createDraft(ctx);
     expect((await submitRegistration(draft)).body.favoriteCandidateEligible).toBe(true);
+    const grant = await recoverRegistration(ctx, draft);
     const before = await ctx.prisma.consents.findFirstOrThrow({ where: { registration_id: draft.registrationId, purpose: 'MEDIA_USAGE' } });
     await ctx.prisma.$transaction(async (tx) => {
       await tx.$executeRaw`INSERT INTO consents(registration_id,purpose,granted,wording_version,recorded_at)
@@ -142,7 +143,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
       await tx.audit_events.create({ data: { action: 'communication.withdrawal_recorded', target_type: 'registration', target_id: draft.registrationId,
         correlation_id: randomUUID(), reason: 'Synthetic emailed withdrawal evidence', metadata: { evidenceReference: 'test-email-reference' } } });
     });
-    const view = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`).set('x-registration-token', draft.profileToken);
+    const view = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`).set('x-registration-token', grant.profileToken);
     expect(view.body.favoriteCandidateEligible).toBe(false);
     const history = await ctx.prisma.consents.findMany({ where: { registration_id: draft.registrationId, purpose: 'MEDIA_USAGE' } });
     expect(history).toHaveLength(2);
@@ -186,7 +187,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
   });
   it('GAP-WORKER-RESTART: expired RUNNING scoring lease is recovered', async () => {
     const a = await actor(); const attempt = await start(a.email, a.cookies);
-    await ctx.http.post(`/api/v1/me/attempts/${attempt.attemptId}/submission`).set(authed(a.cookies)).set('Idempotency-Key', randomUUID()).send();
+    await ctx.http.post(`/api/v1/me/attempts/${attempt.attemptId}/submission`).set(authed(a.cookies)).set('Idempotency-Key', randomUUID()).send({ writerGeneration: 1 });
     await ctx.prisma.async_intents.updateMany({ where: { kind: 'SCORING' }, data: { status: 'RUNNING', lease_until: new Date(Date.now() - 1000) } });
     expect(await ctx.app.get(ScoringService).processPendingScoring('restart-test')).toBe(1);
   });
@@ -197,7 +198,7 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
   });
   it('START-EXACT-REPLAY: a second rapid attempt replays its own receipt', async () => {
     const a = await actor(); const first = await start(a.email, a.cookies);
-    await ctx.http.post(`/api/v1/me/attempts/${first.attemptId}/submission`).set(authed(a.cookies)).set('Idempotency-Key', randomUUID()).send();
+    await ctx.http.post(`/api/v1/me/attempts/${first.attemptId}/submission`).set(authed(a.cookies)).set('Idempotency-Key', randomUUID()).send({ writerGeneration: 1 });
     const key = randomUUID();
     const second = await ctx.http.post(`/api/v1/me/assignments/${first.assignmentId}/attempts`).set(authed(a.cookies)).set('Idempotency-Key', key).send();
     const replay = await ctx.http.post(`/api/v1/me/assignments/${first.assignmentId}/attempts`).set(authed(a.cookies)).set('Idempotency-Key', key).send();
@@ -235,7 +236,9 @@ describe('post-ZCode release assertions (failures are release blockers)', () => 
       expect(await ctx.app.get(NotificationsService).dispatchPending()).toBe(1);
       const intent = await ctx.prisma.notification_intents.findFirstOrThrow({ where: { candidate_id: { not: null } } });
       expect(intent.status).toBe('RETRY_PENDING'); expect(intent.attempts_used).toBe(1);
-      const view = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`).set('x-registration-token', draft.profileToken);
+      // The submitted profile is private: read it via a VERIFIED recovery grant.
+      const grant = await recoverRegistration(ctx, draft);
+      const view = await ctx.http.get(`/api/v1/registrations/${draft.registrationId}`).set('x-registration-token', grant.profileToken);
       expect(view.body.candidateCode).toBe(committed.body.candidateCode);
     } finally { fail.mockRestore(); }
   });

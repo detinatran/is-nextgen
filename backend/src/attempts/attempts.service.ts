@@ -462,7 +462,7 @@ export class AttemptsService {
     attemptId: string,
     idempotencyKey: string,
     correlationId: string,
-    writerGeneration?: number,
+    writerGeneration: number,
   ): Promise<SubmissionResponse> {
     const requestHash = this.idempotency.hashRequest({ attemptId });
     const result = await this.prisma.$transaction(async (tx) => {
@@ -494,11 +494,9 @@ export class AttemptsService {
         where: { candidate_id: attempt.candidate_id },
       });
       this.assertWriterBinding(writer, attemptId, userId, sessionId);
-      // FR-22: the current writer can always submit; a SUPPLIED stale
-      // generation is rejected so a takeover cannot be raced past.
-      if (writerGeneration !== undefined) {
-        this.assertWriterGeneration(writer, writerGeneration);
-      }
+      // FR-22: the writer generation is mandatory — an omitted or stale
+      // generation can never finalize, so a takeover cannot be raced past.
+      this.assertWriterGeneration(writer, writerGeneration);
 
       await this.finalization.finalizeInTx(tx, attempt, 'MANUAL', correlationId);
       return this.finalization.buildCommittedResult(tx, attemptId);

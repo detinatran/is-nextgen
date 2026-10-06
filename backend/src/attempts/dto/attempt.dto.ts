@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 
 export class SaveAnswerDto {
@@ -24,15 +24,15 @@ export class SaveAnswerDto {
 
 /**
  * FR-22: submission carries no answer properties (enforced by the global
- * whitelist). The writer generation may be supplied; a stale supplied
- * generation is rejected while the current writer may always submit.
+ * whitelist). The writer generation is mandatory: a stale or omitted
+ * generation is rejected, so a same-cookie old logical writer can never
+ * finalize across a takeover.
  */
 export class SubmissionDto {
-  @ApiPropertyOptional({ description: 'Writer generation of the active session; omitted = current-writer check only' })
-  @IsOptional()
+  @ApiProperty({ description: 'Writer generation the client holds (from start/GET/takeover)' })
   @IsInt()
   @Min(1)
-  writerGeneration?: number;
+  writerGeneration!: number;
 }
 
 export class ReviewFlagDto {

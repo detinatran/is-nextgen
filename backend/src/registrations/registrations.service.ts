@@ -7,6 +7,7 @@ import { AuditService } from '../common/audit/audit.service';
 import { IdempotencyService, type Tx } from '../common/idempotency/idempotency.service';
 import { PrismaService } from '../database/prisma.service';
 import { ChallengeService } from '../identity-access/challenge.service';
+import type { RegistrationAuthContext } from '../common/http/request-context';
 import type {
   CreateRegistrationDraftDto,
   RegistrationResponse,
@@ -15,6 +16,16 @@ import type {
 } from './dto/registration.dto';
 
 const GRANT_TTL_MS = 14 * 24 * 3_600_000;
+/**
+ * F03: the anonymous initial capability is NOT a registration_access_grants
+ * row — that frozen table's verified_email_normalized/email_verified_at are
+ * NOT NULL and only ever describe a proven email. The limited initial
+ * capability is bound through append-only audit evidence instead (the same
+ * challenge-binding mechanism the verified recovery flow uses). The guard
+ * resolves it by token hash from this action's metadata.
+ */
+export const DRAFT_CAPABILITY_AUDIT_ACTION = 'registration.draft_capability_issued';
+export const DRAFT_CAPABILITY_TTL_MS = GRANT_TTL_MS;
 const NEXT_STEPS = [
   'Kiểm tra hộp thư email để nhận thư xác nhận đăng ký.',
   'Chờ Ban Tổ chức cấp tài khoản thí sinh (thông tin sẽ được gửi qua email).',
@@ -117,11 +128,12 @@ export class RegistrationsService {
         },
       ]);
 
-      // F03: the anonymous initial flow receives ONE capability with the
-      // DRAFT_UPLOAD (initial submission) scope. It never asserts verified
-      // email and never becomes long-lived private edit authority; later
-      // read/edit requires the verified recovery flow below.
-      const draftGrant = await this.issueGrant(tx, registration.id, emailNormalized, 'DRAFT_UPLOAD');
+      // F03: the anonymous initial flow receives ONE limited capability with
+      // the DRAFT_UPLOAD (initial submission) scope, bound via append-only
+      // audit evidence. It never asserts verified email, never touches the
+      // verified grant table, and never becomes long-lived private edit
+      // authority; later read/edit requires the verified recovery flow below.
+      const draftCapability = await this.issueDraftCapability(tx, registration.id, correlationId);
       await this.flagDuplicates(tx, registration.id, emailNormalized, cleanText(dto.studentId));
       await this.audit.record(tx, {
         action: 'registration.draft_created',
@@ -130,7 +142,7 @@ export class RegistrationsService {
         correlation_id: correlationId,
         metadata: { competitionCode: competition.code },
       });
-      return { registration, expiresAt: draftGrant.expiresAt, draftToken: draftGrant.token };
+      return { registration, expiresAt: draftCapability.expiresAt, draftToken: draftCapability.token };
     });
 
     this.logger.log(`registration draft created correlationId=${correlationId}`);
@@ -147,8 +159,29 @@ export class RegistrationsService {
     };
   }
 
-  async getRegistration(registrationId: string): Promise<RegistrationResponse> {
+  /**
+   * F03: private profile read. A DRAFT_UPLOAD initial capability may read its
+   * own registration only while it is still a draft; once submitted (and
+   * possibly edited via verified recovery), only the verified
+   * READ_EDIT_PROFILE grant may read the private profile. Internal callers
+   * pass no auth and are not subject to this check.
+   */
+  async getRegistration(
+    registrationId: string,
+    auth?: RegistrationAuthContext,
+  ): Promise<RegistrationResponse> {
     const registration = await this.loadRegistration(registrationId);
+    if (
+      auth &&
+      auth.registrationId === registration.id &&
+      auth.scopes.includes('DRAFT_UPLOAD') &&
+      !auth.scopes.includes('READ_EDIT_PROFILE') &&
+      registration.state !== 'DRAFT'
+    ) {
+      throw AppException.forbidden(
+        'Initial upload capability cannot read the submitted profile; use verified recovery',
+      );
+    }
     const profile = await this.prisma.candidate_profiles.findUniqueOrThrow({
       where: { candidate_id: registration.candidate_id },
     });
@@ -212,10 +245,27 @@ export class RegistrationsService {
   async updateRegistration(
     registrationId: string,
     dto: UpdateRegistrationDto,
+    grantId: string,
     correlationId: string,
   ): Promise<RegistrationResponse> {
     await this.prisma.$transaction(async (tx) => {
       const registration = await this.lockRegistration(tx, registrationId);
+
+      // F03-REVOCATION: the pre-request guard result is stale once the row
+      // lock is held. The verified grant identity is re-checked INSIDE this
+      // transaction against current time, so a grant expired or revoked while
+      // the edit waited on the lock can never commit.
+      const grant = await tx.registration_access_grants.findUnique({ where: { id: grantId } });
+      const grantValidAt = new Date();
+      if (
+        !grant ||
+        grant.registration_id !== registrationId ||
+        grant.scope !== 'READ_EDIT_PROFILE' ||
+        grant.revoked_at !== null ||
+        grant.expires_at <= grantValidAt
+      ) {
+        throw AppException.authRequired('Registration capability token is invalid or expired');
+      }
 
       // F04: server-authoritative deadline (competition close time) applies
       // to DRAFT and SUBMITTED registrations alike.
@@ -666,12 +716,17 @@ export class RegistrationsService {
     throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Could not allocate a candidate code');
   }
 
+  /**
+   * F03: issues a VERIFIED recovery grant. email_verified_at is the actual
+   * email-ownership proof time — never an issue/delivery timestamp, and this
+   * is the only writer of registration_access_grants rows.
+   */
   private async issueGrant(
     tx: Tx,
     registrationId: string,
     emailNormalized: string,
-    scope: 'READ_EDIT_PROFILE' | 'DRAFT_UPLOAD',
-    verifiedAt?: Date,
+    scope: 'READ_EDIT_PROFILE',
+    verifiedAt: Date,
   ): Promise<{ token: string; expiresAt: Date }> {
     const token = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + GRANT_TTL_MS);
@@ -680,13 +735,35 @@ export class RegistrationsService {
         registration_id: registrationId,
         token_hash: sha256(token),
         verified_email_normalized: emailNormalized,
-        // Schema requires a timestamp here: initial draft capabilities record
-        // their issue time (delivery evidence), while recovery grants record
-        // the moment the email ownership was actually proven.
-        email_verified_at: verifiedAt ?? new Date(),
+        email_verified_at: verifiedAt,
         scope,
         expires_at: expiresAt,
       },
+    });
+    return { token, expiresAt };
+  }
+
+  /**
+   * F03: issues the limited anonymous initial capability (DRAFT_UPLOAD only).
+   * Stored as audit evidence — registration binding, issue time and expiry —
+   * without writing any verified-email columns. It allows photo/video upload,
+   * binding and the initial submission; it never reads the private profile
+   * after submission and never PATCHes (enforced by guard + service state
+   * checks).
+   */
+  private async issueDraftCapability(
+    tx: Tx,
+    registrationId: string,
+    correlationId: string,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const token = randomBytes(32).toString('base64url');
+    const expiresAt = new Date(Date.now() + DRAFT_CAPABILITY_TTL_MS);
+    await this.audit.record(tx, {
+      action: DRAFT_CAPABILITY_AUDIT_ACTION,
+      target_type: 'registration',
+      target_id: registrationId,
+      correlation_id: correlationId,
+      metadata: { tokenHash: sha256(token) },
     });
     return { token, expiresAt };
   }

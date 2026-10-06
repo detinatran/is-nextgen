@@ -347,8 +347,21 @@ export class RegistrationRecoveryVerificationDto {
   code!: string;
 }
 
-export interface RegistrationRecoveryGrantResponse {
-  registrationId: string;
-  profileToken: string;
-  expiresAt: string;
+export class RegistrationRecoveryRequestResponse {
+  @ApiProperty({ example: 'accepted' })
+  status!: string;
+
+  @ApiProperty({ format: 'uuid', description: 'Decoy locator for unknown/mismatching emails — a locator is not a verifier' })
+  challengeId!: string;
+}
+
+export class RegistrationRecoveryGrantResponse {
+  @ApiProperty({ format: 'uuid', description: 'The exact bound registration this grant covers' })
+  registrationId!: string;
+
+  @ApiProperty({ description: 'Opaque READ_EDIT_PROFILE capability token; store in memory only' })
+  profileToken!: string;
+
+  @ApiProperty({ format: 'date-time', description: 'Grant expiry; the grant is revocable and expires regardless' })
+  expiresAt!: string;
 }

@@ -34,13 +34,17 @@ describe('F03 verified registration recovery', () => {
 
   it('F03-01: anonymous draft creates no READ_EDIT_PROFILE grant and no verified-email claim', async () => {
     const draft = await createDraft(ctx);
+    // F03-CAPABILITY: the initial capability is bound via append-only audit
+    // evidence; the frozen grants table only ever holds PROVEN email grants.
     const grants = await ctx.prisma.registration_access_grants.findMany({
       where: { registration_id: draft.registrationId },
     });
-    expect(grants.length).toBe(1);
-    expect(grants[0].scope).toBe('DRAFT_UPLOAD');
-    expect(grants.filter((g) => g.scope === 'READ_EDIT_PROFILE')).toHaveLength(0);
+    expect(grants.length).toBe(0);
     expect(await ctx.prisma.users.count()).toBe(0);
+    const binding = await ctx.prisma.audit_events.findFirst({
+      where: { action: 'registration.draft_capability_issued', target_id: draft.registrationId },
+    });
+    expect(binding?.metadata).toHaveProperty('tokenHash');
   });
 
   it('F03-02: the initial capability completes the initial flow (upload, bind, submit)', async () => {

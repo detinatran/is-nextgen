@@ -1,6 +1,40 @@
 # BLOCKER_REMEDIATION_F01_F05_REPORT
 
-**Result: PASS (targeted remediation complete).** Remediation of the five blockers from `POST_ZCODE_INSPECTION_REPORT.md` and the follow-up findings from `POST_REMEDIATION_INSPECTION_REPORT.md` (F01-E, F06, F07). Baseline: commit `a033ac9` + the prior uncommitted remediation. Branch: `backend_candidate`.
+**Result: findings from `POST_REMEDIATION_INSPECTION_REPORT.md` (V2/F03/FR14/F06 + obsolete fixtures) remediated in targeted scope; F05-AUTHORIZATION remains PARTIAL. NOT claimed production READY: full regression, frozen-DB validation and Docker build/smoke were NOT re-run in this batch.**
+
+## Batch 3 — remediation of the 0830ff7 post-inspection findings (this commit)
+
+Baseline `0830ff7`, branch `backend_candidate`. Scope limited to: F02-SUBMIT, FR14-BINDING, F03-CAPABILITY, F03-REVOCATION, F06-CONTRACT, two obsolete security fixtures. Frozen SQL/seed, Prisma schema/migrations, verification evidence, and the review tests (`review-0830ff7.spec.ts`, `review-0830ff7-smoke.cjs`) were not modified. F01/F04/MFA PASS behavior untouched.
+
+| Finding | Fix (file → change) | Targeted test(s) | Result |
+| --- | --- | --- | --- |
+| F02-SUBMIT (HIGH): optional `writerGeneration` let an old same-cookie logical writer finalize after takeover with an empty body | `src/attempts/dto/attempt.dto.ts` → `SubmissionDto.writerGeneration` required (`@ApiProperty`, `@IsInt @Min(1)`); `src/attempts/attempts.service.ts` → `submitAttempt` takes a required generation and always asserts it against the authoritative writer after the attempt lock (no omission bypass); `src/attempts/attempts.controller.ts` wires it. Affected test inputs updated to the new contract (submission-scoring submit helper, exam-access quota, concurrency C3, post-zcode release-gate, post-remediation V-F02-current-submit) — no bypass kept for old tests | `V2-F02` | PASS |
+| FR14-BINDING (HIGH): controller required `DRAFT_UPLOAD`, `bindVideo` service required `READ_EDIT_PROFILE` → every binding 403 | `src/media/media.service.ts` → `bindVideo` `assertGrant` scope `DRAFT_UPLOAD` (matches controller). Registration DRAFT/sealed, object ownership and READY checks unchanged; no guard removed; no edit authority granted to the initial capability | `V2-F03-initial-video-binding`; media.spec `accepts a valid small MP4` | PASS |
+| F03-CAPABILITY (HIGH): anonymous draft wrote `verified_email_normalized`/`email_verified_at` without proof; the unverified 14-day token could read the submitted (and later edited) profile | `src/registrations/registrations.service.ts` → initial capability is no longer a `registration_access_grants` row: `issueDraftCapability` binds it via append-only audit evidence (`registration.draft_capability_issued` metadata `tokenHash`, target registration, TTL); `issueGrant` is verified-recovery-only with the actual proof time mandatory. `src/registrations/registration-capability.guard.ts` → resolves both token kinds (verified grants table, audit-bound DRAFT_UPLOAD capability). `src/registrations/{registrations.service,registrations.controller}.ts` → `GET /registrations/:id` denies the DRAFT_UPLOAD capability once state ≠ DRAFT (no private profile read after submission; PATCH already scope-gated). Photo/video upload, binding and initial submission still work with the initial token; no User/exam access created | `V2-F03-01`; `V2-F03-private-read` | PASS |
+| F03-REVOCATION (HIGH): a grant revoked while PATCH waited on the registration row lock still committed | `src/registrations/registrations.service.ts` → `updateRegistration` receives the verified grant identity (`registrationAuth.grantId`) and re-checks resource/scope/expiry/revocation against the current time INSIDE the transaction immediately after `lockRegistration`; a grant revoked during the lock wait now fails closed (401) with revision/profile unchanged | `V2-F04-revoked-grant` | PASS |
+| F06-CONTRACT (MEDIUM): submission generation optional in Swagger; `SessionResponse` empty; no login union; recovery verification had no response schema; attempt DTOs unwired | `src/attempts/dto/attempt.dto.ts` → submission schema requires `writerGeneration`; `src/identity-access/auth.controller.ts` → `SessionResponse` concrete fields (nested user/csrfToken/mfaVerifiedAt), login 200 `oneOf: [SessionResponse, MfaRequiredResponse]` via `@ApiExtraModels`; `src/registrations/{registrations.controller,dto/registration.dto}.ts` → recovery request 202 + verification 200 response schemas matching runtime; `src/attempts/attempts.controller.ts` → existing `AttemptView`/`AnswerSavedResponse`/`SubmissionResponse`/`TakeoverResponse` wired to their endpoints. No runtime change made for Swagger's sake | `V2-contract-submission`; `V2-contract-login`; `V2-contract-recovery` | PASS |
+| LOW: `security.spec.ts` expired/revoked fixtures searched a `READ_EDIT_PROFILE` grant right after anonymous draft → Prisma P2025 | `test/integration/security.spec.ts` → setups obtain the grant through real verified recovery (`recoverRegistration`), then expire/revoke that grant; the 401 rejection assertions are unchanged | `expired registration capability`; `revoked registration capability` | PASS |
+
+### Batch 3 targeted results (disposable PostgreSQL 16 container, tmpfs PGDATA; Jest independent + integration + release-gate configs)
+
+| Run | Result |
+| --- | --- |
+| `review-0830ff7.spec.ts` — the 8 originally-failing finding cases | **8 PASS / 0 FAIL** |
+| `review-0830ff7.spec.ts` — directly-affected preservation cases (V2-F03-expiry/resource/replay/grant-expired/grant-revoked, V2-F04-CAS/deadline-at-lock/submitted-deadline) | **8 PASS / 0 FAIL** |
+| media.spec + security.spec targeted fixtures (`accepts a valid small MP4`, expired, revoked) | **3 PASS / 0 FAIL** |
+| Behavior-preservation picks: registration draft-read, remediation-flows F03-01..09 + F04-02..08 (10), attempt-submission contract picks (4), post-remediation V-F03 (4) + V-F02 (2), release-gate picks (5) | **25 PASS / 0 FAIL** |
+| Build / Typecheck / Lint | PASS / PASS / PASS |
+
+Targeted total: **44 PASS / 0 FAIL** (no skips inside the selected sets). F05 MFA cases (`V2-F05-*`) intentionally not re-run — that flow was not modified. Distinguish: the above are exactly the tests executed; everything else in the repo was not run in this batch.
+
+### Batch 3 remaining limits
+
+- **F05-AUTHORIZATION remains PARTIAL:** the AdminGuard permission / reviewer-assignment layer is still absent (out of this batch's scope per instruction).
+- `V2-F05-*`, full integration suites, frozen-DB validation (103), Docker production build/smoke, full contract suite: NOT re-run — no full-regression or production-READY claim is made.
+- The initial DRAFT_UPLOAD capability is TTL-bound and audit-bound (no DB row → no row-level revocation; it grants no private read/edit and every upload/bind/submit remains state-gated); the verified grant keeps binding/expiry/revocation.
+- Operational withdrawal/retention workflows remain documented gaps (previous batches).
+
+Remediation of the five blockers from `POST_ZCODE_INSPECTION_REPORT.md` and the follow-up findings from `POST_REMEDIATION_INSPECTION_REPORT.md` (F01-E, F06, F07). Baseline: commit `a033ac9` + the prior uncommitted remediation. Branch: `backend_candidate`.
 
 ## Finding → cause → fix → targeted test → result
 
@@ -56,11 +90,11 @@
 ## API contract changes (frontend-visible)
 
 1. **Password reset / activation / email verification:** request endpoints return `{status, challengeId}` (decoy locator for unknown accounts); verification endpoints take `{challengeId, code}`; `password-resets` keeps deprecated `token` only to fail closed (401) for legacy token-only calls.
-2. **Writer generation:** start response, active-attempt view (`attempt.writerGeneration`) and takeover response expose it; `PUT answers`, `PUT review-flags` require it in the body (missing → 400, mismatch → 409 + `reason: STALE_WRITER_GENERATION`); `POST submission` accepts an optional `{writerGeneration}` (omitted = current-writer check).
+2. **Writer generation:** start response, active-attempt view (`attempt.writerGeneration`) and takeover response expose it; `PUT answers`, `PUT review-flags` require it in the body (missing → 400, mismatch → 409 + `reason: STALE_WRITER_GENERATION`); `POST submission` requires `{writerGeneration}` since Batch 3 (missing/stale → rejected; see Batch 3 table).
 3. **Registration edit:** `PATCH` requires `expectedRevision` (schema-required; absent/stale → 409 `REVISION_CONFLICT`); deadline → 409 `DEADLINE_PASSED`; submitted registrations allow current-profile edits (email/consent/video/photo excluded).
 4. **Registration recovery:** `POST /registrations/:registrationId/recovery-requests` → `{status, challengeId}`; `POST /registrations/recovery/verifications` → `{registrationId, profileToken, expiresAt}`.
 5. **Admin login:** `MFA_REQUIRED` + `challengeId` (no cookies); `POST /auth/admin/mfa-challenges/:challenge/verification` → full session with server-committed MFA proof; `GET /admin/session` authorization probe.
-6. **Registration draft capability:** single `DRAFT_UPLOAD` grant; `profileToken` returned as a deprecated alias; submission/binding accept it; private edit requires the recovery grant.
+6. **Registration draft capability:** one limited initial capability (audit-bound `DRAFT_UPLOAD`, Batch 3 modeling — no grants row, no verified-email columns); `profileToken` returned as a deprecated alias of `uploadToken`; uploads/binding/initial submission and DRAFT-state reads accept it; private profile read after submission and PATCH require the verified recovery grant.
 
 ## Database
 

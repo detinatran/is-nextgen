@@ -1,15 +1,17 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiHeader, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import type { AuthenticatedRequest } from '../common/http/request-context';
 import { AuthGuard } from '../identity-access/guards/auth.guard';
 import { CsrfGuard } from '../identity-access/guards/csrf.guard';
 import { requireIdempotencyKey } from '../exam-operations/assignments.controller';
 import { AttemptsService } from './attempts.service';
-import { SaveAnswerDto, ReviewFlagDto, SubmissionDto } from './dto/attempt.dto';
-import type {
+import {
   AnswerSavedResponse,
   AttemptView,
+  SaveAnswerDto,
+  ReviewFlagDto,
+  SubmissionDto,
   SubmissionResponse,
   TakeoverResponse,
 } from './dto/attempt.dto';
@@ -23,6 +25,7 @@ export class AttemptsController {
 
   /** Sanitized FR-20 contract — never exposes correctness data. */
   @Get(':attemptId')
+  @ApiOkResponse({ type: AttemptView, description: 'Sanitized attempt view for the owning candidate' })
   async getAttempt(
     @Param('attemptId', ParseUUIDPipe) attemptId: string,
     @Req() req: AuthenticatedRequest,
@@ -33,6 +36,7 @@ export class AttemptsController {
   @Put(':attemptId/answers/:deliveredQuestionId')
   @UseGuards(CsrfGuard)
   @SkipThrottle()
+  @ApiOkResponse({ type: AnswerSavedResponse })
   async saveAnswer(
     @Param('attemptId', ParseUUIDPipe) attemptId: string,
     @Param('deliveredQuestionId', ParseUUIDPipe) deliveredQuestionId: string,
@@ -57,6 +61,7 @@ export class AttemptsController {
   @Post(':attemptId/session-takeover')
   @HttpCode(HttpStatus.OK)
   @UseGuards(CsrfGuard)
+  @ApiOkResponse({ type: TakeoverResponse })
   async takeover(
     @Param('attemptId', ParseUUIDPipe) attemptId: string,
     @Req() req: AuthenticatedRequest,
@@ -70,12 +75,13 @@ export class AttemptsController {
   @ApiHeader({ name: 'Idempotency-Key', required: true })
   @UseGuards(CsrfGuard)
   @SkipThrottle()
+  @ApiOkResponse({ type: SubmissionResponse })
   async submit(
     @Body() dto: SubmissionDto,
     @Param('attemptId', ParseUUIDPipe) attemptId: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<SubmissionResponse> {
     const idempotencyKey = requireIdempotencyKey(req);
-    return this.attempts.submitAttempt(req.auth!.userId, req.auth!.sessionId, attemptId, idempotencyKey, req.correlationId ?? 'unknown', dto?.writerGeneration);
+    return this.attempts.submitAttempt(req.auth!.userId, req.auth!.sessionId, attemptId, idempotencyKey, req.correlationId ?? 'unknown', dto.writerGeneration);
   }
 }

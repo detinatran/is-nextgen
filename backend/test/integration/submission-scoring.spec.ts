@@ -74,11 +74,12 @@ describe('submission, timeout finalization and automatic scoring', () => {
   }
 
   async function submit(attemptId: string, key = randomUUID()) {
+    // Fresh attempts expose writer generation 1; takeover never occurs in this suite.
     return ctx.http
       .post(`/api/v1/me/attempts/${attemptId}/submission`)
       .set(authed(cookies))
       .set('Idempotency-Key', key)
-      .send();
+      .send({ writerGeneration: 1 });
   }
 
   it('manual submit finalizes, rejects answer payload changes, and replays idempotently', async () => {

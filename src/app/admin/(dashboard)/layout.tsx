@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
-import "@/app/globals.css";
+import AdminShell from "@/components/admin/layout/AdminShell";
+import { ToastProvider } from "@/components/admin/ui/Toast";
 
 const beVietnam = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -18,17 +19,14 @@ export const metadata: Metadata = {
   description: "Phân hệ quản trị cuộc thi IS-NextGen Manager Challenge 2026",
 };
 
-export default function AdminRootLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={`${beVietnam.variable} js`} suppressHydrationWarning>
-      <head />
-      <body className="min-h-screen bg-slate-50" suppressHydrationWarning>
-        {children}
-      </body>
-    </html>
+    <ToastProvider>
+      <AdminShell>{children}</AdminShell>
+    </ToastProvider>
   );
 }

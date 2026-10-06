@@ -31,6 +31,16 @@ interface AdminTableProps<T> {
   /** Enable staggered row entrance animation */
   animateRows?: boolean;
   className?: string;
+
+  // Bulk selection support
+  enableSelection?: boolean;
+  selectedRows?: Set<string | number>;
+  onSelectionChange?: (selectedRows: Set<string | number>) => void;
+  selectAllMode?: "page" | "all";
+  onSelectAll?: (selected: boolean) => void;
+
+  // Use string keys internally
+  keyType?: "string" | "number";
 }
 
 const getAlignmentClass = (align?: "left" | "center" | "right") => {
@@ -58,6 +68,12 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
       pageSize = 10,
       animateRows = true,
       className = "",
+      // Bulk selection support
+      enableSelection = false,
+      selectedRows = new Set(),
+      selectAllMode = "page",
+      onSelectAll,
+      onSelectionChange,
       ...props
     },
     ref
@@ -99,6 +115,23 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
           <table className="w-full min-w-[800px] border-collapse text-left">
             <thead>
               <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider select-none">
+                {enableSelection && (
+                  <th className="px-4 py-3.5 w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows && selectedRows.size === data.length && data.length > 0}
+                      // @ts-ignore - indeterminate not in HTML props but works in React
+                      onChange={(e) => onSelectAll?.(e.target.checked)}
+                      className="w-4 h-4 rounded text-[#1F5BE0] border-slate-300 focus:ring-[#1F5BE0]/20 cursor-pointer"
+                      aria-label={selectedRows && selectedRows.size === data.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                      ref={(el) => {
+                        if (el && selectedRows && selectedRows.size > 0 && selectedRows.size < data.length) {
+                          el.indeterminate = true;
+                        }
+                      }}
+                    />
+                  </th>
+                )}
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -131,7 +164,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                 ))
               ) : data.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-16 text-center">
+                  <td colSpan={enableSelection ? columns.length + 1 : columns.length} className="px-4 py-16 text-center">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
                         <svg
@@ -158,6 +191,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
               ) : (
                 data.map((row, index) => {
                   const key = keyExtractor(row);
+                  const isSelected = selectedRows?.has(key);
 
                   return (
                     <tr
@@ -165,8 +199,32 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                       onClick={() => onRowClick && onRowClick(row)}
                       className={`transition-colors hover:bg-slate-50/80 ${
                         onRowClick ? "cursor-pointer" : ""
-                      }`}
+                      } ${isSelected ? "bg-sky-50/50" : ""}`}
                     >
+                      {enableSelection && (
+                        <td className="px-4 py-3.5 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const newSelection = new Set(selectedRows || []);
+                              if (e.target.checked) {
+                                newSelection.add(key);
+                              } else {
+                                newSelection.delete(key);
+                              }
+                              onSelectionChange?.(newSelection);
+                            }}
+                            className="w-4 h-4 rounded text-[#1F5BE0] border-slate-300 focus:ring-[#1F5BE0]/20 cursor-pointer"
+                            aria-label={isSelected ? "Bỏ chọn dòng này" : "Chọn dòng này"}
+                            // @ts-ignore - indeterminate not in HTML props but works in React
+                            ref={(el) => {
+                              if (el && isSelected) el.indeterminate = false;
+                            }}
+                          />
+                        </td>
+                      )}
                       {columns.map((col) => (
                         <td
                           key={`${key}-${col.key}`}

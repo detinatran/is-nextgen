@@ -111,7 +111,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Phòng giám sát Live",
+          label: "Phòng giám sát",
           href: "/admin/exams/monitor",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ export default function AdminSidebar({
 
                   {/* Menu Item Text with Smooth Fade & No Wrap */}
                   <span
-                    className={`nav-text flex-1 whitespace-nowrap transition-all duration-300 ease-out ${
+                    className={`nav-text flex-1 min-w-0 truncate whitespace-nowrap transition-all duration-300 ease-out ${
                       collapsed
                         ? "opacity-0 w-0 overflow-hidden"
                         : "opacity-100 w-auto"

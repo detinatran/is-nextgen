@@ -6,6 +6,7 @@ import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
 import { ApiError, apiBase, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
+import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
 import PhotoUpload from "./PhotoUpload";
 import VideoUpload from "./VideoUpload";
 
@@ -38,6 +39,22 @@ const text = {
     consentWithdraw: "Bạn có thể rút lại sự đồng ý bất cứ lúc nào bằng cách gửi email tới",
     consentNote: "Đối với thí sinh tham gia xét giải Thí sinh được yêu thích nhất, thí sinh phải đồng ý sử dụng hình ảnh và video.",
     uploadingPhoto: "Đang tải ảnh...",
+    fieldErrors: {
+      required: "Vui lòng điền ô này.",
+      name: "Họ tên chỉ gồm chữ cái và khoảng trắng.",
+      email: "Email chưa đúng, ví dụ: ten@gmail.com.",
+      phone: "Số điện thoại gồm 9-15 chữ số.",
+      studentId: "Mã số sinh viên chỉ gồm chữ và số (4-20 ký tự).",
+      facebook: "Nhập link trang Facebook cá nhân, ví dụ: facebook.com/ten-cua-ban.",
+      dob: "Ngày sinh chưa hợp lệ.",
+      text: "Nội dung chưa hợp lệ.",
+    } as Record<FieldErrorCode, string>,
+    needPhoto: "Vui lòng tải lên ảnh cá nhân.",
+    needVideo: "Vui lòng tải lên video giới thiệu.",
+    waitVideo: "Đang kiểm tra video, vui lòng đợi trong giây lát.",
+    needConsent: "Vui lòng chọn Đồng ý hoặc Không đồng ý.",
+    needConfirm: "Vui lòng xác nhận để nộp đăng ký.",
+    duplicateNote: "Mỗi thí sinh chỉ đăng ký một lần. Hồ sơ trùng email hoặc mã số sinh viên sẽ được Ban Tổ chức rà soát; nếu cần sửa thông tin, hãy liên hệ",
     steps: ["Thông tin", "Ảnh & video", "Cam kết"],
     next: "Tiếp tục",
     back: "Quay lại",
@@ -73,6 +90,14 @@ const text = {
       VALIDATION_FAILED: "Thông tin chưa hợp lệ, vui lòng kiểm tra lại các ô đã nhập.",
       STATE_CONFLICT: "Cổng đăng ký hiện không mở.",
       RATE_LIMITED: "Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.",
+      DEADLINE_PASSED: "Đã hết hạn đăng ký.",
+      NOT_FOUND: "Cuộc thi chưa mở đăng ký trên hệ thống.",
+      IDEMPOTENCY_CONFLICT: "Hồ sơ đang được xử lý, vui lòng không bấm nộp nhiều lần.",
+      UPLOAD_INCOMPLETE: "Video chưa tải lên xong. Vui lòng thử lại.",
+      AUTH_REQUIRED: "Phiên đăng ký đã hết hạn. Vui lòng tải lại trang và đăng ký lại.",
+      FORBIDDEN: "Phiên đăng ký đã hết hạn. Vui lòng tải lại trang và đăng ký lại.",
+      DEPENDENCY_UNAVAILABLE: "Hệ thống đang bận, vui lòng thử lại sau ít phút.",
+      INTERNAL: "Hệ thống gặp lỗi, vui lòng thử lại sau ít phút.",
     } as Record<string, string>,
     studentId: "Mã số sinh viên *",
     year: "Năm học *",
@@ -86,7 +111,7 @@ const text = {
     sending: "Đang gửi...",
     submit: "Gửi đăng ký",
     closed: "Đã hết hạn đăng ký mùa I.",
-    notOpen: "Cổng đăng ký sẽ mở trong Lễ phát động (tuần 2 tháng 10/2026).",
+    notOpen: "Cổng đăng ký hiện chưa mở. Vui lòng quay lại sau.",
   },
   en: {
     uploadError: "Could not upload your photo or video. Check your connection and try again.",
@@ -98,6 +123,22 @@ const text = {
     consentWithdraw: "You can withdraw your consent at any time by emailing",
     consentNote: "Contestants who wish to be considered for the Most Popular Contestant award must agree to the use of their photos and videos.",
     uploadingPhoto: "Uploading photo...",
+    fieldErrors: {
+      required: "Please fill in this field.",
+      name: "Your name may only contain letters and spaces.",
+      email: "Please enter a valid email, e.g. name@gmail.com.",
+      phone: "Phone number must have 9-15 digits.",
+      studentId: "Student ID may only contain letters and digits (4-20 characters).",
+      facebook: "Enter your Facebook profile link, e.g. facebook.com/your-name.",
+      dob: "Please enter a valid date of birth.",
+      text: "This value is not valid.",
+    } as Record<FieldErrorCode, string>,
+    needPhoto: "Please upload your personal photo.",
+    needVideo: "Please upload your intro video.",
+    waitVideo: "Checking your video, please wait a moment.",
+    needConsent: "Please choose Agree or Do not agree.",
+    needConfirm: "Please confirm to submit your registration.",
+    duplicateNote: "Each contestant may register only once. Registrations with a duplicate email or student ID are reviewed by the Organizing Committee; to change your details, contact",
     steps: ["Your details", "Photo & video", "Consent"],
     next: "Continue",
     back: "Back",
@@ -133,6 +174,14 @@ const text = {
       VALIDATION_FAILED: "Some details are not valid. Please check your entries.",
       STATE_CONFLICT: "Registration is not open right now.",
       RATE_LIMITED: "Too many attempts. Please try again in a few minutes.",
+      DEADLINE_PASSED: "Registration has closed.",
+      NOT_FOUND: "Registration for this competition is not open in the system.",
+      IDEMPOTENCY_CONFLICT: "Your application is being processed; please don't submit twice.",
+      UPLOAD_INCOMPLETE: "The video did not finish uploading. Please try again.",
+      AUTH_REQUIRED: "Your registration session expired. Please reload the page and try again.",
+      FORBIDDEN: "Your registration session expired. Please reload the page and try again.",
+      DEPENDENCY_UNAVAILABLE: "The system is busy. Please try again in a few minutes.",
+      INTERNAL: "Something went wrong. Please try again in a few minutes.",
     } as Record<string, string>,
     studentId: "Student ID *",
     year: "Year of study *",
@@ -146,7 +195,7 @@ const text = {
     sending: "Sending...",
     submit: "Submit registration",
     closed: "Registration for Season I has closed.",
-    notOpen: "Registration opens at the Launch Event (week 2 of October 2026).",
+    notOpen: "Registration is not open yet. Please check back later.",
   },
 };
 const yearValues = text.vi.years;
@@ -170,6 +219,9 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const pages = useRef<(HTMLDivElement | null)[]>([]);
   const [progress, setProgress] = useState<number | null>(null);
   const [errorText, setErrorText] = useState("");
+  // Lỗi hiển thị ngay dưới từng ô (theo tên ô) và trạng thái đang kiểm tra video
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [videoChecking, setVideoChecking] = useState(false);
 
   useEffect(() => {
     setClosed(Date.now() > new Date(deadline).getTime());
@@ -180,16 +232,43 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  /** Chỉ sang bước sau khi mọi ô bắt buộc của bước hiện tại hợp lệ. */
-  function nextPage() {
-    const fields = pages.current[page]?.querySelectorAll<HTMLInputElement | HTMLSelectElement>("input, select") ?? [];
-    for (const el of fields) {
-      if (!el.checkValidity()) {
-        el.reportValidity();
-        return;
-      }
+  /** Kiểm tra một bước; lỗi hiện dưới từng ô và đưa con trỏ tới ô lỗi đầu tiên. */
+  function validatePage(p: number): boolean {
+    const form = formRef.current;
+    if (!form) return false;
+    const data = new FormData(form);
+    const get = (n: string) => String(data.get(n) ?? "");
+    let found: Record<string, string> = {};
+    if (p === 0) {
+      const codes = validateProfile(get);
+      found = Object.fromEntries(Object.entries(codes).map(([k, c]) => [k, t.fieldErrors[c]]));
+    } else if (p === 1) {
+      if (!photo) found.photo = t.needPhoto;
+      if (videoChecking) found.video = t.waitVideo;
+      else if (!video) found.video = t.needVideo;
+    } else {
+      if (!get("mediaConsent")) found.mediaConsent = t.needConsent;
+      if (!get("confirm")) found.confirm = t.needConfirm;
     }
-    goTo(page + 1);
+    setErrors(found);
+    const first = Object.keys(found)[0];
+    if (first) {
+      const el = form.querySelector<HTMLElement>(`[name="${first}"]`);
+      el?.focus({ preventScroll: true });
+      (el?.closest("label, fieldset, .sm\\:col-span-2") ?? el)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return false;
+    }
+    return true;
+  }
+
+  function nextPage() {
+    if (validatePage(page)) goTo(page + 1);
+  }
+
+  /** Gõ lại vào ô nào thì xoá lỗi của ô đó. */
+  function clearError(e: React.FormEvent<HTMLFormElement>) {
+    const name = (e.target as HTMLInputElement).name;
+    if (name && errors[name]) setErrors(({ [name]: _removed, ...rest }) => rest);
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -197,9 +276,18 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     // Bấm Enter ở các bước đầu thì chuyển bước, không gửi
     if (page < 2) return nextPage();
     const form = e.currentTarget;
+    if (!photo || !video) {
+      goTo(1);
+      validatePage(1);
+      return;
+    }
+    if (!validatePage(2)) return;
     const data = new FormData(form);
-    if (data.get("website") || !video || !photo) return; // bẫy bot / chưa chọn ảnh, video
+    if (data.get("website")) return; // bẫy bot
     data.delete("website");
+    // Cắt khoảng trắng thừa ở mọi ô chữ, chuẩn hoá link Facebook
+    for (const [k, v] of [...data.entries()]) if (typeof v === "string") data.set(k, v.trim());
+    if (data.get("facebook")) data.set("facebook", normalizeFacebook(String(data.get("facebook"))));
     data.set("submittedAt", new Date().toISOString());
     data.set("shareProfile", data.get("shareProfile") ? "Có" : "Không");
 
@@ -276,7 +364,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
       setState("error");
       setProgress(null);
       const code = err instanceof ApiError ? err.code : "";
-      setErrorText(code === "NETWORK" ? t.uploadError : (t.errors[code] ?? `${t.sendError}${err instanceof Error ? ` (${err.message})` : ""}`));
+      // Mã lỗi chưa có trong danh sách: hiện nguyên lời backend để thí sinh biết vì sao
+      setErrorText(code === "NETWORK" ? t.uploadError : (t.errors[code] ?? `${t.sendError}${err instanceof Error && err.message ? ` (${err.message})` : ""}`));
     }
   }
 
@@ -304,10 +393,14 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const unavailable = closed || (!endpoint && !apiBase);
 
   const busy = state === "uploading" || state === "sending";
+  const inputProps = (name: string) => ({
+    "aria-invalid": errors[name] ? true : undefined,
+    className: `${field} ${errors[name] ? "border-orange-ink bg-white ring-2 ring-orange/15" : ""}`,
+  });
   const pageCls = (i: number) => (page === i ? "grid gap-4 sm:grid-cols-2" : "hidden");
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="card scroll-mt-24 p-6 sm:p-8">
+    <form ref={formRef} onSubmit={onSubmit} onInput={clearError} onChange={clearError} noValidate className="card scroll-mt-24 p-6 sm:p-8">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={asset("/images/logo.png")} alt="" className="mb-6 h-12 w-auto" />
 
@@ -338,54 +431,63 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         <div ref={(el) => { pages.current[0] = el; }} className={pageCls(0)}>
           <label className="sm:col-span-2">
             <span className={labelCls}>{t.fullName}</span>
-            <input name="fullName" required autoComplete="name" className={field} />
+            <input name="fullName" required autoComplete="name" {...inputProps("fullName")} />
+            <FieldError msg={errors.fullName} />
           </label>
 
           <label>
             <span className={labelCls}>Email *</span>
-            <input name="email" type="email" required autoComplete="email" className={field} />
+            <input name="email" type="email" required autoComplete="email" {...inputProps("email")} />
+            <FieldError msg={errors.email} />
           </label>
           <label>
             <span className={labelCls}>{t.phone}</span>
-            <input name="phone" type="tel" required autoComplete="tel" pattern="[0-9+ ]{9,15}" title={t.phoneHint} className={field} />
+            <input name="phone" type="tel" required autoComplete="tel" inputMode="tel" {...inputProps("phone")} />
+            <FieldError msg={errors.phone} />
           </label>
 
           <label className="sm:col-span-2">
             <span className={labelCls}>{t.school}</span>
-            <input name="school" required list="school-list" placeholder={t.schoolPh} className={field} />
+            <input name="school" required list="school-list" placeholder={t.schoolPh} {...inputProps("school")} />
             <datalist id="school-list">
               {schools.map((s) => (
                 <option key={s} value={s} />
               ))}
             </datalist>
+            <FieldError msg={errors.school} />
           </label>
 
           <label>
             <span className={labelCls}>{t.dob}</span>
-            <input name="dateOfBirth" type="date" required max="2012-12-31" className={field} />
+            <input name="dateOfBirth" type="date" required min="1970-01-01" max="2012-12-31" {...inputProps("dateOfBirth")} />
+            <FieldError msg={errors.dateOfBirth} />
           </label>
           <label>
             <span className={labelCls}>{t.department}</span>
-            <input name="department" required className={field} />
+            <input name="department" required {...inputProps("department")} />
+            <FieldError msg={errors.department} />
           </label>
 
           <label>
             <span className={labelCls}>{t.major}</span>
-            <input name="major" required className={field} />
+            <input name="major" required {...inputProps("major")} />
+            <FieldError msg={errors.major} />
           </label>
           <label>
             <span className={labelCls}>{t.studentId}</span>
-            <input name="studentId" required className={field} />
+            <input name="studentId" required autoCapitalize="characters" {...inputProps("studentId")} />
+            <FieldError msg={errors.studentId} />
           </label>
 
           <label className="sm:col-span-2">
             <span className={labelCls}>{t.facebook}</span>
-            <input name="facebook" required placeholder={t.facebookPh} className={field} />
+            <input name="facebook" type="url" inputMode="url" required placeholder={t.facebookPh} {...inputProps("facebook")} />
+            <FieldError msg={errors.facebook} />
           </label>
 
           <label>
             <span className={labelCls}>{t.year}</span>
-            <select name="year" required defaultValue="" className={field}>
+            <select name="year" required defaultValue="" {...inputProps("year")}>
               <option value="" disabled>
                 {t.choose}
               </option>
@@ -395,17 +497,19 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
                 </option>
               ))}
             </select>
+            <FieldError msg={errors.year} />
           </label>
           <label>
             <span className={labelCls}>{t.nationality}</span>
-            <input name="nationality" defaultValue={t.nationalityDefault} className={field} />
+            <input name="nationality" defaultValue={t.nationalityDefault} {...inputProps("nationality")} />
+            <FieldError msg={errors.nationality} />
           </label>
         </div>
 
         {/* Bước 2: ảnh và video */}
         <div ref={(el) => { pages.current[1] = el; }} className={pageCls(1)}>
-          <PhotoUpload lang={lang} file={photo} onChange={setPhoto} progress={state === "uploading" && step === "photo" ? progress : null} />
-          <VideoUpload lang={lang} mp4Only={!!apiBase} file={video} onChange={setVideo} progress={state === "uploading" && step === "video" ? progress : null} />
+          <PhotoUpload lang={lang} formError={errors.photo} file={photo} onChange={(f) => { setPhoto(f); if (f) setErrors(({ photo: _p, ...rest }) => rest); }} progress={state === "uploading" && step === "photo" ? progress : null} />
+          <VideoUpload lang={lang} mp4Only={!!apiBase} formError={errors.video} onCheckingChange={setVideoChecking} file={video} onChange={(f) => { setVideo(f); if (f) setErrors(({ video: _v, ...rest }) => rest); }} progress={state === "uploading" && step === "video" ? progress : null} />
         </div>
 
         {/* Bước 3: cam kết, đồng ý rồi mới nộp */}
@@ -426,6 +530,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
               </label>
             </div>
             <p className="mt-3 rounded-lg bg-[#fff1e6] px-3 py-2 text-sm font-medium text-orange-ink">{t.consentNote}</p>
+            <FieldError msg={errors.mediaConsent} />
             <p className="mt-2 text-[13px] text-muted">
               {t.consentWithdraw}{" "}
               <a href={`mailto:${email}`} className="font-semibold text-navy underline-offset-2 hover:underline">
@@ -437,12 +542,22 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
 
           <label className="flex items-start gap-3 text-[15px] text-ink sm:col-span-2">
             <input name="confirm" type="checkbox" required className="mt-0.5 h-4 w-4 accent-orange" />
-            <span>{t.confirm}</span>
+            <span>
+              {t.confirm}
+              <FieldError msg={errors.confirm} />
+            </span>
           </label>
           <label className="flex items-start gap-3 text-[15px] text-ink sm:col-span-2">
             <input name="shareProfile" type="checkbox" className="mt-0.5 h-4 w-4 accent-orange" />
             <span>{t.share}</span>
           </label>
+          <p className="rounded-lg bg-mist px-3 py-2 text-[13px] leading-relaxed text-muted sm:col-span-2">
+            {t.duplicateNote}{" "}
+            <a href={`mailto:${email}`} className="font-semibold text-navy underline-offset-2 hover:underline">
+              {email}
+            </a>
+            .
+          </p>
         </div>
 
         {/* Bẫy bot: người dùng không thấy ô này */}
@@ -487,5 +602,14 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         </p>
       )}
     </form>
+  );
+}
+
+function FieldError({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return (
+    <span className="mt-1.5 block text-[13px] font-medium text-orange-ink" role="alert">
+      {msg}
+    </span>
   );
 }

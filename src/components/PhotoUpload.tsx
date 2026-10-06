@@ -11,6 +11,8 @@ type Props = {
   onChange: (file: File | null) => void;
   /** 0..1 khi đang tải lên, null khi chưa tải */
   progress: number | null;
+  /** Lỗi do form báo, ví dụ chưa chọn ảnh */
+  formError?: string;
 };
 
 // Backend chỉ nhận 3 định dạng này (kiểm tra bằng magic bytes)
@@ -39,7 +41,7 @@ const text = {
   },
 };
 
-export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
+export default function PhotoUpload({ lang, file, onChange, progress, formError }: Props) {
   const t = text[lang];
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
@@ -122,9 +124,9 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
           aria-label={t.pick}
         />
       </div>
-      {error && (
+      {(error || formError) && (
         <p className="mt-2 text-sm font-medium text-orange-ink" role="alert">
-          {error}
+          {error || formError}
         </p>
       )}
     </div>

@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import AdminLangSwitch from "@/components/admin/ui/AdminLangSwitch";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 
-export default function AdminHeader() {
+export default function AdminHeader({
+  onMobileMenuToggle,
+}: {
+  onMobileMenuToggle?: () => void;
+}) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const breadcrumbRef = useRef<HTMLDivElement>(null);
@@ -68,6 +74,18 @@ export default function AdminHeader() {
       ref={headerRef}
       className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between transition-all duration-300 ease-out shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
     >
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={onMobileMenuToggle}
+        className="lg:hidden p-2 -ml-2 mr-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0"
+        aria-label="Mở menu quản trị"
+        title="Mở menu"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
       {/* Left: Breadcrumbs & Title */}
       <div className="flex flex-col min-w-0 flex-1">
         <div
@@ -105,20 +123,21 @@ export default function AdminHeader() {
           <span>Hệ thống trực tuyến</span>
         </div>
 
-        {/* Home Portal Link */}
+        {/* Quick Switcher: Landing Page ↔ Admin */}
         <Link
           href="/"
           target="_blank"
-          className="p-2 text-slate-500 hover:text-[#0B1F4D] hover:bg-slate-100 rounded-lg transition-all duration-200 hover:scale-105"
+          className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-slate-700 text-xs font-medium shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:bg-slate-100 hover:border-slate-300 transition-all duration-200 hover:scale-105 group"
           title="Xem trang công khai (Landing Page)"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          <svg className="w-4 h-4 text-slate-400 group-hover:text-[#1F5BE0] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-1.343 3-3V5a3 3 0 00-3-3H9" />
           </svg>
+          <span>Trang chủ</span>
         </Link>
 
         {/* Divider */}
-        <div className="h-6 w-px bg-slate-200" />
+        <div className="hidden lg:block h-6 w-px bg-slate-200" />
 
         {/* Admin Profile & Logout */}
         <div className="flex items-center gap-2.5">
@@ -126,19 +145,26 @@ export default function AdminHeader() {
             <span className="text-xs font-bold text-slate-800">Ban Tổ Chức</span>
             <span className="text-[10px] text-slate-400">Super Admin</span>
           </div>
-          <button
-            onClick={() => {
-              if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi trang Quản trị?")) {
-                window.location.href = "/";
-              }
-            }}
-            className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-            title="Đăng xuất"
+          <AdminPopconfirm
+            title="Đăng xuất khỏi Admin"
+            description="Bạn có chắc chắn muốn đăng xuất khỏi trang Quản trị?"
+            confirmVariant="danger"
+            confirmText="Đăng xuất"
+            onConfirm={() => (window.location.href = "/")}
+            triggerVariant="ghost"
+            triggerSize="sm"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
+            {(open) => (
+              <span
+                className={`p-2 text-rose-600 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${open ? "bg-rose-50" : "hover:bg-rose-50"}`}
+                title="Đăng xuất"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </span>
+            )}
+          </AdminPopconfirm>
         </div>
       </div>
     </header>

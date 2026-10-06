@@ -5,6 +5,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 
 interface LiveAttemptItem {
@@ -86,8 +87,6 @@ export default function LiveExamMonitorPage() {
   const [filterViolation, setFilterViolation] = useState<"ALL" | "VIOLATION_ONLY">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [autoRefresh, setAutoRefresh] = useState(true);
-
-  // Warning / Force Action Modal
   const [targetAttempt, setTargetAttempt] = useState<LiveAttemptItem | null>(null);
   const [actionType, setActionType] = useState<"WARN" | "FORCE_SUBMIT" | "DISQUALIFY">("WARN");
   const [reason, setReason] = useState("");
@@ -108,39 +107,6 @@ export default function LiveExamMonitorPage() {
   const totalActive = attempts.filter((a) => a.status === "ACTIVE").length;
   const totalFinalized = attempts.filter((a) => a.status === "FINALIZED").length;
   const totalViolations = attempts.filter((a) => a.tabSwitchCount >= 3 || a.copyPasteCount >= 2).length;
-
-  const handleExecuteAction = () => {
-    if (!targetAttempt) return;
-    if (!reason.trim()) {
-      alert("Vui lòng nhập lý do xử lý vi phạm!");
-      return;
-    }
-
-    if (actionType === "FORCE_SUBMIT") {
-      setAttempts((prev) =>
-        prev.map((a) =>
-          a.id === targetAttempt.id
-            ? { ...a, status: "FINALIZED", lastHeartbeat: "Cưỡng chế nộp bài" }
-            : a
-        )
-      );
-      alert(`Đã cưỡng chế nộp bài (Force Finalize) thí sinh ${targetAttempt.fullName}!`);
-    } else if (actionType === "DISQUALIFY") {
-      setAttempts((prev) =>
-        prev.map((a) =>
-          a.id === targetAttempt.id
-            ? { ...a, status: "DISQUALIFIED", lastHeartbeat: "Đình chỉ thi" }
-            : a
-        )
-      );
-      alert(`Đã đình chỉ thi thí sinh ${targetAttempt.fullName}!`);
-    } else {
-      alert(`Đã gửi cảnh báo đỏ trực tiếp đến màn hình thí sinh ${targetAttempt.fullName}!`);
-    }
-
-    setTargetAttempt(null);
-    setReason("");
-  };
 
   const columns: Column<LiveAttemptItem>[] = [
     {
@@ -264,17 +230,62 @@ export default function LiveExamMonitorPage() {
             >
               Cảnh cáo
             </AdminButton>
-            <AdminButton
-              variant="danger"
-              size="sm"
-              onClick={() => {
-                setTargetAttempt(row);
-                setActionType("FORCE_SUBMIT");
-                setReason("Cưỡng chế nộp bài do vi phạm quy chế thi trực tuyến!");
+            <AdminPopconfirm
+              title="Cưỡng chế nộp bài"
+              description={`Buộc thí sinh ${row.fullName} nộp bài ngay lập tức. Hành động này không thể hoàn tác.`}
+              confirmVariant="danger"
+              confirmText="Xác nhận cưỡng chế"
+              onConfirm={() => {
+                setAttempts((prev) =>
+                  prev.map((a) =>
+                    a.id === row.id
+                      ? { ...a, status: "FINALIZED", lastHeartbeat: "Cưỡng chế nộp bài" }
+                      : a
+                  )
+                );
+                alert(`Đã cưỡng chế nộp bài (Force Finalize) thí sinh ${row.fullName}!`);
               }}
+              triggerVariant="danger"
+              triggerSize="sm"
             >
-              Thu bài
-            </AdminButton>
+              {(open) => (
+                <span
+                  className={`inline-flex items-center justify-center px-2 py-1 rounded-md text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 cursor-pointer transition-colors ${open ? "bg-rose-600" : ""}`}
+                >
+                  Thu bài
+                </span>
+              )}
+            </AdminPopconfirm>
+            <AdminPopconfirm
+              title="Đình chỉ thi & Hủy tư cách"
+              description={`Đình chỉ thi thí sinh ${row.fullName} và hủy tư cách tham gia cuộc thi. Hành động này không thể hoàn tác.`}
+              confirmVariant="danger"
+              confirmText="Xác nhận đình chỉ"
+              onConfirm={() => {
+                setAttempts((prev) =>
+                  prev.map((a) =>
+                    a.id === row.id
+                      ? { ...a, status: "DISQUALIFIED", lastHeartbeat: "Đình chỉ thi" }
+                      : a
+                  )
+                );
+                alert(`Đã đình chỉ thi thí sinh ${row.fullName}!`);
+              }}
+              triggerVariant="ghost"
+              triggerSize="sm"
+            >
+              {(open) => (
+                <span
+                  className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
+                  title="Đình chỉ thi & Hủy tư cách"
+                  aria-label="Đình chỉ thi & Hủy tư cách"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+              )}
+            </AdminPopconfirm>
           </div>
         ) : (
           <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight italic">Đã kết thúc</span>
@@ -354,56 +365,6 @@ export default function LiveExamMonitorPage() {
         data={filtered}
         keyExtractor={(item) => item.id}
       />
-
-      {/* Action Modal */}
-      {targetAttempt && (
-        <AdminModal
-          isOpen={true}
-          onClose={() => setTargetAttempt(null)}
-          title={`Xử lý vi phạm: ${targetAttempt.fullName}`}
-          description={`Mã TS: ${targetAttempt.candidateCode} • Ca: ${targetAttempt.scheduleName}`}
-          maxWidth="lg"
-          footer={
-            <div className="flex items-center gap-2">
-              <AdminButton variant="outline" size="sm" onClick={() => setTargetAttempt(null)}>
-                Hủy
-              </AdminButton>
-              <AdminButton
-                variant={actionType === "WARN" ? "brand" : "danger"}
-                size="sm"
-                onClick={handleExecuteAction}
-              >
-                Xác nhận thực hiện
-              </AdminButton>
-            </div>
-          }
-        >
-          <div className="space-y-4">
-            <AdminSelect
-              label="Hành động kỷ luật"
-              value={actionType}
-              onChange={(e) => setActionType(e.target.value as any)}
-              options={[
-                { label: "Gửi thông điệp Cảnh cáo đỏ vào màn hình thí sinh", value: "WARN" },
-                { label: "Cưỡng chế nộp bài ngay lập tức (Force Finalize)", value: "FORCE_SUBMIT" },
-                { label: "Đình chỉ thi & Hủy tư cách (Disqualify)", value: "DISQUALIFY" },
-              ]}
-            />
-
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Lý do xử lý (Lưu vào nhật ký kiểm toán):
-              </label>
-              <textarea
-                rows={3}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"
-              />
-            </div>
-          </div>
-        </AdminModal>
-      )}
     </div>
   );
 }

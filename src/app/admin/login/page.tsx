@@ -56,9 +56,28 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 relative z-10 animate-in zoom-in-95 duration-200">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-[#1F5BE0] flex items-center justify-center text-white font-extrabold text-2xl mx-auto shadow-md mb-3">
-            N
-          </div>
+          <img
+            src="/images/logo.png"
+            alt="IS-NEXTGEN"
+            className="w-16 h-16 mx-auto object-contain mb-3"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              e.currentTarget.nextElementSibling?.classList.remove("hidden");
+            }}
+          />
+          <svg
+            className="w-16 h-16 mx-auto text-[#1F5BE0] hidden"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
           <h2 className="text-xl font-extrabold text-[#0B1F4D] tracking-tight">
             IS-NEXTGEN MANAGER
           </h2>

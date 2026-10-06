@@ -5,6 +5,7 @@ import Link from "next/link";
 import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 
 interface ParsedQuestionRow {
   rowId: number;
@@ -64,6 +65,7 @@ export default function QuestionImportPage() {
   const [file, setFile] = useState<File | null>(null);
   const [parsedRows, setParsedRows] = useState<ParsedQuestionRow[]>(mockParsedData);
   const [isImporting, setIsImporting] = useState(false);
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
 
   const validCount = parsedRows.filter((r) => r.isValid).length;
   const invalidCount = parsedRows.filter((r) => !r.isValid).length;
@@ -74,22 +76,22 @@ export default function QuestionImportPage() {
     }
   };
 
-  const handleConfirmImport = () => {
-    if (invalidCount > 0) {
-      if (
-        !confirm(
-          `Cảnh báo: Có ${invalidCount} câu hỏi bị lỗi cấu trúc. Hệ thống sẽ chỉ import ${validCount} câu hỏi hợp lệ vào Ngân hàng đề thi. Bạn có muốn tiếp tục?`
-        )
-      ) {
-        return;
-      }
-    }
+  const handleExecuteImport = () => {
+    setShowImportConfirm(false);
     setIsImporting(true);
     setTimeout(() => {
       setIsImporting(false);
       alert(`Đã import thành công ${validCount} câu hỏi vào Ngân hàng đề thi!`);
       window.location.href = "/admin/questions";
     }, 800);
+  };
+
+  const handleImportClick = () => {
+    if (invalidCount > 0) {
+      setShowImportConfirm(true);
+    } else {
+      handleExecuteImport();
+    }
   };
 
   const columns: Column<ParsedQuestionRow>[] = [
@@ -216,14 +218,30 @@ export default function QuestionImportPage() {
               <span className="font-bold text-rose-600">{invalidCount}</span>
             </p>
           </div>
-          <AdminButton
-            variant="brand"
-            size="sm"
-            onClick={handleConfirmImport}
-            isLoading={isImporting}
+          <AdminPopconfirm
+            title="Xác nhận nhập câu hỏi"
+            description={
+              invalidCount > 0
+                ? `Cảnh báo: Có ${invalidCount} câu hỏi bị lỗi cấu trúc. Hệ thống sẽ chỉ import ${validCount} câu hỏi hợp lệ vào Ngân hàng đề thi.`
+                : `Sẽ nhập ${validCount} câu hỏi hợp lệ vào Ngân hàng đề thi.`
+            }
+            confirmVariant="primary"
+            confirmText="Xác nhận nhập"
+            onConfirm={handleExecuteImport}
+            triggerVariant="outline"
+            triggerSize="sm"
+            open={showImportConfirm}
+            onOpenChange={setShowImportConfirm}
           >
-            Lưu {validCount} câu hỏi hợp lệ vào Ngân hàng
-          </AdminButton>
+            {(open) => (
+              <span
+                className={`inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors ${open ? "bg-slate-50" : ""}`}
+                onClick={handleImportClick}
+              >
+                Lưu {validCount} câu hỏi hợp lệ vào Ngân hàng
+              </span>
+            )}
+          </AdminPopconfirm>
         </div>
 
         <AdminTable

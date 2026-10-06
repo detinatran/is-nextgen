@@ -6,6 +6,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import type { QuestionVersion, QuestionOption, QuestionDifficulty } from "@/types/admin";
 
@@ -286,14 +287,21 @@ export default function QuestionsPage() {
               <AdminButton variant="outline" size="sm" onClick={() => handleOpenEdit(row)}>
                 Sửa
               </AdminButton>
-              <AdminButton
-                variant="brand"
-                size="sm"
-                onClick={() => handleFreeze(row)}
-                title="Đóng băng để thi"
+              <AdminPopconfirm
+                title="Đóng băng câu hỏi"
+                description={`Câu hỏi [${row.id}] v${row.version} sẽ chuyển sang FROZEN vĩnh viễn. Trigger DB sẽ chặn mọi UPDATE/DELETE. Hành động không thể hoàn tác.`}
+                confirmVariant="primary"
+                confirmText="Đóng băng"
+                onConfirm={() => handleFreeze(row)}
+                triggerVariant="brand"
+                triggerSize="sm"
               >
-                Freeze
-              </AdminButton>
+                {(open) => (
+                  <span className="inline-flex items-center justify-center px-2 py-1 rounded-md text-xs font-bold bg-[#1F5BE0] text-white hover:bg-[#16357A] cursor-pointer transition-colors" data-open={open.toString()}>
+                    Freeze
+                  </span>
+                )}
+              </AdminPopconfirm>
             </>
           ) : (
             <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight italic">

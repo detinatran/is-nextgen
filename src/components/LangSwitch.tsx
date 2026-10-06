@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { langFromPath, switchPath } from "@/lib/i18n";
-import { asset } from "@/lib/paths";
 import Icon from "./Icon";
 
 /** Nút đổi Tiếng Việt / English, giữ nguyên trang và mục đang xem. */
@@ -10,7 +9,7 @@ export default function LangSwitch({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const lang = langFromPath(pathname);
   const to = lang === "vi" ? "en" : "vi";
-  const href = asset(switchPath(pathname, to));
+  const href = switchPath(pathname, to);
 
   return (
     <a

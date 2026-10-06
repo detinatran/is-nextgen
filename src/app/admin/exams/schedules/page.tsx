@@ -6,6 +6,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import type { ExamSchedule } from "@/types/admin";
 
@@ -154,6 +155,32 @@ export default function ExamSchedulesPage() {
               Xem danh sách TS
             </AdminButton>
           </Link>
+          {row.assignedCount === 0 && (
+            <AdminPopconfirm
+              title="Xóa ca thi"
+              description={`Xóa ca thi "${row.name}"? Chỉ cho phép xóa khi chưa có thí sinh được gán (assignedCount = 0).`}
+              confirmVariant="danger"
+              confirmText="Xóa"
+              onConfirm={() => {
+                setSchedules((prev) => prev.filter((s) => s.id !== row.id));
+                alert(`Đã xóa ca thi ${row.name}`);
+              }}
+              triggerVariant="ghost"
+              triggerSize="sm"
+            >
+              {(open) => (
+                <span
+                  className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
+                  title="Xóa ca thi"
+                  aria-label="Xóa ca thi"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </span>
+              )}
+            </AdminPopconfirm>
+          )}
         </div>
       ),
     },

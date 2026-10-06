@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -15,14 +15,17 @@ interface NavGroup {
 }
 
 export default function AdminSidebar({
-  collapsed: collapsedProp,
+  collapsed = false,
   onToggle,
+  mobileOpen = false,
+  onMobileClose,
 }: {
   collapsed?: boolean;
   onToggle?: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(collapsedProp ?? false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
 
   const navGroups: NavGroup[] = [
@@ -144,18 +147,21 @@ export default function AdminSidebar({
     },
   ];
 
-  const handleToggle = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    onToggle?.();
-  };
-
   return (
     <aside
       className={`fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 ease-out flex flex-col ${
         collapsed ? "w-20" : "w-64"
-      }`}
+      } lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      aria-hidden={!mobileOpen}
     >
+      {/* Mobile Backdrop */}
+      <div
+        className={`fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-[-1] lg:hidden transition-opacity duration-300 ${
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onMobileClose}
+        aria-hidden="true"
+      />
       {/* Brand Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
         <Link
@@ -190,15 +196,43 @@ export default function AdminSidebar({
               src="/images/logo_min.png"
               alt="IS-NEXTGEN"
               className="w-8 h-8 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                e.currentTarget.nextElementSibling?.classList.remove("hidden");
+              }}
             />
+            <svg
+              className="w-8 h-8 text-white hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
         </Link>
+
+        {/* Mobile Close Button */}
+        <button
+          onClick={onMobileClose}
+          className="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors cursor-pointer"
+          aria-label="Đóng menu"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
         {/* Premium Toggle Button - Fixed on right edge of sidebar, vertical center */}
         <button
           ref={toggleBtnRef}
-          onClick={handleToggle}
-          className={`absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md flex items-center justify-center cursor-pointer transition-all duration-200 ${
+          onClick={onToggle}
+          className={`hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md items-center justify-center cursor-pointer transition-all duration-200 ${
             collapsed ? "bg-[#0B1F4D] hover:bg-[#16357A]" : "bg-slate-50 hover:bg-slate-100"
           }`}
           title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
@@ -252,6 +286,7 @@ export default function AdminSidebar({
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => onMobileClose?.()}
                   title={collapsed ? item.label : undefined}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                     isActive

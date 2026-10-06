@@ -5,6 +5,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 
 interface Round1ResultItem {
@@ -271,13 +272,21 @@ export default function Round1ScoringPage() {
             Xuất bảng điểm (Excel/CSV)
           </AdminButton>
           {!isApproved && (
-            <AdminButton
-              variant="brand"
-              size="sm"
-              onClick={() => setIsPublishModalOpen(true)}
+            <AdminPopconfirm
+              title="Phê duyệt kết quả Vòng 1"
+              description="Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1. Sau khi phê duyệt, 40 thí sinh TOP sẽ được gán quyền nộp bài cho Vòng 2. Hành động không thể hoàn tác."
+              confirmVariant="primary"
+              confirmText="Xác nhận phê duyệt"
+              onConfirm={handlePublishConfirm}
+              triggerVariant="brand"
+              triggerSize="sm"
             >
-              Phê duyệt TOP 40 vào Vòng 2
-            </AdminButton>
+              {(open) => (
+                <AdminButton variant="brand" size="sm">
+                  Phê duyệt TOP 40 vào Vòng 2
+                </AdminButton>
+              )}
+            </AdminPopconfirm>
           )}
         </div>
       </div>

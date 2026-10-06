@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import CandidateDetailDrawer from "@/components/admin/candidate/CandidateDetailDrawer";
 import VideoReviewModal from "@/components/admin/candidate/VideoReviewModal";
@@ -152,7 +153,7 @@ const mockCandidates: CandidateRecord[] = [
       checksum_sha256: "8743b52063cd84097a65d1633f5c74f5",
       mime_type: "video/mp4",
       size_bytes: 62100000,
-      duration_seconds: 128.5, // > 120s!
+      duration_seconds: 128.5,
       is_private: true,
       validated_at: "2026-10-02T15:05:00Z",
       sealed_at: "2026-10-02T15:05:00Z",
@@ -296,8 +297,7 @@ export default function CandidatesPage() {
     setIsVideoModalOpen(true);
   };
 
-  const handleToggleAccount = (cand: CandidateRecord, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleToggleAccount = (cand: CandidateRecord) => {
     const nextStatus = cand.accountStatus === "ACTIVE" ? "DISABLED" : "ACTIVE";
     if (
       confirm(
@@ -407,23 +407,49 @@ export default function CandidatesPage() {
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-1.5">
-          <button
-            onClick={(e) => handleToggleAccount(row, e)}
-            className={`p-1.5 rounded-md hover:bg-slate-100 transition-colors text-xs cursor-pointer ${
-              row.accountStatus === "ACTIVE" ? "text-slate-500 hover:text-rose-600" : "text-emerald-600"
-            }`}
+          <AdminPopconfirm
             title={row.accountStatus === "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+            description={
+              row.accountStatus === "ACTIVE"
+                ? `Tài khoản của ${row.profile.full_name} sẽ bị khóa và không thể đăng nhập.`
+                : `Tài khoản của ${row.profile.full_name} sẽ được kích hoạt lại.`
+            }
+            confirmVariant="danger"
+            confirmText="Xác nhận"
+            onConfirm={() => handleToggleAccount(row)}
+            triggerVariant="ghost"
+            triggerSize="sm"
           >
-            {row.accountStatus === "ACTIVE" ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-              </svg>
+            {(open) => (
+              <span
+                className={`p-1.5 rounded-md hover:bg-slate-100 transition-colors text-xs cursor-pointer ${
+                  row.accountStatus === "ACTIVE"
+                    ? "text-slate-500 hover:text-rose-600"
+                    : "text-emerald-600"
+                  } ${open ? "bg-slate-100" : ""}`}
+                title={
+                  row.accountStatus === "ACTIVE"
+                    ? "Khóa tài khoản"
+                    : "Mở khóa tài khoản"
+                }
+                aria-label={
+                  row.accountStatus === "ACTIVE"
+                    ? "Khóa tài khoản"
+                    : "Mở khóa tài khoản"
+                }
+              >
+                {row.accountStatus === "ACTIVE" ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                  </svg>
+                )}
+              </span>
             )}
-          </button>
+          </AdminPopconfirm>
           <AdminButton
             variant="outline"
             size="sm"
@@ -507,6 +533,7 @@ export default function CandidatesPage() {
         data={filteredCandidates}
         keyExtractor={(item) => item.id}
         onRowClick={(item) => handleOpenDetail(item)}
+        emptyMessage="Không tìm thấy hồ sơ phù hợp với bộ lọc hiện tại"
       />
 
       {/* Modals & Drawers */}

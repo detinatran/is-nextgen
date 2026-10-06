@@ -5,6 +5,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 
 interface ManualScoringItem {
@@ -241,16 +242,39 @@ export default function ManualScoringPage() {
       header: "Thao tác",
       align: "right",
       render: (row) => (
-        <AdminButton
-          variant={row.state === "NEEDS_THIRD" ? "brand" : "outline"}
-          size="sm"
-          onClick={() => {
-            setSelectedCase(row);
-            setFeedback("");
-          }}
-        >
-          {row.state === "NEEDS_THIRD" ? "Chấm GK 3" : "Phiếu Rubric"}
-        </AdminButton>
+        <div className="flex items-center justify-end gap-1.5">
+          <AdminButton
+            variant={row.state === "NEEDS_THIRD" ? "brand" : "outline"}
+            size="sm"
+            onClick={() => {
+              setSelectedCase(row);
+              setFeedback("");
+            }}
+          >
+            {row.state === "NEEDS_THIRD" ? "Chấm GK 3" : "Phiếu Rubric"}
+          </AdminButton>
+          <AdminPopconfirm
+            title="Xóa hồ sơ chấm"
+            description={`Xóa bản ghi chấm điểm của ${row.fullName}? Hành động này không thể hoàn tác.`}
+            confirmVariant="danger"
+            confirmText="Xóa"
+            onConfirm={() => alert(`Đã xóa hồ sơ chấm của ${row.fullName}`)}
+            triggerVariant="ghost"
+            triggerSize="sm"
+          >
+            {(open) => (
+              <span
+                className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
+                title="Xóa hồ sơ chấm"
+                aria-label="Xóa hồ sơ chấm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </span>
+            )}
+          </AdminPopconfirm>
+        </div>
       ),
     },
   ];

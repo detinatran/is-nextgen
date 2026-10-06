@@ -1,16 +1,12 @@
 "use client";
 
 import React, { forwardRef, useRef, useEffect } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 
 export interface AdminCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Variant determines the visual emphasis */
   variant?: "default" | "elevated" | "outlined" | "metric" | "interactive";
   /** Optional hover lift effect for interactive cards */
   hoverLift?: boolean;
-  /** Stagger index for entrance animation */
-  staggerIndex?: number;
   /** Children content */
   children: React.ReactNode;
   /** Optional footer */
@@ -60,7 +56,6 @@ export const AdminCard = forwardRef<HTMLDivElement, AdminCardProps>(
     {
       variant = "default",
       hoverLift = false,
-      staggerIndex = 0,
       children,
       footer,
       header,
@@ -77,63 +72,6 @@ export const AdminCard = forwardRef<HTMLDivElement, AdminCardProps>(
       if (typeof ref === "function") ref(el);
       else if (ref) ref.current = el;
     };
-
-    // Entrance animation using GSAP
-    useGSAP(
-      () => {
-        if (!cardRef.current) return;
-        const ctx = gsap.context(() => {
-          gsap.fromTo(
-            cardRef.current!,
-            { opacity: 0, y: 16 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: "power2.out",
-              delay: staggerIndex * 0.08,
-            }
-          );
-        }, cardRef);
-        return () => ctx.revert();
-      },
-      { scope: cardRef, dependencies: [staggerIndex] }
-    );
-
-    // Hover lift animation
-    useGSAP(
-      () => {
-        if (!cardRef.current || !hoverLift) return;
-        const el = cardRef.current;
-        let hoverTween: gsap.core.Tween | null = null;
-
-        const onEnter = () => {
-          hoverTween?.kill();
-          hoverTween = gsap.to(el, {
-            y: -4,
-            duration: 0.25,
-            ease: "power2.out",
-          });
-        };
-        const onLeave = () => {
-          hoverTween?.kill();
-          hoverTween = gsap.to(el, {
-            y: 0,
-            duration: 0.35,
-            ease: "power2.out",
-          });
-        };
-
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-        return () => {
-          el.removeEventListener("mouseenter", onEnter);
-          el.removeEventListener("mouseleave", onLeave);
-          hoverTween?.kill();
-        };
-      },
-      { scope: cardRef, dependencies: [hoverLift] }
-    );
 
     const { base, hover } = variantStyles[variant];
 

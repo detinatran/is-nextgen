@@ -5,6 +5,7 @@ import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminModal from "@/components/admin/ui/AdminModal";
+import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 
 interface AssignmentItem {
@@ -179,17 +180,27 @@ export default function CandidateAssignmentsPage() {
       header: "Thao tác",
       align: "right",
       render: (row) => (
-        <AdminButton
-          variant="outline"
-          size="sm"
-          onClick={() => {
+        <AdminPopconfirm
+          title="Đổi ca thi thí sinh"
+          description={`Chuyển ${row.fullName} (${row.candidateCode}) sang ca thi khác. Hành động sẽ được ghi nhận vào assignment_schedule_history.`}
+          confirmVariant="brand"
+          confirmText="Xác nhận đổi ca"
+          onConfirm={() => {
             setSelectedAssignment(row);
             setNewScheduleId(row.scheduleId === "sch-001" ? "sch-002" : "sch-001");
             setChangeReason("");
           }}
+          triggerVariant="outline"
+          triggerSize="sm"
         >
-          Đổi ca thi
-        </AdminButton>
+          {(open) => (
+            <span
+              className={`inline-flex items-center justify-center px-2 py-1 rounded-md text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors ${open ? "bg-slate-50" : ""}`}
+            >
+              Đổi ca thi
+            </span>
+          )}
+        </AdminPopconfirm>
       ),
     },
   ];

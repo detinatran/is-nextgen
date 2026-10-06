@@ -211,11 +211,10 @@ export default function AdminDashboardPage() {
             variant="metric"
             padding="lg"
             hoverLift
-            staggerIndex={idx}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500">{item.title}</span>
-              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 shrink-0">
                 {item.icon}
               </div>
             </div>
@@ -223,7 +222,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl sm:text-3xl font-extrabold text-[#0F1F3D] tabular-nums leading-tight">
                 {item.value}
               </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 text-xs">
+              <div className="flex items-baseline justify-between mt-2 pt-2 border-t border-slate-100 text-xs">
                 <span className="text-slate-400">{item.subtext}</span>
                 <AdminBadge variant={item.variant} size="sm">
                   {item.change}

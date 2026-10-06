@@ -239,7 +239,7 @@ export default function CandidatesPage() {
     });
   }, [candidates, searchQuery, schoolFilter, statusFilter]);
 
-  // Export CSV (FR-05)
+  // Export CSV
   const handleExportCSV = () => {
     const headers = [
       "Mã thí sinh",
@@ -384,7 +384,7 @@ export default function CandidatesPage() {
     },
     {
       key: "account",
-      header: "Tài khoản (FR-03)",
+      header: "Tài khoản",
       align: "center",
       render: (row) => (
         <AdminBadge
@@ -442,7 +442,7 @@ export default function CandidatesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Quản lý hồ sơ & Dữ liệu đăng ký (FR-04, FR-05)
+            Quản lý hồ sơ & Dữ liệu đăng ký
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Tổng cộng: <span className="font-bold text-[#0B1F4D]">{candidates.length}</span> hồ sơ • Đã nộp video:{" "}
@@ -463,7 +463,7 @@ export default function CandidatesPage() {
               </svg>
             }
           >
-            Xuất Excel / CSV (FR-05)
+            Xuất Excel / CSV
           </AdminButton>
         </div>
       </div>

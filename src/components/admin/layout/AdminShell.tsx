@@ -7,6 +7,7 @@ import AdminHeader from "./AdminHeader";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
   const isLoginPage = pathname === "/admin/login";
 
   if (isLoginPage) {
@@ -16,10 +17,17 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex">
       {/* Fixed Sidebar */}
-      <AdminSidebar />
+      <AdminSidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((prev) => !prev)}
+      />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col pl-64 transition-all duration-300 min-w-0">
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${
+          collapsed ? "pl-20" : "pl-64"
+        }`}
+      >
         <AdminHeader />
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
           {children}

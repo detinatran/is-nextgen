@@ -264,7 +264,7 @@ export default function QuestionsPage() {
     },
     {
       key: "state",
-      header: "Trạng thái (FR-06)",
+      header: "Trạng thái",
       align: "center",
       render: (row) => (
         <AdminBadge
@@ -311,7 +311,7 @@ export default function QuestionsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Ngân hàng câu hỏi trắc nghiệm Vòng 1 (FR-06)
+            Ngân hàng câu hỏi trắc nghiệm Vòng 1
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Tổng cộng: <span className="font-bold text-[#0B1F4D]">{questions.length}</span> câu • Đã đóng băng:{" "}
@@ -325,7 +325,7 @@ export default function QuestionsPage() {
         <div className="flex items-center gap-2.5">
           <Link href="/admin/questions/import">
             <AdminButton variant="outline" size="sm">
-              Import Excel / Word (FR-07)
+              Import Excel / Word
             </AdminButton>
           </Link>
           <AdminButton variant="brand" size="sm" onClick={handleOpenAdd}>

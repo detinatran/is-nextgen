@@ -129,7 +129,7 @@ export default function QuestionImportPage() {
     },
     {
       key: "status",
-      header: "Kiểm tra hợp lệ (FR-07)",
+      header: "Kiểm tra hợp lệ",
       align: "center",
       render: (row) => (
         <div>
@@ -157,7 +157,7 @@ export default function QuestionImportPage() {
             </Link>
           </div>
           <h2 className="text-lg font-bold text-slate-900 mt-1">
-            Nhập câu hỏi hàng loạt từ tệp (Question Batch Import - FR-07)
+            Nhập câu hỏi hàng loạt từ tệp
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Hỗ trợ file định dạng <span className="font-bold text-slate-700">.xlsx / .docx</span>. Tự động kiểm tra cú pháp và đáp án đúng.

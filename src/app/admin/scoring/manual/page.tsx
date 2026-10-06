@@ -174,7 +174,7 @@ export default function ManualScoringPage() {
     },
     {
       key: "diff",
-      header: "Độ lệch & GK C (FR-12)",
+      header: "Độ lệch & GK C",
       render: (row) => (
         <div>
           {row.scoreDiff !== null ? (
@@ -260,7 +260,7 @@ export default function ManualScoringPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Chấm thi Rubric Tự luận & Thuyết trình (Manual Scoring - FR-12)
+          Chấm thi Rubric Tự luận & Thuyết trình
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
           Khung đánh giá gồm <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>. Hệ thống tự động kích hoạt cờ{" "}

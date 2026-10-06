@@ -19,11 +19,11 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError("");
 
-    // Simulate Server Authentication (FR-01)
+    // Simulate Server Authentication
     setTimeout(() => {
       setIsLoading(false);
       if (email.includes("@")) {
-        // Switch to MFA step (NFR-04, FR-01: Admin 2FA required)
+        // Switch to MFA step (Admin 2FA required)
         setStep("MFA");
       } else {
         setError("Email hoặc mật khẩu không chính xác.");

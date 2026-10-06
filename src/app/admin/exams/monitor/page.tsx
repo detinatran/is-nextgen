@@ -248,7 +248,7 @@ export default function LiveExamMonitorPage() {
     },
     {
       key: "actions",
-      header: "Thao tác giám sát (FR-10)",
+      header: "Thao tác giám sát",
       align: "right",
       render: (row) =>
         row.status === "ACTIVE" ? (
@@ -289,7 +289,7 @@ export default function LiveExamMonitorPage() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-slate-900">
-              Giám sát ca thi trực tuyến (Live Proctoring - FR-10)
+              Giám sát ca thi trực tuyến
             </h2>
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

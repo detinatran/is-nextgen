@@ -235,13 +235,14 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Two Column Section: Recent Candidates & Exam Schedules */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Recent Registrations (FR-04) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+        {/* Left Column: Recent Registrations */}
         <AdminCard
           ref={leftSectionRef}
           variant="elevated"
           padding="lg"
           hoverLift
+          className="lg:col-span-2"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -265,10 +266,10 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-bold text-slate-900 truncate">{cand.name}</span>
+                      <span className="text-sm font-bold text-slate-900">{cand.name}</span>
                       <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap">({cand.code})</span>
                     </div>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-xs text-slate-500">
                       MSSV: {cand.studentId} • {cand.school} ({cand.major})
                     </p>
                   </div>
@@ -289,7 +290,7 @@ export default function AdminDashboardPage() {
           </div>
         </AdminCard>
 
-        {/* Right Column: Exam Schedules Overview (FR-08) */}
+        {/* Right Column: Exam Schedules Overview */}
         <AdminCard
           ref={rightSectionRef}
           variant="elevated"

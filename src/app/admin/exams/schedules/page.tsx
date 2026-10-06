@@ -165,7 +165,7 @@ export default function ExamSchedulesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Quản lý Ca thi Vòng 1 (Exam Schedules - FR-08)
+            Quản lý Ca thi Vòng 1
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Thời lượng mỗi ca: <span className="font-bold text-slate-800">60 phút</span> • Tải mục tiêu:{" "}
@@ -244,7 +244,7 @@ export default function ExamSchedulesPage() {
             required
             value={formCapacity}
             onChange={(e) => setFormCapacity(Number(e.target.value))}
-            helperText="Khuyến nghị: 50 - 100 thí sinh để duy trì tốc độ phản hồi < 2s (NFR-01)"
+            helperText="Khuyến nghị: 50 - 100 thí sinh để duy trì tốc độ phản hồi < 2s"
           />
         </div>
       </AdminModal>

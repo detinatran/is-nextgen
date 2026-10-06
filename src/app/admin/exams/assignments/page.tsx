@@ -154,7 +154,7 @@ export default function CandidateAssignmentsPage() {
     },
     {
       key: "schedule",
-      header: "Ca thi được phân bổ (FR-09)",
+      header: "Ca thi được phân bổ",
       render: (row) => (
         <div>
           <span className="text-xs font-semibold text-[#0B1F4D] block">
@@ -199,7 +199,7 @@ export default function CandidateAssignmentsPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Phân ca thi & Lịch sử điều phối thí sinh (Candidate Assignment - FR-09)
+          Phân ca thi & Lịch sử điều phối thí sinh
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
           Quản lý danh sách thí sinh trong từng ca thi. Mọi thao tác đổi ca đều được lưu vết vào bảng{" "}

@@ -253,7 +253,7 @@ export default function Round1ScoringPage() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-slate-900">
-              Bảng điểm tự động & Xếp hạng Vòng 1 (Leaderboard - FR-11)
+              Bảng điểm tự động & Xếp hạng Vòng 1
             </h2>
             {isApproved && (
               <AdminBadge variant="success" size="sm">

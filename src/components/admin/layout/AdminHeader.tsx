@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import AdminLangSwitch from "@/components/admin/ui/AdminLangSwitch";
 
 export default function AdminHeader() {
   const pathname = usePathname();
@@ -95,6 +96,9 @@ export default function AdminHeader() {
         ref={actionsRef}
         className="flex items-center gap-3 sm:gap-4 flex-shrink-0"
       >
+        {/* Language Switcher */}
+        <AdminLangSwitch />
+
         {/* Live Proctor Indicator */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs font-medium shadow-[0_1px_2px_rgba(16,185,129,0.08)]">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -129,7 +133,7 @@ export default function AdminHeader() {
               }
             }}
             className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-            title="Đăng xuất (FR-02)"
+            title="Đăng xuất"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

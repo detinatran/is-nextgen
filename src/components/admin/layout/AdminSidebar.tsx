@@ -38,7 +38,7 @@ export default function AdminSidebar() {
       ],
     },
     {
-      title: "QUẢN LÝ THÍ SINH (FR-03 - 05)",
+      title: "QUẢN LÝ THÍ SINH",
       items: [
         {
           label: "Hồ sơ đăng ký",
@@ -61,7 +61,7 @@ export default function AdminSidebar() {
       ],
     },
     {
-      title: "NGÂN HÀNG ĐỀ THI (FR-06 - 07)",
+      title: "NGÂN HÀNG ĐỀ THI",
       items: [
         {
           label: "Ngân hàng câu hỏi",
@@ -84,7 +84,7 @@ export default function AdminSidebar() {
       ],
     },
     {
-      title: "KỲ THI & GIÁM SÁT (FR-08 - 10)",
+      title: "KỲ THI & GIÁM SÁT",
       items: [
         {
           label: "Lịch thi & Ca thi",
@@ -117,7 +117,7 @@ export default function AdminSidebar() {
       ],
     },
     {
-      title: "ĐIỂM SỐ & RUBRICS (FR-11 - 12)",
+      title: "ĐIỂM SỐ & RUBRICS",
       items: [
         {
           label: "Bảng điểm Vòng 1",
@@ -149,11 +149,15 @@ export default function AdminSidebar() {
         const sidebar = sidebarRef.current!;
         const items = navItemsRef.current.filter(Boolean);
 
-        const getNavText = () => items.map((item) => item.querySelector(".nav-text")).filter(Boolean);
-        const getNavBadge = () => items.map((item) => item.querySelector(".nav-badge")).filter(Boolean);
-        const getGroupTitle = () => items.map((item) => item.querySelector(".group-title")).filter(Boolean);
+        const getNavText = () => items.map((item) => item.querySelector(".nav-text")).filter((el): el is Element => el !== null);
+        const getNavBadge = () => items.map((item) => item.querySelector(".nav-badge")).filter((el): el is Element => el !== null);
+        const getGroupTitle = () => items.map((item) => item.querySelector(".group-title")).filter((el): el is Element => el !== null);
         const brandText = sidebar.querySelector(".brand-text");
         const userInfo = sidebar.querySelector(".user-info");
+
+        const navTexts = getNavText();
+        const navBadges = getNavBadge();
+        const groupTitles = getGroupTitle();
 
         if (collapsed) {
           // Collapse animation
@@ -164,22 +168,26 @@ export default function AdminSidebar() {
           });
 
           // Hide text labels with stagger
-          gsap.to(getNavText(), {
-            opacity: 0,
-            width: 0,
-            overflow: "hidden",
-            duration: 0.15,
-            stagger: 0.02,
-            ease: "power2.in",
-          });
+          if (navTexts.length) {
+            gsap.to(navTexts, {
+              opacity: 0,
+              width: 0,
+              overflow: "hidden",
+              duration: 0.15,
+              stagger: 0.02,
+              ease: "power2.in",
+            });
+          }
 
-          gsap.to(getNavBadge(), {
-            opacity: 0,
-            scale: 0.5,
-            duration: 0.15,
-            stagger: 0.02,
-            ease: "power2.in",
-          });
+          if (navBadges.length) {
+            gsap.to(navBadges, {
+              opacity: 0,
+              scale: 0.5,
+              duration: 0.15,
+              stagger: 0.02,
+              ease: "power2.in",
+            });
+          }
 
           if (brandText) {
             gsap.to(brandText, {
@@ -201,13 +209,15 @@ export default function AdminSidebar() {
             });
           }
 
-          gsap.to(getGroupTitle(), {
-            opacity: 0,
-            height: 0,
-            overflow: "hidden",
-            duration: 0.15,
-            ease: "power2.in",
-          });
+          if (groupTitles.length) {
+            gsap.to(groupTitles, {
+              opacity: 0,
+              height: 0,
+              overflow: "hidden",
+              duration: 0.15,
+              ease: "power2.in",
+            });
+          }
         } else {
           // Expand animation
           gsap.to(sidebar, {
@@ -217,31 +227,35 @@ export default function AdminSidebar() {
           });
 
           // Show text labels with stagger
-          gsap.fromTo(
-            getNavText(),
-            { opacity: 0, width: 0, overflow: "hidden" },
-            {
-              opacity: 1,
-              width: "auto",
-              duration: 0.25,
-              stagger: 0.03,
-              ease: "power2.out",
-              delay: 0.15,
-            }
-          );
+          if (navTexts.length) {
+            gsap.fromTo(
+              navTexts,
+              { opacity: 0, width: 0, overflow: "hidden" },
+              {
+                opacity: 1,
+                width: "auto",
+                duration: 0.25,
+                stagger: 0.03,
+                ease: "power2.out",
+                delay: 0.15,
+              }
+            );
+          }
 
-          gsap.fromTo(
-            getNavBadge(),
-            { opacity: 0, scale: 0.5 },
-            {
-              opacity: 1,
-              scale: 1,
-              duration: 0.25,
-              stagger: 0.03,
-              ease: "back.out(1.5)",
-              delay: 0.15,
-            }
-          );
+          if (navBadges.length) {
+            gsap.fromTo(
+              navBadges,
+              { opacity: 0, scale: 0.5 },
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.25,
+                stagger: 0.03,
+                ease: "back.out(1.5)",
+                delay: 0.15,
+              }
+            );
+          }
 
           if (brandText) {
             gsap.fromTo(
@@ -271,18 +285,20 @@ export default function AdminSidebar() {
             );
           }
 
-          gsap.fromTo(
-            getGroupTitle(),
-            { opacity: 0, height: 0, overflow: "hidden" },
-            {
-              opacity: 1,
-              height: "auto",
-              duration: 0.25,
-              stagger: 0.02,
-              ease: "power2.out",
-              delay: 0.1,
-            }
-          );
+          if (groupTitles.length) {
+            gsap.fromTo(
+              groupTitles,
+              { opacity: 0, height: 0, overflow: "hidden" },
+              {
+                opacity: 1,
+                height: "auto",
+                duration: 0.25,
+                stagger: 0.02,
+                ease: "power2.out",
+                delay: 0.1,
+              }
+            );
+          }
         }
       }, sidebarRef);
       return () => ctx.revert();
@@ -296,18 +312,20 @@ export default function AdminSidebar() {
       if (!sidebarRef.current) return;
       const ctx = gsap.context(() => {
         const items = navItemsRef.current.filter(Boolean);
-        gsap.fromTo(
-          items,
-          { opacity: 0, x: -20 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.5,
-            ease: "power3.out",
-            stagger: 0.04,
-            delay: 0.2,
-          }
-        );
+        if (items.length > 0) {
+          gsap.fromTo(
+            items,
+            { opacity: 0, x: -20 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.5,
+              ease: "power3.out",
+              stagger: 0.04,
+              delay: 0.2,
+            }
+          );
+        }
       }, sidebarRef);
       return () => ctx.revert();
     },
@@ -326,9 +344,6 @@ export default function AdminSidebar() {
       {/* Brand Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533]">
         <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
-          <div className="w-8 h-8 rounded-lg bg-[#1F5BE0] flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-[0_2px_4px_rgba(31,91,224,0.3)]">
-            N
-          </div>
           {!collapsed && (
             <div className="brand-text flex flex-col min-w-0 overflow-hidden whitespace-nowrap">
               <span className="font-bold text-white text-sm tracking-wide">IS-NEXTGEN</span>
@@ -365,10 +380,21 @@ export default function AdminSidebar() {
               </h4>
             )}
             {group.items.map((item) => {
+              // Determine if this item is a parent of any other item in the same group
+              const isParent = group.items.some(
+                (other) => other.href !== item.href && other.href.startsWith(item.href + "/")
+              );
+
+              // Normalize pathname for comparison (handle trailing slashes)
+              const currentPath = pathname?.replace(/\/$/, "") || "";
+              const itemPath = item.href.replace(/\/$/, "");
+
               const isActive =
-                item.href === "/admin"
-                  ? pathname === "/admin"
-                  : pathname === item.href || pathname?.startsWith(item.href + "/");
+                itemPath === "/admin"
+                  ? currentPath === "/admin"
+                  : isParent
+                  ? currentPath === itemPath
+                  : currentPath === itemPath || currentPath.startsWith(itemPath + "/");
 
               const navItemRef = (el: HTMLAnchorElement | null) => {
                 navItemsRef.current = navItemsRef.current.filter(Boolean);

@@ -187,7 +187,7 @@ export default function DuplicateReviewsPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Rà soát hồ sơ trùng lặp (Duplicate Reviews - FR-04)
+          Rà soát hồ sơ trùng lặp
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Hệ thống phát hiện hồ sơ có dấu hiệu nộp trùng lặp (chung MSSV, Số điện thoại, Email hoặc Link Facebook) để Ban Chuyên môn đối chiếu và hợp nhất.

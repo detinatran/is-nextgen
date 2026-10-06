@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
-import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
@@ -8,15 +7,15 @@ import { asset } from "@/lib/paths";
 
 // Ảnh nền: Vitaly Gariev trên Unsplash (unsplash.com/photos/kp7qkHTgSKc), giấy phép Unsplash
 const text = {
-  vi: { open: "Đang mở đăng ký", eyebrow: "Thời hạn đăng ký", title: "Cổng đăng ký sẽ đóng sau", deadline: "Hạn chót", note: "Đăng ký cá nhân, không thu lệ phí.", register: "Đăng ký ngay", rules: "Xem thể lệ" },
-  en: { open: "Registration open", eyebrow: "Registration deadline", title: "Registration closes in", deadline: "Deadline", note: "Individual entry, free of charge.", register: "Register now", rules: "View rules" },
+  vi: { title: "Cổng đăng ký sẽ đóng sau", lead: "Đừng bỏ lỡ cơ hội trở thành một phần của NextGen Manager 2026!", deadline: "Hạn chót", register: "Đăng ký ngay", rules: "Xem chi tiết" },
+  en: { title: "Registration closes in", lead: "Don't miss your chance to be part of NextGen Manager 2026!", deadline: "Deadline", register: "Register now", rules: "View details" },
 };
 
 export default function Deadline({ lang }: { lang: Lang }) {
   const { site } = getContent(lang);
   const t = text[lang];
   return (
-    <section id="dem-nguoc" className="bg-white pt-14 pb-2 lg:pt-16">
+    <section id="dem-nguoc" className="relative bg-white pt-8 pb-2 lg:pt-10">
       <div className="container-x">
         <div className="reveal relative overflow-hidden rounded-3xl border border-line bg-cream shadow-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -33,19 +32,10 @@ export default function Deadline({ lang }: { lang: Lang }) {
           <div className="relative grid items-center gap-y-6 p-6 text-navy sm:p-8 lg:grid-cols-[1fr_1.15fr] lg:gap-x-12 lg:gap-y-5 lg:px-12 lg:py-10">
             {/* Di động: tiêu đề, đồng hồ, rồi nút. Máy tính: chữ và nút bên trái, đồng hồ bên phải */}
             <div className="lg:self-end">
-              <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[13px] font-semibold text-[#15803d] shadow-sm ring-1 ring-[#4ade80]/40">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full motion-safe:animate-ping rounded-full bg-[#4ade80] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4ade80]" />
-                </span>
-                {t.open}
-              </p>
-              <Eyebrow className="mt-5">
-                {t.eyebrow}
-              </Eyebrow>
-              <h2 className="mt-3 text-[1.6rem] leading-tight font-bold text-navy sm:text-[2rem]">{t.title}</h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-muted sm:text-base">
-                {t.deadline}: <strong className="font-semibold text-orange-ink">{site.registrationDeadlineLabel}</strong>. {t.note}
+              <h2 className="text-[1.6rem] leading-tight font-bold text-navy sm:text-[2rem]">{t.title}</h2>
+              <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted sm:text-base">{t.lead}</p>
+              <p className="mt-1 text-sm text-muted">
+                {t.deadline}: <strong className="font-semibold text-orange-ink">{site.registrationDeadlineLabel}</strong>
               </p>
             </div>
             <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
@@ -55,7 +45,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
               <Link href={localePath(lang, "/dang-ky/")} className="btn-primary cta-pulse px-7 py-3">
                 {t.register} <Icon name="arrowRight" className="h-4 w-4" />
               </Link>
-              <Link href={localePath(lang, "/the-le/")} className="btn-outline bg-white/70 px-6 py-3">
+              <Link href={localePath(lang, "/the-le/")} className="btn bg-white px-6 py-3 text-navy shadow-sm hover:shadow-md">
                 {t.rules}
               </Link>
             </div>

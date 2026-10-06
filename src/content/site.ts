@@ -3,21 +3,25 @@
 import type { IconName } from "@/components/Icon";
 
 export const site = {
-  name: "IS-NextGen Manager Challenge 2026",
+  name: "NextGen Manager Challenge 2026",
   viName: "Nhà Quản trị trong Kỷ nguyên mới",
   theme: "Chân dung Nhà quản trị trong kỷ nguyên AI",
   themeEn: "The Manager in the AI Era",
   heroTitle: "Nhà quản trị trong kỷ nguyên AI",
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
-  hashtag: "#ISNextGenManager",
+  hashtag: "#NextGenManager",
   // TODO(BTC): thay bằng hạn đăng ký chính thức. Vòng 1 diễn ra tuần 2/11/2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59, 01/11/2026 (dự kiến)",
-  address: "Khoa Kinh tế và Quản lý, Trường Quốc tế - ĐHQGHN, Số 01 Phan Tây Nhạc, Hà Nội",
+  // Mỗi phần tử là một cụm không bị ngắt dòng giữa chừng
+  address: {
+    unit: ["Khoa Kinh tế và Quản lý,", "Trường Quốc tế - ĐHQGHN"],
+    street: ["Toà D2, ĐHQGHN,", "144 Xuân Thuỷ,", "Cầu Giấy, Hà Nội"],
+  },
   // TODO(BTC): điền thông tin liên hệ và mạng xã hội thật; để trống thì ẩn.
   contact: {
-    email: "",
+    email: "nextgen@vnuis.edu.vn",
     phone: "",
     fanpage: "",
     sponsorDeck: "",
@@ -34,24 +38,31 @@ export const site = {
 
 export const nav = [
   { href: "/#top", label: "Trang chủ", id: "top" },
-  { href: "/#gioi-thieu", label: "Giới thiệu", id: "gioi-thieu" },
-  { href: "/#the-le", label: "Thể lệ", id: "the-le" },
+  { href: "/#gioi-thieu", label: "Cuộc thi", id: "gioi-thieu" },
+  { href: "/#trai-nghiem", label: "Trải nghiệm", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Lộ trình", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Giải thưởng", id: "giai-thuong" },
-  { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
+  { href: "/the-le/", label: "Thể lệ", id: "the-le" },
 ];
 
+export const hero = {
+  eyebrow: "Cuộc thi quản trị thực chiến · Mùa 1",
+  title: ["NEXTGEN", "MANAGER 2026"],
+  theme: "The Manager in the AI Era",
+  tagline: "Nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
+};
+
+// Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "users", value: "250+", label: "Thí sinh tham dự" },
-  { icon: "landmark", value: "04", label: "Vòng thi hấp dẫn", tone: "sky" },
-  { icon: "trophy", value: "14.5tr", label: "Tổng giá trị giải thưởng", tone: "gold" },
-  // Kế hoạch: 6-8 giám khảo Vòng 2-3, 05 giám khảo chung kết, 02-03 giảng viên cố vấn
-  { icon: "star", value: "10+", label: "Chuyên gia đồng hành" },
+  { icon: "briefcase", value: "Thực tập", label: "tại doanh nghiệp đồng hành" },
+  { icon: "handshake", value: "Kết nối", label: "với chuyên gia và lãnh đạo doanh nghiệp" },
+  { icon: "fileChart", value: "04 vòng", label: "thi thực chiến, chấm theo năng lực" },
+  { icon: "users", value: "GS · PGS · TS", label: "và đại diện doanh nghiệp đồng hành" },
 ];
 
 export const about = {
-  title: ["Cuộc thi đa năng lực, đa tầm nhìn", "cho ", "thế hệ quản trị tương lai"],
-  body: "IS-NextGen Manager 2026 là sân chơi học thuật, nơi sinh viên trên toàn quốc được thử thách tư duy, rèn luyện kỹ năng và kiến tạo những giải pháp quản trị sáng tạo trong bối cảnh kỷ nguyên AI.",
+  title: ["Cuộc thi Quản trị Thực chiến Đầu tiên", "ứng dụng ", "Khung Năng lực Hành vi & Trí tuệ Nhân tạo (AI)"],
+  body: "NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật dành cho sinh viên toàn quốc. Thông qua hệ thống bốn vòng thi từ kiểm tra năng lực, thảo luận nhóm thực chiến cho đến giải bài toán quản trị trực tiếp từ doanh nghiệp đồng hành, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn nhận Báo cáo năng lực cá nhân, tham gia chuyến quan sát thực tế tại tập đoàn lớn và mở rộng cánh cửa nghề nghiệp tại các doanh nghiệp hàng đầu.",
   features: [
     {
       icon: "brain" as IconName,
@@ -80,9 +91,34 @@ export const about = {
   ],
 };
 
+// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..4
+export const perks = {
+  eyebrow: "Về cuộc thi",
+  title: "Những trải nghiệm chỉ có tại NextGen Manager",
+  lead: "Cuộc thi quản trị thực chiến giúp bạn phát triển năng lực toàn diện, kết nối sâu rộng và tạo giá trị thật cho sự nghiệp tương lai.",
+  items: [
+    { title: "Thi thực chiến", body: "Giải tình huống thật của doanh nghiệp, chấm theo Khung năng lực hành vi chuẩn hoá: 06 nhóm năng lực, 05 mức hành vi.", href: "/the-le/" },
+    { title: "Thực tập & cơ hội nghề nghiệp", body: "Suất thực tập và vé vào thẳng vòng phỏng vấn cuối chương trình Management Trainee.", href: "/#giai-thuong" },
+    { title: "Kết nối mạng lưới", body: "Gặp gỡ doanh nghiệp, giám khảo và cộng đồng sinh viên toàn quốc.", href: "/#trai-nghiem" },
+    { title: "Phát triển toàn diện", body: "Nhận Báo cáo năng lực cá nhân, rèn tư duy hệ thống và bản lĩnh ứng dụng AI.", href: "/the-le/" },
+  ],
+};
+
+// "Hành trình trải nghiệm": các hoạt động nổi bật trong mùa giải
+export const journey = {
+  title: "Hành trình trải nghiệm",
+  more: "Xem toàn bộ thể lệ",
+  items: [
+    { title: "Thảo luận nhóm không người dẫn", body: "Nhóm 06 người cùng giải một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Giải bài toán quản trị cùng AI", body: "Xử lý hộp thư của nhà quản lý: được dùng AI nhưng phải giải trình từng quyết định.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Quan sát môi trường làm việc thực tế và học hỏi trực tiếp từ nhà quản lý.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Kết nối cộng đồng nhân tài", body: "Tiệc tối Networking cùng doanh nghiệp, giám khảo và cựu sinh viên.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
+  ],
+};
+
 export const themeSection = {
-  body: "AI đang tái định hình mọi lĩnh vực, từ cách chúng ta học tập, làm việc đến cách doanh nghiệp vận hành. IS-NextGen Manager 2026 đặt ra thách thức tìm kiếm những nhà quản trị trẻ có tư duy mới, kỹ năng mới và khả năng tạo ra giá trị thật cho xã hội.",
-  points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi"],
+  body: "Trí tuệ nhân tạo (AI) đang tái định hình phương thức vận hành của mọi doanh nghiệp. Cuộc thi NextGen Manager 2026 đặt ra thách thức tìm kiếm và bồi dưỡng thế hệ nhà quản trị trẻ có tư duy hệ thống, năng lực ra quyết định chính xác trong điều kiện thiếu thông tin, và bản lĩnh ứng dụng AI làm công cụ hỗ trợ đắc lực nhưng vẫn giữ vững phán đoán độc lập.",
+  points: ["Ứng dụng AI trong quản trị", "Giải quyết vấn đề thực tiễn từ doanh nghiệp", "Đề xuất giải pháp sáng tạo, bền vững và khả thi", "Sẵn sàng dẫn dắt trong môi trường toàn cầu"],
   quote: "Không chỉ là một cuộc thi, mà còn là hành trình khám phá và khẳng định bản thân.",
 };
 
@@ -94,7 +130,7 @@ export const rounds = [
     name: "Hồ sơ và kiểm tra năng lực",
     format: "Cá nhân · Trực tuyến",
     duration: "60 phút",
-    body: "Nộp hồ sơ trực tuyến kèm video tối đa 90 giây trả lời một câu hỏi tình huống quản trị do Ban Tổ chức công bố. Làm bài kiểm tra trực tuyến gồm tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng; thí sinh ngoài Trường dự thi từ xa có giám sát.",
+    body: "Nộp hồ sơ trực tuyến kèm video giới thiệu tối đa 02 phút trả lời một câu hỏi tình huống quản trị do Ban Tổ chức công bố và 01 ảnh cá nhân. Làm bài kiểm tra trực tuyến gồm tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng; thí sinh ngoài Trường dự thi từ xa có giám sát.",
     funnel: "250-300 → 40 thí sinh",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -138,35 +174,15 @@ export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "present
 export const roundsIntro: string =
   "Mỗi vòng thi là một thử thách khác nhau, giúp bạn phát triển từ tư duy đến kỹ năng thực chiến dưới sự đánh giá của giảng viên và doanh nghiệp.";
 
-export const experiences = [
-  {
-    image: "/images/generated/round-case.webp",
-    title: "Phân tích tình huống quản trị",
-    body: "Bài kiểm tra tư duy số liệu, logic và tình huống hộp thư điều hành: sắp thứ tự ưu tiên, ra quyết định, giải trình.",
-    href: "/the-le/#vong-1",
-  },
-  {
-    image: "/images/generated/round-2.webp",
-    title: "Làm việc nhóm như ở doanh nghiệp",
-    body: "Nhóm sáu người, tình huống có xung đột lợi ích, không ai được chỉ định làm trưởng nhóm.",
-    href: "/the-le/#vong-2",
-  },
-  {
-    image: "/images/generated/round-pitch.webp",
-    title: "Thuyết trình trước hội đồng chuyên gia",
-    body: "Ba đội chung kết trình bày và phản biện trước hội đồng có lãnh đạo doanh nghiệp, có phần bằng tiếng Anh.",
-    href: "/the-le/#vong-4",
-  },
-];
-
 export const values = {
-  title: ["Sẵn sàng năng lực,", "dẫn lối sự nghiệp tương lai"],
-  body: "Tìm kiếm tri thức, mở rộng mạng lưới và nắm bắt cơ hội nghề nghiệp cùng doanh nghiệp đồng hành, kèm báo cáo năng lực cá nhân cho mỗi thí sinh.",
+  eyebrow: "Đầu tư cho tương lai",
+  title: ["Sẵn sàng năng lực –", "Dẫn lối sự nghiệp"],
+  body: "Tổng giá trị giải thưởng 14.500.000 đồng, cùng suất thực tập, vé vào thẳng vòng phỏng vấn cuối và Báo cáo năng lực cá nhân cho thí sinh vòng trong.",
   items: [
     { icon: "fileChart" as IconName, title: "Kiến thức thực tiễn", body: "Từ chuyên gia và doanh nghiệp" },
-    { icon: "target" as IconName, title: "Kỹ năng toàn diện", body: "Phân tích · Sáng tạo · Lãnh đạo" },
-    { icon: "handshake" as IconName, title: "Mạng lưới chất lượng", body: "Kết nối bạn bè, mentor, nhà tuyển dụng" },
-    { icon: "rocket" as IconName, title: "Cơ hội phát triển", body: "Thực tập, tuyển dụng, giải thưởng giá trị" },
+    { icon: "briefcase" as IconName, title: "Thực tập & dự án thật", body: "Trải nghiệm môi trường thực tế" },
+    { icon: "handshake" as IconName, title: "Kết nối mạng lưới", body: "Với cộng đồng nhân tài & doanh nghiệp" },
+    { icon: "rocket" as IconName, title: "Cơ hội nghề nghiệp", body: "Mở rộng cánh cửa sự nghiệp tương lai" },
   ],
 };
 
@@ -276,14 +292,14 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
-    tag: "IS-NextGen Business Trip",
+    tag: "NextGen Business Trip",
     title: "Tham quan doanh nghiệp hàng đầu",
     when: "Tuần 1 tháng 12/2026 · khoảng 04 giờ",
     who: "16 thí sinh vượt qua Vòng Sơ loại",
     body: "Tham quan không gian làm việc, nghe doanh nghiệp giới thiệu mô hình tổ chức và văn hoá, toạ đàm với nhà quản lý cấp trung về cách ra quyết định. Sau chuyến đi, mỗi thí sinh viết một bản ghi nhận ngắn (không quá 300 từ) làm tư liệu cho phần bảo vệ Vòng Bán kết.",
   },
   {
-    tag: "IS-NextGen Networking Dinner",
+    tag: "NextGen Networking Dinner",
     title: "Tiệc tối kết nối doanh nghiệp",
     when: "Sau Vòng Bán kết, trước Chung kết · khoảng 120 phút",
     who: "Thí sinh vòng trong, doanh nghiệp, giám khảo, cựu sinh viên",
@@ -294,7 +310,7 @@ export const sideEvents = [
 export const votingRules = [
   "03 đội chung kết, mỗi đội nộp 01 video giới thiệu tối đa 90 giây sau buổi giao đề.",
   "Video của 03 đội được đăng cùng lúc trên fanpage chính thức; bình chọn trong 03 ngày.",
-  "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #ISNextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
+  "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #NextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
   "Nghiêm cấm tài khoản ảo, công cụ tăng tương tác hoặc mua bán lượt tương tác. Giải độc lập, không tính vào điểm thi.",
 ];
 
@@ -307,7 +323,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "Hình thức đăng ký như thế nào?",
-    a: "Điền form đăng ký trực tuyến và nộp video tối đa 90 giây trả lời câu hỏi tình huống do Ban Tổ chức công bố. Cuộc thi không thu lệ phí.",
+    a: "Điền form đăng ký trực tuyến và nộp video giới thiệu tối đa 02 phút trả lời câu hỏi tình huống do Ban Tổ chức công bố, kèm 01 ảnh cá nhân. Cuộc thi không thu lệ phí.",
   },
   {
     icon: "usersGroup",

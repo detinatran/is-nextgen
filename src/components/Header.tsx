@@ -42,6 +42,15 @@ export default function Header() {
   const t = lang === "en" ? { register: "Register now", open: "Open menu", close: "Close menu", main: "Main navigation", mobile: "Mobile navigation" } : { register: "Đăng ký ngay", open: "Mở menu", close: "Đóng menu", main: "Điều hướng chính", mobile: "Điều hướng di động" };
   const href = (path: string) => localePath(lang, path);
   const [open, setOpen] = useState(false);
+  // Trang chủ: menu trong suốt nằm trên ảnh hero, có nền khi cuộn xuống hoặc mở menu
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const solid = !onHome || scrolled || open;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -55,10 +64,16 @@ export default function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto max-w-[77rem] lg:px-8">
-        <div className="flex h-14 items-center justify-between gap-4 border border-t-0 border-white/10 bg-navy/85 px-4 shadow-xl shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-b-2xl">
+        <div
+          className={`flex h-16 items-center justify-between gap-4 border border-t-0 px-4 transition-all duration-300 sm:px-6 lg:rounded-b-2xl ${
+            solid
+              ? "border-white/10 bg-navy/85 shadow-xl shadow-navy-deep/20 backdrop-blur-md"
+              : "border-white/10 bg-navy/85 shadow-xl shadow-navy-deep/20 backdrop-blur-md lg:border-transparent lg:bg-transparent lg:shadow-none lg:backdrop-blur-none"
+          }`}
+        >
           <Link href={href("/#top")} className="flex min-w-0 items-center" onClick={() => setOpen(false)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-8 w-auto" />
+            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-9 w-auto" />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label={t.main}>

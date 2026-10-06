@@ -4,17 +4,19 @@ Trang là web tĩnh, nên form gửi dữ liệu tới một Google Apps Script.
 
 ## 1. Tạo Sheet và script
 
-1. Tạo một Google Sheet mới, ví dụ `IS-NextGen 2026 - Đăng ký`, và một thư mục Google Drive để chứa video thí sinh (không cần chia sẻ công khai). Sao chép ID thư mục: phần cuối của URL `drive.google.com/drive/folders/<ID>`.
+1. Tạo một Google Sheet mới, ví dụ `IS-NextGen 2026 - Đăng ký`, và một thư mục Google Drive để chứa video và ảnh thí sinh (không cần chia sẻ công khai). Sao chép ID thư mục: phần cuối của URL `drive.google.com/drive/folders/<ID>`.
 2. Vào **Tiện ích mở rộng → Apps Script**, xoá code mẫu và dán:
 
 ```js
 const SHEET_NAME = "DangKy";
-// ID thư mục Google Drive chứa video (phần cuối URL của thư mục)
+// ID thư mục Google Drive chứa video và ảnh (phần cuối URL của thư mục)
 const VIDEO_FOLDER_ID = "DAN_ID_THU_MUC_VAO_DAY";
 const MAX_VIDEO_BYTES = 300 * 1024 * 1024;
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const FIELDS = [
   "submittedAt", "fullName", "email", "phone", "school", "major",
-  "studentId", "year", "nationality", "videoUrl", "confirm", "shareProfile",
+  "studentId", "year", "nationality", "videoUrl", "photoUrl", "mediaConsent",
+  "confirm", "shareProfile",
 ];
 
 function doPost(e) {
@@ -23,11 +25,13 @@ function doPost(e) {
   return json(saveRegistration(e.parameter || {}));
 }
 
-// Bước 1: tạo phiên tải lên Drive; trình duyệt sẽ gửi video thẳng vào uploadUrl.
+// Bước 1: tạo phiên tải lên Drive; trình duyệt sẽ gửi video/ảnh thẳng vào uploadUrl.
 function initUpload(req) {
   if (req.action !== "initUpload") return { error: "Sai yêu cầu" };
-  if (!/^video\//.test(req.mimeType || "")) return { error: "File không phải video" };
-  if (!(req.size > 0 && req.size <= MAX_VIDEO_BYTES)) return { error: "Video quá lớn" };
+  const type = req.mimeType || "";
+  const max = /^video\//.test(type) ? MAX_VIDEO_BYTES : /^image\//.test(type) ? MAX_PHOTO_BYTES : 0;
+  if (!max) return { error: "Chỉ nhận file video hoặc ảnh" };
+  if (!(req.size > 0 && req.size <= max)) return { error: "File quá lớn" };
   const res = UrlFetchApp.fetch(
     "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true",
     {
@@ -39,7 +43,7 @@ function initUpload(req) {
         "X-Upload-Content-Length": String(req.size),
         Origin: req.origin, // để Drive cho phép trình duyệt từ trang web gửi file
       },
-      payload: JSON.stringify({ name: String(req.name || "video").slice(0, 200), parents: [VIDEO_FOLDER_ID] }),
+      payload: JSON.stringify({ name: String(req.name || "file").slice(0, 200), parents: [VIDEO_FOLDER_ID] }),
       muteHttpExceptions: true,
     },
   );
@@ -47,7 +51,7 @@ function initUpload(req) {
   return uploadUrl ? { uploadUrl } : { error: "Drive từ chối: " + res.getResponseCode() };
 }
 
-// Bước 2: lưu thông tin đăng ký (kèm link video) vào Sheet.
+// Bước 2: lưu thông tin đăng ký (kèm link video, ảnh và lựa chọn đồng ý hình ảnh) vào Sheet.
 function saveRegistration(p) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -71,6 +75,8 @@ function json(obj) {
 ```
 
 3. Thay `DAN_ID_THU_MUC_VAO_DAY` bằng ID thư mục video.
+   - Nếu Sheet đã có dòng tiêu đề từ phiên bản cũ, thêm hai cột `photoUrl` và `mediaConsent` ngay sau cột `videoUrl` (hoặc xoá dòng tiêu đề để script tự tạo lại) để dữ liệu không bị lệch cột.
+   - Sửa code xong cần **Triển khai → Quản lý triển khai → Chỉnh sửa → Phiên bản mới** để áp dụng.
 4. **Triển khai → Tùy chọn triển khai mới → Ứng dụng web**:
    - Thực thi dưới dạng: **Tôi**
    - Người có quyền truy cập: **Bất kỳ ai**
@@ -87,7 +93,7 @@ NEXT_PUBLIC_REGISTER_ENDPOINT=https://script.google.com/macros/s/.../exec
 
 Build lại (`npm run build`). Khi biến này trống, form hiển thị nhưng bị khoá kèm dòng "Cổng đăng ký sẽ mở trong Lễ phát động".
 
-> Cách hoạt động: khi thí sinh bấm gửi, trình duyệt xin Apps Script một đường dẫn tải lên, gửi video thẳng vào thư mục Drive (có thanh tiến trình, tối đa 300 MB, kiểm tra độ dài ≤ 90 giây), rồi gửi thông tin đăng ký kèm link video vào Sheet. Video đứng tên tài khoản triển khai script. Hãy thử một lượt đăng ký và kiểm tra cả Sheet lẫn thư mục Drive.
+> Cách hoạt động: khi thí sinh bấm gửi, trình duyệt xin Apps Script một đường dẫn tải lên, gửi ảnh (≤ 10 MB) và video (≤ 300 MB, kiểm tra độ dài ≤ 2 phút) thẳng vào thư mục Drive có thanh tiến trình, rồi gửi thông tin đăng ký kèm link ảnh, link video và lựa chọn đồng ý sử dụng hình ảnh (cột `mediaConsent`) vào Sheet. File đứng tên tài khoản triển khai script. Hãy thử một lượt đăng ký và kiểm tra cả Sheet lẫn thư mục Drive.
 
 ## 3. (Tuỳ chọn) Cập nhật kết quả bằng Google Sheet
 

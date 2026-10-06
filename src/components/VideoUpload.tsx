@@ -21,8 +21,8 @@ const text = {
   vi: {
     notVideo: "Vui lòng chọn file video (mp4, mov...).",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
-    tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS} giây.`,
-    label: `Video giới thiệu (tối đa ${MAX_VIDEO_SECONDS} giây) *`,
+    tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
+    label: `Video giới thiệu (tối đa ${MAX_VIDEO_SECONDS / 60} phút) *`,
     hint: "Giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố.",
     remove: "Bỏ video đã chọn",
     drop: "Kéo thả video vào đây hoặc bấm để chọn",
@@ -32,8 +32,8 @@ const text = {
   en: {
     notVideo: "Please choose a video file (mp4, mov...).",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
-    tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS}-second limit.`,
-    label: `Intro video (max ${MAX_VIDEO_SECONDS} seconds) *`,
+    tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
+    label: `Intro video (max ${MAX_VIDEO_SECONDS / 60} minutes) *`,
     hint: "Introduce yourself and answer the case question announced by the Organizing Committee.",
     remove: "Remove selected video",
     drop: "Drag and drop your video here, or click to choose",

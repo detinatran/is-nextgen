@@ -162,7 +162,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
           </aside>
         </div>
 
-        <Block eyebrow={t.sideEyebrow} title={t.sideTitle}>
+        <Block id="ben-le" eyebrow={t.sideEyebrow} title={t.sideTitle}>
           <div className="grid gap-5 lg:grid-cols-2">
             {sideEvents.map((e) => (
               <article key={e.tag} className="card p-6 sm:p-7">

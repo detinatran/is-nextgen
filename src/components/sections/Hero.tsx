@@ -5,8 +5,6 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
-const toneClass = { sky: "text-brand", gold: "text-orange-ink" } as const;
-
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
   en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
@@ -134,10 +132,10 @@ export default function Hero({ lang }: { lang: Lang }) {
             {/* Tiêu đề phụ đặt trong khung kính trên bục */}
             <div className="absolute top-[64%] left-1/2 w-max -translate-x-1/2 rounded-xl bg-navy-deep/45 px-7 py-2.5 text-center shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
               <p className="text-[clamp(1.2rem,1.65vw,1.8rem)] leading-tight font-extrabold tracking-wide text-white uppercase">
-                {site.heroTitle}
+                {site.themeEn}
               </p>
-              <p className="mt-1 text-[clamp(0.75rem,0.9vw,0.95rem)] font-semibold tracking-[0.16em] text-[#ffe2a3] uppercase">
-                {site.slogan.join(" · ")}
+              <p className="mt-1 text-[clamp(0.75rem,0.9vw,0.95rem)] font-semibold tracking-[0.16em] text-white/85 uppercase">
+                {lang === "en" ? site.slogan.join(" · ") : site.heroTitle}
               </p>
             </div>
           </div>
@@ -146,29 +144,29 @@ export default function Hero({ lang }: { lang: Lang }) {
 
       {/* Bản di động: chữ đặt dưới ảnh */}
       <div className="container-x py-8 text-center lg:hidden">
-        <p className="text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.heroTitle}</p>
-        <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-orange-ink uppercase sm:text-sm">{site.slogan.join(" · ")}</p>
+        <p className="text-xl font-extrabold tracking-wide text-navy uppercase sm:text-2xl">{site.themeEn}</p>
+        <p className="mt-1.5 text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:text-sm">
+          {lang === "en" ? site.slogan.join(" · ") : site.heroTitle}
+        </p>
         <p className="mt-4 text-base text-muted">{t.audience.join(" ")}</p>
         <Ctas lang={lang} className="mt-6 flex-wrap justify-center" />
       </div>
 
-      {/* Số liệu, vắt ngang mép dưới ảnh */}
-      <div className="container-x relative z-10 pb-10 lg:-mt-20 lg:pb-0">
-        <div className="lg:-mx-8">
-          <div className="grid grid-cols-2 rounded-2xl border border-white bg-white/90 p-2 shadow-2xl shadow-navy/15 backdrop-blur-xl sm:grid-cols-4 sm:p-3">
-            {heroStats.map((s, i) => (
-              <div key={s.label} className={`flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-center lg:gap-4 ${i > 0 ? "sm:border-l sm:border-line" : ""}`}>
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cream text-orange-ink">
-                  <Icon name={s.icon} className="h-5 w-5" strokeWidth={1.8} />
-                </span>
-                <div>
-                  <div className={`text-[1.6rem] leading-none font-bold ${s.tone ? toneClass[s.tone] : "text-navy"}`}>{s.value}</div>
-                  <div className="mt-1 text-[13px] leading-tight text-muted lg:whitespace-nowrap">{s.label}</div>
-                </div>
+      {/* Thẻ quyền lợi nổi lên khỏi mép banner */}
+      <div className="container-x relative z-10 pb-4 lg:-mt-16">
+        <ul className="grid grid-cols-2 gap-y-2 rounded-3xl bg-white p-3 shadow-2xl shadow-navy/15 ring-1 ring-line sm:p-4 lg:grid-cols-4">
+          {heroStats.map((s, i) => (
+            <li key={s.value} className={`flex items-center gap-3 px-2 py-2 sm:px-4 ${i > 0 ? "lg:border-l lg:border-line" : ""}`}>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange sm:h-14 sm:w-14">
+                <Icon name={s.icon} className="h-6 w-6" strokeWidth={1.9} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[0.95rem] leading-tight font-bold whitespace-nowrap text-navy sm:text-lg">{s.value}</p>
+                <p className="mt-0.5 text-[13px] leading-snug text-muted">{s.label}</p>
               </div>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

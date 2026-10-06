@@ -15,8 +15,9 @@ export const registerText = {
     prepare: "Bạn cần chuẩn bị",
     checklist: [
       "Thông tin cá nhân và mã số sinh viên",
-      "Video tối đa 90 giây giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố",
+      "Video giới thiệu tối đa 02 phút: giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố",
       "File video (MP4, MOV...) dưới 300 MB, tải lên ngay trong form",
+      "01 ảnh cá nhân rõ mặt (JPG, PNG) dưới 10 MB để Ban Tổ chức làm truyền thông",
       "Thẻ sinh viên hoặc giấy xác nhận để xuất trình ở các vòng thi trực tiếp",
     ],
   },
@@ -28,8 +29,9 @@ export const registerText = {
     prepare: "What you need",
     checklist: [
       "Your personal details and student ID",
-      "A video of up to 90 seconds introducing yourself and answering the case question announced by the Organizing Committee",
+      "An intro video of up to 02 minutes introducing yourself and answering the case question announced by the Organizing Committee",
       "The video file (MP4, MOV...) under 300 MB, uploaded directly in the form",
+      "01 clear personal photo (JPG, PNG) under 10 MB for the competition's communications",
       "Your student card or enrolment letter to show at in-person rounds",
     ],
   },

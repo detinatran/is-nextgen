@@ -40,6 +40,18 @@ P[wave-hero]="Abstract website design element on a pure black background (#00000
 P[wave-mist-top]="Abstract website section divider on a pure black background (#000000). The top 35 percent of the image is solid pure white. Below it the white dissolves downward into soft wispy cloud-like mist forming a gently undulating wavy edge across the full width, with soft cloud tufts and a subtle pale-blue tint, fading completely into pure black in the bottom 40 percent. No text, no objects. $SCENE"
 P[wave-mist-bottom]="Abstract website section divider on a pure black background (#000000). The bottom 35 percent of the image is solid pure white. Above it, white soft misty clouds rise upward forming one wide gentle wave that is higher on the left and lower on the right, with faint pale snowy mountain silhouettes emerging from the mist on the right. The top 40 percent is pure black. No text. $SCENE"
 
+# ---- Điểm nhấn Mùa 1 (ảnh tư liệu tự nhiên, tránh vẻ "AI") ----
+DOC="Documentary-style candid photo, not staged, of Vietnamese university students in smart casual or business attire. Natural light, muted realistic colors, slight film grain, shallow depth of field, shot on a 35mm lens. No holograms, no floating UI, no glowing effects, no text, no logos, no watermarks. Landscape 3:2."
+P[hl-lgd]="Six students seated around a round meeting table having a lively leaderless group discussion with printed case documents and sticky notes, nobody standing at the head of the table, two assessors with clipboards observing quietly in the soft-focus background of a bright university meeting room. $DOC"
+P[hl-trip]="A small group of students on a company visit walking through the bright open-plan office of a large corporation, a friendly middle-aged manager in a blazer guiding them and gesturing toward the workspace, glass walls and plants, students holding notebooks. $DOC"
+P[hl-dinner]="An evening networking dinner in a hotel function room with round tables and warm ambient lighting, students in formal attire talking and shaking hands with business professionals, name badges, glasses of juice, relaxed genuine smiles. $DOC"
+P[hl-mt]="A final job interview in a corporate glass-walled meeting room: a confident young student candidate in a suit shaking hands across the table with a panel of three senior managers, city view through the window, documents and a laptop on the table. $DOC"
+
+# ---- Giao diện mới theo reference (10/2026) ----
+P[hero-team]="Wide cinematic website hero photograph, landscape 16:9. A modern riverside business district at bright late-afternoon with glass skyscrapers, blue sky with soft white clouds, warm golden sunlight from the right, calm river water reflecting the buildings in the lower part. On the right half of the frame, four young Vietnamese professionals in business attire (two women, two men; dark navy suits and a beige blazer, white shirts) stand side by side shown from the waist up, smiling confidently and looking up toward the upper left. Behind them a very large translucent frosted-glass upward arrow rises out of the skyline. The left 45 percent of the frame is calmer: sky, distant towers and water with a soft blue haze, suitable for overlaying white text. Photorealistic, natural skin tones, crisp detail, no text, no logos, no watermark."
+P[exp-icons]="Four separate small isometric 3D icons arranged in a 2 by 2 grid with generous equal spacing, each centered in its own quadrant, on a pure white background (#FFFFFF), soft matte clay style with gentle soft shadows, limited palette of warm orange (#F26B1D) and royal blue (#1F5BE0) with white. Top-left (orange): a presentation board on a small stand with a tiny speaker figure. Top-right (blue): a small office building with an ID badge and clipboard. Bottom-left (orange): three rising bar chart columns with small connected people nodes. Bottom-right (blue): a rocket launching beside a small globe. Clean, modern, friendly, consistent lighting. No text. Landscape 3:2."
+P[band-mountains]="Very light high-key panoramic banner photograph of snowy mountain peaks: pale blue-grey rocky snow-capped peaks appear only at the far left and far right edges, the center of the image is soft white mist and hazy pale sky, bright and airy, very low contrast so dark text placed over the middle stays readable. No people, no text. Wide landscape 3:1."
+
 # ---- Hoạ tiết nền (tách nền trắng thành trong suốt) ----
 P[deco-blue-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): elegant translucent light-blue silk ribbons and glassy flowing wave shapes sweeping in from the left edge and from the right edge, soft gradients from sky blue to white, subtle glossy highlights. The center 50 percent of the image is completely empty pure white. No text. $SCENE"
 P[deco-peach-waves]="Very light abstract decorative background on a pure white background (#FFFFFF): translucent peach and soft orange silk ribbons and flowing wave layers, faint pale peach mountain silhouettes in the distance on the left, warm glowing light in the upper right, airy and delicate. The center-left area is mostly empty white. No text. $SCENE"
@@ -60,12 +72,14 @@ MODE=(
   wave-hero black wave-mist-top black wave-mist-bottom black
   deco-blue-waves white deco-peach-waves white deco-clouds white rounds-bg white soft-bg photo cta-bg photo
   icons-gold grid:2x2:black icons-light grid:4x2:white
+  hl-lgd photo hl-trip photo hl-dinner photo hl-mt photo
+  hero-team photo exp-icons grid:2x2:white band-mountains photo
 )
 # Tên file kiểm tra đã sinh hay chưa (mặc định <tên>.webp)
-CHECK=(personas-a persona-1 personas-b persona-3 personas-c persona-5 icons-gold icon-value-1 icons-light icon-light-1)
+CHECK=(exp-icons exp-icon-1 personas-a persona-1 personas-b persona-3 personas-c persona-5 icons-gold icon-value-1 icons-light icon-light-1)
 # Tên đầu ra khác tên asset
 typeset -A OUTNAME
-OUTNAME=(personas-a persona personas-b persona personas-c persona icons-gold icon-value icons-light icon-light)
+OUTNAME=(exp-icons exp-icon personas-a persona personas-b persona personas-c persona icons-gold icon-value icons-light icon-light)
 
 ORDER=(
   theme-ai values-bg timeline-bg
@@ -76,6 +90,7 @@ ORDER=(
   personas-a personas-b personas-c
   icons-gold icons-light deco-clouds
   soft-bg rounds-bg cta-bg
+  hl-lgd hl-trip hl-dinner hl-mt
 )
 
 done_already() { [[ -f "$OUT/${CHECK[$1]:-$1}.webp" ]]; }

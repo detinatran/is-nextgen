@@ -3,21 +3,25 @@
 import type { IconName } from "@/components/Icon";
 
 export const site = {
-  name: "IS-NextGen Manager Challenge 2026",
+  name: "NextGen Manager Challenge 2026",
   viName: "Managers for a New Era",
   theme: "Portrait of a Manager in the AI Era",
   themeEn: "The Manager in the AI Era",
   heroTitle: "Managers in the AI Era",
   slogan: ["New Mindset", "New Skills", "Real Value"],
   tagline: "Shaping the next generation of managers",
-  hashtag: "#ISNextGenManager",
+  hashtag: "#NextGenManager",
   // TODO(BTC): replace with the official registration deadline. Round 1 takes place in week 2 of Nov 2026.
   registrationDeadline: "2026-11-01T23:59:00+07:00",
   registrationDeadlineLabel: "23:59 (GMT+7), Nov 1, 2026 (tentative)",
-  address: "Faculty of Economics and Management, VNU International School (VNU-IS), 01 Phan Tây Nhạc, Hanoi",
+  // Each item is a phrase kept on one line
+  address: {
+    unit: ["Faculty of Economics and Management,", "VNU International School (VNU-IS)"],
+    street: ["Building D2, VNU,", "144 Xuan Thuy,", "Cau Giay, Hanoi"],
+  },
   // TODO(BTC): fill in real contact and social media details; leave empty to hide.
   contact: {
-    email: "",
+    email: "nextgen@vnuis.edu.vn",
     phone: "",
     fanpage: "",
     sponsorDeck: "",
@@ -34,24 +38,31 @@ export const site = {
 
 export const nav = [
   { href: "/#top", label: "Home", id: "top" },
-  { href: "/#gioi-thieu", label: "About", id: "gioi-thieu" },
-  { href: "/#the-le", label: "Rules", id: "the-le" },
+  { href: "/#gioi-thieu", label: "Competition", id: "gioi-thieu" },
+  { href: "/#trai-nghiem", label: "Experience", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Timeline", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Prizes", id: "giai-thuong" },
-  { href: "/#hoi-dap", label: "FAQ", id: "hoi-dap" },
+  { href: "/the-le/", label: "Rules", id: "the-le" },
 ];
 
+export const hero = {
+  eyebrow: "Hands-on management competition · Season 1",
+  title: ["NEXTGEN", "MANAGER 2026"],
+  theme: "The Manager in the AI Era",
+  tagline: "Shaping the next generation of managers",
+};
+
+// Season 1 has no past numbers, so we highlight benefits instead
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "users", value: "250+", label: "Expected participants" },
-  { icon: "landmark", value: "04", label: "Challenging rounds", tone: "sky" },
-  { icon: "trophy", value: "14.5M", label: "Total prize pool (VND)", tone: "gold" },
-  // Plan: 6-8 judges for Rounds 2-3, 05 Grand Final judges, 02-03 faculty mentors
-  { icon: "star", value: "10+", label: "Expert judges & mentors" },
+  { icon: "briefcase", value: "Internships", label: "at partner companies" },
+  { icon: "handshake", value: "Network", label: "with experts and business leaders" },
+  { icon: "fileChart", value: "04 rounds", label: "real-world, competency-based" },
+  { icon: "users", value: "Experts", label: "Professors, PhDs and industry leaders" },
 ];
 
 export const about = {
-  title: ["A competition of many skills and perspectives", "for ", "tomorrow's managers"],
-  body: "IS-NextGen Manager 2026 is an academic competition where students from across Vietnam put their thinking to the test, sharpen their skills and build creative management solutions for the AI era.",
+  title: ["The first hands-on management competition", "built on ", "a Behavioral Competency Framework & AI"],
+  body: "Organized by the Faculty of Economics and Management, VNU International School, NextGen Manager 2026 is an academic competition for students nationwide. Across four rounds, from an aptitude test and hands-on group discussion to solving a real management problem set by a partner company, you will build systems thinking, the ability to decide with incomplete information, and the confidence to apply artificial intelligence (AI) in management. You will also receive a Personal Competency Report, join a field visit to a leading corporation and open doors to careers at top companies.",
   features: [
     {
       icon: "brain" as IconName,
@@ -80,9 +91,34 @@ export const about = {
   ],
 };
 
+// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
+export const perks = {
+  eyebrow: "About the competition",
+  title: "Experiences you only get at NextGen Manager",
+  lead: "A hands-on management competition that builds well-rounded skills, deep connections and real value for your future career.",
+  items: [
+    { title: "Real-world challenges", body: "Solve real company cases, scored on a standardized behavioral framework: 06 competency areas, 05 behaviour levels.", href: "/the-le/" },
+    { title: "Internships & careers", body: "Internships and a fast track to the Management Trainee final interview.", href: "/#giai-thuong" },
+    { title: "A strong network", body: "Meet companies, judges and students from across the country.", href: "/#trai-nghiem" },
+    { title: "Well-rounded growth", body: "Get a Personal Competency Report and build systems thinking and confidence with AI.", href: "/the-le/" },
+  ],
+};
+
+// "Your journey": the key activities of the season
+export const journey = {
+  title: "Your journey",
+  more: "See the full rules",
+  items: [
+    { title: "Leaderless group discussion", body: "Groups of six solve a case with conflicting interests, with no appointed leader.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Solve a management case with AI", body: "Handle a manager's in-tray: AI is allowed, but every decision must be explained.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Company visit & talks", body: "See a real workplace and learn directly from managers.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Join the talent community", body: "A networking dinner with companies, judges and alumni.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
+  ],
+};
+
 export const themeSection = {
-  body: "AI is reshaping every field, from how we learn and work to how businesses operate. IS-NextGen Manager 2026 sets out to find young managers with a new mindset, new skills and the ability to create real value for society.",
-  points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions"],
+  body: "Artificial intelligence (AI) is reshaping how every business operates. NextGen Manager 2026 sets out to find and develop a new generation of young managers with systems thinking, the ability to make sound decisions with incomplete information, and the confidence to use AI as a powerful aid while keeping their own independent judgement.",
+  points: ["Applying AI in management", "Solving real-world business problems", "Proposing creative, sustainable and feasible solutions", "Ready to lead in a global environment"],
   quote: "More than a competition, it is a journey of self-discovery and self-affirmation.",
 };
 
@@ -94,7 +130,7 @@ export const rounds = [
     name: "Application and aptitude test",
     format: "Individual · Online",
     duration: "60 minutes",
-    body: "Submit an online application with a video of up to 90 seconds answering a management case question announced by the Organizing Committee. Then take an online test covering numerical reasoning, logical reasoning and core management knowledge; candidates from outside VNU-IS take it remotely under proctoring.",
+    body: "Submit an online application with an intro video of up to 02 minutes answering a management case question announced by the Organizing Committee, plus 01 personal photo. Then take an online test covering numerical reasoning, logical reasoning and core management knowledge; candidates from outside VNU-IS take it remotely under proctoring.",
     funnel: "250-300 → 40 candidates",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -138,35 +174,15 @@ export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "present
 export const roundsIntro =
   "Each round is a different challenge, helping you grow from sharp thinking to real-world skills, assessed by faculty and industry experts.";
 
-export const experiences = [
-  {
-    image: "/images/generated/round-case.webp",
-    title: "Analyze management cases",
-    body: "Numerical and logical reasoning tests plus an executive in-tray case: set priorities, make decisions, justify them.",
-    href: "/the-le/#vong-1",
-  },
-  {
-    image: "/images/generated/round-2.webp",
-    title: "Work in teams like a real company",
-    body: "Groups of six, a case with conflicting interests, and no one appointed as team leader.",
-    href: "/the-le/#vong-2",
-  },
-  {
-    image: "/images/generated/round-pitch.webp",
-    title: "Pitch to a panel of experts",
-    body: "Three finalist teams present and defend their solutions before a panel including business leaders, partly in English.",
-    href: "/the-le/#vong-4",
-  },
-];
-
 export const values = {
-  title: ["Build your capabilities,", "lead your future career"],
-  body: "Gain knowledge, grow your network and seize career opportunities with our partner companies, plus a personal competency report for every candidate.",
+  eyebrow: "Investing in your future",
+  title: ["Build your capabilities –", "lead your career"],
+  body: "A total prize pool of 14,500,000 VND, plus internships, a fast track to final interviews and a Personal Competency Report for advanced-round contestants.",
   items: [
     { icon: "fileChart" as IconName, title: "Practical knowledge", body: "From experts and businesses" },
-    { icon: "target" as IconName, title: "Well-rounded skills", body: "Analysis · Creativity · Leadership" },
-    { icon: "handshake" as IconName, title: "A quality network", body: "Connect with peers, mentors, recruiters" },
-    { icon: "rocket" as IconName, title: "Growth opportunities", body: "Internships, jobs and valuable prizes" },
+    { icon: "briefcase" as IconName, title: "Internships & real projects", body: "Experience a real workplace" },
+    { icon: "handshake" as IconName, title: "A strong network", body: "With talented peers and companies" },
+    { icon: "rocket" as IconName, title: "Career opportunities", body: "Open doors to your future career" },
   ],
 };
 
@@ -276,14 +292,14 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
-    tag: "IS-NextGen Business Trip",
+    tag: "NextGen Business Trip",
     title: "Visit a leading company",
     when: "Week 1 of Dec 2026 · about 04 hours",
     who: "The 16 candidates who pass the Qualifying Round",
     body: "Tour the workplace, learn about the company's organizational model and culture, and join a talk with middle managers on how they make decisions. Afterwards, each candidate writes a short reflection (max. 300 words) to use as material for their Semi-final defense.",
   },
   {
-    tag: "IS-NextGen Networking Dinner",
+    tag: "NextGen Networking Dinner",
     title: "Business networking dinner",
     when: "After the Semi-final, before the Grand Final · about 120 minutes",
     who: "Finalists, partner companies, judges and alumni",
@@ -294,7 +310,7 @@ export const sideEvents = [
 export const votingRules = [
   "Each of the 03 finalist teams submits 01 introduction video of up to 90 seconds after the final case is released.",
   "All 03 videos are posted at the same time on the official fanpage; voting runs for 03 days.",
-  "01 reaction = 01 point; 01 public share with the hashtag #ISNextGenManager = 02 points. Only accounts following the fanpage count, and each account may share each video once.",
+  "01 reaction = 01 point; 01 public share with the hashtag #NextGenManager = 02 points. Only accounts following the fanpage count, and each account may share each video once.",
   "Fake accounts, engagement-boosting tools and buying or selling interactions are strictly prohibited. This award is separate and does not count toward competition scores.",
 ];
 
@@ -307,7 +323,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "How do I register?",
-    a: "Fill in the online registration form and submit a video of up to 90 seconds answering a case question announced by the Organizing Committee. Participation is free of charge.",
+    a: "Fill in the online registration form and submit an intro video of up to 02 minutes answering a case question announced by the Organizing Committee, plus 01 personal photo. Participation is free of charge.",
   },
   {
     icon: "usersGroup",

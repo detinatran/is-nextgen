@@ -76,13 +76,13 @@ export default function Header() {
             <img src={asset("/images/logo-white-2026.png")} alt={site.name} className="h-10 w-auto sm:h-12" />
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex" aria-label={t.main}>
+          <nav className="hidden items-center gap-1 xl:flex" aria-label={t.main}>
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={href(item.href)}
                 aria-current={isActive(item) ? "true" : undefined}
-                className={`relative px-3 py-2 text-sm transition after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-orange after:transition-transform ${
+                className={`relative px-3 py-2 text-sm whitespace-nowrap transition after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-orange after:transition-transform ${
                   isActive(item) ? "font-semibold text-white after:scale-x-100" : "text-white/75 after:scale-x-0 hover:text-white"
                 }`}
               >
@@ -93,12 +93,12 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <LangSwitch />
-            <Link href={href("/dang-ky/")} className="btn-primary hidden px-5 py-2 sm:inline-flex">
+            <Link href={href("/dang-ky/")} className="btn-primary hidden px-5 py-2 whitespace-nowrap sm:inline-flex">
               {t.register} <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10 lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10 xl:hidden"
               aria-label={open ? t.close : t.open}
               aria-expanded={open}
               aria-controls="mobile-nav"
@@ -112,7 +112,7 @@ export default function Header() {
         {open && (
           <nav
             id="mobile-nav"
-            className="border-x border-b border-white/10 bg-navy/95 px-4 pb-4 backdrop-blur-md sm:px-6 lg:hidden"
+            className="border-x border-b border-white/10 bg-navy/95 px-4 pb-4 backdrop-blur-md sm:px-6 xl:hidden"
             aria-label={t.mobile}
           >
             {nav.map((item) => (

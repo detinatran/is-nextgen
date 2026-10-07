@@ -211,6 +211,9 @@ export class AdminExamsService {
       if (a.schedule_id === scheduleId) return { moved: false };
       const started = await tx.attempts.count({ where: { assignment_id: assignmentId } });
       if (started > 0) throw AppException.conflict('STATE_CONFLICT', 'Candidate has already started this exam');
+      const target = await tx.exam_schedules.findUnique({ where: { id: scheduleId } });
+      if (!target || target.exam_id !== a.exam_id) throw AppException.notFound('Schedule not found');
+      if ((await tx.candidate_assignments.count({ where: { schedule_id: scheduleId } })) >= target.capacity) throw AppException.validation('Schedule is full');
       await tx.candidate_assignments.update({ where: { id: assignmentId }, data: { schedule_id: scheduleId, revision: { increment: 1 } } });
       await tx.assignment_schedule_history.create({
         data: { assignment_id: assignmentId, old_schedule_id: a.schedule_id, new_schedule_id: scheduleId, changed_by_user_id: actorUserId, reason: reason || 'Đổi ca' },
@@ -303,7 +306,11 @@ export class AdminExamsService {
             await tx.candidates.update({ where: { id: r.candidate_id }, data: { user_id: userId } });
           }
           const user = await tx.users.findUniqueOrThrow({ where: { id: userId } });
-          if (user.status === 'ACTIVE') alreadyActive++;
+          // Đã kích hoạt tài khoản thì không gửi lại lời mời
+          if (user.status === 'ACTIVE') {
+            alreadyActive++;
+            return;
+          }
           await this.notifications.enqueue(tx, {
             templateCode: 'EXAM_INVITATION',
             destinationEmail: r.email_normalized,
@@ -382,6 +389,15 @@ export class AdminExamsService {
       SELECT c.id, c.candidate_code AS code FROM candidates c JOIN registrations r ON r.candidate_id = c.id
       WHERE r.competition_id = ${exam.competition_id}::uuid AND r.state = 'SUBMITTED' AND c.candidate_code = ANY(${wanted.map((w) => w.code)})`;
     for (const w of wanted) if (!candidates.find((c) => c.code === w.code)) errors.push({ row: w.row, message: `Không có thí sinh đã nộp hồ sơ với mã ${w.code}` });
+    if (errors.length) return { applied: 0, errors };
+    // Sĩ số mỗi ca sau khi áp dụng file không được vượt sức chứa
+    const current = await this.prisma.candidate_assignments.findMany({ where: { exam_id: examId }, select: { candidate_id: true, schedule_id: true } });
+    const slotOf = new Map(current.map((a) => [a.candidate_id, a.schedule_id]));
+    for (const w of wanted) slotOf.set(candidates.find((c) => c.code === w.code)!.id, w.scheduleId);
+    schedules.forEach((sc, i) => {
+      const n = [...slotOf.values()].filter((id) => id === sc.id).length;
+      if (n > sc.capacity) errors.push({ row: 0, message: `Ca ${i + 1} sẽ có ${n} thí sinh, vượt sức chứa ${sc.capacity}` });
+    });
     if (errors.length) return { applied: 0, errors };
     const applied = await this.prisma.$transaction(
       async (tx) => {

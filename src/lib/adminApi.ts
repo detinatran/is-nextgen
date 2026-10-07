@@ -19,7 +19,7 @@ export class AdminError extends Error {
 
 export async function adminCall<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
-  if (init.body) headers.set("Content-Type", "application/json");
+  if (typeof init.body === "string") headers.set("Content-Type", "application/json");
   if (init.method && init.method !== "GET") headers.set("x-csrf-token", decodeURIComponent(csrf()));
   const res = await fetch(adminUrl(path), { ...init, headers, credentials: "include" });
   const data = await res.json().catch(() => ({}));

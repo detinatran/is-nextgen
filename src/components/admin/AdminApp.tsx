@@ -2,27 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AdminError, adminCall, adminUrl, type AdminList, type AdminRow } from "@/lib/adminApi";
+import { field, fmtDate, fmtDuration, messageOf } from "./shared";
+import QuestionBank from "./QuestionBank";
+import Round1 from "./Round1";
 import { asset } from "@/lib/paths";
 import Icon from "../Icon";
 
 type Stage = "checking" | "login" | "otp" | "ready";
-
-const field =
-  "w-full rounded-xl border border-line bg-white px-4 py-2.5 text-[15px] text-ink outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10";
-
-function messageOf(err: unknown) {
-  if (err instanceof AdminError) {
-    if (err.status === 401) return "Sai email hoặc mật khẩu, hoặc mã OTP không đúng / đã hết hạn.";
-    if (err.status === 403) return "Tài khoản này không có quyền quản trị.";
-    if (err.status === 429) return "Thử quá nhiều lần, vui lòng đợi một phút.";
-    return err.message;
-  }
-  return "Không kết nối được máy chủ.";
-}
-
-const fmtDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", dateStyle: "short", timeStyle: "short" }) : "";
-const fmtDuration = (s: number | null) => (s === null ? "" : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`);
 
 export default function AdminApp() {
   const [stage, setStage] = useState<Stage>("checking");
@@ -129,7 +115,57 @@ export default function AdminApp() {
   );
 }
 
+const tabs = [
+  { id: "ho-so", label: "Hồ sơ đăng ký" },
+  { id: "cau-hoi", label: "Ngân hàng câu hỏi" },
+  { id: "vong-1", label: "Vòng 1" },
+] as const;
+type Tab = (typeof tabs)[number]["id"];
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const [tab, setTab] = useState<Tab>("ho-so");
+  useEffect(() => {
+    const fromHash = window.location.hash.slice(1) as Tab;
+    if (tabs.some((t) => t.id === fromHash)) setTab(fromHash);
+  }, []);
+  const go = (t: Tab) => {
+    setTab(t);
+    window.history.replaceState(null, "", `#${t}`);
+  };
+
+  return (
+    <main className="min-h-screen bg-mist">
+      <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={asset("/images/logo.png")} alt="" className="h-8 w-auto" />
+            <nav className="flex gap-1 overflow-x-auto" aria-label="Mục quản trị">
+              {tabs.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => go(t.id)}
+                  aria-current={tab === t.id ? "page" : undefined}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${tab === t.id ? "bg-navy text-white" : "text-muted hover:bg-mist hover:text-navy"}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+          <button onClick={onLogout} className="btn-outline shrink-0 px-4 py-2 text-sm">
+            Đăng xuất
+          </button>
+        </div>
+      </header>
+      {tab === "ho-so" && <Registrations onLogout={onLogout} />}
+      {tab === "cau-hoi" && <QuestionBank onLogout={onLogout} />}
+      {tab === "vong-1" && <Round1 onLogout={onLogout} />}
+    </main>
+  );
+}
+
+function Registrations({ onLogout }: { onLogout: () => void }) {
   const [filters, setFilters] = useState({ q: "", school: "", state: "SUBMITTED", page: 1 });
   const [query, setQuery] = useState("");
   const [data, setData] = useState<AdminList | null>(null);
@@ -169,20 +205,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const pages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
 
   return (
-    <main className="min-h-screen bg-mist">
-      <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo.png")} alt="" className="h-8 w-auto" />
-            <span className="hidden text-sm font-semibold text-navy sm:inline">Quản trị · Hồ sơ đăng ký</span>
-          </div>
-          <button onClick={onLogout} className="btn-outline px-4 py-2 text-sm">
-            Đăng xuất
-          </button>
-        </div>
-      </header>
-
+    <>
       <div className="mx-auto max-w-[90rem] px-4 py-6 sm:px-6">
         <div className="flex flex-wrap items-end gap-3">
           <label className="min-w-56 flex-1">
@@ -285,7 +308,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       </div>
 
       {selected && <Detail row={selected} onClose={() => setSelected(null)} />}
-    </main>
+    </>
   );
 }
 

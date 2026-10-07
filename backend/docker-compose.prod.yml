@@ -32,6 +32,7 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
       SMTP_URL: ${SMTP_URL:-}
+      MAIL_CAPTURE: ${MAIL_CAPTURE:-}
       MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}
     volumes:
       - media:/var/lib/isnextgen/media

@@ -14,7 +14,11 @@ import type { AppConfig } from '../config/configuration';
       provide: MAILER,
       inject: [ConfigService],
       useFactory: (config: ConfigService<AppConfig>): Mailer => {
+        const env = config.get('env', 'development');
         const smtpUrl = config.get('smtpUrl', '');
+        if (env === 'production' && !smtpUrl) {
+          throw new Error('SMTP_URL is required in production');
+        }
         return smtpUrl ? new SmtpMailer(smtpUrl) : new ConsoleCaptureMailer();
       },
     },

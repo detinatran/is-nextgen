@@ -126,7 +126,7 @@ export class MediaService {
       if (outcome.reason === 'PHOTO_TOO_LARGE') {
         throw new AppException(413, ErrorCodes.PHOTO_TOO_LARGE, 'Photo exceeds the size limit');
       }
-      throw new AppException(400, ErrorCodes.PHOTO_INVALID_FORMAT, 'Photo must be JPEG, PNG or WebP');
+      throw new AppException(400, ErrorCodes.PHOTO_INVALID_FORMAT, 'Photo must be JPEG or PNG');
     }
 
     const objectKey = `p/${randomUUID()}`;

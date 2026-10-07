@@ -1,26 +1,26 @@
 {
-  "registrationId": "f85cf2c3-1f15-4c74-84d4-7b25cba90db7",
+  "registrationId": "511a9b72-a1ed-41fd-b97a-92fcaf321d1e",
   "status": "DRAFT",
   "revision": 1,
   "competition": {
-    "code": "C-6e94397d",
-    "registrationClosesAt": "2026-11-04T12:01:28.157Z"
+    "code": "C-d81d7f39",
+    "registrationClosesAt": "2026-11-05T17:54:43.634Z"
   },
   "profile": {
     "fullName": "Nguyen Van Test",
     "dateOfBirth": "2004-05-12",
-    "studentId": "SV229849",
+    "studentId": "SV162777",
     "school": "Fixture University",
     "department": "Faculty of IT",
     "major": "Software Engineering",
-    "email": "draft-c083b626@example.com",
+    "email": "draft-233bfa33@example.com",
     "phone": "0901234567",
     "facebook": "https://facebook.com/fixture",
     "revision": 1
   },
   "video": null,
   "photo": {
-    "uploadId": "0660c2b7-10cd-4a45-85e8-cb46f4b651d5",
+    "uploadId": "d77fc40a-1a69-4050-ac59-45895da4bd0a",
     "state": "READY"
   },
   "consents": [
@@ -28,13 +28,13 @@
       "purpose": "MEDIA_USAGE",
       "granted": false,
       "wordingVersion": "MEDIA-V1-2026",
-      "recordedAt": "2026-10-05T12:01:28.343Z"
+      "recordedAt": "2026-10-06T17:54:43.759Z"
     },
     {
       "purpose": "DATA_PROCESSING",
       "granted": true,
       "wordingVersion": "DATA-V1-2026",
-      "recordedAt": "2026-10-05T12:01:28.342Z"
+      "recordedAt": "2026-10-06T17:54:43.758Z"
     }
   ],
   "favoriteCandidateEligible": false,

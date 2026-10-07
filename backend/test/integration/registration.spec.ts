@@ -341,7 +341,7 @@ describe('FR-13/FR-16 registration + confirmation', () => {
     expect(res.body.consents.mediaUsage.withdrawalNotice).toContain('@');
     expect(res.body.consents.eventCoverage.statement).toContain('01 năm');
     expect(res.body.favoriteCandidateNotice).toContain('Thí sinh được yêu thích nhất');
-    expect(res.body.photo.acceptedTypes).toEqual(['image/jpeg', 'image/png', 'image/webp']);
+    expect(res.body.photo.acceptedTypes).toEqual(['image/jpeg', 'image/png']);
   });
 
   it('flags duplicate signals for review without rejecting', async () => {

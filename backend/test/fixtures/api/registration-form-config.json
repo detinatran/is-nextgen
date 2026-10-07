@@ -8,8 +8,7 @@
     "maxBytes": 10000000,
     "acceptedTypes": [
       "image/jpeg",
-      "image/png",
-      "image/webp"
+      "image/png"
     ],
     "statement": "01 bức ảnh cá nhân dùng cho hoạt động truyền thông của Cuộc thi."
   },

@@ -11,14 +11,18 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 /** Controlled-text rule: no control characters; service trims and normalizes. */
 // eslint-disable-next-line no-control-regex -- deliberate control-character rejection
 const SAFE_TEXT = /^[^\u0000-\u001f\u007f]*$/;
+const TRIM_TEXT = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
+const PHONE_DIGITS = /^(?=(?:[^\d]*\d){6,20}$)[+]?[\d\s()-]{6,20}$/;
+const HTTP_URL = /^https?:\/\/.+/i;
 
 export class ConsentInputDto {
   @ApiProperty({ example: 'MEDIA-V1-2026', description: 'Wording version the candidate actually saw' })
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(50)
@@ -32,12 +36,14 @@ export class ConsentInputDto {
 
 export class CreateRegistrationDraftDto {
   @ApiProperty({ example: 'ISNG-2026' })
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(50)
   competitionCode!: string;
 
   @ApiProperty({ example: 'Nguyen Van A' })
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -45,10 +51,12 @@ export class CreateRegistrationDraftDto {
   fullName!: string;
 
   @ApiProperty({ format: 'date', example: '2004-05-12' })
+  @Transform(TRIM_TEXT)
   @IsDateString({}, { message: 'date_of_birth must be an ISO date (YYYY-MM-DD)' })
   dateOfBirth!: string;
 
   @ApiProperty({ example: '20211234' })
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(50)
@@ -56,6 +64,7 @@ export class CreateRegistrationDraftDto {
   studentId!: string;
 
   @ApiProperty()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -63,6 +72,7 @@ export class CreateRegistrationDraftDto {
   school!: string;
 
   @ApiProperty()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -70,6 +80,7 @@ export class CreateRegistrationDraftDto {
   department!: string;
 
   @ApiProperty()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -77,19 +88,23 @@ export class CreateRegistrationDraftDto {
   major!: string;
 
   @ApiProperty({ example: 'candidate@example.com' })
+  @Transform(TRIM_TEXT)
   @IsEmail({}, { message: 'email is not valid' })
   @MaxLength(255)
   email!: string;
 
   @ApiProperty({ example: '0901234567' })
+  @Transform(TRIM_TEXT)
   @IsString()
-  @Matches(/^[+]?[\d\s()-]{6,20}$/, { message: 'phone is not valid' })
+  @Matches(PHONE_DIGITS, { message: 'phone is not valid' })
   phone!: string;
 
   @ApiProperty({ example: 'https://facebook.com/candidate' })
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(300)
+  @Matches(HTTP_URL, { message: 'facebook must be a valid http or https URL' })
   @Matches(SAFE_TEXT)
   facebook!: string;
 
@@ -121,6 +136,7 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -129,11 +145,13 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsDateString({}, { message: 'date_of_birth must be an ISO date (YYYY-MM-DD)' })
   dateOfBirth?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(50)
@@ -142,6 +160,7 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -150,6 +169,7 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -158,6 +178,7 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -166,21 +187,25 @@ export class UpdateRegistrationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsEmail({}, { message: 'email is not valid' })
   @MaxLength(255)
   email?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
-  @Matches(/^[+]?[\d\s()-]{6,20}$/, { message: 'phone is not valid' })
+  @Matches(PHONE_DIGITS, { message: 'phone is not valid' })
   phone?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform(TRIM_TEXT)
   @IsString()
   @MinLength(1)
   @MaxLength(300)
+  @Matches(HTTP_URL, { message: 'facebook must be a valid http or https URL' })
   @Matches(SAFE_TEXT)
   facebook?: string;
 

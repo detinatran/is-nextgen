@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 interface AdminInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -8,16 +8,8 @@ interface AdminInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   rightIcon?: React.ReactNode;
 }
 
-export function AdminInput({
-  label,
-  error,
-  helperText,
-  leftIcon,
-  rightIcon,
-  className = "",
-  id,
-  ...props
-}: AdminInputProps) {
+export const AdminInput = forwardRef<HTMLInputElement, AdminInputProps>(
+  ({ label, error, helperText, leftIcon, rightIcon, className = "", id, ...props }, ref) => {
   const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
   return (
@@ -38,6 +30,7 @@ export function AdminInput({
           </div>
         )}
         <input
+          ref={ref}
           id={inputId}
           className={`w-full bg-white text-slate-900 placeholder:text-slate-400 text-sm rounded-lg border transition-colors focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20 focus:border-[#1F5BE0] disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 ${
             leftIcon ? "pl-10" : "pl-4"
@@ -61,7 +54,9 @@ export function AdminInput({
       ) : null}
     </div>
   );
-}
+});
+
+AdminInput.displayName = "AdminInput";
 
 interface AdminSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;

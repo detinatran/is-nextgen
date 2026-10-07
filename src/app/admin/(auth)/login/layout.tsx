@@ -14,11 +14,7 @@ export default function AdminLoginLayout({
 }) {
   return (
     <AdminI18nProvider>
-      <ToastProvider>
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-          {children}
-        </div>
-      </ToastProvider>
+      <ToastProvider>{children}</ToastProvider>
     </AdminI18nProvider>
   );
 }

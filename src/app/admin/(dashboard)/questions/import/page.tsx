@@ -7,6 +7,7 @@ import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface ParsedQuestionRow {
   rowId: number;
@@ -63,6 +64,7 @@ const mockParsedData: ParsedQuestionRow[] = [
 ];
 
 export default function QuestionImportPage() {
+  const { t } = useAdminI18n();
   const [file, setFile] = useState<File | null>(null);
   const [parsedRows, setParsedRows] = useState<ParsedQuestionRow[]>(mockParsedData);
   const [isImporting, setIsImporting] = useState(false);
@@ -84,7 +86,7 @@ export default function QuestionImportPage() {
     setIsImporting(true);
     setTimeout(() => {
       setIsImporting(false);
-      success("Import thành công", `Đã import ${validCount} câu hỏi vào Ngân hàng đề thi!`);
+      success(t("Import thành công"), `${t("Đã import")} ${validCount} ${t("câu hỏi vào Ngân hàng đề thi!")}`);
       window.location.href = "/admin/questions";
     }, 800);
   };
@@ -100,18 +102,18 @@ export default function QuestionImportPage() {
   const columns: Column<ParsedQuestionRow>[] = [
     {
       key: "rowId",
-      header: "Dòng",
+      header: t("Dòng"),
       width: "70px",
       render: (row) => <span className="font-sans tabular-nums tracking-tight text-xs font-bold">#{row.rowId}</span>,
     },
     {
       key: "prompt",
-      header: "Nội dung câu hỏi trích xuất",
+      header: t("Nội dung câu hỏi trích xuất"),
       render: (row) => (
         <div>
           <p className="text-xs font-bold text-slate-900 line-clamp-2">{row.prompt}</p>
           <div className="text-[11px] text-slate-500 mt-1">
-            Số phương án: <span className="font-semibold text-slate-700">{row.optionsCount}</span> • Đáp án đúng:{" "}
+            {t("Số phương án")}: <span className="font-semibold text-slate-700">{row.optionsCount}</span> • {t("Đáp án đúng")}:{" "}
             <span className="font-sans tabular-nums tracking-tight font-bold text-emerald-700">{row.correctAnswer}</span>
           </div>
         </div>
@@ -119,7 +121,7 @@ export default function QuestionImportPage() {
     },
     {
       key: "difficulty",
-      header: "Độ khó & Nhóm",
+      header: t("Độ khó & Nhóm"),
       render: (row) => (
         <div>
           <AdminBadge
@@ -134,12 +136,12 @@ export default function QuestionImportPage() {
     },
     {
       key: "status",
-      header: "Kiểm tra hợp lệ",
+      header: t("Kiểm tra hợp lệ"),
       align: "center",
       render: (row) => (
         <div>
           <AdminBadge variant={row.isValid ? "success" : "danger"} size="sm">
-            {row.isValid ? "Hợp lệ" : "Lỗi cấu trúc"}
+            {row.isValid ? t("Hợp lệ") : t("Lỗi cấu trúc")}
           </AdminBadge>
           {row.errors.length > 0 && (
             <div className="text-[10px] text-rose-600 mt-1 font-medium">
@@ -158,14 +160,14 @@ export default function QuestionImportPage() {
         <div>
           <div className="flex items-center gap-2">
             <Link href="/admin/questions" className="text-xs text-slate-400 hover:text-[#1F5BE0]">
-              ← Quay lại Ngân hàng câu hỏi
+              {t("← Quay lại Ngân hàng câu hỏi")}
             </Link>
           </div>
           <h2 className="text-lg font-bold text-slate-900 mt-1">
-            Nhập câu hỏi hàng loạt từ tệp
+            {t("Nhập câu hỏi hàng loạt từ tệp")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Hỗ trợ file định dạng <span className="font-bold text-slate-700">.xlsx / .docx</span>. Tự động kiểm tra cú pháp và đáp án đúng.
+            {t("Hỗ trợ file định dạng")} <span className="font-bold text-slate-700">.xlsx / .docx</span>. {t("Tự động kiểm tra cú pháp và đáp án đúng.")}
           </p>
         </div>
 
@@ -174,11 +176,11 @@ export default function QuestionImportPage() {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              info("Đang tải file mẫu", "is_nextgen_question_template.xlsx");
+              info(t("Đang tải file mẫu"), "is_nextgen_question_template.xlsx");
             }}
             className="text-xs font-semibold text-[#1F5BE0] hover:underline"
           >
-            Tải file mẫu Excel (.xlsx)
+            {t("Tải file mẫu Excel (.xlsx)")}
           </a>
         </div>
       </div>
@@ -199,10 +201,10 @@ export default function QuestionImportPage() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-800">
-              {file ? `Đã chọn: ${file.name}` : "Kéo thả file đề thi vào đây hoặc bấm để chọn"}
+              {file ? `${t("Đã chọn")}: ${file.name}` : t("Kéo thả file đề thi vào đây hoặc bấm để chọn")}
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
-              Hệ thống sẽ tự động quét các bảng hoặc danh sách câu hỏi trong file
+              {t("Hệ thống sẽ tự động quét các bảng hoặc danh sách câu hỏi trong file")}
             </p>
           </div>
         </div>
@@ -213,23 +215,23 @@ export default function QuestionImportPage() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-900">
-              Kết quả phân tích trước khi lưu (Preview Validation)
+              {t("Kết quả phân tích trước khi lưu (Preview Validation)")}
             </h3>
             <p className="text-xs text-slate-500">
-              Tổng số: <span className="font-bold">{parsedRows.length}</span> câu • Hợp lệ:{" "}
-              <span className="font-bold text-emerald-600">{validCount}</span> • Lỗi:{" "}
+              {t("Tổng số")}: <span className="font-bold">{parsedRows.length}</span> {t("câu")} • {t("Hợp lệ")}:{" "}
+              <span className="font-bold text-emerald-600">{validCount}</span> • {t("Lỗi")}:{" "}
               <span className="font-bold text-rose-600">{invalidCount}</span>
             </p>
           </div>
           <AdminPopconfirm
-            title="Xác nhận nhập câu hỏi"
+            title={t("Xác nhận nhập câu hỏi")}
             description={
               invalidCount > 0
-                ? `Cảnh báo: Có ${invalidCount} câu hỏi bị lỗi cấu trúc. Hệ thống sẽ chỉ import ${validCount} câu hỏi hợp lệ vào Ngân hàng đề thi.`
-                : `Sẽ nhập ${validCount} câu hỏi hợp lệ vào Ngân hàng đề thi.`
+                ? `${t("Cảnh báo: Có")} ${invalidCount} ${t("câu hỏi bị lỗi cấu trúc. Hệ thống sẽ chỉ import")} ${validCount} ${t("câu hỏi hợp lệ vào Ngân hàng đề thi.")}`
+                : `${t("Sẽ nhập")} ${validCount} ${t("câu hỏi hợp lệ vào Ngân hàng đề thi.")}`
             }
             confirmVariant="primary"
-            confirmText="Xác nhận nhập"
+            confirmText={t("Xác nhận nhập")}
             onConfirm={handleExecuteImport}
             triggerVariant="outline"
             triggerSize="sm"
@@ -241,7 +243,7 @@ export default function QuestionImportPage() {
                 className={`inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors ${open ? "bg-slate-50" : ""}`}
                 onClick={handleImportClick}
               >
-                Lưu {validCount} câu hỏi hợp lệ vào Ngân hàng
+                {t("Lưu")} {validCount} {t("câu hỏi hợp lệ vào Ngân hàng")}
               </span>
             )}
           </AdminPopconfirm>

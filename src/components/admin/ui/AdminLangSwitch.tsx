@@ -4,18 +4,14 @@ import { usePathname } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { langFromPath } from "@/lib/i18n";
-import { useRef, useState, useEffect } from "react";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { useRef, useEffect } from "react";
 
 export default function AdminLangSwitch() {
   const pathname = usePathname();
   const initialLang = langFromPath(pathname);
-  const [lang, setLang] = useState<"vi" | "en">(initialLang);
+  const { lang, setLang } = useAdminI18n();
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Persist language choice to localStorage for admin section
-  useEffect(() => {
-    localStorage.setItem("admin-lang", lang);
-  }, [lang]);
 
   // Sync with initial language on mount
   useEffect(() => {
@@ -23,7 +19,7 @@ export default function AdminLangSwitch() {
     if (saved && saved !== lang) {
       setLang(saved);
     }
-  }, []);
+  }, [lang, setLang]);
 
   // Click handler to switch language (no URL change for admin routes)
   const handleSwitch = (to: "vi" | "en") => {

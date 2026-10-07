@@ -11,8 +11,10 @@ import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockSchedules, getScheduleById } from "@/mocks/admin";
 import type { ScheduleItem } from "@/mocks/admin/schedules";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function ExamSchedulesPage() {
+  const { t } = useAdminI18n();
   const [schedules, setSchedules] = useState<ScheduleItem[]>(mockSchedules);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,7 +29,7 @@ export default function ExamSchedulesPage() {
 
   const handleCreateSchedule = () => {
     if (!formName.trim()) {
-      warning("Thiếu thông tin", "Vui lòng nhập tên ca thi!");
+      warning(t("Thiếu thông tin"), t("Vui lòng nhập tên ca thi!"));
       return;
     }
     const newSch: ScheduleItem = {
@@ -42,32 +44,32 @@ export default function ExamSchedulesPage() {
     };
     setSchedules([...schedules, newSch]);
     setIsModalOpen(false);
-    success("Tạo ca thi thành công", "Đã tạo ca thi mới thành công!");
+    success(t("Tạo ca thi thành công"), t("Đã tạo ca thi mới thành công!"));
   };
 
   const columns: Column<ScheduleItem>[] = [
     {
       key: "name",
-      header: "Tên ca thi & Ngày giờ",
+      header: t("Tên ca thi & Ngày giờ"),
       render: (row) => (
         <div>
           <span className="font-bold text-slate-900 text-sm block">{row.name}</span>
           <span className="text-xs text-slate-500 font-sans tabular-nums tracking-tight">
             {new Date(row.opens_at).toLocaleString("vi-VN")} →{" "}
-            {new Date(row.closes_at).toLocaleTimeString("vi-VN")} (60 phút)
+            {new Date(row.closes_at).toLocaleTimeString("vi-VN")} {t("(60 phút)")}
           </span>
         </div>
       ),
     },
     {
       key: "capacity",
-      header: "Tải mục tiêu & Sức chứa",
+      header: t("Tải mục tiêu & Sức chứa"),
       render: (row) => {
         const percent = Math.round((row.assignedCount / row.capacity) * 100);
         return (
           <div className="w-48 space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Đã gán:</span>
+              <span className="text-slate-500">{t("Đã gán:")}</span>
               <span className="font-sans tabular-nums tracking-tight font-bold text-slate-900">
                 {row.assignedCount} / {row.capacity} ({percent}%)
               </span>
@@ -90,37 +92,37 @@ export default function ExamSchedulesPage() {
     },
     {
       key: "status",
-      header: "Trạng thái",
+      header: t("Trạng thái"),
       align: "center",
       render: (row) => {
         const isFull = row.assignedCount >= row.capacity;
         return (
           <AdminBadge variant={isFull ? "danger" : "success"} size="sm">
-            {isFull ? "ĐẦY CA" : "CÒN CHỖ"}
+            {isFull ? t("ĐẦY CA") : t("CÒN CHỖ")}
           </AdminBadge>
         );
       },
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
           <Link href={`/admin/exams/assignments?scheduleId=${row.id}`}>
             <AdminButton variant="outline" size="sm">
-              Xem danh sách TS
+              {t("Xem danh sách TS")}
             </AdminButton>
           </Link>
           {row.assignedCount === 0 && (
             <AdminPopconfirm
-              title="Xóa ca thi"
-              description={`Xóa ca thi "${row.name}"? Chỉ cho phép xóa khi chưa có thí sinh được gán (assignedCount = 0).`}
+              title={t("Xóa ca thi")}
+              description={t("Xóa ca thi") + ` "${row.name}"? ${t("Chỉ cho phép xóa khi chưa có thí sinh được gán")} (assignedCount = 0).`}
               confirmVariant="danger"
-              confirmText="Xóa"
+              confirmText={t("Xóa")}
               onConfirm={() => {
                 setSchedules((prev) => prev.filter((s) => s.id !== row.id));
-                success("Đã xóa ca thi", `Đã xóa ca thi ${row.name} thành công!`);
+                success(t("Đã xóa ca thi"), t("Đã xóa ca thi") + ` ${row.name} ${t("thành công!")}`);
               }}
               triggerVariant="ghost"
               triggerSize="sm"
@@ -128,8 +130,8 @@ export default function ExamSchedulesPage() {
               {(open) => (
                 <span
                   className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
-                  title="Xóa ca thi"
-                  aria-label="Xóa ca thi"
+                  title={t("Xóa ca thi")}
+                  aria-label={t("Xóa ca thi")}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -149,11 +151,11 @@ export default function ExamSchedulesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Quản lý Ca thi Vòng 1
+            {t("Quản lý Ca thi Vòng 1")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Thời lượng mỗi ca: <span className="font-bold text-slate-800">60 phút</span> • Tải mục tiêu:{" "}
-            <span className="font-bold text-slate-800">50 - 100 thí sinh/ca</span> để chống nghẽn mạng.
+            {t("Thời lượng mỗi ca:")} <span className="font-bold text-slate-800">60 phút</span> • {t("Tải mục tiêu:")}{" "}
+            <span className="font-bold text-slate-800">50 - 100 thí sinh/ca</span> {t("để chống nghẽn mạng.")}
           </p>
         </div>
 
@@ -165,7 +167,7 @@ export default function ExamSchedulesPage() {
             setIsModalOpen(true);
           }}
         >
-          + Tạo ca thi mới
+          + {t("Tạo ca thi mới")}
         </AdminButton>
       </div>
 
@@ -180,39 +182,39 @@ export default function ExamSchedulesPage() {
       <AdminModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Tạo ca thi mới Vòng 1"
-        description="Thời lượng làm bài cố định 60 phút theo thể lệ cuộc thi (round = 1)"
+        title={t("Tạo ca thi mới Vòng 1")}
+        description={t("Thời lượng làm bài cố định 60 phút theo thể lệ cuộc thi (round = 1)")}
         maxWidth="lg"
         footer={
           <div className="flex items-center gap-2">
             <AdminButton variant="outline" size="sm" onClick={() => setIsModalOpen(false)}>
-              Hủy
+              {t("Hủy")}
             </AdminButton>
             <AdminButton variant="brand" size="sm" onClick={handleCreateSchedule}>
-              Xác nhận tạo ca
+              {t("Xác nhận tạo ca")}
             </AdminButton>
           </div>
         }
       >
         <div className="space-y-4">
           <AdminInput
-            label="Tên ca thi"
+            label={t("Tên ca thi")}
             required
-            placeholder="Ví dụ: Ca 05 - Tối Chủ Nhật (08/11/2026)"
+            placeholder={t("Ví dụ: Ca 05 - Tối Chủ Nhật (08/11/2026)")}
             value={formName}
             onChange={(e) => setFormName(e.target.value)}
           />
 
           <div className="grid grid-cols-2 gap-3">
             <AdminInput
-              label="Thời gian mở ca"
+              label={t("Thời gian mở ca")}
               type="datetime-local"
               required
               value={formOpensAt}
               onChange={(e) => setFormOpensAt(e.target.value)}
             />
             <AdminInput
-              label="Thời gian đóng ca"
+              label={t("Thời gian đóng ca")}
               type="datetime-local"
               required
               value={formClosesAt}
@@ -221,14 +223,14 @@ export default function ExamSchedulesPage() {
           </div>
 
           <AdminInput
-            label="Sức chứa tối đa (Capacity)"
+            label={t("Sức chứa tối đa (Capacity)")}
             type="number"
             min={1}
             max={200}
             required
             value={formCapacity}
             onChange={(e) => setFormCapacity(Number(e.target.value))}
-            helperText="Khuyến nghị: 50 - 100 thí sinh để duy trì tốc độ phản hồi < 2s"
+            helperText={t("Khuyến nghị: 50 - 100 thí sinh để duy trì tốc độ phản hồi < 2s")}
           />
         </div>
       </AdminModal>

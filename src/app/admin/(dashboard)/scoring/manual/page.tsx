@@ -10,8 +10,10 @@ import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockScoringCases, rubricCriteria } from "@/mocks/admin";
 import type { ManualScoringItem } from "@/mocks/admin/scoring-manual";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function ManualScoringPage() {
+  const { t } = useAdminI18n();
   const [cases, setCases] = useState<ManualScoringItem[]>(mockScoringCases);
   const [selectedCase, setSelectedCase] = useState<ManualScoringItem | null>(null);
   const [stateFilter, setStateFilter] = useState("ALL");
@@ -67,15 +69,15 @@ export default function ManualScoringPage() {
     );
     setSelectedCase(null);
     success(
-      "Lưu phiếu chấm thành công",
-      `Đã lưu phiếu chấm Rubric cho thí sinh ${selectedCase.fullName}. Điểm quy đổi: ${finalCalculated}/10.`
+      t("Lưu phiếu chấm thành công"),
+      `${t("Đã lưu phiếu chấm Rubric cho thí sinh")} ${selectedCase.fullName}. ${t("Điểm quy đổi:")} ${finalCalculated}/10.`
     );
   };
 
   const columns: Column<ManualScoringItem>[] = [
     {
       key: "candidate",
-      header: "Thí sinh & Vòng thi",
+      header: t("Thí sinh & Vòng thi"),
       render: (row) => (
         <div>
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
@@ -89,20 +91,20 @@ export default function ManualScoringPage() {
     },
     {
       key: "scores",
-      header: "Điểm Giám khảo A & B (Thang 10)",
+      header: t("Điểm Giám khảo A & B (Thang 10)"),
       render: (row) => (
         <div className="space-y-1 text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 w-16">GK A:</span>
+            <span className="text-slate-500 w-16">{t("GK A:")}</span>
             <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800">
-              {row.reviewerA.score !== null ? `${row.reviewerA.score} đ` : "Chưa chấm"}
+              {row.reviewerA.score !== null ? `${row.reviewerA.score} ${t("đ")}` : t("Chưa chấm")}
             </span>
             <span className="text-[10px] text-slate-400 font-normal">({row.reviewerA.name})</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 w-16">GK B:</span>
+            <span className="text-slate-500 w-16">{t("GK B:")}</span>
             <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800">
-              {row.reviewerB.score !== null ? `${row.reviewerB.score} đ` : "Chưa chấm"}
+              {row.reviewerB.score !== null ? `${row.reviewerB.score} ${t("đ")}` : t("Chưa chấm")}
             </span>
             <span className="text-[10px] text-slate-400 font-normal">({row.reviewerB.name})</span>
           </div>
@@ -111,7 +113,7 @@ export default function ManualScoringPage() {
     },
     {
       key: "diff",
-      header: "Độ lệch & GK C",
+      header: t("Độ lệch & GK C"),
       render: (row) => (
         <div>
           {row.scoreDiff !== null ? (
@@ -123,23 +125,23 @@ export default function ManualScoringPage() {
                     : "bg-slate-100 text-slate-700"
                 }`}
               >
-                Lệch {row.scoreDiff.toFixed(1)}%
+                {t("Lệch")} {row.scoreDiff.toFixed(1)}%
               </span>
               {row.scoreDiff > 20 && (
                 <span className="text-[10px] text-rose-600 font-bold block">
-                  ⚠️ Cần GK C chấm lại (&gt;20%)
+                  ⚠️ {t("Cần GK C chấm lại (>20%)")}
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-xs text-slate-400 italic">Chưa đủ 2 điểm</span>
+            <span className="text-xs text-slate-400 italic">{t("Chưa đủ 2 điểm")}</span>
           )}
         </div>
       ),
     },
     {
       key: "finalScore",
-      header: "Điểm chốt",
+      header: t("Điểm chốt"),
       align: "center",
       render: (row) => (
         <span className="font-sans tabular-nums tracking-tight text-base font-extrabold text-[#0B1F4D]">
@@ -149,7 +151,7 @@ export default function ManualScoringPage() {
     },
     {
       key: "state",
-      header: "Trạng thái",
+      header: t("Trạng thái"),
       align: "center",
       render: (row) => {
         const variant =
@@ -163,19 +165,19 @@ export default function ManualScoringPage() {
         return (
           <AdminBadge variant={variant} size="sm">
             {row.state === "NEEDS_THIRD"
-              ? "CẦN GK 3 ĐỐI SOÁT"
+              ? t("CẦN GK 3 ĐỐI SOÁT")
               : row.state === "COMPLETED"
-              ? "HOÀN THÀNH"
+              ? t("HOÀN THÀNH")
               : row.state === "SCORING"
-              ? "ĐANG CHẤM"
-              : "CHỜ GÁN GK"}
+              ? t("ĐANG CHẤM")
+              : t("CHỜ GÁN GK")}
           </AdminBadge>
         );
       },
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-1.5">
@@ -187,15 +189,15 @@ export default function ManualScoringPage() {
               setFeedback("");
             }}
           >
-            {row.state === "NEEDS_THIRD" ? "Chấm GK 3" : "Phiếu Rubric"}
+            {row.state === "NEEDS_THIRD" ? t("Chấm GK 3") : t("Phiếu Rubric")}
           </AdminButton>
           <AdminPopconfirm
-            title="Xóa hồ sơ chấm"
-            description={`Xóa bản ghi chấm điểm của ${row.fullName}? Hành động này không thể hoàn tác.`}
+            title={t("Xóa hồ sơ chấm")}
+            description={t("Xóa bản ghi chấm điểm của") + ` ${row.fullName}? ${t("Hành động này không thể hoàn tác.")}`}
             confirmVariant="danger"
-            confirmText="Xóa"
+            confirmText={t("Xóa")}
             onConfirm={() => {
-              success("Đã xóa hồ sơ chấm", `Đã xóa hồ sơ chấm của ${row.fullName}`);
+              success(t("Đã xóa hồ sơ chấm"), `${t("Đã xóa hồ sơ chấm của")} ${row.fullName}`);
             }}
             triggerVariant="ghost"
             triggerSize="sm"
@@ -203,8 +205,8 @@ export default function ManualScoringPage() {
             {(open) => (
               <span
                 className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
-                title="Xóa hồ sơ chấm"
-                aria-label="Xóa hồ sơ chấm"
+                title={t("Xóa hồ sơ chấm")}
+                aria-label={t("Xóa hồ sơ chấm")}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -222,18 +224,18 @@ export default function ManualScoringPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Chấm thi Rubric Tự luận & Thuyết trình
+          {t("Chấm thi Rubric Tự luận & Thuyết trình")}
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
-          Khung đánh giá gồm <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>. Hệ thống tự động kích hoạt cờ{" "}
-          <span className="font-sans tabular-nums tracking-tight font-semibold text-rose-700 bg-rose-50 px-1 rounded">NEEDS_THIRD</span> khi độ lệch giữa 2 giám khảo &gt; 20%.
+          {t("Khung đánh giá gồm")} <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>. {t("Hệ thống tự động kích hoạt cờ")}{" "}
+          <span className="font-sans tabular-nums tracking-tight font-semibold text-rose-700 bg-rose-50 px-1 rounded">NEEDS_THIRD</span> {t("khi độ lệch giữa 2 giám khảo > 20%.")}
         </p>
       </div>
 
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-2 gap-3">
         <AdminInput
-          placeholder="Tìm theo Tên thí sinh, Mã TS..."
+          placeholder={t("Tìm theo Tên thí sinh, Mã TS...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -241,10 +243,10 @@ export default function ManualScoringPage() {
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value)}
           options={[
-            { label: "Tất cả trạng thái chấm", value: "ALL" },
-            { label: "Cần GK 3 đối soát (NEEDS_THIRD)", value: "NEEDS_THIRD" },
-            { label: "Đang chấm (SCORING)", value: "SCORING" },
-            { label: "Đã hoàn thành (COMPLETED)", value: "COMPLETED" },
+            { label: t("Tất cả trạng thái chấm"), value: "ALL" },
+            { label: t("Cần GK 3 đối soát (NEEDS_THIRD)"), value: "NEEDS_THIRD" },
+            { label: t("Đang chấm (SCORING)"), value: "SCORING" },
+            { label: t("Đã hoàn thành (COMPLETED)"), value: "COMPLETED" },
           ]}
         />
       </div>
@@ -261,23 +263,23 @@ export default function ManualScoringPage() {
         <AdminModal
           isOpen={true}
           onClose={() => setSelectedCase(null)}
-          title={`Phiếu đánh giá Rubric: ${selectedCase.fullName}`}
-          description={`Mã TS: ${selectedCase.candidateCode} • ${selectedCase.roundName}`}
+          title={t("Phiếu đánh giá Rubric:") + ` ${selectedCase.fullName}`}
+          description={t("Mã TS:") + ` ${selectedCase.candidateCode} • ${selectedCase.roundName}`}
           maxWidth="2xl"
           footer={
             <div className="flex items-center justify-between w-full">
               <div className="text-xs font-sans tabular-nums tracking-tight text-slate-700">
-                Tổng điểm quy đổi (Thang 10):{" "}
+                {t("Tổng điểm quy đổi (Thang 10):")}{" "}
                 <span className="text-base font-extrabold text-[#0B1F4D]">
                   {calculateTotalScore()} / 10.0
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <AdminButton variant="outline" size="sm" onClick={() => setSelectedCase(null)}>
-                  Đóng
+                  {t("Đóng")}
                 </AdminButton>
                 <AdminButton variant="brand" size="sm" onClick={handleSaveRubric}>
-                  Lưu & Phê duyệt điểm
+                  {t("Lưu & Phê duyệt điểm")}
                 </AdminButton>
               </div>
             </div>
@@ -292,7 +294,7 @@ export default function ManualScoringPage() {
                     <p className="text-[11px] text-slate-500">{item.desc}</p>
                   </div>
                   <AdminBadge variant="default" size="sm">
-                    Trọng số: {item.weight}%
+                    {t("Trọng số:")} {item.weight}%
                   </AdminBadge>
                 </div>
 
@@ -308,7 +310,7 @@ export default function ManualScoringPage() {
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
-                      Mức {lvl}
+                      {t("Mức")} {lvl}
                     </button>
                   ))}
                 </div>
@@ -317,11 +319,11 @@ export default function ManualScoringPage() {
 
             <div>
               <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Nhận xét & Ghi chú của Giám khảo:
+                {t("Nhận xét & Ghi chú của Giám khảo:")}
               </label>
               <textarea
                 rows={3}
-                placeholder="Nhận xét điểm mạnh, điểm cần cải thiện của thí sinh..."
+                placeholder={t("Nhận xét điểm mạnh, điểm cần cải thiện của thí sinh...")}
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"

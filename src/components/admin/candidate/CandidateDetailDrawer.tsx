@@ -4,6 +4,7 @@ import React from "react";
 import AdminBadge from "../ui/AdminBadge";
 import AdminButton from "../ui/AdminButton";
 import type { Candidate, CandidateProfile, Registration, MediaObject } from "@/types/admin";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface CandidateDetailDrawerProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function CandidateDetailDrawer({
   onOpenVideoReview,
   onToggleStatus,
 }: CandidateDetailDrawerProps) {
+  const { t } = useAdminI18n();
   if (!isOpen || !candidate) return null;
 
   const profile = candidate.profile;
@@ -47,7 +49,7 @@ export default function CandidateDetailDrawer({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-slate-900">
-                  {profile?.full_name || "Chi tiết thí sinh"}
+                  {profile?.full_name || t("Chi tiết thí sinh")}
                 </h3>
                 {candidate.candidate_code && (
                   <span className="text-xs font-sans tabular-nums tracking-tight font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
@@ -56,7 +58,7 @@ export default function CandidateDetailDrawer({
                 )}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Đăng ký ngày: {new Date(candidate.created_at).toLocaleDateString("vi-VN")}
+                {t("Đăng ký ngày")}: {new Date(candidate.created_at).toLocaleDateString("vi-VN")}
               </p>
             </div>
             <button
@@ -74,20 +76,20 @@ export default function CandidateDetailDrawer({
             {/* Trạng thái hồ sơ */}
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2">
               <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Trạng thái đăng ký
+                {t("Trạng thái đăng ký")}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-600">Hồ sơ Vòng Đơn:</span>
+                <span className="text-xs text-slate-600">{t("Hồ sơ Vòng Đơn:")}</span>
                 <AdminBadge
                   variant={registration?.state === "SUBMITTED" ? "success" : "default"}
                   size="sm"
                 >
-                  {registration?.state === "SUBMITTED" ? "ĐÃ NỘP HỒ SƠ" : "DỰ THẢO (DRAFT)"}
+                  {registration?.state === "SUBMITTED" ? t("ĐÃ NỘP HỒ SƠ") : t("DỰ THẢO (DRAFT)")}
                 </AdminBadge>
               </div>
               {registration?.submitted_at && (
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Thời điểm nộp:</span>
+                  <span className="text-slate-500">{t("Thời điểm nộp:")}</span>
                   <span className="font-sans tabular-nums tracking-tight text-slate-800">
                     {new Date(registration.submitted_at).toLocaleString("vi-VN")}
                   </span>
@@ -98,39 +100,39 @@ export default function CandidateDetailDrawer({
             {/* Thông tin học vấn & cá nhân */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-[#0B1F4D] uppercase tracking-wider border-b border-slate-100 pb-1">
-                Thông tin học vấn & cá nhân
+                {t("Thông tin học vấn & cá nhân")}
               </h4>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-slate-400 block">Mã số sinh viên (MSSV)</span>
+                  <span className="text-slate-400 block">{t("Mã số sinh viên (MSSV)")}</span>
                   <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">
-                    {profile?.student_id || "Chưa cập nhật"}
+                    {profile?.student_id || t("Chưa cập nhật")}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Ngày sinh</span>
+                  <span className="text-slate-400 block">{t("Ngày sinh")}</span>
                   <span className="font-semibold text-slate-900">
                     {profile?.date_of_birth
                       ? new Date(profile.date_of_birth).toLocaleDateString("vi-VN")
-                      : "Chưa cập nhật"}
+                      : t("Chưa cập nhật")}
                   </span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-slate-400 block">Trường / Viện đào tạo</span>
+                  <span className="text-slate-400 block">{t("Trường / Viện đào tạo")}</span>
                   <span className="font-semibold text-slate-900">
-                    {profile?.school || "Chưa cập nhật"}
+                    {profile?.school || t("Chưa cập nhật")}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Khoa / Bộ môn</span>
+                  <span className="text-slate-400 block">{t("Khoa / Bộ môn")}</span>
                   <span className="font-semibold text-slate-900">
-                    {profile?.department || "Chưa cập nhật"}
+                    {profile?.department || t("Chưa cập nhật")}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Chuyên ngành</span>
+                  <span className="text-slate-400 block">{t("Chuyên ngành")}</span>
                   <span className="font-semibold text-slate-900">
-                    {profile?.major || "Chưa cập nhật"}
+                    {profile?.major || t("Chưa cập nhật")}
                   </span>
                 </div>
               </div>
@@ -139,24 +141,24 @@ export default function CandidateDetailDrawer({
             {/* Thông tin liên hệ */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-[#0B1F4D] uppercase tracking-wider border-b border-slate-100 pb-1">
-                Thông tin liên hệ
+                {t("Thông tin liên hệ")}
               </h4>
               <div className="space-y-2 text-xs">
                 <div>
-                  <span className="text-slate-400 block">Email chính thức</span>
+                  <span className="text-slate-400 block">{t("Email chính thức")}</span>
                   <span className="font-medium text-[#1F5BE0] font-sans tabular-nums tracking-tight">
-                    {profile?.email || "Chưa cập nhật"}
+                    {profile?.email || t("Chưa cập nhật")}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Số điện thoại</span>
+                  <span className="text-slate-400 block">{t("Số điện thoại")}</span>
                   <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">
-                    {profile?.phone || "Chưa cập nhật"}
+                    {profile?.phone || t("Chưa cập nhật")}
                   </span>
                 </div>
                 {profile?.facebook && (
                   <div>
-                    <span className="text-slate-400 block">Link Facebook</span>
+                    <span className="text-slate-400 block">{t("Link Facebook")}</span>
                     <a
                       href={profile.facebook}
                       target="_blank"
@@ -173,23 +175,23 @@ export default function CandidateDetailDrawer({
             {/* Video dự thi */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-[#0B1F4D] uppercase tracking-wider border-b border-slate-100 pb-1">
-                Video giới thiệu bản thân (&le; 2 phút)
+                {t("Video giới thiệu bản thân (&le; 2 phút)")}
               </h4>
               <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-slate-800">
-                    {media ? "Video MP4 tải lên trực tiếp" : "Chưa có video hoặc đang xác thực"}
+                    {media ? t("Video MP4 tải lên trực tiếp") : t("Chưa có video hoặc đang xác thực")}
                   </p>
                   {media && (
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      Thời lượng: {media.duration_seconds}s • Dung lượng:{" "}
+                      {t("Thời lượng")}: {media.duration_seconds}s • {t("Dung lượng")}:{" "}
                       {(media.size_bytes / (1024 * 1024)).toFixed(1)} MB
                     </p>
                   )}
                 </div>
                 {media && onOpenVideoReview && (
                   <AdminButton variant="outline" size="sm" onClick={onOpenVideoReview}>
-                    Xem Video
+                    {t("Xem Video")}
                   </AdminButton>
                 )}
               </div>
@@ -199,11 +201,11 @@ export default function CandidateDetailDrawer({
           {/* Footer Actions */}
           <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
             <AdminButton variant="outline" size="sm" onClick={onClose}>
-              Đóng
+              {t("Đóng")}
             </AdminButton>
             {onToggleStatus && (
               <AdminButton variant="secondary" size="sm" onClick={onToggleStatus}>
-                Khóa / Đổi trạng thái
+                {t("Khóa / Đổi trạng thái")}
               </AdminButton>
             )}
           </div>

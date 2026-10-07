@@ -5,6 +5,7 @@ import AdminModal from "@/components/admin/ui/AdminModal";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import type { DuplicateReviewItem } from "@/mocks/admin/duplicates";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface DuplicateDiffModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function DuplicateDiffModal({
   onResolve,
   resolutionNote = "",
 }: DuplicateDiffModalProps) {
+  const { t } = useAdminI18n();
   if (!isOpen || !review) return null;
 
   const candidates = review.conflictDetails.candidates;
@@ -34,14 +36,14 @@ export function DuplicateDiffModal({
   const getFacebook = (c: CandidateType) => c.profile.facebook;
 
   const fieldsToCompare: { key: string; label: string; getter: FieldGetter }[] = [
-    { key: "code", label: "Mã thí sinh", getter: (c: CandidateType) => c.code },
-    { key: "name", label: "Họ và tên", getter: (c: CandidateType) => c.name },
-    { key: "school", label: "Trường", getter: (c: CandidateType) => c.school },
-    { key: "student_id", label: "MSSV", getter: getStudentId },
-    { key: "email", label: "Email", getter: getEmail },
-    { key: "phone", label: "Số điện thoại", getter: getPhone },
-    { key: "facebook", label: "Facebook", getter: getFacebook },
-    { key: "submittedAt", label: "Thời gian nộp", getter: (c: CandidateType) => c.submittedAt },
+    { key: "code", label: t("Mã TS"), getter: (c: CandidateType) => c.code },
+    { key: "name", label: t("Họ và tên"), getter: (c: CandidateType) => c.name },
+    { key: "school", label: t("Trường"), getter: (c: CandidateType) => c.school },
+    { key: "student_id", label: t("MSSV"), getter: getStudentId },
+    { key: "email", label: t("Email"), getter: getEmail },
+    { key: "phone", label: t("Số điện thoại"), getter: getPhone },
+    { key: "facebook", label: t("Facebook"), getter: getFacebook },
+    { key: "submittedAt", label: t("Thời gian nộp"), getter: (c: CandidateType) => c.submittedAt },
   ];
 
   const renderDiffRow = (field: typeof fieldsToCompare[0]) => {
@@ -77,17 +79,17 @@ export function DuplicateDiffModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title="So sánh chi tiết hồ sơ trùng lặp"
-      description={`Mã đối chiếu: ${review.id} • Dữ liệu trùng: ${review.conflictDetails.field} • Độ tương đồng: ${Math.round((review.signals.similarity_score || 0) * 100)}%`}
+      title={t("So sánh chi tiết hồ sơ trùng lặp")}
+      description={`${t("Mã đối chiếu")}: ${review.id} • ${t("Dữ liệu trùng")}: ${review.conflictDetails.field} • ${t("Độ tương đồng")}: ${Math.round((review.signals.similarity_score || 0) * 100)}%`}
       maxWidth="4xl"
       footer={
         <div className="flex items-center justify-between w-full">
           <div className="text-xs text-slate-500">
-            Chọn hồ sơ chính thức để giữ lại. Hồ sơ còn lại sẽ lưu vào lịch sử nhưng không được phân ca thi.
+            {t("Chọn hồ sơ chính thức để giữ lại. Hồ sơ còn lại sẽ lưu vào lịch sử nhưng không được phân ca thi.")}
           </div>
           <div className="flex items-center gap-2">
             <AdminButton variant="outline" size="sm" onClick={onClose}>
-              Đóng
+              {t("Đóng")}
             </AdminButton>
           </div>
         </div>
@@ -103,7 +105,7 @@ export function DuplicateDiffModal({
             >
               <div className="flex items-center gap-2">
                 <AdminBadge variant="default" size="sm">
-                  Hồ sơ #{idx + 1}
+                  {t("Hồ sơ #")}{idx + 1}
                 </AdminBadge>
                 <span className="font-bold text-slate-900 text-sm">{c.name}</span>
               </div>
@@ -111,7 +113,7 @@ export function DuplicateDiffModal({
                 {c.code} • {c.school}
               </div>
               <div className="text-[11px] text-slate-500">
-                Nộp lúc: <span className="font-semibold text-slate-700">{c.submittedAt}</span>
+                {t("Nộp lúc")}: <span className="font-semibold text-slate-700">{c.submittedAt}</span>
               </div>
               <div className="pt-2 border-t border-slate-200">
                 <AdminButton
@@ -120,7 +122,7 @@ export function DuplicateDiffModal({
                   className="w-full"
                   onClick={() => onResolve(c.code, resolutionNote || "")}
                 >
-                  Giữ bản này
+                  {t("Giữ bản này")}
                 </AdminButton>
               </div>
             </div>
@@ -130,11 +132,11 @@ export function DuplicateDiffModal({
         {/* Detailed Diff Table */}
         <div>
           <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
-            Bảng đối chiếu chi tiết từng trường dữ liệu
+            {t("Bảng đối chiếu chi tiết từng trường dữ liệu")}
           </h4>
           <div className="rounded-lg border border-slate-200 overflow-hidden">
             <div className="grid grid-cols-[auto_1fr_1fr] bg-slate-100 border-b border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-600 uppercase tracking-wider">
-              <span>Trường</span>
+              <span>{t("Trường")}</span>
               {candidates.map((c, idx) => (
                 <span key={idx} className="text-center">
                   {c.code}
@@ -150,12 +152,12 @@ export function DuplicateDiffModal({
         {/* Resolution Note */}
         <div className="pt-4 border-t border-slate-200">
           <label className="text-xs font-semibold text-slate-700 block mb-2">
-            Ghi chú quyết định xử lý (bắt buộc):
+            {t("Ghi chú quyết định xử lý (bắt buộc):")}
           </label>
           <textarea
             rows={3}
-            placeholder="Ví dụ: Thí sinh nộp nhầm video ở lượt đầu, giữ bản nộp lại... / Giữ bản nộp sớm nhất theo quy định..."
-            className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"
+            placeholder={t("Ví dụ: Thí sinh nộp nhầm video ở lượt đầu, giữ bản nộp lại... / Giữ bản nộp sớm nhất theo quy định...")}
+            className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"
             onBlur={(e) => {
               // Store note temporarily for the resolve action
               (e.target as HTMLTextAreaElement).dataset.note = e.target.value;

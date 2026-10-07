@@ -10,8 +10,10 @@ import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockRound1Results, getTop40 } from "@/mocks/admin";
 import type { Round1ResultItem } from "@/mocks/admin/scoring-round1";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function Round1ScoringPage() {
+  const { t } = useAdminI18n();
   const [results, setResults] = useState<Round1ResultItem[]>(mockRound1Results);
   const [filterTop, setFilterTop] = useState<"ALL" | "TOP40">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +41,7 @@ export default function Round1ScoringPage() {
   };
 
   const handleExportCSV = () => {
-    const headers = ["Hang", "Ma_TS", "Ho_Ten", "MSSV", "Truong", "Diem", "So_Cau_Dung", "Thoi_Gian_Lam_Bai", "Ket_Qua"];
+    const headers = [t("Hạng"), t("Mã TS"), t("Họ Tên"), t("MSSV"), t("Trường"), t("Điểm"), t("Số Câu Đúng"), t("Thời Gian Làm Bài"), t("Kết Quả")];
     const rows = filtered.map((r) => [
       r.rank,
       r.candidateCode,
@@ -62,19 +64,19 @@ export default function Round1ScoringPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    success("Đã xuất CSV", `Đã xuất ${filtered.length} hồ sơ bảng điểm Vòng 1 ra file CSV.`);
+    success(t("Đã xuất CSV"), `${t("Đã xuất")} ${filtered.length} ${t("hồ sơ bảng điểm Vòng 1 ra file CSV.")}`);
   };
 
   const handlePublishConfirm = () => {
     setIsApproved(true);
     setIsPublishModalOpen(false);
-    success("Đã phê duyệt kết quả Vòng 1", "Danh sách TOP 40 thí sinh đã được chốt và chuyển sang Vòng 2 (result_revisions: APPROVED)");
+    success(t("Đã phê duyệt kết quả Vòng 1"), t("Danh sách TOP 40 thí sinh đã được chốt và chuyển sang Vòng 2 (result_revisions: APPROVED)"));
   };
 
   const columns: Column<Round1ResultItem>[] = [
     {
       key: "rank",
-      header: "Hạng",
+      header: t("Hạng"),
       width: "70px",
       align: "center",
       render: (row) => (
@@ -93,21 +95,21 @@ export default function Round1ScoringPage() {
     },
     {
       key: "candidate",
-      header: "Thí sinh",
+      header: t("Thí sinh"),
       render: (row) => (
         <div>
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
             {row.fullName}
           </span>
           <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
-            {row.candidateCode} • MSSV: {row.studentId} • {row.school}
+            {row.candidateCode} • {t("MSSV")}: {row.studentId} • {row.school}
           </span>
         </div>
       ),
     },
     {
       key: "score",
-      header: "Điểm thi & Tỷ lệ đúng",
+      header: t("Điểm thi & Tỷ lệ đúng"),
       align: "center",
       render: (row) => (
         <div className="space-y-0.5">
@@ -115,30 +117,30 @@ export default function Round1ScoringPage() {
             {row.score.toFixed(1)}
           </span>
           <span className="text-[11px] text-slate-500 font-sans tabular-nums tracking-tight">
-            {row.correctAnswers} / {row.totalQuestions} câu đúng
+            {row.correctAnswers} / {row.totalQuestions} {t("câu đúng")}
           </span>
         </div>
       ),
     },
     {
       key: "timeTaken",
-      header: "Thời gian làm bài (Tie-break)",
+      header: t("Thời gian làm bài (Tie-break)"),
       render: (row) => (
         <div className="space-y-0.5">
           <span className="font-sans tabular-nums tracking-tight text-xs font-semibold text-slate-800 block">
             {formatDuration(row.timeTakenSeconds)}
           </span>
-          <span className="text-[10px] text-slate-400">Nộp: {row.submittedAt}</span>
+          <span className="text-[10px] text-slate-400">{t("Nộp:")} {row.submittedAt}</span>
         </div>
       ),
     },
     {
       key: "status",
-      header: "Kết quả Vòng 1",
+      header: t("Kết quả Vòng 1"),
       align: "center",
       render: (row) => (
         <AdminBadge variant={row.isTop40 ? "success" : "default"} size="sm">
-          {row.isTop40 ? "LỌT TOP 40 (VÀO V2)" : "DỪNG BƯỚC"}
+          {row.isTop40 ? t("LỌT TOP 40 (VÀO V2)") : t("DỪNG BƯỚC")}
         </AdminBadge>
       ),
     },
@@ -151,36 +153,36 @@ export default function Round1ScoringPage() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-slate-900">
-              Bảng điểm tự động & Xếp hạng Vòng 1
+              {t("Bảng điểm tự động & Xếp hạng Vòng 1")}
             </h2>
             {isApproved && (
               <AdminBadge variant="success" size="sm">
-                ĐÃ PHÊ DUYỆT CHỐT SỔ
+                {t("ĐÃ PHÊ DUYỆT CHỐT SỔ")}
               </AdminBadge>
             )}
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Điểm tự động tính toán từ các phương án đúng. Tiêu chí phụ khi bằng điểm: Thí sinh nộp bài sớm hơn xếp trên.
+            {t("Điểm tự động tính toán từ các phương án đúng. Tiêu chí phụ khi bằng điểm: Thí sinh nộp bài sớm hơn xếp trên.")}
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <AdminButton variant="outline" size="sm" onClick={handleExportCSV}>
-            Xuất bảng điểm (Excel/CSV)
+            {t("Xuất bảng điểm (Excel/CSV)")}
           </AdminButton>
           {!isApproved && (
             <AdminPopconfirm
-              title="Phê duyệt kết quả Vòng 1"
-              description="Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1. Sau khi phê duyệt, 40 thí sinh TOP sẽ được gán quyền nộp bài cho Vòng 2. Hành động không thể hoàn tác."
+              title={t("Phê duyệt kết quả Vòng 1")}
+              description={t("Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1. Sau khi phê duyệt, 40 thí sinh TOP sẽ được gán quyền nộp bài cho Vòng 2. Hành động không thể hoàn tác.")}
               confirmVariant="primary"
-              confirmText="Xác nhận phê duyệt"
+              confirmText={t("Xác nhận phê duyệt")}
               onConfirm={handlePublishConfirm}
               triggerVariant="brand"
               triggerSize="sm"
             >
               {(open) => (
                 <AdminButton variant="brand" size="sm">
-                  Phê duyệt TOP 40 vào Vòng 2
+                  {t("Phê duyệt TOP 40 vào Vòng 2")}
                 </AdminButton>
               )}
             </AdminPopconfirm>
@@ -191,7 +193,7 @@ export default function Round1ScoringPage() {
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-2 gap-3">
         <AdminInput
-          placeholder="Tìm theo Tên thí sinh, Mã TS, MSSV..."
+          placeholder={t("Tìm theo Tên thí sinh, Mã TS, MSSV...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -199,8 +201,8 @@ export default function Round1ScoringPage() {
           value={filterTop}
           onChange={(e) => setFilterTop(e.target.value as any)}
           options={[
-            { label: "Tất cả thí sinh đã có điểm", value: "ALL" },
-            { label: "Chỉ lọc danh sách TOP 40 thí sinh đi tiếp", value: "TOP40" },
+            { label: t("Tất cả thí sinh đã có điểm"), value: "ALL" },
+            { label: t("Chỉ lọc danh sách TOP 40 thí sinh đi tiếp"), value: "TOP40" },
           ]}
         />
       </div>
@@ -216,28 +218,28 @@ export default function Round1ScoringPage() {
       <AdminModal
         isOpen={isPublishModalOpen}
         onClose={() => setIsPublishModalOpen(false)}
-        title="Phê duyệt kết quả Vòng 1 & Chốt danh sách TOP 40"
-        description="Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1"
+        title={t("Phê duyệt kết quả Vòng 1 & Chốt danh sách TOP 40")}
+        description={t("Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1")}
         maxWidth="lg"
         footer={
           <div className="flex items-center gap-2">
             <AdminButton variant="outline" size="sm" onClick={() => setIsPublishModalOpen(false)}>
-              Hủy
+              {t("Hủy")}
             </AdminButton>
             <AdminButton variant="brand" size="sm" onClick={handlePublishConfirm}>
-              Xác nhận phê duyệt
+              {t("Xác nhận phê duyệt")}
             </AdminButton>
           </div>
         }
       >
         <div className="text-xs text-slate-600 space-y-2 leading-relaxed">
           <p>
-            Hệ thống đã tự động áp dụng quy chế xét giải:
+            {t("Hệ thống đã tự động áp dụng quy chế xét giải:")}
           </p>
           <ul className="list-disc pl-5 space-y-1 text-slate-700 font-medium">
-            <li>Lấy 40 thí sinh có điểm số từ cao xuống thấp.</li>
-            <li>Trường hợp bằng điểm (Tie-breaking): Ưu tiên thí sinh có thời gian làm bài ngắn hơn.</li>
-            <li>Sau khi phê duyệt, 40 thí sinh này sẽ được gán quyền nộp bài cho Vòng 2.</li>
+            <li>{t("Lấy 40 thí sinh có điểm số từ cao xuống thấp.")}</li>
+            <li>{t("Trường hợp bằng điểm (Tie-breaking): Ưu tiên thí sinh có thời gian làm bài ngắn hơn.")}</li>
+            <li>{t("Sau khi phê duyệt, 40 thí sinh này sẽ được gán quyền nộp bài cho Vòng 2.")}</li>
           </ul>
         </div>
       </AdminModal>

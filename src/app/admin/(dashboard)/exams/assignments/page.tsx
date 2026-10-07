@@ -11,8 +11,10 @@ import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockAssignments, mockSchedules } from "@/mocks/admin";
 import type { AssignmentItem } from "@/mocks/admin/assignments";
 import type { ScheduleItem } from "@/mocks/admin/schedules";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function CandidateAssignmentsPage() {
+  const { t } = useAdminI18n();
   const [assignments, setAssignments] = useState<AssignmentItem[]>(mockAssignments);
   const [scheduleFilter, setScheduleFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,14 +43,14 @@ export default function CandidateAssignmentsPage() {
   const handleChangeScheduleConfirm = () => {
     if (!selectedAssignment) return;
     if (!changeReason.trim()) {
-      warning("Thiếu thông tin", "Vui lòng nhập lý do đổi ca thi (bắt buộc theo quy chế kiểm toán)!");
+      warning(t("Thiếu thông tin"), t("Vui lòng nhập lý do đổi ca thi (bắt buộc theo quy chế kiểm toán)!"));
       return;
     }
     const targetSchedule = mockSchedules.find((s) => s.id === newScheduleId);
     if (!targetSchedule) return;
 
     if (targetSchedule.assignedCount >= targetSchedule.capacity) {
-      error("Ca thi đã đầy", "Ca thi này đã đạt sức chứa tối đa (Capacity)! Vui lòng chọn ca khác.");
+      error(t("Ca thi đã đầy"), t("Ca thi này đã đạt sức chứa tối đa (Capacity)! Vui lòng chọn ca khác."));
       return;
     }
 
@@ -67,13 +69,13 @@ export default function CandidateAssignmentsPage() {
 
     setSelectedAssignment(null);
     setChangeReason("");
-    success("Đổi ca thi thành công", "Đã chuyển ca thi và ghi nhận lịch sử đổi ca thành công!");
+    success(t("Đổi ca thi thành công"), t("Đã chuyển ca thi và ghi nhận lịch sử đổi ca thành công!"));
   };
 
   const columns: Column<AssignmentItem>[] = [
     {
       key: "candidateCode",
-      header: "Mã TS",
+      header: t("Mã TS"),
       width: "120px",
       render: (row) => (
         <span className="font-sans tabular-nums tracking-tight text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">
@@ -83,50 +85,50 @@ export default function CandidateAssignmentsPage() {
     },
     {
       key: "name",
-      header: "Họ và tên thí sinh",
+      header: t("Họ và tên thí sinh"),
       render: (row) => (
         <div>
           <span className="font-bold text-slate-900 text-xs sm:text-sm block">
             {row.fullName}
           </span>
           <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight">
-            MSSV: {row.studentId} • {row.school}
+            {t("MSSV")}: {row.studentId} • {row.school}
           </span>
         </div>
       ),
     },
     {
       key: "schedule",
-      header: "Ca thi được phân bổ",
+      header: t("Ca thi được phân bổ"),
       render: (row) => (
         <div>
           <span className="text-xs font-semibold text-[#0B1F4D] block">
             {row.scheduleName}
           </span>
-          <span className="text-[11px] text-slate-400">Gán lúc: {row.assignedAt}</span>
+          <span className="text-[11px] text-slate-400">{t("Gán lúc:")} {row.assignedAt}</span>
         </div>
       ),
     },
     {
       key: "history",
-      header: "Lịch sử đổi ca",
+      header: t("Lịch sử đổi ca"),
       align: "center",
       render: (row) => (
         <AdminBadge variant={row.historyCount > 0 ? "warning" : "default"} size="sm">
-          {row.historyCount > 0 ? `${row.historyCount} lần đổi` : "Chưa đổi"}
+          {row.historyCount > 0 ? t(`${row.historyCount} lần đổi`) : t("Chưa đổi")}
         </AdminBadge>
       ),
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) => (
         <AdminPopconfirm
-          title="Đổi ca thi thí sinh"
-          description={`Chuyển ${row.fullName} (${row.candidateCode}) sang ca thi khác. Hành động sẽ được ghi nhận vào assignment_schedule_history.`}
+          title={t("Đổi ca thi thí sinh")}
+          description={t("Chuyển") + ` ${row.fullName} (${row.candidateCode}) ${t("sang ca thi khác. Hành động sẽ được ghi nhận vào")} assignment_schedule_history.`}
           confirmVariant="brand"
-          confirmText="Xác nhận đổi ca"
+          confirmText={t("Xác nhận đổi ca")}
           onConfirm={() => {
             setSelectedAssignment(row);
             setNewScheduleId(row.scheduleId === "sch-001" ? "sch-002" : "sch-001");
@@ -139,7 +141,7 @@ export default function CandidateAssignmentsPage() {
             <span
               className={`inline-flex items-center justify-center px-2 py-1 rounded-md text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors ${open ? "bg-slate-50" : ""}`}
             >
-              Đổi ca thi
+              {t("Đổi ca thi")}
             </span>
           )}
         </AdminPopconfirm>
@@ -152,10 +154,10 @@ export default function CandidateAssignmentsPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Phân ca thi & Lịch sử điều phối thí sinh
+          {t("Phân ca thi & Lịch sử điều phối thí sinh")}
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
-          Quản lý danh sách thí sinh trong từng ca thi. Mọi thao tác đổi ca đều được lưu vết vào bảng{" "}
+          {t("Quản lý danh sách thí sinh trong từng ca thi. Mọi thao tác đổi ca đều được lưu vết vào bảng")}{" "}
           <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">assignment_schedule_history</span>.
         </p>
       </div>
@@ -163,7 +165,7 @@ export default function CandidateAssignmentsPage() {
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-2 gap-3">
         <AdminInput
-          placeholder="Tìm theo Mã TS, Họ tên, MSSV..."
+          placeholder={t("Tìm theo Mã TS, Họ tên, MSSV...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -171,10 +173,10 @@ export default function CandidateAssignmentsPage() {
           value={scheduleFilter}
           onChange={(e) => setScheduleFilter(e.target.value)}
           options={[
-            { label: "Tất cả các ca thi", value: "ALL" },
-            { label: "Ca 01 - Sáng T7 (07/11 08:30)", value: "sch-001" },
-            { label: "Ca 02 - Chiều T7 (07/11 14:30)", value: "sch-002" },
-            { label: "Ca 03 - Sáng CN (08/11 09:00)", value: "sch-003" },
+            { label: t("Tất cả các ca thi"), value: "ALL" },
+            { label: t("Ca 01 - Sáng T7 (07/11 08:30)"), value: "sch-001" },
+            { label: t("Ca 02 - Chiều T7 (07/11 14:30)"), value: "sch-002" },
+            { label: t("Ca 03 - Sáng CN (08/11 09:00)"), value: "sch-003" },
           ]}
         />
       </div>
@@ -191,23 +193,23 @@ export default function CandidateAssignmentsPage() {
         <AdminModal
           isOpen={true}
           onClose={() => setSelectedAssignment(null)}
-          title={`Chuyển ca thi cho: ${selectedAssignment.fullName}`}
-          description={`Mã TS: ${selectedAssignment.candidateCode} • Ca hiện tại: ${selectedAssignment.scheduleName}`}
+          title={t("Chuyển ca thi cho:") + ` ${selectedAssignment.fullName}`}
+          description={t("Mã TS:") + ` ${selectedAssignment.candidateCode} • ${t("Ca hiện tại:")} ${selectedAssignment.scheduleName}`}
           maxWidth="lg"
           footer={
             <div className="flex items-center gap-2">
               <AdminButton variant="outline" size="sm" onClick={() => setSelectedAssignment(null)}>
-                Hủy
+                {t("Hủy")}
               </AdminButton>
               <AdminButton variant="brand" size="sm" onClick={handleChangeScheduleConfirm}>
-                Xác nhận đổi ca
+                {t("Xác nhận đổi ca")}
               </AdminButton>
             </div>
           }
         >
           <div className="space-y-4">
             <AdminSelect
-              label="Chọn ca thi mới"
+              label={t("Chọn ca thi mới")}
               value={newScheduleId}
               onChange={(e) => setNewScheduleId(e.target.value)}
               options={mockSchedules
@@ -220,11 +222,11 @@ export default function CandidateAssignmentsPage() {
 
             <div>
               <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Lý do chuyển ca thi (Bắt buộc):
+                {t("Lý do chuyển ca thi (Bắt buộc):")}
               </label>
               <textarea
                 rows={3}
-                placeholder="Ví dụ: Thí sinh có lịch học chính khóa đột xuất vào sáng Thứ Bảy..."
+                placeholder={t("Ví dụ: Thí sinh có lịch học chính khóa đột xuất vào sáng Thứ Bảy...")}
                 value={changeReason}
                 onChange={(e) => setChangeReason(e.target.value)}
                 className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"

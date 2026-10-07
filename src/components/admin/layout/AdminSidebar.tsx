@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface NavGroup {
   title: string;
@@ -26,15 +27,16 @@ export default function AdminSidebar({
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }) {
+  const { t } = useAdminI18n();
   const pathname = usePathname();
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
 
   const navGroups: NavGroup[] = [
     {
-      title: "TỔNG QUAN",
+      title: t("TỔNG QUAN"),
       items: [
         {
-          label: "Dashboard",
+          label: t("Dashboard"),
           href: "/admin",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,10 +47,10 @@ export default function AdminSidebar({
       ],
     },
     {
-      title: "QUẢN LÝ THÍ SINH",
+      title: t("QUẢN LÝ THÍ SINH"),
       items: [
         {
-          label: "Hồ sơ đăng ký",
+          label: t("Hồ sơ đăng ký"),
           href: "/admin/candidates",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +59,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Duyệt trùng lặp",
+          label: t("Duyệt trùng lặp"),
           href: "/admin/candidates/duplicate-reviews",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,10 +70,10 @@ export default function AdminSidebar({
       ],
     },
     {
-      title: "NGÂN HÀNG ĐỀ THI",
+      title: t("NGÂN HÀNG ĐỀ THI"),
       items: [
         {
-          label: "Ngân hàng câu hỏi",
+          label: t("Ngân hàng câu hỏi"),
           href: "/admin/questions",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +82,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Import câu hỏi",
+          label: t("Import câu hỏi"),
           href: "/admin/questions/import",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,10 +93,10 @@ export default function AdminSidebar({
       ],
     },
     {
-      title: "KỲ THI & GIÁM SÁT",
+      title: t("KỲ THI & GIÁM SÁT"),
       items: [
         {
-          label: "Lịch thi & Ca thi",
+          label: t("Lịch thi & Ca thi"),
           href: "/admin/exams/schedules",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +105,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Phân ca thí sinh",
+          label: t("Phân ca thí sinh"),
           href: "/admin/exams/assignments",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +114,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Phòng giám sát",
+          label: t("Phòng giám sát"),
           href: "/admin/exams/monitor",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,10 +126,10 @@ export default function AdminSidebar({
       ],
     },
     {
-      title: "ĐIỂM SỐ & RUBRICS",
+      title: t("ĐIỂM SỐ & RUBRICS"),
       items: [
         {
-          label: "Bảng điểm Vòng 1",
+          label: t("Bảng điểm Vòng 1"),
           href: "/admin/scoring/round-1",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +138,7 @@ export default function AdminSidebar({
           ),
         },
         {
-          label: "Chấm điểm Rubric",
+          label: t("Chấm điểm Rubric"),
           href: "/admin/scoring/manual",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +210,7 @@ export default function AdminSidebar({
         <button
           onClick={onMobileClose}
           className="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors cursor-pointer"
-          aria-label="Đóng menu"
+          aria-label={t("Đóng menu")}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -223,8 +225,8 @@ export default function AdminSidebar({
             "hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md items-center justify-center cursor-pointer transition-all duration-200",
             collapsed ? "bg-[#0B1F4D] hover:bg-[#16357A]" : "bg-slate-50 hover:bg-slate-100"
           )}
-          title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
-          aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+          title={collapsed ? t("Mở rộng sidebar") : t("Thu gọn sidebar")}
+          aria-label={collapsed ? t("Mở rộng sidebar") : t("Thu gọn sidebar")}
         >
           <svg
             className={cn(
@@ -325,7 +327,7 @@ export default function AdminSidebar({
           </div>
           {!collapsed && (
             <div className="user-info flex-1 min-w-0 whitespace-nowrap">
-              <p className="text-xs font-semibold text-white truncate whitespace-nowrap">Ban Tổ Chức</p>
+              <p className="text-xs font-semibold text-white truncate whitespace-nowrap">{t("Ban Tổ Chức")}</p>
               <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">admin@is-nextgen.edu.vn</p>
             </div>
           )}

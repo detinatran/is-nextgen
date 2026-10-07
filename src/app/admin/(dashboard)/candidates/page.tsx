@@ -12,8 +12,10 @@ import VideoReviewModal from "@/components/admin/candidate/VideoReviewModal";
 import BulkActionBar from "@/components/admin/ui/BulkActionBar";
 import { mockCandidates, getSchools } from "@/mocks/admin";
 import type { CandidateRecord } from "@/mocks/admin/candidates";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function CandidatesPage() {
+  const { t } = useAdminI18n();
   const [candidates, setCandidates] = useState<CandidateRecord[]>(mockCandidates);
   const [searchQuery, setSearchQuery] = useState("");
   const [schoolFilter, setSchoolFilter] = useState("ALL");
@@ -73,8 +75,8 @@ export default function CandidatesPage() {
     if (selectedCandidates.length === 0) return;
 
     const headers = [
-      "Mã thí sinh", "Họ và tên", "MSSV", "Trường", "Ngành", "Email",
-      "Số điện thoại", "Trạng thái hồ sơ", "Link Video S3", "Thời lượng (giây)", "Ngày đăng ký"
+      t("Mã TS"), t("Họ và tên"), t("MSSV"), t("Trường / Ngành học"), t("Ngành"), t("Email"),
+      t("Số điện thoại"), t("Hồ sơ"), t("Link Video S3"), t("Thời lượng (giây)"), t("Ngày đăng ký")
     ];
     const rows = selectedCandidates.map((c) => [
       c.candidate_code || "", `"${c.profile.full_name}"`, c.profile.student_id || "",
@@ -87,7 +89,7 @@ export default function CandidatesPage() {
     link.setAttribute("href", encodeURI(csvContent));
     link.setAttribute("download", `IS-NextGen_DS_Chon_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    success("Đã xuất CSV", `Đã xuất ${selectedCandidates.length} hồ sơ đã chọn ra file CSV.`);
+    success(t("Đã xuất CSV"), t("Đã xuất") + ` ${selectedCandidates.length} ` + t("hồ sơ đã chọn ra file CSV."));
     clearSelection();
   }, [filteredCandidates, selectedRows, success, clearSelection]);
 
@@ -101,8 +103,8 @@ export default function CandidatesPage() {
       )
     );
     success(
-      disable ? "Đã khóa hàng loạt" : "Đã mở khóa hàng loạt",
-      `Đã ${disable ? "khóa" : "mở khóa"} ${selectedCandidates.length} tài khoản.`
+      disable ? t("Đã khóa hàng loạt") : t("Đã mở khóa hàng loạt"),
+      t("Đã") + ` ${disable ? t("khóa") : t("mở khóa")} ${selectedCandidates.length} ` + t("tài khoản.")
     );
     clearSelection();
   }, [filteredCandidates, selectedRows, success, clearSelection]);
@@ -110,17 +112,8 @@ export default function CandidatesPage() {
   // Export CSV
   const handleExportCSV = () => {
     const headers = [
-      "Mã thí sinh",
-      "Họ và tên",
-      "MSSV",
-      "Trường",
-      "Ngành",
-      "Email",
-      "Số điện thoại",
-      "Trạng thái hồ sơ",
-      "Link đối tượng Video S3",
-      "Thời lượng video (giây)",
-      "Ngày đăng ký",
+      t("Mã TS"), t("Họ và tên"), t("MSSV"), t("Trường / Ngành học"), t("Ngành"), t("Email"),
+      t("Số điện thoại"), t("Hồ sơ"), t("Link Video S3"), t("Thời lượng (giây)"), t("Ngày đăng ký")
     ];
 
     const rows = filteredCandidates.map((c) => [
@@ -151,7 +144,7 @@ export default function CandidatesPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    success("Đã xuất CSV", `Đã xuất ${filteredCandidates.length} hồ sơ thí sinh ra file CSV.`);
+    success(t("Đã xuất CSV"), t("Đã xuất") + ` ${filteredCandidates.length} ` + t("hồ sơ thí sinh ra file CSV."));
   };
 
   const handleOpenDetail = (cand: CandidateRecord) => {
@@ -168,13 +161,13 @@ export default function CandidatesPage() {
   const handleToggleAccount = (cand: CandidateRecord) => {
     const nextStatus = cand.accountStatus === "ACTIVE" ? "DISABLED" : "ACTIVE";
     warning(
-      nextStatus === "DISABLED" ? "Khóa tài khoản" : "Mở khóa tài khoản",
+      nextStatus === "DISABLED" ? t("Khóa tài khoản") : t("Mở khóa tài khoản"),
       nextStatus === "DISABLED"
-        ? `Tài khoản của ${cand.profile.full_name} sẽ bị khóa và không thể đăng nhập.`
-        : `Tài khoản của ${cand.profile.full_name} sẽ được kích hoạt lại.`,
+        ? t("Tài khoản của") + ` ${cand.profile.full_name} ` + t("sẽ bị khóa và không thể đăng nhập.")
+        : t("Tài khoản của") + ` ${cand.profile.full_name} ` + t("sẽ được kích hoạt lại."),
       {
         action: {
-          label: "Xác nhận",
+          label: t("Xác nhận"),
           onClick: () => {
             setCandidates((prev) =>
               prev.map((c) =>
@@ -182,8 +175,8 @@ export default function CandidatesPage() {
               )
             );
             success(
-              nextStatus === "DISABLED" ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản",
-              `Tài khoản của ${cand.profile.full_name} đã được chuyển sang ${nextStatus}.`
+              nextStatus === "DISABLED" ? t("Đã khóa tài khoản") : t("Đã mở khóa tài khoản"),
+              t("Tài khoản của") + ` ${cand.profile.full_name} ` + t("đã được chuyển sang") + ` ${nextStatus}.`
             );
           },
         },
@@ -194,17 +187,17 @@ export default function CandidatesPage() {
   const columns: Column<CandidateRecord>[] = [
     {
       key: "candidate_code",
-      header: "Mã TS",
+      header: t("Mã TS"),
       width: "120px",
       render: (row) => (
         <span className="font-sans tabular-nums tracking-tight font-bold text-slate-800 text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-          {row.candidate_code || "CHƯA CẤP"}
+          {row.candidate_code || t("CHƯA CẤP")}
         </span>
       ),
     },
     {
       key: "full_name",
-      header: "Họ và tên",
+      header: t("Họ và tên"),
       render: (row) => (
         <div>
           <div className="font-bold text-slate-900">{row.profile.full_name}</div>
@@ -216,7 +209,7 @@ export default function CandidatesPage() {
     },
     {
       key: "school",
-      header: "Trường / Ngành học",
+      header: t("Trường / Ngành học"),
       render: (row) => (
         <div>
           <div className="font-medium text-slate-800 text-xs">{row.profile.school}</div>
@@ -226,7 +219,7 @@ export default function CandidatesPage() {
     },
     {
       key: "video",
-      header: "Video dự thi",
+      header: t("Video dự thi"),
       align: "center",
       render: (row) => {
         const isDurationValid = row.mediaObject && row.mediaObject.duration_seconds <= 120;
@@ -242,7 +235,7 @@ export default function CandidatesPage() {
               <span>{row.mediaObject.duration_seconds}s</span>
             </button>
             <AdminBadge variant={isDurationValid ? "success" : "danger"} size="sm">
-              {isDurationValid ? "Hợp lệ" : "> 2 phút"}
+              {isDurationValid ? t("Hợp lệ") : "> 2 phút"}
             </AdminBadge>
           </div>
         );
@@ -250,20 +243,20 @@ export default function CandidatesPage() {
     },
     {
       key: "state",
-      header: "Hồ sơ",
+      header: t("Hồ sơ"),
       align: "center",
       render: (row) => (
         <AdminBadge
           variant={row.registration.state === "SUBMITTED" ? "success" : "default"}
           size="sm"
         >
-          {row.registration.state === "SUBMITTED" ? "Đã nộp" : "Dự thảo"}
+          {row.registration.state === "SUBMITTED" ? t("Đã nộp") : t("Dự thảo")}
         </AdminBadge>
       ),
     },
     {
       key: "account",
-      header: "Tài khoản",
+      header: t("Tài khoản"),
       align: "center",
       render: (row) => (
         <AdminBadge
@@ -282,19 +275,19 @@ export default function CandidatesPage() {
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <AdminPopconfirm
-            title={row.accountStatus === "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+            title={row.accountStatus === "ACTIVE" ? t("Khóa tài khoản") : t("Mở khóa tài khoản")}
             description={
               row.accountStatus === "ACTIVE"
-                ? `Tài khoản của ${row.profile.full_name} sẽ bị khóa và không thể đăng nhập.`
-                : `Tài khoản của ${row.profile.full_name} sẽ được kích hoạt lại.`
+                ? t("Tài khoản của") + ` ${row.profile.full_name} ` + t("sẽ bị khóa và không thể đăng nhập.")
+                : t("Tài khoản của") + ` ${row.profile.full_name} ` + t("sẽ được kích hoạt lại.")
             }
             confirmVariant="danger"
-            confirmText="Xác nhận"
+            confirmText={t("Xác nhận")}
             onConfirm={() => handleToggleAccount(row)}
             triggerVariant="ghost"
             triggerSize="sm"
@@ -308,13 +301,13 @@ export default function CandidatesPage() {
                   } ${open ? "bg-slate-100" : ""}`}
                 title={
                   row.accountStatus === "ACTIVE"
-                    ? "Khóa tài khoản"
-                    : "Mở khóa tài khoản"
+                    ? t("Khóa tài khoản")
+                    : t("Mở khóa tài khoản")
                 }
                 aria-label={
                   row.accountStatus === "ACTIVE"
-                    ? "Khóa tài khoản"
-                    : "Mở khóa tài khoản"
+                    ? t("Khóa tài khoản")
+                    : t("Mở khóa tài khoản")
                 }
               >
                 {row.accountStatus === "ACTIVE" ? (
@@ -334,7 +327,7 @@ export default function CandidatesPage() {
             size="sm"
             onClick={() => handleOpenDetail(row)}
           >
-            Chi tiết
+            {t("Chi tiết")}
           </AdminButton>
         </div>
       ),
@@ -347,10 +340,10 @@ export default function CandidatesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Quản lý hồ sơ & Dữ liệu đăng ký
+            {t("Quản lý hồ sơ & Dữ liệu đăng ký")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Tổng cộng: <span className="font-bold text-[#0B1F4D]">{candidates.length}</span> hồ sơ • Đã nộp video:{" "}
+            {t("Tổng cộng")}: <span className="font-bold text-[#0B1F4D]">{candidates.length}</span> {t("hồ sơ")} • {t("Đã nộp video")}:{" "}
             <span className="font-bold text-emerald-600">
               {candidates.filter((c) => c.registration.state === "SUBMITTED").length}
             </span>
@@ -368,7 +361,7 @@ export default function CandidatesPage() {
               </svg>
             }
           >
-            Xuất Excel / CSV
+            {t("Xuất Excel / CSV")}
           </AdminButton>
         </div>
       </div>
@@ -376,7 +369,7 @@ export default function CandidatesPage() {
       {/* Filters Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-3 gap-3">
         <AdminInput
-          placeholder="Tìm theo MSSV, Họ tên, Email, Mã thí sinh..."
+          placeholder={t("Tìm theo MSSV, Họ tên, Email, Mã thí sinh...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           leftIcon={
@@ -389,19 +382,19 @@ export default function CandidatesPage() {
           value={schoolFilter}
           onChange={(e) => setSchoolFilter(e.target.value)}
           options={[
-            { label: "Tất cả các Trường / Viện", value: "ALL" },
-            { label: "Trường Quốc tế - ĐHQGHN", value: "Trường Quốc tế" },
-            { label: "Đại học Ngoại Thương", value: "Ngoại Thương" },
-            { label: "Đại học Kinh tế Quốc dân", value: "Kinh tế Quốc dân" },
+            { label: t("Tất cả các Trường / Viện"), value: "ALL" },
+            { label: t("Trường Quốc tế"), value: "Trường Quốc tế" },
+            { label: t("Ngoại Thương"), value: "Ngoại Thương" },
+            { label: t("Kinh tế Quốc dân"), value: "Kinh tế Quốc dân" },
           ]}
         />
         <AdminSelect
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           options={[
-            { label: "Tất cả trạng thái hồ sơ", value: "ALL" },
-            { label: "Đã nộp chính thức (SUBMITTED)", value: "SUBMITTED" },
-            { label: "Dự thảo (DRAFT)", value: "DRAFT" },
+            { label: t("Tất cả trạng thái hồ sơ"), value: "ALL" },
+            { label: t("Đã nộp chính thức (SUBMITTED)"), value: "SUBMITTED" },
+            { label: t("Dự thảo (DRAFT)"), value: "DRAFT" },
           ]}
         />
       </div>
@@ -412,7 +405,7 @@ export default function CandidatesPage() {
         data={filteredCandidates}
         keyExtractor={(item) => item.id}
         onRowClick={(item) => handleOpenDetail(item)}
-        emptyMessage="Không tìm thấy hồ sơ phù hợp với bộ lọc hiện tại"
+        emptyMessage={t("Không tìm thấy hồ sơ phù hợp với bộ lọc hiện tại")}
         enableSelection={true}
         selectedRows={selectedRows}
         onSelectionChange={handleSelectionChange}
@@ -425,7 +418,7 @@ export default function CandidatesPage() {
         onClearSelection={clearSelection}
         actions={[
           {
-            label: "Xuất CSV",
+            label: t("Xuất CSV"),
             onClick: handleBulkExportCSV,
             variant: "outline",
             icon: (
@@ -435,7 +428,7 @@ export default function CandidatesPage() {
             ),
           },
           {
-            label: "Khóa tài khoản",
+            label: t("Khóa tài khoản"),
             onClick: () => handleBulkToggleAccount(true),
             variant: "danger",
             icon: (
@@ -445,7 +438,7 @@ export default function CandidatesPage() {
             ),
           },
           {
-            label: "Mở khóa tài khoản",
+            label: t("Mở khóa tài khoản"),
             onClick: () => handleBulkToggleAccount(false),
             variant: "primary",
             icon: (
@@ -475,10 +468,10 @@ export default function CandidatesPage() {
         candidateCode={selectedCandidate?.candidate_code || ""}
         media={selectedCandidate?.mediaObject || null}
         onApprove={() => {
-          success("Đã duyệt video", "Video dự thi đạt tiêu chuẩn quy định.");
+          success(t("Đã duyệt video"), t("Video dự thi đạt tiêu chuẩn quy định."));
         }}
         onReject={(reason) => {
-          error("Đã từ chối video", `Lý do: ${reason}`);
+          error(t("Đã từ chối video"), t("Lý do:") + ` ${reason}`);
         }}
       />
     </div>

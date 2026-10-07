@@ -7,8 +7,10 @@ import gsap from "gsap";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminCard from "@/components/admin/ui/AdminCard";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function AdminDashboardPage() {
+  const { t } = useAdminI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const kpiCardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const leftSectionRef = useRef<HTMLDivElement>(null);
@@ -16,10 +18,10 @@ export default function AdminDashboardPage() {
 
   const kpiData = [
     {
-      title: "Tổng thí sinh đăng ký",
+      title: t("Tổng thí sinh đăng ký"),
       value: "318",
-      subtext: "Mục tiêu: 500 sinh viên",
-      change: "+24 hôm nay",
+      subtext: t("Mục tiêu: 500 sinh viên"),
+      change: t("+24 hôm nay"),
       variant: "success" as const,
       icon: (
         <svg className="w-5 h-5 text-[#1F5BE0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,10 +30,10 @@ export default function AdminDashboardPage() {
       ),
     },
     {
-      title: "Video giới thiệu đã nộp",
+      title: t("Video giới thiệu đã nộp"),
       value: "286",
-      subtext: "Thời lượng ≤ 2 phút",
-      change: "89.9% hoàn thành",
+      subtext: t("Thời lượng ≤ 2 phút"),
+      change: t("89.9% hoàn thành"),
       variant: "info" as const,
       icon: (
         <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,10 +42,10 @@ export default function AdminDashboardPage() {
       ),
     },
     {
-      title: "Ngân hàng câu hỏi",
+      title: t("Ngân hàng câu hỏi"),
       value: "150",
-      subtext: "Đã Freeze: 120 câu",
-      change: "Sẵn sàng Vòng 1",
+      subtext: t("Đã Freeze: 120 câu"),
+      change: t("Sẵn sàng Vòng 1"),
       variant: "gold" as const,
       icon: (
         <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,10 +54,10 @@ export default function AdminDashboardPage() {
       ),
     },
     {
-      title: "Hồ sơ cần rà soát",
+      title: t("Hồ sơ cần rà soát"),
       value: "4",
-      subtext: "Nghi ngờ trùng thông tin",
-      change: "Cần xử lý",
+      subtext: t("Nghi ngờ trùng thông tin"),
+      change: t("Cần xử lý"),
       variant: "warning" as const,
       icon: (
         <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +75,7 @@ export default function AdminDashboardPage() {
       school: "Trường Quốc tế - ĐHQGHN",
       major: "Quản trị Kinh doanh",
       videoStatus: "READY",
-      createdAt: "10 phút trước",
+      createdAt: t("10 phút trước"),
     },
     {
       code: "CAND-00123",
@@ -82,7 +84,7 @@ export default function AdminDashboardPage() {
       school: "Đại học Ngoại Thương",
       major: "Kinh tế Đối ngoại",
       videoStatus: "READY",
-      createdAt: "35 phút trước",
+      createdAt: t("35 phút trước"),
     },
     {
       code: "CAND-00122",
@@ -91,7 +93,7 @@ export default function AdminDashboardPage() {
       school: "Trường Quốc tế - ĐHQGHN",
       major: "Công nghệ Tài chính",
       videoStatus: "VALIDATING",
-      createdAt: "1 giờ trước",
+      createdAt: t("1 giờ trước"),
     },
     {
       code: "CAND-00121",
@@ -100,25 +102,25 @@ export default function AdminDashboardPage() {
       school: "Đại học Kinh tế Quốc dân",
       major: "Marketing",
       videoStatus: "READY",
-      createdAt: "2 giờ trước",
+      createdAt: t("2 giờ trước"),
     },
   ];
 
   const examSchedules = [
     {
-      name: "Ca 01 - Sáng Thứ Bảy (07/11)",
+      name: t("Ca 01 - Sáng Thứ Bảy (07/11)"),
       time: "08:30 - 09:30",
       assigned: "85 / 100",
       status: "SCHEDULED",
     },
     {
-      name: "Ca 02 - Chiều Thứ Bảy (07/11)",
+      name: t("Ca 02 - Chiều Thứ Bảy (07/11)"),
       time: "14:30 - 15:30",
       assigned: "92 / 100",
       status: "SCHEDULED",
     },
     {
-      name: "Ca 03 - Sáng Chủ Nhật (08/11)",
+      name: t("Ca 03 - Sáng Chủ Nhật (08/11)"),
       time: "09:00 - 10:00",
       assigned: "78 / 100",
       status: "SCHEDULED",
@@ -173,16 +175,16 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-[#0F1F3D] tracking-tight">
-              IS-NextGen Manager Challenge 2026
+              {t("IS-NextGen Manager Challenge 2026")}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Chủ đề: <span className="font-semibold text-[#0B1F4D]">The Manager in the AI Era</span>. Đang mở cổng đăng ký trực tuyến Vòng 1.
+              {t("Chủ đề:")} <span className="font-semibold text-[#0B1F4D]">The Manager in the AI Era</span>. {t("Đang mở cổng đăng ký trực tuyến Vòng 1.")}
             </p>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
             <Link href="/admin/candidates">
               <AdminButton variant="outline" size="sm">
-                Xem toàn bộ hồ sơ
+                {t("Xem toàn bộ hồ sơ")}
               </AdminButton>
             </Link>
             <Link href="/admin/exams/monitor">
@@ -191,7 +193,7 @@ export default function AdminDashboardPage() {
                 size="sm"
                 leftIcon={<span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
               >
-                Vào phòng giám sát thi
+                {t("Vào phòng giám sát thi")}
               </AdminButton>
             </Link>
           </div>
@@ -202,7 +204,7 @@ export default function AdminDashboardPage() {
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
         role="list"
-        aria-label="Chỉ số hiệu suất chính"
+        aria-label={t("Chỉ số hiệu suất chính")}
       >
         {kpiData.map((item, idx) => (
           <AdminCard
@@ -245,14 +247,14 @@ export default function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Hồ sơ đăng ký mới nhất</h3>
-              <p className="text-xs text-slate-400">Danh sách thí sinh gửi hồ sơ trong ngày</p>
+              <h3 className="text-sm font-bold text-slate-900">{t("Hồ sơ đăng ký mới nhất")}</h3>
+              <p className="text-xs text-slate-400">{t("Danh sách thí sinh gửi hồ sơ trong ngày")}</p>
             </div>
             <Link
               href="/admin/candidates"
               className="text-xs font-semibold text-[#1F5BE0] hover:underline"
             >
-              Xem tất cả →
+              {t("Xem tất cả →")}
             </Link>
           </div>
 
@@ -269,7 +271,7 @@ export default function AdminDashboardPage() {
                       <span className="text-[11px] font-sans tabular-nums tracking-tight text-slate-400 whitespace-nowrap">({cand.code})</span>
                     </div>
                     <p className="text-xs text-slate-500">
-                      MSSV: {cand.studentId} • {cand.school} ({cand.major})
+                      {t("MSSV")}: {cand.studentId} • {cand.school} ({cand.major})
                     </p>
                   </div>
                 </div>
@@ -278,7 +280,7 @@ export default function AdminDashboardPage() {
                     variant={cand.videoStatus === "READY" ? "success" : "warning"}
                     size="sm"
                   >
-                    {cand.videoStatus === "READY" ? "Video đã duyệt" : "Đang kiểm tra"}
+                    {cand.videoStatus === "READY" ? t("Video đã duyệt") : t("Đang kiểm tra")}
                   </AdminBadge>
                   <span className="text-[11px] text-slate-400 hidden sm:inline whitespace-nowrap">
                     {cand.createdAt}
@@ -299,14 +301,14 @@ export default function AdminDashboardPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Ca thi Vòng 1</h3>
-                <p className="text-xs text-slate-400">Dự kiến 07 - 08/11/2026</p>
+                <h3 className="text-sm font-bold text-slate-900">{t("Ca thi Vòng 1")}</h3>
+                <p className="text-xs text-slate-400">{t("Dự kiến 07 - 08/11/2026")}</p>
               </div>
               <Link
                 href="/admin/exams/schedules"
                 className="text-xs font-semibold text-[#1F5BE0] hover:underline"
               >
-                Quản lý →
+                {t("Quản lý →")}
               </Link>
             </div>
 
@@ -323,7 +325,7 @@ export default function AdminDashboardPage() {
                     </AdminBadge>
                   </div>
                   <div className="mt-2.5 flex items-center justify-between text-xs text-slate-500">
-                    <span>Đã phân bổ:</span>
+                    <span>{t("Đã phân bổ:")}</span>
                     <span className="font-semibold text-slate-900 font-sans tabular-nums tracking-tight">{sch.assigned}</span>
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
@@ -346,7 +348,7 @@ export default function AdminDashboardPage() {
           <div className="mt-6 pt-4 border-t border-slate-100">
             <Link href="/admin/exams/assignments" className="w-full block">
               <AdminButton variant="outline" size="sm" className="w-full">
-                Phân bổ ca thi cho thí sinh mới
+                {t("Phân bổ ca thi cho thí sinh mới")}
               </AdminButton>
             </Link>
           </div>

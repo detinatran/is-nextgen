@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
-import AdminShell from "@/components/admin/layout/AdminShell";
-import { ToastProvider } from "@/components/admin/ui/Toast";
+import AdminShellClient from "./AdminShellClient";
 
 const beVietnam = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -25,8 +24,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ToastProvider>
-      <AdminShell>{children}</AdminShell>
-    </ToastProvider>
+    <AdminShellClient>{children}</AdminShellClient>
   );
 }

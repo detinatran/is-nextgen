@@ -10,8 +10,10 @@ import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockLiveAttempts, getLiveAttemptById } from "@/mocks/admin";
 import type { LiveAttemptItem } from "@/mocks/admin/live-monitor";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function LiveExamMonitorPage() {
+  const { t } = useAdminI18n();
   const [attempts, setAttempts] = useState<LiveAttemptItem[]>(mockLiveAttempts);
   const [filterViolation, setFilterViolation] = useState<"ALL" | "VIOLATION_ONLY">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,8 +42,8 @@ export default function LiveExamMonitorPage() {
         // Auto-finalize if all questions answered
         const newStatus = newAnswered >= attempt.totalQuestions ? "FINALIZED" : "ACTIVE";
         const newHeartbeat = newStatus === "FINALIZED"
-          ? `Đã nộp bài (${new Date().toLocaleTimeString("vi-VN")})`
-          : "Vừa xong";
+          ? `${t("Đã nộp bài")} (${new Date().toLocaleTimeString("vi-VN")})`
+          : t("Vừa xong");
 
         return {
           ...attempt,
@@ -53,7 +55,7 @@ export default function LiveExamMonitorPage() {
         };
       })
     );
-  }, []);
+  }, [t]);
 
   // Start/stop auto-refresh
   useEffect(() => {
@@ -91,7 +93,7 @@ export default function LiveExamMonitorPage() {
   const columns: Column<LiveAttemptItem>[] = [
     {
       key: "candidate",
-      header: "Thí sinh & Ca thi",
+      header: t("Thí sinh & Ca thi"),
       render: (row) => (
         <div>
           <div className="flex items-center gap-2">
@@ -103,14 +105,14 @@ export default function LiveExamMonitorPage() {
             </span>
           </div>
           <span className="text-[11px] text-slate-400 block mt-0.5 font-sans tabular-nums tracking-tight">
-            MSSV: {row.studentId} • {row.scheduleName}
+            {t("MSSV")}: {row.studentId} • {row.scheduleName}
           </span>
         </div>
       ),
     },
     {
       key: "progress",
-      header: "Tiến độ trả lời",
+      header: t("Tiến độ trả lời"),
       render: (row) => {
         const percent = Math.round((row.answeredCount / row.totalQuestions) * 100);
         return (
@@ -135,7 +137,7 @@ export default function LiveExamMonitorPage() {
     },
     {
       key: "violations",
-      header: "Cảnh báo gian lận (Anti-Cheat)",
+      header: t("Cảnh báo gian lận (Anti-Cheat)"),
       render: (row) => {
         const hasWarning = row.tabSwitchCount >= 3 || row.copyPasteCount >= 2;
         return (
@@ -148,7 +150,7 @@ export default function LiveExamMonitorPage() {
                     : "bg-slate-100 text-slate-600"
                 }`}
               >
-                Rời tab: {row.tabSwitchCount}
+                {t("Rời tab:")} {row.tabSwitchCount}
               </span>
               <span
                 className={`px-1.5 py-0.5 rounded font-sans tabular-nums tracking-tight text-[11px] ${
@@ -162,7 +164,7 @@ export default function LiveExamMonitorPage() {
             </div>
             {hasWarning && (
               <span className="text-[10px] text-rose-600 font-bold flex items-center gap-1">
-                ⚠️ Bất thường cao
+                ⚠️ {t("Bất thường cao")}
               </span>
             )}
           </div>
@@ -171,7 +173,7 @@ export default function LiveExamMonitorPage() {
     },
     {
       key: "status",
-      header: "Trạng thái",
+      header: t("Trạng thái"),
       align: "center",
       render: (row) => {
         const variant =
@@ -194,7 +196,7 @@ export default function LiveExamMonitorPage() {
     },
     {
       key: "actions",
-      header: "Thao tác giám sát",
+      header: t("Thao tác giám sát"),
       align: "right",
       render: (row) =>
         row.status === "ACTIVE" ? (
@@ -205,25 +207,25 @@ export default function LiveExamMonitorPage() {
               onClick={() => {
                 setTargetAttempt(row);
                 setActionType("WARN");
-                setReason("Cảnh cáo: Phát hiện nhiều lần rời màn hình thi!");
+                setReason(t("Cảnh cáo: Phát hiện nhiều lần rời màn hình thi!"));
               }}
             >
-              Cảnh cáo
+              {t("Cảnh cáo")}
             </AdminButton>
             <AdminPopconfirm
-              title="Cưỡng chế nộp bài"
-              description={`Buộc thí sinh ${row.fullName} nộp bài ngay lập tức. Hành động này không thể hoàn tác.`}
+              title={t("Cưỡng chế nộp bài")}
+              description={t("Buộc thí sinh") + ` ${row.fullName} ` + t("nộp bài ngay lập tức. Hành động này không thể hoàn tác.")}
               confirmVariant="danger"
-              confirmText="Xác nhận cưỡng chế"
+              confirmText={t("Xác nhận cưỡng chế")}
               onConfirm={() => {
                 setAttempts((prev) =>
                   prev.map((a) =>
                     a.id === row.id
-                      ? { ...a, status: "FINALIZED", lastHeartbeat: "Cưỡng chế nộp bài" }
+                      ? { ...a, status: "FINALIZED", lastHeartbeat: t("Cưỡng chế nộp bài") }
                       : a
                   )
                 );
-                success("Đã cưỡng chế nộp bài", `Thí sinh ${row.fullName} đã được buộc nộp bài.`);
+                success(t("Đã cưỡng chế nộp bài"), `${t("Thí sinh")} ${row.fullName} ${t("đã được buộc nộp bài.")}`);
               }}
               triggerVariant="danger"
               triggerSize="sm"
@@ -232,24 +234,24 @@ export default function LiveExamMonitorPage() {
                 <span
                   className={`inline-flex items-center justify-center px-2 py-1 rounded-md text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 cursor-pointer transition-colors ${open ? "bg-rose-600" : ""}`}
                 >
-                  Thu bài
+                  {t("Thu bài")}
                 </span>
               )}
             </AdminPopconfirm>
             <AdminPopconfirm
-              title="Đình chỉ thi & Hủy tư cách"
-              description={`Đình chỉ thi thí sinh ${row.fullName} và hủy tư cách tham gia cuộc thi. Hành động này không thể hoàn tác.`}
+              title={t("Đình chỉ thi & Hủy tư cách")}
+              description={t("Đình chỉ thi thí sinh") + ` ${row.fullName} ` + t("và hủy tư cách tham gia cuộc thi. Hành động này không thể hoàn tác.")}
               confirmVariant="danger"
-              confirmText="Xác nhận đình chỉ"
+              confirmText={t("Xác nhận đình chỉ")}
               onConfirm={() => {
                 setAttempts((prev) =>
                   prev.map((a) =>
                     a.id === row.id
-                      ? { ...a, status: "DISQUALIFIED", lastHeartbeat: "Đình chỉ thi" }
+                      ? { ...a, status: "DISQUALIFIED", lastHeartbeat: t("Đình chỉ thi") }
                       : a
                   )
                 );
-                error("Đã đình chỉ thi", `Thí sinh ${row.fullName} đã bị hủy tư cách tham gia cuộc thi.`);
+                error(t("Đã đình chỉ thi"), `${t("Thí sinh")} ${row.fullName} ${t("đã bị hủy tư cách tham gia cuộc thi.")}`);
               }}
               triggerVariant="ghost"
               triggerSize="sm"
@@ -257,8 +259,8 @@ export default function LiveExamMonitorPage() {
               {(open) => (
                 <span
                   className={`p-1.5 rounded-md hover:bg-rose-50 hover:text-rose-600 transition-colors text-xs cursor-pointer ${open ? "bg-rose-50" : ""}`}
-                  title="Đình chỉ thi & Hủy tư cách"
-                  aria-label="Đình chỉ thi & Hủy tư cách"
+                  title={t("Đình chỉ thi & Hủy tư cách")}
+                  aria-label={t("Đình chỉ thi & Hủy tư cách")}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -268,7 +270,7 @@ export default function LiveExamMonitorPage() {
             </AdminPopconfirm>
           </div>
         ) : (
-          <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight italic">Đã kết thúc</span>
+          <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight italic">{t("Đã kết thúc")}</span>
         ),
     },
   ];
@@ -280,7 +282,7 @@ export default function LiveExamMonitorPage() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-slate-900">
-              Giám sát ca thi trực tuyến
+              {t("Giám sát ca thi trực tuyến")}
             </h2>
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -288,7 +290,7 @@ export default function LiveExamMonitorPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Theo dõi tiến trình làm bài, phát hiện rời tab (focus_lost), copy/paste và ghi vết vào bảng{" "}
+            {t("Theo dõi tiến trình làm bài, phát hiện rời tab (focus_lost), copy/paste và ghi vết vào bảng")}{" "}
             <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">exam_events</span>.
           </p>
         </div>
@@ -301,7 +303,7 @@ export default function LiveExamMonitorPage() {
               onChange={(e) => setAutoRefresh(e.target.checked)}
               className="rounded text-[#1F5BE0] focus:ring-[#1F5BE0]/20"
             />
-            Tự động cập nhật (Heartbeat 5s)
+            {t("Tự động cập nhật (Heartbeat 5s)")}
           </label>
         </div>
       </div>
@@ -309,15 +311,15 @@ export default function LiveExamMonitorPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-          <p className="text-xs font-semibold text-slate-500">Đang làm bài (ACTIVE)</p>
+          <p className="text-xs font-semibold text-slate-500">{t("Đang làm bài (ACTIVE)")}</p>
           <p className="text-2xl font-extrabold text-[#1F5BE0] mt-1 font-sans tabular-nums tracking-tight">{totalActive}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-          <p className="text-xs font-semibold text-slate-500">Đã nộp bài (FINALIZED)</p>
+          <p className="text-xs font-semibold text-slate-500">{t("Đã nộp bài (FINALIZED)")}</p>
           <p className="text-2xl font-extrabold text-emerald-600 mt-1 font-sans tabular-nums tracking-tight">{totalFinalized}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-          <p className="text-xs font-semibold text-slate-500">Cảnh báo vi phạm rời tab/paste</p>
+          <p className="text-xs font-semibold text-slate-500">{t("Cảnh báo vi phạm rời tab/paste")}</p>
           <p className="text-2xl font-extrabold text-rose-600 mt-1 font-sans tabular-nums tracking-tight">{totalViolations}</p>
         </div>
       </div>
@@ -325,7 +327,7 @@ export default function LiveExamMonitorPage() {
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-2 gap-3">
         <AdminInput
-          placeholder="Tìm theo Mã TS, Họ tên, MSSV..."
+          placeholder={t("Tìm theo Mã TS, Họ tên, MSSV...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -333,8 +335,8 @@ export default function LiveExamMonitorPage() {
           value={filterViolation}
           onChange={(e) => setFilterViolation(e.target.value as any)}
           options={[
-            { label: "Tất cả thí sinh trong ca", value: "ALL" },
-            { label: "Chỉ hiển thị thí sinh có cảnh báo vi phạm", value: "VIOLATION_ONLY" },
+            { label: t("Tất cả thí sinh trong ca"), value: "ALL" },
+            { label: t("Chỉ hiển thị thí sinh có cảnh báo vi phạm"), value: "VIOLATION_ONLY" },
           ]}
         />
       </div>

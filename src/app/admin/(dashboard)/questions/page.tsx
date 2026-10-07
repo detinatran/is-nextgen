@@ -10,8 +10,10 @@ import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockQuestions, getPools, getDifficulties } from "@/mocks/admin";
 import type { QuestionItem, QuestionDifficulty } from "@/mocks/admin/questions";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function QuestionsPage() {
+  const { t } = useAdminI18n();
   const [questions, setQuestions] = useState<QuestionItem[]>(mockQuestions);
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [stateFilter, setStateFilter] = useState("ALL");
@@ -57,7 +59,7 @@ export default function QuestionsPage() {
 
   const handleOpenEdit = (q: QuestionItem) => {
     if (q.state === "FROZEN") {
-      warning("Không thể chỉnh sửa", "Câu hỏi này đã đóng băng (FROZEN) để dùng cho bài thi. Hệ thống cơ sở dữ liệu chặn chỉnh sửa trực tiếp để bảo vệ tính toàn vẹn (protect_question_version). Bạn cần tạo phiên bản mới!");
+      warning(t("Không thể chỉnh sửa"), t("Câu hỏi này đã đóng băng (FROZEN) để dùng cho bài thi. Hệ thống cơ sở dữ liệu chặn chỉnh sửa trực tiếp để bảo vệ tính toàn vẹn (protect_question_version). Bạn cần tạo phiên bản mới!"));
       return;
     }
     setEditingQuestion(q);
@@ -72,12 +74,12 @@ export default function QuestionsPage() {
 
   const handleSaveQuestion = () => {
     if (!formPrompt.trim()) {
-      error("Thiếu nội dung", "Vui lòng nhập nội dung câu hỏi!");
+      error(t("Thiếu nội dung"), t("Vui lòng nhập nội dung câu hỏi!"));
       return;
     }
     const hasCorrect = formOptions.some((o) => o.is_correct && o.text.trim());
     if (!hasCorrect) {
-      error("Thiếu đáp án đúng", "Câu hỏi phải có ít nhất 1 đáp án đúng và có nội dung!");
+      error(t("Thiếu đáp án đúng"), t("Câu hỏi phải có ít nhất 1 đáp án đúng và có nội dung!"));
       return;
     }
 
@@ -101,7 +103,7 @@ export default function QuestionsPage() {
             : item
         )
       );
-      success("Đã cập nhật", `Câu hỏi ${editingQuestion.id} đã được lưu thay đổi.`);
+      success(t("Đã cập nhật"), `${t("Câu hỏi")} ${editingQuestion.id} ${t("đã được lưu thay đổi.")}`);
     } else {
       const newId = `qv-${Date.now()}`;
       const newQuestion: QuestionItem = {
@@ -124,16 +126,16 @@ export default function QuestionsPage() {
         })),
       };
       setQuestions([newQuestion, ...questions]);
-      success("Đã tạo mới", `Câu hỏi ${newId} đã được thêm vào ngân hàng.`);
+      success(t("Đã tạo mới"), `${t("Câu hỏi")} ${newId} ${t("đã được thêm vào ngân hàng.")}`);
     }
 
     setIsEditorOpen(false);
   };
 
   const handleFreeze = (q: QuestionItem) => {
-    warning("Xác nhận đóng băng đề thi", `Câu hỏi [${q.id}] phiên bản v${q.version} sẽ chuyển sang trạng thái FROZEN vĩnh viễn. Sau khi đóng băng, trigger DB sẽ từ chối mọi thao tác UPDATE/DELETE. Hành động không thể hoàn tác.`, {
+    warning(t("Xác nhận đóng băng đề thi"), `${t("Câu hỏi")} [${q.id}] ${t("phiên bản")} v${q.version} ${t("sẽ chuyển sang trạng thái FROZEN vĩnh viễn. Sau khi đóng băng, trigger DB sẽ từ chối mọi thao tác UPDATE/DELETE. Hành động không thể hoàn tác.")}`, {
       action: {
-        label: "Đóng băng",
+        label: t("Đóng băng"),
         onClick: () => {
           setQuestions((prev) =>
             prev.map((item) =>
@@ -142,7 +144,7 @@ export default function QuestionsPage() {
                 : item
             )
           );
-          success("Đã đóng băng", `Câu hỏi ${q.id} v${q.version} đã chuyển sang trạng thái FROZEN.`);
+          success(t("Đã đóng băng"), `${t("Câu hỏi")} ${q.id} v${q.version} ${t("đã chuyển sang trạng thái FROZEN.")}`);
         },
       },
     });
@@ -151,7 +153,7 @@ export default function QuestionsPage() {
   const columns: Column<QuestionItem>[] = [
     {
       key: "version",
-      header: "Phiên bản",
+      header: t("Phiên bản"),
       width: "100px",
       render: (row) => (
         <span className="font-sans tabular-nums tracking-tight text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
@@ -161,7 +163,7 @@ export default function QuestionsPage() {
     },
     {
       key: "prompt",
-      header: "Nội dung câu hỏi & Lựa chọn",
+      header: t("Nội dung câu hỏi & Lựa chọn"),
       render: (row) => (
         <div className="space-y-1.5 py-1">
           <p className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2">
@@ -186,14 +188,14 @@ export default function QuestionsPage() {
     },
     {
       key: "pool",
-      header: "Nhóm kiến thức",
+      header: t("Nhóm kiến thức"),
       render: (row) => (
         <span className="text-xs text-slate-700 font-medium">{row.poolName}</span>
       ),
     },
     {
       key: "difficulty",
-      header: "Độ khó",
+      header: t("Độ khó"),
       align: "center",
       render: (row) => {
         const variant =
@@ -211,35 +213,35 @@ export default function QuestionsPage() {
     },
     {
       key: "state",
-      header: "Trạng thái",
+      header: t("Trạng thái"),
       align: "center",
       render: (row) => (
         <AdminBadge
           variant={row.state === "FROZEN" ? "info" : "default"}
           size="sm"
         >
-          {row.state === "FROZEN" ? "ĐÃ ĐÓNG BĂNG" : "DỰ THẢO"}
+          {row.state === "FROZEN" ? t("ĐÃ ĐÓNG BĂNG") : t("DỰ THẢO")}
         </AdminBadge>
       ),
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           {row.state === "DRAFT" ? (
             <>
               <AdminButton variant="outline" size="sm" onClick={() => handleOpenEdit(row)}>
-                Sửa
+                {t("Sửa")}
               </AdminButton>
               <AdminButton variant="brand" size="sm" onClick={() => handleFreeze(row)}>
-                Freeze
+                {t("Freeze")}
               </AdminButton>
             </>
           ) : (
             <span className="text-[11px] text-slate-400 font-sans tabular-nums tracking-tight italic">
-              Bất biến (Locked)
+              {t("Bất biến (Locked)")}
             </span>
           )}
         </div>
@@ -253,25 +255,25 @@ export default function QuestionsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
           <h2 className="text-lg font-bold text-slate-900">
-            Ngân hàng câu hỏi trắc nghiệm Vòng 1
+            {t("Ngân hàng câu hỏi trắc nghiệm Vòng 1")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Tổng cộng: <span className="font-bold text-[#0B1F4D]">{questions.length}</span> câu • Đã đóng băng:{" "}
+            {t("Tổng cộng")}: <span className="font-bold text-[#0B1F4D]">{questions.length}</span> {t("câu")} • {t("Đã đóng băng")}:{" "}
             <span className="font-bold text-sky-700">
               {questions.filter((q) => q.state === "FROZEN").length}
             </span>{" "}
-            câu
+            {t("câu")}
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <Link href="/admin/questions/import">
             <AdminButton variant="outline" size="sm">
-              Import Excel / Word
+              {t("Import Excel / Word")}
             </AdminButton>
           </Link>
           <AdminButton variant="brand" size="sm" onClick={handleOpenAdd}>
-            + Thêm câu hỏi mới
+            + {t("Thêm câu hỏi mới")}
           </AdminButton>
         </div>
       </div>
@@ -279,7 +281,7 @@ export default function QuestionsPage() {
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs grid grid-cols-1 sm:grid-cols-3 gap-3">
         <AdminInput
-          placeholder="Tìm kiếm nội dung câu hỏi..."
+          placeholder={t("Tìm kiếm nội dung câu hỏi...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -287,19 +289,19 @@ export default function QuestionsPage() {
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
           options={[
-            { label: "Tất cả độ khó", value: "ALL" },
-            { label: "Dễ (EASY)", value: "EASY" },
-            { label: "Trung bình (MEDIUM)", value: "MEDIUM" },
-            { label: "Khó (HARD)", value: "HARD" },
+            { label: t("Tất cả độ khó"), value: "ALL" },
+            { label: t("Dễ (EASY)"), value: "EASY" },
+            { label: t("Trung bình (MEDIUM)"), value: "MEDIUM" },
+            { label: t("Khó (HARD)"), value: "HARD" },
           ]}
         />
         <AdminSelect
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value)}
           options={[
-            { label: "Tất cả trạng thái", value: "ALL" },
-            { label: "Đã đóng băng (FROZEN)", value: "FROZEN" },
-            { label: "Dự thảo (DRAFT)", value: "DRAFT" },
+            { label: t("Tất cả trạng thái"), value: "ALL" },
+            { label: t("Đã đóng băng (FROZEN)"), value: "FROZEN" },
+            { label: t("Dự thảo (DRAFT)"), value: "DRAFT" },
           ]}
         />
       </div>
@@ -315,16 +317,16 @@ export default function QuestionsPage() {
       <AdminModal
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
-        title={editingQuestion ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi trắc nghiệm mới"}
-        description="Mỗi câu hỏi phải có ít nhất 2 đáp án và duy nhất 1 đáp án đúng"
+        title={editingQuestion ? t("Chỉnh sửa câu hỏi") : t("Thêm câu hỏi trắc nghiệm mới")}
+        description={t("Mỗi câu hỏi phải có ít nhất 2 đáp án và duy nhất 1 đáp án đúng")}
         maxWidth="2xl"
         footer={
           <div className="flex items-center gap-2">
             <AdminButton variant="outline" size="sm" onClick={() => setIsEditorOpen(false)}>
-              Hủy
+              {t("Hủy")}
             </AdminButton>
             <AdminButton variant="brand" size="sm" onClick={handleSaveQuestion}>
-              Lưu bản ghi
+              {t("Lưu bản ghi")}
             </AdminButton>
           </div>
         }
@@ -332,11 +334,11 @@ export default function QuestionsPage() {
         <div className="space-y-4">
           <div>
             <label className="text-xs font-semibold text-slate-700 block mb-1">
-              Nội dung câu hỏi:
+              {t("Nội dung câu hỏi:")}
             </label>
             <textarea
               rows={3}
-              placeholder="Nhập nội dung đề thi..."
+              placeholder={t("Nhập nội dung đề thi...")}
               value={formPrompt}
               onChange={(e) => setFormPrompt(e.target.value)}
               className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"
@@ -345,23 +347,23 @@ export default function QuestionsPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <AdminSelect
-              label="Mức độ khó"
+              label={t("Mức độ khó")}
               value={formDifficulty}
               onChange={(e) => setFormDifficulty(e.target.value as QuestionDifficulty)}
               options={[
-                { label: "Dễ (EASY)", value: "EASY" },
-                { label: "Trung bình (MEDIUM)", value: "MEDIUM" },
-                { label: "Khó (HARD)", value: "HARD" },
+                { label: t("Dễ (EASY)"), value: "EASY" },
+                { label: t("Trung bình (MEDIUM)"), value: "MEDIUM" },
+                { label: t("Khó (HARD)"), value: "HARD" },
               ]}
             />
             <AdminSelect
-              label="Nhóm kiến thức (Pool)"
+              label={t("Nhóm kiến thức (Pool)")}
               value={formPool}
               onChange={(e) => setFormPool(e.target.value)}
               options={[
-                { label: "Kiến thức quản trị nền tảng", value: "Kiến thức quản trị nền tảng" },
-                { label: "Tư duy phân tích & Ra quyết định", value: "Tư duy phân tích & Ra quyết định" },
-                { label: "Tư duy số liệu & Tài chính", value: "Tư duy số liệu & Tài chính" },
+                { label: t("Kiến thức quản trị nền tảng"), value: "Kiến thức quản trị nền tảng" },
+                { label: t("Tư duy phân tích & Ra quyết định"), value: "Tư duy phân tích & Ra quyết định" },
+                { label: t("Tư duy số liệu & Tài chính"), value: "Tư duy số liệu & Tài chính" },
               ]}
             />
           </div>
@@ -369,7 +371,7 @@ export default function QuestionsPage() {
           {/* Options */}
           <div className="space-y-2.5 pt-2">
             <label className="text-xs font-semibold text-slate-700 block">
-              Các phương án trả lời (Tick vào nút tròn để chọn đáp án đúng):
+              {t("Các phương án trả lời (Tick vào nút tròn để chọn đáp án đúng):")}
             </label>
             {formOptions.map((opt, idx) => (
               <div key={idx} className="flex items-center gap-3">
@@ -389,7 +391,7 @@ export default function QuestionsPage() {
                 </span>
                 <input
                   type="text"
-                  placeholder={`Phương án ${String.fromCharCode(65 + idx)}...`}
+                  placeholder={`${t("Phương án")} ${String.fromCharCode(65 + idx)}...`}
                   value={opt.text}
                   onChange={(e) => {
                     const text = e.target.value;

@@ -8,8 +8,10 @@ import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockDuplicates, getDuplicateById } from "@/mocks/admin";
 import type { DuplicateReviewItem } from "@/mocks/admin/duplicates";
 import DuplicateDiffModal from "@/components/admin/candidate/DuplicateDiffModal";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function DuplicateReviewsPage() {
+  const { t } = useAdminI18n();
   const [reviews, setReviews] = useState<DuplicateReviewItem[]>(mockDuplicates);
   const [selectedReview, setSelectedReview] = useState<DuplicateReviewItem | null>(null);
   const [resolutionNote, setResolutionNote] = useState("");
@@ -24,40 +26,40 @@ export default function DuplicateReviewsPage() {
           ? {
               ...r,
               state: "RESOLVED",
-              disposition: `Giữ lại bản ghi [${keepCandidateId}] - Ghi chú: ${note || "Hợp lệ"}`,
+              disposition: `${t("Giữ lại bản ghi")} [${keepCandidateId}] - ${t("Ghi chú")}: ${note || t("Hợp lệ")}`,
               reviewed_at: new Date().toISOString(),
             }
           : r
       )
     );
     setSelectedReview(null);
-    success("Đã giải quyết trùng lặp", `Đã giữ lại hồ sơ ${keepCandidateId}.`);
+    success(t("Đã giải quyết trùng lặp"), `${t("Đã giữ lại hồ sơ")} ${keepCandidateId}.`);
   };
 
   const columns: Column<DuplicateReviewItem>[] = [
     {
       key: "id",
-      header: "Mã Review",
+      header: t("Mã Review"),
       width: "120px",
       render: (row) => <span className="font-sans tabular-nums tracking-tight text-xs font-bold">{row.id}</span>,
     },
     {
       key: "conflict",
-      header: "Trường dữ liệu nghi ngờ",
+      header: t("Trường dữ liệu nghi ngờ"),
       render: (row) => (
         <div>
           <span className="font-bold text-rose-700 text-xs block">
             {row.conflictDetails.field}
           </span>
           <span className="text-xs text-slate-500 font-sans tabular-nums tracking-tight">
-            Giá trị trùng: {row.conflictDetails.value}
+            {t("Giá trị trùng")}: {row.conflictDetails.value}
           </span>
         </div>
       ),
     },
     {
       key: "candidates",
-      header: "Các hồ sơ liên quan",
+      header: t("Các hồ sơ liên quan"),
       render: (row) => (
         <div className="space-y-1">
           {row.conflictDetails.candidates.map((c, i) => (
@@ -74,20 +76,20 @@ export default function DuplicateReviewsPage() {
     },
     {
       key: "state",
-      header: "Trạng thái",
+      header: t("Trạng thái"),
       align: "center",
       render: (row) => (
         <AdminBadge
           variant={row.state === "OPEN" ? "warning" : "success"}
           size="sm"
         >
-          {row.state === "OPEN" ? "Cần xử lý" : "Đã giải quyết"}
+          {row.state === "OPEN" ? t("Cần xử lý") : t("Đã giải quyết")}
         </AdminBadge>
       ),
     },
     {
       key: "actions",
-      header: "Thao tác",
+      header: t("Thao tác"),
       align: "right",
       render: (row) =>
         row.state === "OPEN" ? (
@@ -96,7 +98,7 @@ export default function DuplicateReviewsPage() {
             size="sm"
             onClick={() => setSelectedReview(row)}
           >
-            Xử lý trùng lặp
+            {t("Xử lý trùng lặp")}
           </AdminButton>
         ) : (
           <span className="text-xs text-slate-400 font-sans tabular-nums tracking-tight">
@@ -111,10 +113,10 @@ export default function DuplicateReviewsPage() {
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
         <h2 className="text-lg font-bold text-slate-900">
-          Rà soát hồ sơ trùng lặp
+          {t("Rà soát hồ sơ trùng lặp")}
         </h2>
         <p className="text-xs text-slate-500 mt-1">
-          Hệ thống phát hiện hồ sơ có dấu hiệu nộp trùng lặp (chung MSSV, Số điện thoại, Email hoặc Link Facebook) để Ban Chuyên môn đối chiếu và hợp nhất.
+          {t("Hệ thống phát hiện hồ sơ có dấu hiệu nộp trùng lặp (chung MSSV, Số điện thoại, Email hoặc Link Facebook) để Ban Chuyên môn đối chiếu và hợp nhất.")}
         </p>
       </div>
 

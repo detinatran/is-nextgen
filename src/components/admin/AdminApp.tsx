@@ -72,7 +72,7 @@ export default function AdminApp() {
     <main className="flex min-h-screen items-center justify-center bg-mist px-4">
       <div className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-card ring-1 ring-line">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset("/images/logo.png")} alt="NextGen Manager" className="h-14 w-auto" />
+        <img src={asset("/images/logo-2026.png")} alt="NextGen Manager" className="h-14 w-auto" />
         <h1 className="mt-6 text-xl font-bold text-navy">Quản trị Ban Tổ chức</h1>
         {stage === "checking" && <p className="mt-4 text-sm text-muted">Đang kiểm tra phiên đăng nhập...</p>}
         {stage === "login" && (
@@ -139,7 +139,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo.png")} alt="" className="h-10 w-auto" />
+            <img src={asset("/images/logo-2026.png")} alt="" className="h-10 w-auto" />
             <nav className="flex gap-1 overflow-x-auto" aria-label="Mục quản trị">
               {tabs.map((t) => (
                 <button

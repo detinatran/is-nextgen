@@ -97,7 +97,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
         <div className="container-x relative grid gap-10 pb-8 md:grid-cols-[1.4fr_0.6fr_0.8fr] lg:grid-cols-[1.3fr_0.5fr_0.7fr_1.2fr]">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-16 w-auto" />
+            <img src={asset("/images/logo-white-2026.png")} alt={site.name} className="h-16 w-auto" />
             <p className="mt-3 text-base text-white/90">{site.tagline}</p>
             <ul className="mt-5 space-y-3 text-[15px] text-white/85">
               <li className="flex gap-2.5">

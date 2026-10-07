@@ -27,8 +27,8 @@ export default function AdminShellClient({
   }
 
   return (
-    <ToastProvider>
-      <AdminI18nProvider initialLang="vi">
+    <AdminI18nProvider initialLang="vi">
+      <ToastProvider>
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex">
           {/* Fixed Sidebar */}
           <AdminSidebar
@@ -50,7 +50,7 @@ export default function AdminShellClient({
             </main>
           </div>
         </div>
-      </AdminI18nProvider>
-    </ToastProvider>
+      </ToastProvider>
+    </AdminI18nProvider>
   );
 }

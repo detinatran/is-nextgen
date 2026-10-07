@@ -4,29 +4,33 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { useToastHelpers } from "@/components/admin/ui/Toast";
 
 export default function AdminLoginPage() {
+  const { t } = useAdminI18n();
   const router = useRouter();
+  const { error: showError } = useToastHelpers();
   const [step, setStep] = useState<"CREDENTIALS" | "MFA">("CREDENTIALS");
-  const [email, setEmail] = useState("admin@is-nextgen.edu.vn");
-  const [password, setPassword] = useState("••••••••••••");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [mfaCode, setMfaCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
-    // Simulate Server Authentication
+    // Simulate Server Authentication - TODO: Replace with real API call
     setTimeout(() => {
       setIsLoading(false);
-      if (email.includes("@")) {
+      // Mock validation: check against known admin emails
+      const validAdmins = ["admin@is-nextgen.edu.vn", "admin@vnu-is.edu.vn", "organizer@is-nextgen.edu.vn"];
+      if (validAdmins.includes(email.trim().toLowerCase()) && password.length >= 8) {
         // Switch to MFA step (Admin 2FA required)
         setStep("MFA");
       } else {
-        setError("Email hoặc mật khẩu không chính xác.");
+        showError(t("Email hoặc mật khẩu không chính xác."));
       }
     }, 600);
   };
@@ -34,15 +38,17 @@ export default function AdminLoginPage() {
   const handleMfaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     setTimeout(() => {
       setIsLoading(false);
-      if (mfaCode.length === 6 || mfaCode === "123456" || !mfaCode) {
+      // Mock validation: only accept specific test code
+      if (mfaCode === "123456") {
         // Success -> redirect to admin dashboard
+        // TODO: Set real session cookie via API
         router.push("/admin");
+        router.refresh();
       } else {
-        setError("Mã xác thực 2 bước (OTP) không đúng hoặc đã hết hạn.");
+        showError(t("Mã xác thực 2 bước (OTP) không đúng hoặc đã hết hạn."));
       }
     }, 600);
   };
@@ -82,25 +88,17 @@ export default function AdminLoginPage() {
             IS-NEXTGEN MANAGER
           </h2>
           <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest font-semibold">
-            Khu vực Quản trị Hệ thống (Admin)
+            {t("Khu vực Quản trị Hệ thống (Admin)")}
           </p>
         </div>
-
-        {error && (
-          <div className="mb-6 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{error}</span>
-          </div>
-        )}
 
         {step === "CREDENTIALS" ? (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <AdminInput
-              label="Email Quản trị viên"
+              label={t("Email Quản trị viên")}
               type="email"
               required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@is-nextgen.edu.vn"
@@ -112,9 +110,10 @@ export default function AdminLoginPage() {
             />
 
             <AdminInput
-              label="Mật khẩu"
+              label={t("Mật khẩu")}
               type="password"
               required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
@@ -133,7 +132,7 @@ export default function AdminLoginPage() {
                 className="w-full"
                 isLoading={isLoading}
               >
-                Tiếp tục (Xác thực 2 bước)
+                {t("Tiếp tục (Xác thực 2 bước)")}
               </AdminButton>
             </div>
           </form>
@@ -145,9 +144,9 @@ export default function AdminLoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-sm font-bold text-slate-800">Xác thực OTP 2 bước (MFA)</h3>
+              <h3 className="text-sm font-bold text-slate-800">{t("Xác thực OTP 2 bước (MFA)")}</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Nhập mã 6 số từ ứng dụng Authenticator hoặc email của bạn
+                {t("Nhập mã 6 số từ ứng dụng Authenticator hoặc email của bạn")}
               </p>
             </div>
 
@@ -158,6 +157,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setMfaCode(e.target.value)}
               className="text-center font-sans tabular-nums tracking-tight text-xl font-bold"
               autoFocus
+              autoComplete="one-time-code"
             />
 
             <div className="space-y-2">
@@ -168,7 +168,7 @@ export default function AdminLoginPage() {
                 className="w-full"
                 isLoading={isLoading}
               >
-                Đăng nhập vào Dashboard
+                {t("Đăng nhập vào Dashboard")}
               </AdminButton>
               <AdminButton
                 type="button"
@@ -177,7 +177,7 @@ export default function AdminLoginPage() {
                 className="w-full"
                 onClick={() => setStep("CREDENTIALS")}
               >
-                ← Quay lại đăng nhập
+                {t("← Quay lại đăng nhập")}
               </AdminButton>
             </div>
           </form>
@@ -185,7 +185,7 @@ export default function AdminLoginPage() {
 
         <div className="mt-8 pt-4 border-t border-slate-100 text-center">
           <p className="text-[11px] text-slate-400">
-            Hệ thống quản trị IS-NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).
+            {t("Hệ thống quản trị IS-NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).")}
           </p>
         </div>
       </div>

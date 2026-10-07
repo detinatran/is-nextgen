@@ -9,12 +9,13 @@ import AdminModal from "@/components/admin/ui/AdminModal";
 import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
-import { mockSchedules, getScheduleById } from "@/mocks/admin";
+import { mockSchedules } from "@/mocks/admin";
 import type { ScheduleItem } from "@/mocks/admin/schedules";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { exportCSV } from "@/lib/admin/csv";
 
 export default function ExamSchedulesPage() {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const [schedules, setSchedules] = useState<ScheduleItem[]>(mockSchedules);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,6 +48,39 @@ export default function ExamSchedulesPage() {
     success(t("Tạo ca thi thành công"), t("Đã tạo ca thi mới thành công!"));
   };
 
+  const handleDeleteSchedule = (scheduleId: string) => {
+    const schedule = schedules.find((s) => s.id === scheduleId);
+    if (!schedule) return;
+
+    // Block deletion if candidates are already assigned
+    if (schedule.assignedCount > 0) {
+      error(
+        t("Không thể xóa ca thi"),
+        t("Ca thi này đã có {count} thí sinh được gán. Vui lòng chuyển tất cả thí sinh sang ca khác trước khi xóa.", { count: schedule.assignedCount })
+      );
+      return;
+    }
+
+    setSchedules((prev) => prev.filter((s) => s.id !== scheduleId));
+    success(t("Đã xóa ca thi"), t("Đã xóa ca thi") + ` ${schedule.name} ` + t("thành công!"));
+  };
+
+  const handleExportCSV = () => {
+    exportCSV({
+      filename: `IS-NextGen_Lich_Thi_Vong_1_${new Date().toISOString().slice(0, 10)}.csv`,
+      columns: [
+        { header: t("Tên ca thi"), key: "name" },
+        { header: t("Thời gian mở ca"), key: "opens_at", render: (row) => new Date(row.opens_at).toLocaleString(lang === "vi" ? "vi-VN" : "en-US") },
+        { header: t("Thời gian đóng ca"), key: "closes_at", render: (row) => new Date(row.closes_at).toLocaleString(lang === "vi" ? "vi-VN" : "en-US") },
+        { header: t("Sức chứa"), key: "capacity" },
+        { header: t("Đã gán"), key: "assignedCount" },
+        { header: t("Trạng thái"), key: "status", render: (row) => row.assignedCount >= row.capacity ? t("ĐẦY CA") : t("CÒN CHỖ") },
+      ],
+      data: schedules,
+    });
+    success(t("Đã xuất CSV"), t("Đã xuất") + ` ${schedules.length} ` + t("ca thi ra file CSV."));
+  };
+
   const columns: Column<ScheduleItem>[] = [
     {
       key: "name",
@@ -55,8 +89,8 @@ export default function ExamSchedulesPage() {
         <div>
           <span className="font-bold text-slate-900 text-sm block">{row.name}</span>
           <span className="text-xs text-slate-500 font-sans tabular-nums tracking-tight">
-            {new Date(row.opens_at).toLocaleString("vi-VN")} →{" "}
-            {new Date(row.closes_at).toLocaleTimeString("vi-VN")} {t("(60 phút)")}
+            {new Date(row.opens_at).toLocaleString(lang === "vi" ? "vi-VN" : "en-US")} →{" "}
+            {new Date(row.closes_at).toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-US")} {t("(60 phút)")}
           </span>
         </div>
       ),
@@ -117,13 +151,10 @@ export default function ExamSchedulesPage() {
           {row.assignedCount === 0 && (
             <AdminPopconfirm
               title={t("Xóa ca thi")}
-              description={t("Xóa ca thi") + ` "${row.name}"? ${t("Chỉ cho phép xóa khi chưa có thí sinh được gán")} (assignedCount = 0).`}
+              description={t("Xóa ca thi") + ` "${row.name}"? ${t("Chỉ cho phép xóa khi chưa có thí sinh được gán")}.`}
               confirmVariant="danger"
               confirmText={t("Xóa")}
-              onConfirm={() => {
-                setSchedules((prev) => prev.filter((s) => s.id !== row.id));
-                success(t("Đã xóa ca thi"), t("Đã xóa ca thi") + ` ${row.name} ${t("thành công!")}`);
-              }}
+              onConfirm={() => handleDeleteSchedule(row.id)}
               triggerVariant="ghost"
               triggerSize="sm"
             >
@@ -168,6 +199,9 @@ export default function ExamSchedulesPage() {
           }}
         >
           + {t("Tạo ca thi mới")}
+        </AdminButton>
+        <AdminButton variant="outline" size="sm" onClick={handleExportCSV}>
+          {t("Xuất CSV")}
         </AdminButton>
       </div>
 

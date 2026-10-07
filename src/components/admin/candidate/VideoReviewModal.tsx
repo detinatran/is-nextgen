@@ -28,7 +28,7 @@ export default function VideoReviewModal({
   onApprove,
   onReject,
 }: VideoReviewModalProps) {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const [rejecting, setRejecting] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
@@ -156,11 +156,11 @@ export default function VideoReviewModal({
           <div>
             <span className="text-slate-400 block">{t("Trạng thái bảo mật:")}</span>
             <span className="font-semibold text-emerald-700">
-              {media.is_private ? "Private Encrypted S3" : "Public"}
+              {media.is_private ? t("Private Encrypted S3") : t("Public")}
             </span>
           </div>
           <div className="col-span-2 pt-2 border-t border-slate-200">
-            <span className="text-slate-400 block">SHA-256 Checksum:</span>
+            <span className="text-slate-400 block">{t("SHA-256 Checksum:")}</span>
             <span className="font-sans tabular-nums tracking-tight text-[11px] text-slate-600 break-all select-all">
               {media.checksum_sha256}
             </span>

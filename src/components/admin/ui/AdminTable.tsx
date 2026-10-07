@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState, forwardRef } from "react";
 import AdminButton from "./AdminButton";
 import AdminBadge from "./AdminBadge";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export interface Column<T> {
   key: string;
@@ -56,7 +57,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
       data,
       keyExtractor,
       isLoading = false,
-      emptyMessage = "Không tìm thấy dữ liệu nào",
+      emptyMessage,
       onRowClick,
       sortColumn,
       sortDirection = "asc",
@@ -78,6 +79,8 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
     },
     ref
   ) => {
+    const { t } = useAdminI18n();
+    const defaultEmptyMessage = t("Không tìm thấy dữ liệu nào");
     const tableRef = useRef<HTMLDivElement>(null);
     const rowsRef = useRef<HTMLTableRowElement[]>([]);
     const [mounted, setMounted] = useState(false);
@@ -123,7 +126,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                       // @ts-ignore - indeterminate not in HTML props but works in React
                       onChange={(e) => onSelectAll?.(e.target.checked)}
                       className="w-4 h-4 rounded text-[#1F5BE0] border-slate-300 focus:ring-[#1F5BE0]/20 cursor-pointer"
-                      aria-label={selectedRows && selectedRows.size === data.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                      aria-label={selectedRows && selectedRows.size === data.length ? t("Bỏ chọn tất cả") : t("Chọn tất cả")}
                       ref={(el) => {
                         if (el && selectedRows && selectedRows.size > 0 && selectedRows.size < data.length) {
                           el.indeterminate = true;
@@ -183,7 +186,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                       </div>
                       <div className="text-center">
                         <p className="text-slate-600 font-medium text-sm">{emptyMessage}</p>
-                        <p className="text-slate-400 text-xs mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                        <p className="text-slate-400 text-xs mt-1">{t("Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm")}</p>
                       </div>
                     </div>
                   </td>
@@ -217,7 +220,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                               onSelectionChange?.(newSelection);
                             }}
                             className="w-4 h-4 rounded text-[#1F5BE0] border-slate-300 focus:ring-[#1F5BE0]/20 cursor-pointer"
-                            aria-label={isSelected ? "Bỏ chọn dòng này" : "Chọn dòng này"}
+                            aria-label={isSelected ? t("Bỏ chọn dòng này") : t("Chọn dòng này")}
                             // @ts-ignore - indeterminate not in HTML props but works in React
                             ref={(el) => {
                               if (el && isSelected) el.indeterminate = false;
@@ -255,7 +258,7 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
             <div>
               {totalItems !== undefined && (
                 <span>
-                  Hiển thị{" "}
+                  {t("Hiển thị")}{" "}
                   <span className="font-semibold text-slate-900 tabular-nums">
                     {Math.min((currentPage - 1) * pageSize + 1, totalItems)}
                   </span>{" "}
@@ -263,8 +266,8 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                   <span className="font-semibold text-slate-900 tabular-nums">
                     {Math.min(currentPage * pageSize, totalItems)}
                   </span>{" "}
-                  trong tổng số{" "}
-                  <span className="font-semibold text-slate-900 tabular-nums">{totalItems}</span> bản ghi
+                  {t("trong tổng số")}{" "}
+                  <span className="font-semibold text-slate-900 tabular-nums">{totalItems}</span> {t("bản ghi")}
                 </span>
               )}
             </div>
@@ -274,23 +277,23 @@ export const AdminTable = forwardRef<HTMLDivElement, AdminTableProps<any>>(
                 size="sm"
                 disabled={currentPage <= 1}
                 onClick={() => onPageChange(currentPage - 1)}
-                title="Trang trước"
-                aria-label="Trang trước"
+                title={t("Trang trước")}
+                aria-label={t("Trang trước")}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </AdminButton>
               <span className="px-2 font-medium">
-                Trang {currentPage} / {totalPages}
+                {t("Trang")} {currentPage} / {totalPages}
               </span>
               <AdminButton
                 variant="outline"
                 size="sm"
                 disabled={currentPage >= totalPages}
                 onClick={() => onPageChange(currentPage + 1)}
-                title="Trang sau"
-                aria-label="Trang sau"
+                title={t("Trang sau")}
+                aria-label={t("Trang sau")}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

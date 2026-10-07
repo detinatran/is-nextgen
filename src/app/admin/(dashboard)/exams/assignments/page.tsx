@@ -125,13 +125,13 @@ export default function CandidateAssignmentsPage() {
       align: "right",
       render: (row) => (
         <AdminPopconfirm
-          title={t("Đổi ca thi thí sinh")}
-          description={t("Chuyển") + ` ${row.fullName} (${row.candidateCode}) ${t("sang ca thi khác. Hành động sẽ được ghi nhận vào")} assignment_schedule_history.`}
-          confirmVariant="brand"
-          confirmText={t("Xác nhận đổi ca")}
+          title={t("Đổi ca thi")}
+          description={t("Chuyển thí sinh") + ` ${row.fullName} ` + t("sang ca thi khác. Hành động sẽ được ghi nhận vào lịch sử kiểm toán.")}
+          confirmVariant="primary"
+          confirmText={t("Mở Modal đổi ca")}
           onConfirm={() => {
             setSelectedAssignment(row);
-            setNewScheduleId(row.scheduleId === "sch-001" ? "sch-002" : "sch-001");
+            setNewScheduleId("");
             setChangeReason("");
           }}
           triggerVariant="outline"

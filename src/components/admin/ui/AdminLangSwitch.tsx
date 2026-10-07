@@ -10,7 +10,7 @@ import { useRef, useEffect } from "react";
 export default function AdminLangSwitch() {
   const pathname = usePathname();
   const initialLang = langFromPath(pathname);
-  const { lang, setLang } = useAdminI18n();
+  const { lang, setLang, t } = useAdminI18n();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync with initial language on mount
@@ -57,7 +57,7 @@ export default function AdminLangSwitch() {
       ref={containerRef}
       className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium transition-all hover:border-slate-300 hover:shadow-sm"
       role="group"
-      aria-label="Chuyển đổi ngôn ngữ"
+      aria-label={t("Chuyển đổi ngôn ngữ")}
     >
       <button
         onClick={() => handleSwitch("vi")}

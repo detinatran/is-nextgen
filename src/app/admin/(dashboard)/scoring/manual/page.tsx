@@ -13,7 +13,7 @@ import type { ManualScoringItem } from "@/mocks/admin/scoring-manual";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function ManualScoringPage() {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const [cases, setCases] = useState<ManualScoringItem[]>(mockScoringCases);
   const [selectedCase, setSelectedCase] = useState<ManualScoringItem | null>(null);
   const [stateFilter, setStateFilter] = useState("ALL");
@@ -22,16 +22,22 @@ export default function ManualScoringPage() {
   // Toast helpers
   const { success, error, warning, info } = useToastHelpers();
 
-  // Rubric Score state for active case
-  const [scores, setScores] = useState<Record<string, number>>({
-    c1: 4,
-    c2: 4,
-    c3: 4,
-    c4: 4,
-    c5: 5,
-    c6: 4,
-  });
+  // Rubric Score state for active case - reset when selectedCase changes
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [feedback, setFeedback] = useState("");
+
+  // Reset scores when selectedCase changes
+  React.useEffect(() => {
+    if (selectedCase) {
+      // Initialize with neutral defaults (3 = middle level) or existing reviewer scores
+      const initialScores: Record<string, number> = {};
+      rubricCriteria.forEach((c) => {
+        initialScores[c.id] = 3; // Neutral default
+      });
+      setScores(initialScores);
+      setFeedback("");
+    }
+  }, [selectedCase]);
 
   const filtered = cases.filter((c) => {
     const matchQuery =
@@ -55,6 +61,10 @@ export default function ManualScoringPage() {
   const handleSaveRubric = () => {
     if (!selectedCase) return;
     const finalCalculated = parseFloat(calculateTotalScore());
+
+    // Check if needs third reviewer (diff > 20%)
+    const needsThird = selectedCase.scoreDiff !== null && selectedCase.scoreDiff > 20;
+
     setCases((prev) =>
       prev.map((c) =>
         c.caseId === selectedCase.caseId
@@ -62,7 +72,7 @@ export default function ManualScoringPage() {
               ...c,
               reviewerC: { name: "GK. Admin (Trưởng BGK)", score: finalCalculated },
               finalScore: finalCalculated,
-              state: "COMPLETED",
+              state: needsThird ? "NEEDS_THIRD" : "COMPLETED",
             }
           : c
       )
@@ -197,6 +207,7 @@ export default function ManualScoringPage() {
             confirmVariant="danger"
             confirmText={t("Xóa")}
             onConfirm={() => {
+              setCases((prev) => prev.filter((c) => c.caseId !== row.caseId));
               success(t("Đã xóa hồ sơ chấm"), `${t("Đã xóa hồ sơ chấm của")} ${row.fullName}`);
             }}
             triggerVariant="ghost"

@@ -25,7 +25,7 @@ export default function CandidateDetailDrawer({
   onOpenVideoReview,
   onToggleStatus,
 }: CandidateDetailDrawerProps) {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   if (!isOpen || !candidate) return null;
 
   const profile = candidate.profile;
@@ -58,7 +58,7 @@ export default function CandidateDetailDrawer({
                 )}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                {t("Đăng ký ngày")}: {new Date(candidate.created_at).toLocaleDateString("vi-VN")}
+                {t("Đăng ký ngày")}: {new Date(candidate.created_at).toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US")}
               </p>
             </div>
             <button
@@ -91,7 +91,7 @@ export default function CandidateDetailDrawer({
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-500">{t("Thời điểm nộp:")}</span>
                   <span className="font-sans tabular-nums tracking-tight text-slate-800">
-                    {new Date(registration.submitted_at).toLocaleString("vi-VN")}
+                    {new Date(registration.submitted_at).toLocaleString(lang === "vi" ? "vi-VN" : "en-US")}
                   </span>
                 </div>
               )}
@@ -113,7 +113,7 @@ export default function CandidateDetailDrawer({
                   <span className="text-slate-400 block">{t("Ngày sinh")}</span>
                   <span className="font-semibold text-slate-900">
                     {profile?.date_of_birth
-                      ? new Date(profile.date_of_birth).toLocaleDateString("vi-VN")
+                      ? new Date(profile.date_of_birth).toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US")
                       : t("Chưa cập nhật")}
                   </span>
                 </div>

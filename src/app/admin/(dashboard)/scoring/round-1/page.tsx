@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminTable, { type Column } from "@/components/admin/ui/AdminTable";
 import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
@@ -11,6 +11,7 @@ import { useToastHelpers } from "@/components/admin/ui/Toast";
 import { mockRound1Results, getTop40 } from "@/mocks/admin";
 import type { Round1ResultItem } from "@/mocks/admin/scoring-round1";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { exportCSV } from "@/lib/admin/csv";
 
 export default function Round1ScoringPage() {
   const { t } = useAdminI18n();
@@ -19,6 +20,18 @@ export default function Round1ScoringPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+
+  // Persist approval state in localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("admin-round1-approved");
+    if (stored === "true") {
+      setIsApproved(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("admin-round1-approved", isApproved.toString());
+  }, [isApproved]);
 
   const { success } = useToastHelpers();
 
@@ -41,36 +54,34 @@ export default function Round1ScoringPage() {
   };
 
   const handleExportCSV = () => {
-    const headers = [t("Hạng"), t("Mã TS"), t("Họ Tên"), t("MSSV"), t("Trường"), t("Điểm"), t("Số Câu Đúng"), t("Thời Gian Làm Bài"), t("Kết Quả")];
-    const rows = filtered.map((r) => [
-      r.rank,
-      r.candidateCode,
-      `"${r.fullName}"`,
-      r.studentId,
-      `"${r.school}"`,
-      r.score,
-      `${r.correctAnswers}/${r.totalQuestions}`,
-      formatDuration(r.timeTakenSeconds),
-      r.status,
-    ]);
-
-    const csvContent =
-      "data:text/csv;charset=utf-8,﻿" +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Bang_Diem_Vong_1_ISNextGen_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    success(t("Đã xuất CSV"), `${t("Đã xuất")} ${filtered.length} ${t("hồ sơ bảng điểm Vòng 1 ra file CSV.")}`);
+    exportCSV({
+      filename: `Bang_Diem_Vong_1_ISNextGen_${Date.now()}.csv`,
+      columns: [
+        { header: t("Hạng"), key: "rank" },
+        { header: t("Mã TS"), key: "candidateCode" },
+        { header: t("Họ Tên"), key: "fullName", render: (r) => r.fullName },
+        { header: t("MSSV"), key: "studentId" },
+        { header: t("Trường"), key: "school", render: (r) => r.school },
+        { header: t("Điểm"), key: "score" },
+        { header: t("Số Câu Đúng"), key: "correctAnswers", render: (r) => `${r.correctAnswers}/${r.totalQuestions}` },
+        { header: t("Thời Gian Làm Bài"), key: "timeTakenSeconds", render: (r) => formatDuration(r.timeTakenSeconds) },
+        { header: t("Kết Quả"), key: "status" },
+      ],
+      data: filtered,
+    });
+    success(t("Đã xuất CSV"), t("Đã xuất") + ` ${filtered.length} ` + t("hồ sơ bảng điểm Vòng 1 ra file CSV."));
   };
 
   const handlePublishConfirm = () => {
     setIsApproved(true);
     setIsPublishModalOpen(false);
     success(t("Đã phê duyệt kết quả Vòng 1"), t("Danh sách TOP 40 thí sinh đã được chốt và chuyển sang Vòng 2 (result_revisions: APPROVED)"));
+  };
+
+  const handleOpenPublishModal = () => {
+    if (!isApproved) {
+      setIsPublishModalOpen(true);
+    }
   };
 
   const columns: Column<Round1ResultItem>[] = [
@@ -171,21 +182,9 @@ export default function Round1ScoringPage() {
             {t("Xuất bảng điểm (Excel/CSV)")}
           </AdminButton>
           {!isApproved && (
-            <AdminPopconfirm
-              title={t("Phê duyệt kết quả Vòng 1")}
-              description={t("Thao tác này sẽ chuyển revision của bảng kết quả sang APPROVED và khóa bảng xếp hạng Vòng 1. Sau khi phê duyệt, 40 thí sinh TOP sẽ được gán quyền nộp bài cho Vòng 2. Hành động không thể hoàn tác.")}
-              confirmVariant="primary"
-              confirmText={t("Xác nhận phê duyệt")}
-              onConfirm={handlePublishConfirm}
-              triggerVariant="brand"
-              triggerSize="sm"
-            >
-              {(open) => (
-                <AdminButton variant="brand" size="sm">
-                  {t("Phê duyệt TOP 40 vào Vòng 2")}
-                </AdminButton>
-              )}
-            </AdminPopconfirm>
+            <AdminButton variant="brand" size="sm" onClick={handleOpenPublishModal}>
+              {t("Phê duyệt TOP 40 vào Vòng 2")}
+            </AdminButton>
           )}
         </div>
       </div>

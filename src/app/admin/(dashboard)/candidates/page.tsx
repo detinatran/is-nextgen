@@ -13,9 +13,10 @@ import BulkActionBar from "@/components/admin/ui/BulkActionBar";
 import { mockCandidates, getSchools } from "@/mocks/admin";
 import type { CandidateRecord } from "@/mocks/admin/candidates";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { exportCSV } from "@/lib/admin/csv";
 
 export default function CandidatesPage() {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const [candidates, setCandidates] = useState<CandidateRecord[]>(mockCandidates);
   const [searchQuery, setSearchQuery] = useState("");
   const [schoolFilter, setSchoolFilter] = useState("ALL");
@@ -43,7 +44,7 @@ export default function CandidatesPage() {
         (item.candidate_code && item.candidate_code.toLowerCase().includes(q));
 
       const matchSchool =
-        schoolFilter === "ALL" || item.profile.school?.includes(schoolFilter);
+        schoolFilter === "ALL" || (item.profile.school && item.profile.school.includes(schoolFilter));
 
       const matchStatus =
         statusFilter === "ALL" || item.registration.state === statusFilter;
@@ -74,24 +75,26 @@ export default function CandidatesPage() {
     const selectedCandidates = filteredCandidates.filter((c) => selectedRows.has(c.id));
     if (selectedCandidates.length === 0) return;
 
-    const headers = [
-      t("Mã TS"), t("Họ và tên"), t("MSSV"), t("Trường / Ngành học"), t("Ngành"), t("Email"),
-      t("Số điện thoại"), t("Hồ sơ"), t("Link Video S3"), t("Thời lượng (giây)"), t("Ngày đăng ký")
-    ];
-    const rows = selectedCandidates.map((c) => [
-      c.candidate_code || "", `"${c.profile.full_name}"`, c.profile.student_id || "",
-      `"${c.profile.school || ""}"`, `"${c.profile.major || ""}"`, c.profile.email,
-      c.profile.phone || "", c.registration.state, c.mediaObject?.object_key || "",
-      c.mediaObject?.duration_seconds || 0, new Date(c.created_at).toLocaleDateString("vi-VN")
-    ]);
-    const csvContent = "data:text/csv;charset=utf-8,﻿" + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-    const link = document.createElement("a");
-    link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", `IS-NextGen_DS_Chon_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    exportCSV({
+      filename: `IS-NextGen_DS_Chon_${new Date().toISOString().slice(0, 10)}.csv`,
+      columns: [
+        { header: t("Mã TS"), key: "candidate_code" },
+        { header: t("Họ và tên"), key: "profile.full_name", render: (c) => c.profile?.full_name || "" },
+        { header: t("MSSV"), key: "profile.student_id", render: (c) => c.profile?.student_id || "" },
+        { header: t("Trường / Ngành học"), key: "profile.school", render: (c) => c.profile?.school || "" },
+        { header: t("Ngành"), key: "profile.major", render: (c) => c.profile?.major || "" },
+        { header: t("Email"), key: "profile.email", render: (c) => c.profile?.email || "" },
+        { header: t("Số điện thoại"), key: "profile.phone", render: (c) => c.profile?.phone || "" },
+        { header: t("Hồ sơ"), key: "registration.state", render: (c) => c.registration?.state || "" },
+        { header: t("Link Video S3"), key: "mediaObject.object_key", render: (c) => c.mediaObject?.object_key || "" },
+        { header: t("Thời lượng (giây)"), key: "mediaObject.duration_seconds", render: (c) => c.mediaObject?.duration_seconds || 0 },
+        { header: t("Ngày đăng ký"), key: "created_at", render: (c) => new Date(c.created_at).toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US") },
+      ],
+      data: selectedCandidates,
+    });
     success(t("Đã xuất CSV"), t("Đã xuất") + ` ${selectedCandidates.length} ` + t("hồ sơ đã chọn ra file CSV."));
     clearSelection();
-  }, [filteredCandidates, selectedRows, success, clearSelection]);
+  }, [filteredCandidates, selectedRows, success, clearSelection, lang]);
 
   const handleBulkToggleAccount = useCallback((disable: boolean) => {
     const selectedCandidates = filteredCandidates.filter((c) => selectedRows.has(c.id));
@@ -104,48 +107,34 @@ export default function CandidatesPage() {
     );
     success(
       disable ? t("Đã khóa hàng loạt") : t("Đã mở khóa hàng loạt"),
-      t("Đã") + ` ${disable ? t("khóa") : t("mở khóa")} ${selectedCandidates.length} ` + t("tài khoản.")
+      disable
+        ? t("Đã khóa {count} tài khoản.", { count: selectedRows.size })
+        : t("Đã mở khóa {count} tài khoản.", { count: selectedRows.size })
     );
     clearSelection();
   }, [filteredCandidates, selectedRows, success, clearSelection]);
 
-  // Export CSV
-  const handleExportCSV = () => {
-    const headers = [
-      t("Mã TS"), t("Họ và tên"), t("MSSV"), t("Trường / Ngành học"), t("Ngành"), t("Email"),
-      t("Số điện thoại"), t("Hồ sơ"), t("Link Video S3"), t("Thời lượng (giây)"), t("Ngày đăng ký")
-    ];
-
-    const rows = filteredCandidates.map((c) => [
-      c.candidate_code || "",
-      `"${c.profile.full_name}"`,
-      c.profile.student_id || "",
-      `"${c.profile.school || ""}"`,
-      `"${c.profile.major || ""}"`,
-      c.profile.email,
-      c.profile.phone || "",
-      c.registration.state,
-      c.mediaObject?.object_key || "",
-      c.mediaObject?.duration_seconds || 0,
-      new Date(c.created_at).toLocaleDateString("vi-VN"),
-    ]);
-
-    const csvContent =
-      "data:text/csv;charset=utf-8,﻿" +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute(
-      "download",
-      `IS-NextGen_Danh_Sach_Thi_Sinh_${new Date().toISOString().slice(0, 10)}.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Export CSV - using shared utility
+  const handleExportCSV = useCallback(() => {
+    exportCSV({
+      filename: `IS-NextGen_Danh_Sach_Thi_Sinh_${new Date().toISOString().slice(0, 10)}.csv`,
+      columns: [
+        { header: t("Mã TS"), key: "candidate_code" },
+        { header: t("Họ và tên"), key: "profile.full_name", render: (c) => c.profile?.full_name || "" },
+        { header: t("MSSV"), key: "profile.student_id", render: (c) => c.profile?.student_id || "" },
+        { header: t("Trường / Ngành học"), key: "profile.school", render: (c) => c.profile?.school || "" },
+        { header: t("Ngành"), key: "profile.major", render: (c) => c.profile?.major || "" },
+        { header: t("Email"), key: "profile.email", render: (c) => c.profile?.email || "" },
+        { header: t("Số điện thoại"), key: "profile.phone", render: (c) => c.profile?.phone || "" },
+        { header: t("Hồ sơ"), key: "registration.state", render: (c) => c.registration?.state || "" },
+        { header: t("Link Video S3"), key: "mediaObject.object_key", render: (c) => c.mediaObject?.object_key || "" },
+        { header: t("Thời lượng (giây)"), key: "mediaObject.duration_seconds", render: (c) => c.mediaObject?.duration_seconds || 0 },
+        { header: t("Ngày đăng ký"), key: "created_at", render: (c) => new Date(c.created_at).toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US") },
+      ],
+      data: filteredCandidates,
+    });
     success(t("Đã xuất CSV"), t("Đã xuất") + ` ${filteredCandidates.length} ` + t("hồ sơ thí sinh ra file CSV."));
-  };
+  }, [filteredCandidates, lang, success]);
 
   const handleOpenDetail = (cand: CandidateRecord) => {
     setSelectedCandidate(cand);
@@ -383,9 +372,7 @@ export default function CandidatesPage() {
           onChange={(e) => setSchoolFilter(e.target.value)}
           options={[
             { label: t("Tất cả các Trường / Viện"), value: "ALL" },
-            { label: t("Trường Quốc tế"), value: "Trường Quốc tế" },
-            { label: t("Ngoại Thương"), value: "Ngoại Thương" },
-            { label: t("Kinh tế Quốc dân"), value: "Kinh tế Quốc dân" },
+            ...getSchools().map((school) => ({ label: school, value: school })),
           ]}
         />
         <AdminSelect
@@ -468,9 +455,27 @@ export default function CandidatesPage() {
         candidateCode={selectedCandidate?.candidate_code || ""}
         media={selectedCandidate?.mediaObject || null}
         onApprove={() => {
+          if (selectedCandidate) {
+            setCandidates((prev) =>
+              prev.map((c) =>
+                c.id === selectedCandidate.id
+                  ? { ...c, registration: { ...c.registration, state: "SUBMITTED" } }
+                  : c
+              )
+            );
+          }
           success(t("Đã duyệt video"), t("Video dự thi đạt tiêu chuẩn quy định."));
         }}
         onReject={(reason) => {
+          if (selectedCandidate) {
+            setCandidates((prev) =>
+              prev.map((c) =>
+                c.id === selectedCandidate.id
+                  ? { ...c, registration: { ...c.registration, state: "DRAFT" } }
+                  : c
+              )
+            );
+          }
           error(t("Đã từ chối video"), t("Lý do:") + ` ${reason}`);
         }}
       />

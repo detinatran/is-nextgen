@@ -8,6 +8,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export type ToastVariant = "success" | "error" | "warning" | "info";
 
@@ -83,6 +84,7 @@ interface ToastItemProps {
 }
 
 function ToastItem({ toast, onClose }: ToastItemProps) {
+  const { t } = useAdminI18n();
   const { title, description, variant = "info", action, duration = 5000 } = toast;
   const styles = VARIANT_STYLES[variant];
   const [isExiting, setIsExiting] = useState(false);
@@ -149,7 +151,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
       <button
         onClick={handleClose}
         className="flex-shrink-0 p-1 rounded hover:bg-black/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2"
-        aria-label="Đóng thông báo"
+        aria-label={t("Đóng thông báo")}
       >
         <svg className="w-4 h-4 opacity-60 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -164,7 +166,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label="Thời gian tự động đóng"
+          aria-label={t("Thời gian tự động đóng")}
         />
       )}
     </div>
@@ -184,6 +186,7 @@ function ToastContainer({
   gap = 8,
   className = "",
 }: ToastContainerProps) {
+  const { t } = useAdminI18n();
   const { toasts, hideToast } = useToast();
 
   const positionStyles: Record<string, string> = {
@@ -206,7 +209,7 @@ function ToastContainer({
         ${className}
       `}
       aria-live="polite"
-      aria-label="Thông báo hệ thống"
+      aria-label={t("Thông báo hệ thống")}
     >
       {visibleToasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto w-full max-w-[384px]">

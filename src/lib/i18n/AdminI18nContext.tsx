@@ -8,17 +8,20 @@ type Lang = "vi" | "en";
 interface AdminI18nContextType {
   lang: Lang;
   setLang: (lang: Lang) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   toggleLang: () => void;
+  isReady: boolean; // SSR hydration ready
 }
 
 const AdminI18nContext = createContext<AdminI18nContextType | undefined>(undefined);
 
 export function AdminI18nProvider({ children, initialLang = "vi" }: { children: ReactNode; initialLang?: Lang }) {
   const [lang, setLangState] = useState<Lang>(initialLang);
+  const [isReady, setIsReady] = useState(false);
 
-  // Load saved language from localStorage on mount
+  // Load saved language from localStorage on mount (client-side only)
   useEffect(() => {
+    setIsReady(true);
     try {
       const saved = localStorage.getItem("admin-lang") as Lang | null;
       if (saved && (saved === "vi" || saved === "en")) {
@@ -42,13 +45,33 @@ export function AdminI18nProvider({ children, initialLang = "vi" }: { children: 
     setLang(lang === "vi" ? "en" : "vi");
   }, [lang, setLang]);
 
-  const t = useCallback((key: string): string => {
-    if (lang === "vi") return key;
-    return adminTranslations[key as AdminTranslationKey] || key;
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
+    if (lang === "vi") {
+      if (!params) return key;
+      // Apply interpolation to Vietnamese key
+      return Object.entries(params).reduce(
+        (str, [k, v]) => str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+        key
+      );
+    }
+    const translation = adminTranslations[key as AdminTranslationKey];
+    if (!translation) {
+      // Development warning for missing translations
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[i18n] Missing translation key: "${key}"`);
+      }
+      return key; // fallback to Vietnamese key
+    }
+    // Apply interpolation to English translation
+    if (!params) return translation;
+    return Object.entries(params).reduce(
+      (str, [k, v]) => str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+      translation
+    );
   }, [lang]);
 
   return (
-    <AdminI18nContext.Provider value={{ lang, setLang, t, toggleLang }}>
+    <AdminI18nContext.Provider value={{ lang, setLang, t, toggleLang, isReady }}>
       {children}
     </AdminI18nContext.Provider>
   );
@@ -63,7 +86,22 @@ export function useAdminI18n(): AdminI18nContextType {
 }
 
 // Helper function for components that can't use hooks
-export function translate(key: string, lang: Lang = "vi"): string {
-  if (lang === "vi") return key;
-  return adminTranslations[key as AdminTranslationKey] || key;
+export function translate(key: string, lang: Lang = "vi", params?: Record<string, string | number>): string {
+  if (lang === "vi") {
+    if (!params) return key;
+    return Object.entries(params).reduce(
+      (str, [k, v]) => str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+      key
+    );
+  }
+  const translation = adminTranslations[key as AdminTranslationKey];
+  if (!translation && process.env.NODE_ENV === "development") {
+    console.warn(`[i18n] Missing translation key: "${key}"`);
+  }
+  if (!translation) return key;
+  if (!params) return translation;
+  return Object.entries(params).reduce(
+    (str, [k, v]) => str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+    translation
+  );
 }

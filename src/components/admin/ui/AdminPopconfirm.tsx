@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import AdminButton from "./AdminButton";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface AdminPopconfirmProps {
   /** Trigger content - render prop function that receives open state */
@@ -36,8 +37,8 @@ export default function AdminPopconfirm({
   children,
   title,
   description,
-  confirmText = "Xác nhận",
-  cancelText = "Hủy",
+  confirmText,
+  cancelText,
   confirmVariant = "danger",
   onConfirm,
   onCancel,
@@ -47,6 +48,9 @@ export default function AdminPopconfirm({
   open: controlledOpen,
   onOpenChange,
 }: AdminPopconfirmProps) {
+  const { t } = useAdminI18n();
+  const defaultConfirmText = confirmText || t("Xác nhận");
+  const defaultCancelText = cancelText || t("Hủy");
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
@@ -131,7 +135,7 @@ export default function AdminPopconfirm({
                     onCancel?.();
                   }}
                 >
-                  {cancelText}
+                  {defaultCancelText}
                 </AdminButton>
                 <AdminButton
                   variant={confirmVariant}
@@ -141,7 +145,7 @@ export default function AdminPopconfirm({
                     onConfirm();
                   }}
                 >
-                  {confirmText}
+                  {defaultConfirmText}
                 </AdminButton>
               </div>
             </div>

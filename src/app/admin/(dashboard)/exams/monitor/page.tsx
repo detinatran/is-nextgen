@@ -13,37 +13,43 @@ import type { LiveAttemptItem } from "@/mocks/admin/live-monitor";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 export default function LiveExamMonitorPage() {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const [attempts, setAttempts] = useState<LiveAttemptItem[]>(mockLiveAttempts);
   const [filterViolation, setFilterViolation] = useState<"ALL" | "VIOLATION_ONLY">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [targetAttempt, setTargetAttempt] = useState<LiveAttemptItem | null>(null);
-  const [actionType, setActionType] = useState<"WARN" | "FORCE_SUBMIT" | "DISQUALIFY">("WARN");
-  const [reason, setReason] = useState("");
+  const [isWarnModalOpen, setIsWarnModalOpen] = useState(false);
+  const [warnAttempt, setWarnAttempt] = useState<LiveAttemptItem | null>(null);
+  const [warnReason, setWarnReason] = useState("");
 
   const { success, error, warning, info } = useToastHelpers();
 
-  // Auto-refresh heartbeat simulation
+  // Auto-refresh heartbeat simulation - realistic deterministic updates
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const simulateHeartbeat = useCallback(() => {
     setAttempts((prev) =>
       prev.map((attempt) => {
         if (attempt.status !== "ACTIVE") return attempt;
 
-        // Simulate progress - increase answered count randomly
-        const progressIncrement = Math.random() > 0.7 ? Math.floor(Math.random() * 3) + 1 : 0;
-        const newAnswered = Math.min(attempt.answeredCount + progressIncrement, attempt.totalQuestions);
+        // Deterministic progress based on time elapsed (not random)
+        const timeElapsed = Date.now() - new Date(attempt.startedAt).getTime();
+        const expectedAnswered = Math.min(
+          Math.floor(timeElapsed / (60 * 1000)) * 2 + 1, // ~2 questions per minute
+          attempt.totalQuestions
+        );
 
-        // Simulate occasional violations
-        const newTabSwitch = attempt.tabSwitchCount + (Math.random() > 0.95 ? 1 : 0);
-        const newCopyPaste = attempt.copyPasteCount + (Math.random() > 0.98 ? 1 : 0);
+        // Only update if progress would increase (prevents flicker)
+        const newAnswered = Math.max(attempt.answeredCount, expectedAnswered);
+
+        // Violations only increase, never decrease
+        const newTabSwitch = Math.max(attempt.tabSwitchCount, Math.floor(timeElapsed / (5 * 60 * 1000)));
+        const newCopyPaste = Math.max(attempt.copyPasteCount, Math.floor(timeElapsed / (10 * 60 * 1000)));
 
         // Auto-finalize if all questions answered
         const newStatus = newAnswered >= attempt.totalQuestions ? "FINALIZED" : "ACTIVE";
         const newHeartbeat = newStatus === "FINALIZED"
-          ? `${t("Đã nộp bài")} (${new Date().toLocaleTimeString("vi-VN")})`
-          : t("Vừa xong");
+          ? `${t("Đã nộp bài")} (${new Date().toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-US")})`
+          : `${t("Vừa xong")} (${new Date().toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-US")})`;
 
         return {
           ...attempt,
@@ -55,7 +61,7 @@ export default function LiveExamMonitorPage() {
         };
       })
     );
-  }, [t]);
+  }, [t, lang]);
 
   // Start/stop auto-refresh
   useEffect(() => {
@@ -205,9 +211,9 @@ export default function LiveExamMonitorPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                setTargetAttempt(row);
-                setActionType("WARN");
-                setReason(t("Cảnh cáo: Phát hiện nhiều lần rời màn hình thi!"));
+                setWarnAttempt(row);
+                setWarnReason(t("Cảnh cáo: Phát hiện nhiều lần rời màn hình thi!"));
+                setIsWarnModalOpen(true);
               }}
             >
               {t("Cảnh cáo")}
@@ -347,6 +353,55 @@ export default function LiveExamMonitorPage() {
         data={filtered}
         keyExtractor={(item) => item.id}
       />
+
+      {/* Warning Modal */}
+      <AdminModal
+        isOpen={isWarnModalOpen}
+        onClose={() => setIsWarnModalOpen(false)}
+        title={t("Cảnh cáo thí sinh")}
+        description={warnAttempt ? `${warnAttempt.fullName} (${warnAttempt.candidateCode})` : ""}
+        maxWidth="md"
+        footer={
+          <div className="flex items-center gap-2">
+            <AdminButton variant="outline" size="sm" onClick={() => setIsWarnModalOpen(false)}>
+              {t("Hủy")}
+            </AdminButton>
+            <AdminButton
+              variant="brand"
+              size="sm"
+              onClick={() => {
+                if (warnAttempt) {
+                  setAttempts((prev) =>
+                    prev.map((a) =>
+                      a.id === warnAttempt.id
+                        ? { ...a, lastHeartbeat: t("Đã cảnh cáo") }
+                        : a
+                    )
+                  );
+                  success(t("Đã gửi cảnh cáo"), `${t("Thí sinh")} ${warnAttempt.fullName} ${t("đã nhận được cảnh cáo.")}`);
+                }
+                setIsWarnModalOpen(false);
+              }}
+            >
+              {t("Gửi cảnh cáo")}
+            </AdminButton>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
+              {t("Nội dung cảnh cáo:")}
+            </label>
+            <textarea
+              rows={4}
+              value={warnReason}
+              onChange={(e) => setWarnReason(e.target.value)}
+              className="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-[#1F5BE0]/20"
+            />
+          </div>
+        </div>
+      </AdminModal>
     </div>
   );
 }

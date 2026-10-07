@@ -3,6 +3,7 @@
 import React from "react";
 import AdminButton from "./AdminButton";
 import AdminBadge from "./AdminBadge";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface BulkActionBarProps {
   selectedCount: number;
@@ -22,6 +23,7 @@ export function BulkActionBar({
   actions,
   className = "",
 }: BulkActionBarProps) {
+  const { t } = useAdminI18n();
   if (selectedCount === 0) return null;
 
   return (
@@ -33,13 +35,13 @@ export function BulkActionBar({
       <div className="bg-white rounded-xl border border-slate-200 shadow-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 max-w-2xl">
         <div className="flex items-center gap-4">
           <AdminBadge variant="info" size="md" className="font-bold">
-            Đã chọn: {selectedCount} bản ghi
+            {t("Đã chọn:")} {selectedCount} {t("bản ghi")}
           </AdminBadge>
           <AdminButton variant="ghost" size="sm" onClick={onClearSelection}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            Bỏ chọn
+            {t("Bỏ chọn")}
           </AdminButton>
         </div>
         <div className="flex items-center gap-2 flex-wrap">

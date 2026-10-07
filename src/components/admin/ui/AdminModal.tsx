@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { createPortal } from "react-dom";
+import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export default function AdminModal({
   maxWidth = "lg",
   disableAnimation = false,
 }: AdminModalProps) {
+  const { t } = useAdminI18n();
   const modalRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -143,7 +145,7 @@ export default function AdminModal({
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
-              title="Đóng (Esc)"
+              title={t("Đóng (Esc)")}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

@@ -73,7 +73,7 @@ export default function Header() {
         >
           <Link href={href("/#top")} className="flex min-w-0 items-center" onClick={() => setOpen(false)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-9 w-auto" />
+            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-10 w-auto sm:h-12" />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label={t.main}>

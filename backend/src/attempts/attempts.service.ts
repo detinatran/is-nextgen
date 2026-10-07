@@ -198,6 +198,7 @@ export class AttemptsService {
           selectedOptionId: answer?.selected_delivered_option_id ?? null,
           answerRevision: answer ? Number(answer.revision) : 0,
           reviewFlag: flag?.flagged ?? false,
+          flagRevision: flag ? Number(flag.revision) : 0,
         };
       }),
     };

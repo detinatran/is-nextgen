@@ -112,6 +112,8 @@ class CandidateAnswerStateDto {
   answerRevision!: number;
   @ApiProperty()
   reviewFlag!: boolean;
+  @ApiProperty({ description: 'Revision of the review flag (0 = never set); send as expectedRevision' })
+  flagRevision!: number;
 }
 
 export class AttemptView {

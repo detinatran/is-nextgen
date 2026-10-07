@@ -46,6 +46,7 @@ export const nav = [
   { href: "/#lo-trinh", label: "Lộ trình", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Giải thưởng", id: "giai-thuong" },
   { href: "/the-le/", label: "Thể lệ", id: "the-le" },
+  { href: "/thi/", label: "Vào thi", id: "thi" },
 ];
 
 export const hero = {

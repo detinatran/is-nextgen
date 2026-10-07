@@ -1,5 +1,7 @@
 # IS-NextGen Manager Challenge 2026
 
+**Branch Admin FR-01–FR-12:** các màn hình quản trị đã nối API NestJS/PostgreSQL trong `backend/`. Xem [hướng dẫn cài đặt, kiểm thử và cấu hình BCM](docs/admin-fr-01-12.md). Phần nhập/xuất điểm đã có; công thức và trọng số BCM chính thức cần được Ban Tổ Chức xác nhận.
+
 **Website chính thức + Phân hệ Admin Dashboard** cho cuộc thi **IS-NextGen Manager Challenge 2026 – "The Manager in the AI Era" (Mùa I)**, do Khoa Kinh tế và Quản lý, Trường Quốc tế – Đại học Quốc gia Hà Nội tổ chức.
 
 ---
@@ -8,14 +10,14 @@
 
 ```
 is-nextgen/
-├── 🌐 Landing Page (Public)          → Next.js 16 App Router, Static Export (out/)
+├── 🌐 Landing Page (Public)          → Next.js 16 App Router
 ├── 🔐 Admin Dashboard (Private)      → Next.js 16 App Router, Client Components, i18n (VI/EN)
 └── 📦 Shared Config                  → Tailwind CSS 4, TypeScript, Be Vietnam Pro font
 ```
 
 | Phân hệ | Tech Stack | Deploy Target |
 |---------|------------|---------------|
-| **Landing Page** | Next.js 16 (Static Export), Tailwind CSS 4, GSAP | GitHub Pages / Vercel / Netlify / Hosting Trường |
+| **Landing Page** | Next.js 16, Tailwind CSS 4, GSAP | Next.js server / Vercel / Hosting Trường |
 | **Admin Dashboard** | Next.js 16 (App Router), React 19, Tailwind CSS 4, GSAP, i18n | Vercel / Node.js Server / Docker |
 
 ---
@@ -30,7 +32,8 @@ npm install
 npm run dev        # http://localhost:3000
 
 # Build production
-npm run build      # Landing Page → out/ | Admin → .next/
+npm run build      # Build Next.js vào .next/
+npm start          # Chạy Next.js server; backend chạy riêng ở cổng 3001
 ```
 
 > **Lưu ý**: Admin Dashboard chạy ở `/admin` (route group `(dashboard)`), Landing Page ở `/`.
@@ -116,7 +119,7 @@ src/
 │   │   ├── page.tsx                       # Dashboard KPI + Quick Actions
 │   │   ├── candidates/
 │   │   │   ├── page.tsx                   # Danh sách + tìm kiếm + Bulk actions
-│   │   │   └── duplicate-reviews/page.tsx # Rà soát trùng lặp
+│   │   │   └── duplicate-reviews/page.tsx # Chuyển về trang hồ sơ
 │   │   ├── questions/
 │   │   │   ├── page.tsx                   # Ngân hàng câu hỏi (CRUD, freeze)
 │   │   │   └── import/page.tsx            # Import Excel/Docx + validate
@@ -126,7 +129,7 @@ src/
 │   │   │   └── monitor/page.tsx           # Live proctoring dashboard
 │   │   └── scoring/
 │   │       ├── round-1/page.tsx           # Bảng điểm Vòng 1 + TOP 40
-│   │       └── manual/page.tsx            # Chấm Rubric Vòng 2/3/Chung kết
+│   │       └── manual/page.tsx            # Nhập điểm Vòng 2/Chung kết
 │   └── layout.tsx                         # Root admin layout
 ├── components/admin/
 │   ├── layout/
@@ -171,7 +174,8 @@ NEXT_PUBLIC_REGISTER_ENDPOINT=https://script.google.com/macros/s/.../exec
 NEXT_PUBLIC_RESULTS_CSV_URL=https://docs.google.com/spreadsheets/d/.../export?format=csv
 
 # Deploy config
-NEXT_PUBLIC_BASE_PATH=/is-nextgen          # GitHub Pages project page
+NEXT_PUBLIC_BASE_PATH=                    # Chạy tại domain gốc
+BACKEND_URL=http://127.0.0.1:3001          # API NestJS, proxy qua Next.js server
 NEXT_PUBLIC_SITE_URL=https://is-nextgen.vn # Open Graph, sitemap
 ```
 
@@ -181,7 +185,7 @@ NEXT_PUBLIC_SITE_URL=https://is-nextgen.vn # Open Graph, sitemap
 
 | Package | Phân hệ | Mục đích |
 |---------|---------|----------|
-| `next@16.3.8` | Cả 2 | App Router, Static Export, Turbopack |
+| `next@16.3.8` | Cả 2 | App Router, API proxy, Turbopack |
 | `react@19.3.0` | Cả 2 | React 19 features |
 | `tailwindcss@4.3.3` | Cả 2 | Utility-first CSS, `@theme` design tokens |
 | `@gsap/react@2.1.2`, `gsap@3.15.0` | Admin + Landing | Animations (scroll, entrance, modal, drawer) |
@@ -191,11 +195,11 @@ NEXT_PUBLIC_SITE_URL=https://is-nextgen.vn # Open Graph, sitemap
 
 ## 🧪 Mock Data & Development
 
-Admin Dashboard dùng **Mock Data** tại `src/mocks/admin/` để phát triển độc lập khỏi Backend (NestJS + PostgreSQL). Khi kết nối BE:
+Các màn hình FR-01–FR-12 dùng API thật, qua `src/lib/admin/api.ts` và `src/components/admin/operations/`. Dữ liệu được lưu trong PostgreSQL. `src/mocks/admin/` chỉ giữ các dữ liệu mẫu cũ, không cấp dữ liệu cho các màn hình này.
 
-1. Thay thế import từ `@/mocks/admin` bằng API calls (React Query / SWR)
-2. Types đã sẵn sàng tại `src/types/admin.ts` (mapping 1-1 schema SQL)
-3. API contracts: RESTful + Server-side Session (HttpOnly cookie, CSRF, MFA)
+API bảo vệ bằng session HttpOnly, CSRF và MFA. Có kiểm thử với database riêng cho quyền truy cập, phiên đăng nhập, nhập/xuất tệp, phiên bản câu hỏi và phân ca đồng thời. Hướng dẫn chạy và kiểm thử: [docs/admin-fr-01-12.md](docs/admin-fr-01-12.md).
+
+Không dùng static export cho branch này; phần Admin cần Next.js server để kiểm tra phiên và chuyển tiếp API. Nội dung các màn hình chức năng mới dùng tiếng Việt; shell giữ bộ chuyển ngôn ngữ cũ.
 
 ---
 

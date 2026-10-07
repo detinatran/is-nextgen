@@ -9,6 +9,7 @@ import AdminLangSwitch from "@/components/admin/ui/AdminLangSwitch";
 import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminPopconfirm from "@/components/admin/ui/AdminPopconfirm";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { adminApi } from '@/lib/admin/api';
 
 export default function AdminHeader({
   onMobileMenuToggle,
@@ -151,7 +152,10 @@ export default function AdminHeader({
             description={t("Bạn có chắc chắn muốn đăng xuất khỏi trang Quản trị?")}
             confirmVariant="danger"
             confirmText={t("Đăng xuất")}
-            onConfirm={() => (window.location.href = "/")}
+            onConfirm={async () => {
+              try { await adminApi('auth/logout', { method: 'POST' }); window.location.assign('/admin/login'); }
+              catch (error) { window.alert((error as Error).message); }
+            }}
             triggerVariant="ghost"
             triggerSize="sm"
           >

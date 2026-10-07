@@ -1,0 +1,22 @@
+{
+  "assignments": [
+    {
+      "assignmentId": "c95da91c-8299-48f6-86fa-272c3c94e2ee",
+      "exam": {
+        "id": "49fd2829-2f4c-4406-92d1-b57a44618b53",
+        "round": 1,
+        "name": "Round 1 of C-f4d84e76",
+        "durationSeconds": 3600
+      },
+      "schedule": {
+        "opensAt": "2026-10-05T11:01:30.552Z",
+        "closesAt": "2026-10-05T13:01:30.552Z",
+        "capacity": 100
+      },
+      "attemptsUsed": 0,
+      "attemptQuota": 3,
+      "activeAttemptId": null,
+      "finalScore": null
+    }
+  ]
+}

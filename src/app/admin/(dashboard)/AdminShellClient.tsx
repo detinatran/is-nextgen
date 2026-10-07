@@ -29,7 +29,7 @@ export default function AdminShellClient({
   return (
     <AdminI18nProvider initialLang="vi">
       <ToastProvider>
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex">
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex overflow-x-clip">
           {/* Fixed Sidebar */}
           <AdminSidebar
             collapsed={collapsed}

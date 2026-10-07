@@ -1,0 +1,43 @@
+# Production trên server: chỉ PostgreSQL + backend. Backend lắng nghe 127.0.0.1:3001,
+# nginx của máy chủ chuyển tiếp https://<domain>/api/ vào đây.
+# Bí mật (POSTGRES_PASSWORD, SMTP_URL...) đặt trong file .env cạnh file này, không commit.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nextgen
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: nextgen
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextgen -d nextgen"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://nextgen:${POSTGRES_PASSWORD}@postgres:5432/nextgen?schema=public
+      MEDIA_STORAGE_DIR: /var/lib/isnextgen/media
+      TRUST_PROXY: "1"
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
+      SMTP_URL: ${SMTP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}
+    volumes:
+      - media:/var/lib/isnextgen/media
+    ports:
+      - "127.0.0.1:3001:3001"
+
+volumes:
+  pgdata:
+  media:

@@ -1,0 +1,14 @@
+{
+  "user": {
+    "id": "91d4e437-36d2-4ffa-8871-827999f4293d",
+    "email": "cand-1c4bc077@example.com",
+    "roles": [
+      "STUDENT"
+    ]
+  },
+  "setsCookies": [
+    "isng_session (HttpOnly, SameSite=Lax)",
+    "isng_csrf (readable)"
+  ],
+  "csrfHeader": "x-csrf-token"
+}

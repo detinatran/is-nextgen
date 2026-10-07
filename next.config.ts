@@ -4,10 +4,13 @@ import type { NextConfig } from "next";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
-  output: "export",
   basePath,
   trailingSlash: true,
   images: { unoptimized: true },
+  async rewrites() {
+    const backend = (process.env.BACKEND_URL || 'http://127.0.0.1:3001').replace(/\/$/, '');
+    return [{ source: '/api/v1/:path*', destination: `${backend}/api/v1/:path*` }];
+  },
 };
 
 export default nextConfig;

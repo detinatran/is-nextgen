@@ -36,6 +36,6 @@
     ".next/dev/types/**/*.ts"
 , "src/mocks/admin/candidates.ts", "src/mocks/admin/duplicates.ts"  ],
   "exclude": [
-    "node_modules"
+    "node_modules", "backend", "is-nextgen"
   ]
 }

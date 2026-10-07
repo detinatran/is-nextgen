@@ -1,0 +1,53 @@
+{
+  "video": {
+    "maxBytes": 500000000,
+    "maxDurationSeconds": 120,
+    "acceptedType": "video/mp4"
+  },
+  "photo": {
+    "maxBytes": 10000000,
+    "acceptedTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "statement": "01 bức ảnh cá nhân dùng cho hoạt động truyền thông của Cuộc thi."
+  },
+  "consents": {
+    "eventCoverage": {
+      "wordingVersion": "EVENT-V1-2026",
+      "statement": "Ban Tổ chức ghi hình, chụp ảnh tại các vòng thi và sự kiện của Cuộc thi, sử dụng cho mục đích truyền thông về Cuộc thi trên fanpage, website, ấn phẩm in và báo chí. Hình ảnh được lưu trong 01 năm kể từ ngày kết thúc Cuộc thi.",
+      "required": false,
+      "deprecated": true,
+      "description": "Legacy event wording; MEDIA_USAGE is the communication-use decision."
+    },
+    "mediaUsage": {
+      "wordingVersion": "MEDIA-V1-2026",
+      "purpose": "MEDIA_USAGE",
+      "description": "Ban Tổ chức có thể ghi hình, chụp ảnh tại các vòng thi và sự kiện của Cuộc thi và sử dụng hình ảnh/video cho mục đích truyền thông về Cuộc thi trên fanpage, website, ấn phẩm in và báo chí. Hình ảnh được lưu trong 01 năm kể từ ngày kết thúc Cuộc thi.",
+      "selectionRequired": true,
+      "defaultSelection": null,
+      "choices": [
+        {
+          "decision": "AGREE",
+          "granted": true
+        },
+        {
+          "decision": "DISAGREE",
+          "granted": false
+        }
+      ],
+      "withdrawalContactEmail": "nextgen@vnuis.edu.vn",
+      "retention": {
+        "anchor": "OFFICIAL_COMPETITION_END",
+        "period": "P1Y"
+      },
+      "cleanupEnforced": false,
+      "statement": "Tôi đồng ý cho Ban Tổ chức sử dụng hình ảnh, video của tôi cho mục đích truyền thông nêu trên.",
+      "declineStatement": "Tôi không đồng ý.",
+      "withdrawalNotice": "Bạn có thể rút lại sự đồng ý bất cứ lúc nào bằng cách gửi email tới nextgen@vnuis.edu.vn.",
+      "required": false
+    }
+  },
+  "favoriteCandidateNotice": "Đối với thí sinh tham gia xét giải Thí sinh được yêu thích nhất, thí sinh phải đồng ý sử dụng hình ảnh và video."
+}

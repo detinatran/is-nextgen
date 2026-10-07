@@ -3,6 +3,7 @@
 import React, { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface NavGroup {
   title: string;
@@ -149,71 +150,57 @@ export default function AdminSidebar({
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 ease-out flex flex-col ${
-        collapsed ? "w-20" : "w-64"
-      } lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      className={cn(
+        "fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 ease-out flex flex-col",
+        collapsed ? "w-[var(--sidebar-width-icon)]" : "w-[var(--sidebar-width)]",
+        "lg:translate-x-0",
+        mobileOpen ? "translate-x-0" : "-translate-x-full",
+        "lg:translate-x-0"
+      )}
       aria-hidden={!mobileOpen}
+      style={{
+        '--sidebar-width': '16rem',
+        '--sidebar-width-icon': '5rem',
+      } as React.CSSProperties}
     >
       {/* Mobile Backdrop */}
       <div
-        className={`fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-[-1] lg:hidden transition-opacity duration-300 ${
+        className={cn(
+          "fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-[-1] lg:hidden transition-opacity duration-300",
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        )}
         onClick={onMobileClose}
         aria-hidden="true"
       />
+
       {/* Brand Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
         <Link
           href="/admin"
-          className="flex items-center gap-3 overflow-hidden flex-1 justify-center transition-all duration-300 ease-out"
+          className="flex items-center justify-center w-full transition-all duration-300 ease-out"
         >
-          {/* Expanded Brand Text */}
-          <div
-            className={`brand-text flex flex-col min-w-0 whitespace-nowrap transition-all duration-300 ease-out ${
-              collapsed
-                ? "opacity-0 w-0 overflow-hidden"
-                : "opacity-100 w-auto"
-            }`}
-          >
-            <span className="font-bold text-white text-sm tracking-wide whitespace-nowrap">
-              IS-NEXTGEN
-            </span>
-            <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase whitespace-nowrap">
-              Admin Manager
-            </span>
-          </div>
-
-          {/* Collapsed Mini Logo */}
-          <div
-            className={`brand-logo-min flex justify-center items-center transition-all duration-300 ease-out ${
-              collapsed
-                ? "opacity-100 scale-100 w-auto"
-                : "opacity-0 scale-50 w-0 overflow-hidden"
-            }`}
-          >
+          {/* Logo - Always centered */}
+          <div className="flex items-center justify-center w-full">
             <img
               src="/images/logo_min.png"
               alt="IS-NEXTGEN"
-              className="w-8 h-8 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                e.currentTarget.nextElementSibling?.classList.remove("hidden");
-              }}
+              className={cn(
+                "size-8 shrink-0 object-contain transition-all duration-300 ease-out",
+                collapsed ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none absolute"
+              )}
             />
-            <svg
-              className="w-8 h-8 text-white hidden"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+
+            {/* Expanded Brand Text - Only visible when not collapsed */}
+            {!collapsed && (
+              <div className="brand-text flex flex-col min-w-0 whitespace-nowrap ml-3 opacity-100 w-auto transition-all duration-300 ease-out">
+                <span className="font-bold text-white text-sm tracking-wide whitespace-nowrap">
+                  IS-NEXTGEN
+                </span>
+                <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase whitespace-nowrap">
+                  Admin Manager
+                </span>
+              </div>
+            )}
           </div>
         </Link>
 
@@ -232,16 +219,18 @@ export default function AdminSidebar({
         <button
           ref={toggleBtnRef}
           onClick={onToggle}
-          className={`hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md items-center justify-center cursor-pointer transition-all duration-200 ${
+          className={cn(
+            "hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md items-center justify-center cursor-pointer transition-all duration-200",
             collapsed ? "bg-[#0B1F4D] hover:bg-[#16357A]" : "bg-slate-50 hover:bg-slate-100"
-          }`}
+          )}
           title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
           aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
         >
           <svg
-            className={`w-4 h-4 transition-transform duration-300 ease-out ${
+            className={cn(
+              "w-4 h-4 transition-transform duration-300 ease-out",
               collapsed ? "rotate-180 text-white" : "text-slate-600"
-            }`}
+            )}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -255,15 +244,13 @@ export default function AdminSidebar({
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 no-scrollbar">
         {navGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
-            <h4
-              className={`group-title px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 whitespace-nowrap transition-all duration-300 ease-out ${
-                collapsed
-                  ? "opacity-0 h-0 overflow-hidden m-0 p-0"
-                  : "opacity-100 h-auto"
-              }`}
-            >
-              {group.title}
-            </h4>
+            {/* Group Title - Hidden when collapsed, but maintain vertical spacing */}
+            <div className={cn(
+              "group-title px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 whitespace-nowrap transition-all duration-300 ease-out",
+              collapsed ? "opacity-0 h-0 overflow-hidden m-0 p-0" : "opacity-100 h-auto"
+            )}>
+              {!collapsed && group.title}
+            </div>
 
             {group.items.map((item) => {
               // Determine if this item is a parent of any other item in the same group
@@ -288,36 +275,35 @@ export default function AdminSidebar({
                   href={item.href}
                   onClick={() => onMobileClose?.()}
                   title={collapsed ? item.label : undefined}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  className={cn(
+                    "flex items-center transition-all duration-200 rounded-lg text-xs sm:text-sm font-medium",
                     isActive
                       ? "bg-[#16357A] text-white font-semibold shadow-[0_0_0_1px_rgba(31,91,224,0.3)]"
-                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
-                  } ${collapsed ? "justify-center px-2" : ""}`}
+                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white",
+                    collapsed
+                      ? "justify-center px-0 gap-0 h-10"
+                      : "justify-start px-3 gap-3 h-10"
+                  )}
+                  aria-label={collapsed ? item.label : undefined}
                 >
-                  <span className={`shrink-0 ${isActive ? "text-white" : "text-slate-400"}`}>
+                  {/* Icon Wrapper - Fixed size, always centered */}
+                  <span className={cn(
+                    "flex size-5 shrink-0 items-center justify-center",
+                    isActive ? "text-white" : "text-slate-400"
+                  )}>
                     {item.icon}
                   </span>
 
-                  {/* Menu Item Text with Smooth Fade & No Wrap */}
-                  <span
-                    className={`nav-text flex-1 min-w-0 truncate whitespace-nowrap transition-all duration-300 ease-out ${
-                      collapsed
-                        ? "opacity-0 w-0 overflow-hidden"
-                        : "opacity-100 w-auto"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
+                  {/* Menu Item Text - Only render when not collapsed */}
+                  {!collapsed && (
+                    <span className="nav-text flex-1 min-w-0 truncate whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  )}
 
-                  {/* Badge */}
-                  {item.badge && (
-                    <span
-                      className={`nav-badge text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold whitespace-nowrap shrink-0 transition-all duration-300 ease-out ${
-                        collapsed
-                          ? "opacity-0 scale-50 w-0 overflow-hidden p-0 border-0"
-                          : "opacity-100 scale-100"
-                      }`}
-                    >
+                  {/* Badge - Only render when not collapsed */}
+                  {!collapsed && item.badge && (
+                    <span className="nav-badge shrink-0 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
                       {item.badge}
                     </span>
                   )}
@@ -330,20 +316,19 @@ export default function AdminSidebar({
 
       {/* Footer User Info */}
       <div className="p-3 border-t border-slate-800/80 bg-[#06122C]">
-        <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : "px-2"}`}>
+        <div className={cn(
+          "flex items-center gap-3 transition-all duration-300 ease-out",
+          collapsed ? "justify-center px-0" : "px-2"
+        )}>
           <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-[#1F5BE0]/40">
             AD
           </div>
-          <div
-            className={`user-info flex-1 min-w-0 whitespace-nowrap transition-all duration-300 ease-out ${
-              collapsed
-                ? "opacity-0 w-0 overflow-hidden"
-                : "opacity-100 w-auto"
-            }`}
-          >
-            <p className="text-xs font-semibold text-white truncate whitespace-nowrap">Ban Tổ Chức</p>
-            <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">admin@is-nextgen.edu.vn</p>
-          </div>
+          {!collapsed && (
+            <div className="user-info flex-1 min-w-0 whitespace-nowrap">
+              <p className="text-xs font-semibold text-white truncate whitespace-nowrap">Ban Tổ Chức</p>
+              <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">admin@is-nextgen.edu.vn</p>
+            </div>
+          )}
         </div>
       </div>
     </aside>

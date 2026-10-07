@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { randomInt, randomUUID } from 'node:crypto';
 import type { Prisma } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { ErrorCodes } from '../common/errors/error-codes';
@@ -237,13 +237,19 @@ export class ExamAccessService {
             where: { question_version_id: questionVersionId },
             orderBy: { position: 'asc' },
           });
-          for (const option of options) {
+          // FR-3.2: thứ tự đáp án xáo trộn riêng cho từng lượt thi (Fisher-Yates, CSPRNG)
+          const positions = options.map((_, k) => k + 1);
+          for (let k = positions.length - 1; k > 0; k--) {
+            const j = randomInt(0, k + 1);
+            [positions[k], positions[j]] = [positions[j], positions[k]];
+          }
+          for (let k = 0; k < options.length; k++) {
             await tx.delivered_options.create({
               data: {
                 delivered_question_id: deliveredQuestion.id,
                 question_version_id: questionVersionId,
-                question_option_id: option.id,
-                position: option.position,
+                question_option_id: options[k].id,
+                position: positions[k],
               },
             });
           }

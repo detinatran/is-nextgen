@@ -10,6 +10,7 @@ import {
   AnswerSavedResponse,
   AttemptView,
   SaveAnswerDto,
+  FocusEventDto,
   ReviewFlagDto,
   SubmissionDto,
   SubmissionResponse,
@@ -55,6 +56,18 @@ export class AttemptsController {
     @Req() req: AuthenticatedRequest,
   ): Promise<{ flagged: boolean; revision: number }> {
     return this.attempts.setReviewFlag(req.auth!.userId, req.auth!.sessionId, attemptId, deliveredQuestionId, dto);
+  }
+
+  /** FR-3.2: ghi nhận thí sinh rời trang làm bài (chuyển tab / mất focus). */
+  @Post(':attemptId/focus-events')
+  @UseGuards(CsrfGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async focusEvent(
+    @Param('attemptId', ParseUUIDPipe) attemptId: string,
+    @Body() dto: FocusEventDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<void> {
+    await this.attempts.recordFocusEvent(req.auth!.userId, attemptId, dto, req.correlationId ?? 'unknown');
   }
 
   /** Reconnect: same attempt, next writer generation, fresh reauthentication. */

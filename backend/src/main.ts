@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
 
   if (config.get('swaggerEnabled', true)) {
     const config = new DocumentBuilder()
-      .setTitle('IS-NextGen Backend API')
+      .setTitle('NextGen Manager Backend API')
       .setDescription('Candidate flow FR-13..FR-22 (NestJS + Prisma + PostgreSQL)')
       .setVersion('1.0')
       .addSecurity('cookie', { type: 'apiKey', in: 'cookie', name: 'isng_session' })

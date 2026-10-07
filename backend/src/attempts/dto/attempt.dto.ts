@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import { IsBoolean, IsIn, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
 
 export class SaveAnswerDto {
   @ApiProperty({ nullable: true, description: 'Delivered option id or null to clear' })
@@ -33,6 +33,19 @@ export class SubmissionDto {
   @IsInt()
   @Min(1)
   writerGeneration!: number;
+}
+
+/** FR-3.2: rời khỏi trang làm bài (ẩn tab / mất focus) do trình duyệt báo về. */
+export class FocusEventDto {
+  @ApiProperty({ enum: ['HIDDEN', 'BLUR'] })
+  @IsIn(['HIDDEN', 'BLUR'])
+  kind!: 'HIDDEN' | 'BLUR';
+
+  @ApiProperty({ description: 'Số lần rời trang tính tới lúc này (phía trình duyệt)' })
+  @IsInt()
+  @Min(1)
+  @Max(10_000)
+  count!: number;
 }
 
 export class ReviewFlagDto {

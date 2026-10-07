@@ -505,4 +505,28 @@ export class AttemptsService {
     return result;
   }
 
+
+  /** FR-3.2: append-only evidence of leaving the exam page; only for the owner's ACTIVE attempt. */
+  async recordFocusEvent(
+    userId: string,
+    attemptId: string,
+    dto: { kind: 'HIDDEN' | 'BLUR'; count: number },
+    correlationId: string,
+  ): Promise<void> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT a.id FROM attempts a JOIN candidates c ON c.id = a.candidate_id
+      WHERE a.id = ${attemptId}::uuid AND c.user_id = ${userId}::uuid AND a.state = 'ACTIVE'`;
+    if (rows.length === 0) throw AppException.notFound('Active attempt not found');
+    await this.prisma.$transaction((tx) =>
+      this.audit.record(tx, {
+        actor_user_id: userId,
+        action: 'exam.focus_lost',
+        target_type: 'attempt',
+        target_id: attemptId,
+        correlation_id: correlationId,
+        metadata: { kind: dto.kind, count: dto.count },
+      }),
+    );
+  }
+
 }

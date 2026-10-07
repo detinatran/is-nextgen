@@ -44,7 +44,7 @@ export default (): AppConfig => ({
   photoMaxBytes: num(process.env.PHOTO_MAX_BYTES, 10_000_000),
   contactEmail: process.env.CONTACT_EMAIL ?? 'btc@isnextgen.local',
   smtpUrl: process.env.SMTP_URL ?? '',
-  mailFrom: process.env.MAIL_FROM ?? 'IS-NextGen <no-reply@isnextgen.local>',
+  mailFrom: process.env.MAIL_FROM ?? 'NextGen Manager <nextgen@vnuis.edu.vn>',
   fixturesEnabled: process.env.NODE_ENV !== 'production' && bool(process.env.FIXTURES_ENABLED, true),
   fixturesToken: process.env.FIXTURES_TOKEN ?? 'dev-fixtures-token',
   swaggerEnabled: bool(process.env.SWAGGER_ENABLED, process.env.NODE_ENV !== 'production'),

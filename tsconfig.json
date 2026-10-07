@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "src/mocks/admin/candidates.ts", "src/mocks/admin/duplicates.ts"  ],
   "exclude": [
     "node_modules"
   ]

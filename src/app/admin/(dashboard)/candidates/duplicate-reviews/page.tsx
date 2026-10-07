@@ -116,7 +116,7 @@ export default function DuplicateReviewsPage() {
           {t("Rà soát hồ sơ trùng lặp")}
         </h2>
         <p className="text-xs text-slate-500 mt-1">
-          {t("Hệ thống phát hiện hồ sơ có dấu hiệu nộp trùng lặp (chung MSSV, Số điện thoại, Email hoặc Link Facebook) để Ban Chuyên môn đối chiếu và hợp nhất.")}
+          {t("Hệ thống phát hiện hồ sơ có dấu hiệu nộp trùng lặp (chung MSSV, Số điện thoại, Email hoặc Link Facebook).")}
         </p>
       </div>
 

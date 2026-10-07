@@ -296,7 +296,7 @@ export default function LiveExamMonitorPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            {t("Theo dõi tiến trình làm bài, phát hiện rời tab (focus_lost), copy/paste và ghi vết vào bảng")}{" "}
+            {t("Theo dõi tiến trình làm bài, phát hiện rời tab và ghi vết vào bảng")}{" "}
             <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">exam_events</span>.
           </p>
         </div>

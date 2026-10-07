@@ -157,8 +157,7 @@ export default function CandidateAssignmentsPage() {
           {t("Phân ca thi & Lịch sử điều phối thí sinh")}
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
-          {t("Quản lý danh sách thí sinh trong từng ca thi. Mọi thao tác đổi ca đều được lưu vết vào bảng")}{" "}
-          <span className="font-sans tabular-nums tracking-tight font-semibold text-slate-700">assignment_schedule_history</span>.
+          {t("Quản lý danh sách thí sinh trong từng ca thi.")}{" "}
         </p>
       </div>
 

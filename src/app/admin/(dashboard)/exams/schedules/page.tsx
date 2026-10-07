@@ -185,8 +185,7 @@ export default function ExamSchedulesPage() {
             {t("Quản lý Ca thi Vòng 1")}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            {t("Thời lượng mỗi ca:")} <span className="font-bold text-slate-800">60 phút</span> • {t("Tải mục tiêu:")}{" "}
-            <span className="font-bold text-slate-800">50 - 100 thí sinh/ca</span> {t("để chống nghẽn mạng.")}
+            {t("Thời lượng mỗi ca:")} <span className="font-bold text-slate-800">60 phút</span>
           </p>
         </div>
 

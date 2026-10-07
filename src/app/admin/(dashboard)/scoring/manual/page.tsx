@@ -238,8 +238,7 @@ export default function ManualScoringPage() {
           {t("Chấm thi Rubric Tự luận & Thuyết trình")}
         </h2>
         <p className="text-xs text-slate-500 mt-0.5">
-          {t("Khung đánh giá gồm")} <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>. {t("Hệ thống tự động kích hoạt cờ")}{" "}
-          <span className="font-sans tabular-nums tracking-tight font-semibold text-rose-700 bg-rose-50 px-1 rounded">NEEDS_THIRD</span> {t("khi độ lệch giữa 2 giám khảo > 20%.")}
+          {t("Khung đánh giá gồm")} <span className="font-bold text-slate-800">6 nhóm năng lực cốt lõi</span>.
         </p>
       </div>
 

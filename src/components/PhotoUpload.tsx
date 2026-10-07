@@ -16,26 +16,26 @@ type Props = {
 };
 
 // Backend chỉ nhận 3 định dạng này (kiểm tra bằng magic bytes)
-const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const PHOTO_TYPES = ["image/jpeg", "image/png"];
 
 const text = {
   vi: {
     label: "Ảnh cá nhân *",
     hint: "01 ảnh chân dung rõ mặt, dùng cho truyền thông của Cuộc thi.",
-    notImage: "Vui lòng chọn ảnh JPG, PNG hoặc WebP.",
+    notImage: "Vui lòng chọn ảnh JPG hoặc PNG.",
     tooBig: `Ảnh lớn hơn ${MAX_PHOTO_MB} MB. Hãy chọn ảnh nhỏ hơn.`,
     drop: "Kéo thả ảnh vào đây hoặc bấm để chọn",
-    formats: `JPG, PNG, WebP · tối đa ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG · tối đa ${MAX_PHOTO_MB} MB`,
     remove: "Bỏ ảnh đã chọn",
     pick: "Chọn ảnh cá nhân",
   },
   en: {
     label: "Personal photo *",
     hint: "01 clear portrait photo, used for the competition's communications.",
-    notImage: "Please choose a JPG, PNG or WebP image.",
+    notImage: "Please choose a JPG or PNG image.",
     tooBig: `The photo is larger than ${MAX_PHOTO_MB} MB. Please choose a smaller one.`,
     drop: "Drag and drop your photo here, or click to choose",
-    formats: `JPG, PNG, WebP · up to ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG · up to ${MAX_PHOTO_MB} MB`,
     remove: "Remove selected photo",
     pick: "Choose personal photo",
   },

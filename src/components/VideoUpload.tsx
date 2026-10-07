@@ -29,7 +29,7 @@ const text = {
     notMp4: "Vui lòng chọn video định dạng MP4.",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
     tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
-    label: `Video giới thiệu (tối đa ${MAX_VIDEO_SECONDS / 60} phút) *`,
+    label: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) *`,
     hint: "Giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố.",
     remove: "Bỏ video đã chọn",
     drop: "Kéo thả video vào đây hoặc bấm để chọn",
@@ -44,7 +44,7 @@ const text = {
     notMp4: "Please choose an MP4 video.",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
     tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
-    label: `Intro video (max ${MAX_VIDEO_SECONDS / 60} minutes) *`,
+    label: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) *`,
     hint: "Introduce yourself and answer the case question announced by the Organizing Committee.",
     remove: "Remove selected video",
     drop: "Drag and drop your video here, or click to choose",
@@ -75,8 +75,8 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
     const d = await readVideoDuration(f);
     setChecking(false);
     onCheckingChange?.(false);
-    // Cho phép lệch 1 giây do cách làm tròn của từng thiết bị
-    if (d !== null && d > MAX_VIDEO_SECONDS + 1) return reject(t.tooLong(formatTime(d)));
+    // Server nhận video ngắn hơn hẳn 120 giây (đúng 2:00 cũng bị từ chối)
+    if (d !== null && d >= MAX_VIDEO_SECONDS) return reject(t.tooLong(formatTime(d)));
     setDuration(d);
     onChange(f);
   }

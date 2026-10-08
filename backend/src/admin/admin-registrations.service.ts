@@ -7,6 +7,7 @@ import { AuditService } from '../common/audit/audit.service';
 import { AppException } from '../common/errors/app-error';
 import type { AppConfig } from '../config/configuration';
 import { PrismaService } from '../database/prisma.service';
+import { DriveService } from '../media/drive/drive.service';
 import { LocalStorageService } from '../media/storage/local-storage.service';
 
 export interface RegistrationFilter {
@@ -81,6 +82,7 @@ export class AdminRegistrationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly drive: DriveService,
     config: ConfigService<AppConfig>,
   ) {
     this.storage = new LocalStorageService(config.get('mediaStorageDir', './.data/media'));
@@ -201,16 +203,25 @@ export class AdminRegistrationsService {
   async media(
     registrationId: string,
     kind: 'photo' | 'video',
-  ): Promise<{ path: string; contentType: string; objectKey: string; size: number }> {
+  ): Promise<{ path?: string; driveFileId?: string; contentType: string; objectKey: string; size: number }> {
     let objectKey: string | undefined;
+    let driveFileId: string | undefined;
+    let driveSize = 0;
     let contentType = 'video/mp4';
     if (kind === 'video') {
-      const rows = await this.prisma.$queryRaw<{ object_key: string; mime_type: string }[]>`
-        SELECT mo.object_key, mo.mime_type FROM registration_videos rv
+      const rows = await this.prisma.$queryRaw<{ object_key: string; mime_type: string; drive_file_id: string | null; drive_size: bigint | null; local_deleted_at: Date | null }[]>`
+        SELECT mo.object_key, mo.mime_type, d.drive_file_id, d.size_bytes AS drive_size, d.local_deleted_at
+        FROM registration_videos rv
         JOIN media_objects mo ON mo.id = rv.media_object_id
+        LEFT JOIN media_drive_copies d ON d.media_object_id = mo.id
         WHERE rv.registration_id = ${registrationId}::uuid`;
       objectKey = rows[0]?.object_key;
       contentType = rows[0]?.mime_type ?? contentType;
+      // Bản trên máy chủ đã xoá sau khi chép sang Google Drive: phát từ Drive
+      if (rows[0]?.drive_file_id && rows[0].local_deleted_at && this.drive.enabled) {
+        driveFileId = rows[0].drive_file_id;
+        driveSize = Number(rows[0].drive_size);
+      }
     } else {
       const upload = await this.prisma.media_uploads.findFirst({
         where: { registration_id: registrationId, state: 'READY', object_key: { startsWith: 'p/' } },
@@ -219,6 +230,7 @@ export class AdminRegistrationsService {
       objectKey = upload?.object_key;
     }
     if (!objectKey) throw AppException.notFound(kind === 'video' ? 'Video not found' : 'Photo not found');
+    if (driveFileId) return { driveFileId, contentType, objectKey, size: driveSize };
     const path = this.storage.pathFor(objectKey);
     const handle = await open(path, 'r').catch(() => {
       throw AppException.notFound('Media file is missing from storage');
@@ -234,6 +246,11 @@ export class AdminRegistrationsService {
     } finally {
       await handle.close();
     }
+  }
+
+  /** Một đoạn video từ Google Drive (đã xác thực quyền ở controller). */
+  driveStream(fileId: string, start: number, end: number) {
+    return this.drive.download(fileId, start, end);
   }
 
   async recordMediaView(actorUserId: string, registrationId: string, kind: 'photo' | 'video', correlationId: string) {

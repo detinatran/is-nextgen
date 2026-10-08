@@ -16,6 +16,7 @@ import { AttemptsModule } from './attempts/attempts.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { FixturesModule } from './fixtures/fixtures.module';
 import { AdminModule } from './admin/admin.module';
+import { DriveModule } from './media/drive/drive.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AdminModule } from './admin/admin.module';
     ScoringModule,
     FixturesModule,
     AdminModule,
+    DriveModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

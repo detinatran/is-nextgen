@@ -33,6 +33,12 @@ services:
       CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
       SMTP_URL: ${SMTP_URL:-}
       MAIL_CAPTURE: ${MAIL_CAPTURE:-}
+      # Google Drive của nextgen@vnuis.edu.vn: bản chính video thí sinh (để trống = chỉ lưu trên máy chủ)
+      GOOGLE_DRIVE_CLIENT_ID: ${GOOGLE_DRIVE_CLIENT_ID:-}
+      GOOGLE_DRIVE_CLIENT_SECRET: ${GOOGLE_DRIVE_CLIENT_SECRET:-}
+      GOOGLE_DRIVE_REFRESH_TOKEN: ${GOOGLE_DRIVE_REFRESH_TOKEN:-}
+      GOOGLE_DRIVE_FOLDER: ${GOOGLE_DRIVE_FOLDER:-}
+      GOOGLE_DRIVE_DELETE_LOCAL: ${GOOGLE_DRIVE_DELETE_LOCAL:-}
       MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}
     volumes:
       - media:/var/lib/isnextgen/media

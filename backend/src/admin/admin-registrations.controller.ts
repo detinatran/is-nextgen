@@ -2,6 +2,7 @@ import { Controller, Get, Param, ParseUUIDPipe, Query, Req, Res, UseGuards } fro
 import { ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { createReadStream } from 'node:fs';
+import { Readable } from 'node:stream';
 import type { AuthenticatedRequest } from '../common/http/request-context';
 import { AdminGuard } from '../identity-access/guards/admin.guard';
 import { AuthGuard } from '../identity-access/guards/auth.guard';
@@ -91,7 +92,18 @@ export class AdminRegistrationsController {
     if (range) res.setHeader('Content-Range', `bytes ${start}-${end}/${file.size}`);
     res.setHeader('Cache-Control', 'private, no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    const stream = createReadStream(file.path, { start, end });
+    if (file.driveFileId) {
+      const remote = await this.registrations.driveStream(file.driveFileId, start, end).catch(() => null);
+      if (!remote?.body) {
+        if (!res.headersSent) res.status(502).end();
+        return;
+      }
+      const body = Readable.fromWeb(remote.body as import('node:stream/web').ReadableStream);
+      body.on('error', () => res.destroy());
+      body.pipe(res);
+      return;
+    }
+    const stream = createReadStream(file.path!, { start, end });
     stream.on('error', () => res.destroy());
     stream.pipe(res);
   }

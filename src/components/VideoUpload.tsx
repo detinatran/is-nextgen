@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { checkMp4 } from "@/lib/mp4";
 import { MAX_VIDEO_MB, MAX_VIDEO_SECONDS, readVideoDuration } from "@/lib/upload";
 import type { Lang } from "@/lib/i18n";
 import Icon from "./Icon";
@@ -27,6 +28,8 @@ const text = {
   vi: {
     notVideo: "Vui lòng chọn file video (mp4, mov...).",
     notMp4: "Vui lòng chọn video định dạng MP4.",
+    corrupt: "File video bị lỗi hoặc chưa tải về đầy đủ. Hãy kiểm tra video phát được trên máy rồi chọn lại.",
+    noVideo: "File này không có hình video. Hãy chọn đúng video giới thiệu.",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
     tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
     label: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) *`,
@@ -42,6 +45,8 @@ const text = {
   en: {
     notVideo: "Please choose a video file (mp4, mov...).",
     notMp4: "Please choose an MP4 video.",
+    corrupt: "This video file is damaged or incomplete. Make sure it plays on your device, then choose it again.",
+    noVideo: "This file has no video track. Please choose your intro video.",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
     tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
     label: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) *`,
@@ -67,12 +72,24 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
   async function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    if (mp4Only ? f.type !== "video/mp4" : !f.type.startsWith("video/")) return reject(mp4Only ? t.notMp4 : t.notVideo);
+    const looksMp4 = f.type === "video/mp4" || (!f.type && /\.mp4$/i.test(f.name));
+    if (mp4Only ? !looksMp4 : !f.type.startsWith("video/")) return reject(mp4Only ? t.notMp4 : t.notVideo);
     if (f.size > MAX_VIDEO_MB * 1024 * 1024) return reject(t.tooBig);
     onChange(null);
     setChecking(true);
     onCheckingChange?.(true);
-    const d = await readVideoDuration(f);
+    let d: number | null = null;
+    if (mp4Only) {
+      // Đọc thẳng cấu trúc MP4: không phụ thuộc codec trình duyệt, bắt được file hỏng/tải dở
+      const info = await checkMp4(f).catch(() => ({ ok: false as const, reason: "CORRUPT" as const }));
+      if (!info.ok) {
+        setChecking(false);
+        onCheckingChange?.(false);
+        return reject(info.reason === "NOT_MP4" ? t.notMp4 : info.reason === "NO_VIDEO" ? t.noVideo : t.corrupt);
+      }
+      d = info.duration;
+    }
+    if (d === null) d = await readVideoDuration(f);
     setChecking(false);
     onCheckingChange?.(false);
     // Server nhận video ngắn hơn hẳn 120 giây (đúng 2:00 cũng bị từ chối)

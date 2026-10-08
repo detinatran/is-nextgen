@@ -23,7 +23,7 @@ export default function Faq({ lang }: { lang: Lang }) {
             {en ? "or contact the Organizing Committee." : "hoặc liên hệ Ban Tổ chức."}
           </p>
           {/* FR-1.4: liên hệ Ban Tổ chức */}
-          <div className="mt-6 space-y-3 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-line backdrop-blur-sm">
+          <div data-tour="contact" className="mt-6 space-y-3 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-line backdrop-blur-sm">
             <p className="text-sm font-bold text-navy">{en ? "Contact the Organizing Committee" : "Liên hệ Ban Tổ chức"}</p>
             {c.phone && (
               <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 text-[15px] text-ink hover:text-orange-ink">

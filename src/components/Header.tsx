@@ -76,7 +76,7 @@ export default function Header() {
             <img src={asset("/images/logo-white-2026.png")} alt={site.name} className="h-10 w-auto sm:h-12" />
           </Link>
 
-          <nav className="hidden items-center gap-1 xl:flex" aria-label={t.main}>
+          <nav data-tour="nav" className="hidden items-center gap-1 xl:flex" aria-label={t.main}>
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -102,6 +102,7 @@ export default function Header() {
               aria-label={open ? t.close : t.open}
               aria-expanded={open}
               aria-controls="mobile-nav"
+              data-tour="nav"
               onClick={() => setOpen((v) => !v)}
             >
               <Icon name={open ? "x" : "menu"} className="h-6 w-6" strokeWidth={2} />

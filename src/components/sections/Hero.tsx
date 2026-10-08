@@ -34,7 +34,7 @@ export default function Hero({ lang }: { lang: Lang }) {
         {site.name} - {site.viName}
       </h1>
 
-      <div className="relative aspect-video overflow-hidden lg:aspect-[1920/900]">
+      <div data-tour="hero" className="relative aspect-video overflow-hidden lg:aspect-[1920/900]">
         {/* Di động: banner gốc đầy đủ */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

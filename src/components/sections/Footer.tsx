@@ -16,6 +16,7 @@ const text = {
     soon: "Sắp cập nhật",
     links: "Về cuộc thi",
     support: "Hỗ trợ",
+    guide: "Hướng dẫn sử dụng",
     linkItems: [["/#gioi-thieu", "Giới thiệu"], ["/#trai-nghiem", "Trải nghiệm"], ["/#lo-trinh", "Lộ trình"], ["/#giai-thuong", "Giải thưởng"]],
     contact: "Liên hệ",
     terms: "Điều khoản & thể lệ",
@@ -34,6 +35,7 @@ const text = {
     soon: "Coming soon",
     links: "The competition",
     support: "Support",
+    guide: "How to use this site",
     linkItems: [["/#gioi-thieu", "About"], ["/#trai-nghiem", "Experience"], ["/#lo-trinh", "Timeline"], ["/#giai-thuong", "Prizes"]],
     contact: "Contact",
     terms: "Terms & rules",
@@ -208,6 +210,11 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                 <Link href={href("/ket-qua/")} className={linkCls}>
                   {t.results}
                 </Link>
+              </li>
+              <li>
+                <a href={`${href("/")}?tour=1`} data-tour-start className={linkCls}>
+                  {t.guide}
+                </a>
               </li>
             </ul>
           </nav>

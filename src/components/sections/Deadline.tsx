@@ -17,7 +17,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
   return (
     <section id="dem-nguoc" className="relative bg-white pt-8 pb-2 lg:pt-10">
       <div className="container-x">
-        <div className="reveal relative overflow-hidden rounded-3xl border border-line bg-cream shadow-card">
+        <div data-tour="register" className="reveal relative overflow-hidden rounded-3xl border border-line bg-cream shadow-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={asset("/images/unsplash/countdown-students.webp")}

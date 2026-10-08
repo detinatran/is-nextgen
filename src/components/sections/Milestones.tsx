@@ -33,7 +33,7 @@ export default function Milestones({ lang }: { lang: Lang }) {
   return (
     <section id="lo-trinh" className="relative overflow-hidden bg-linear-to-b from-white via-[#eef4fd] to-white py-16 lg:py-24">
       <Art src="/images/generated/deco-blue-waves.webp" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40" />
-      <div className="container-x relative">
+      <div data-tour="milestones" className="container-x relative">
         <div className="reveal">
           <Eyebrow>{en ? "Competition roadmap" : "Lộ trình cuộc thi"}</Eyebrow>
           <h2 className="h2-section mt-4">{en ? "Key dates" : "Các mốc thời gian quan trọng"}</h2>

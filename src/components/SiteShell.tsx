@@ -1,6 +1,7 @@
 import type { Lang } from "@/lib/i18n";
 import BackToTop from "./BackToTop";
 import Header from "./Header";
+import Onboarding from "./Onboarding";
 import RevealObserver from "./RevealObserver";
 import Footer from "./sections/Footer";
 
@@ -20,6 +21,7 @@ export default function SiteShell({ children, lang, cta = true }: { children: Re
       <main id="noi-dung">{children}</main>
       <Footer lang={lang} cta={cta} />
       <BackToTop lang={lang} />
+      <Onboarding lang={lang} />
       <RevealObserver />
     </div>
   );

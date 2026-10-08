@@ -1,5 +1,18 @@
 # Kết quả kiểm tra phần Admin
 
+## Kiểm tra bản merge vào main — 09/10/2026
+
+Nhánh `feature/admin-fr-01-12` được merge vào `main` tại commit `5b6f4f2`, không có xung đột. `origin/main` tại thời điểm merge là `f7fd302`; các nhánh tính năng khác của nhóm chưa được gộp trong lần này.
+
+- Frontend và backend: TypeScript, build thành công; backend ESLint không có cảnh báo.
+- 20 kiểm thử đơn vị, 107 kiểm thử tích hợp PostgreSQL và 2 kiểm thử contract API đều đạt (129/129).
+- Chrome chạy bản build sau merge: kiểm tra bảo vệ route, mật khẩu sai, đăng nhập và MFA, 9 màn hình Admin, tải Excel, form câu hỏi, từ chối file nhập lỗi, mobile 390 px, đăng xuất và từ chối cookie cũ đều đạt.
+- Database kiểm thử riêng, không xoá dữ liệu ứng dụng local. Các fixture phát sinh trong kiểm thử contract đã được khôi phục, không đưa ID và thời gian ngẫu nhiên vào commit.
+
+FR-12 vẫn cần công thức BCM chính thức để xác nhận cách tổng hợp điểm. Các kiểm thử hiện xác nhận công thức có trọng số đang được hỗ trợ, không xác nhận quy định BCM của Ban Tổ Chức.
+
+## Kiểm tra trước merge
+
 Ngày kiểm tra: 07/10/2026. Branch: `feature/admin-fr-01-12`.
 
 - Frontend: TypeScript và build Next.js thành công.

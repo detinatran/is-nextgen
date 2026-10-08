@@ -10,6 +10,9 @@ const tones = [
   { card: "from-[#eaf2ff] to-[#f7faff] ring-[#d9e6fb]", arrow: "text-brand" },
 ];
 
+// Icon 3D của 4 thẻ (icon 4: chỉ còn quả địa cầu, đã bỏ tên lửa)
+const expIcons = ["exp-icon-1", "exp-icon-2", "exp-icon-3", "exp-icon-4-globe"];
+
 export default function Perks({ lang }: { lang: Lang }) {
   const { perks } = getContent(lang);
   return (
@@ -32,7 +35,7 @@ export default function Perks({ lang }: { lang: Lang }) {
                   className={`group flex h-full flex-col rounded-3xl bg-linear-to-b ${tone.card} p-6 ring-1 transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-navy/10`}
                 >
                   <Art
-                    src={`/images/generated/exp-icon-${i + 1}.webp`}
+                    src={`/images/generated/${expIcons[i]}.webp`}
                     className="h-16 w-16 object-contain transition duration-300 group-hover:-translate-y-1 group-hover:scale-105"
                   />
                   <h3 className="mt-4 text-lg leading-snug font-bold text-navy">{p.title}</h3>

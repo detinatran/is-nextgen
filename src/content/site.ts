@@ -94,7 +94,7 @@ export const about = {
   ],
 };
 
-// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..4
+// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..3, exp-icon-4-globe
 export const perks = {
   eyebrow: "Về cuộc thi",
   title: "Những trải nghiệm chỉ có tại NextGen Manager",

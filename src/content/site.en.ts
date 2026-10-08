@@ -94,7 +94,7 @@ export const about = {
   ],
 };
 
-// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
+// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..3, exp-icon-4-globe
 export const perks = {
   eyebrow: "About the competition",
   title: "Experiences you only get at NextGen Manager",

@@ -5,7 +5,7 @@ import SiteShell from "@/components/SiteShell";
 import { pageMetadata } from "@/lib/meta";
 import { asset } from "@/lib/paths";
 
-export const metadata: Metadata = { ...pageMetadata("vi", "/thi/", "Vòng 1 thi trực tuyến"), alternates: { canonical: asset("/thi/") } };
+export const metadata: Metadata = { ...pageMetadata("vi", "/thi/", "Vòng 1 thi trực tuyến"), alternates: { canonical: asset("/thi/") }, robots: { index: false, follow: false } };
 
 export default function Page() {
   return (

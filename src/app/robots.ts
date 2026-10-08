@@ -6,7 +6,7 @@ const site = process.env.NEXT_PUBLIC_SITE_URL || "https://nextgen.vnuis.edu.vn";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin/", "/thi/lam-bai/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin/", "/thi/"] },
     sitemap: `${site}/sitemap.xml`,
   };
 }

@@ -7,9 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { type Lang, localePath } from "@/lib/i18n";
 
 /**
- * Hướng dẫn sử dụng dạng spotlight (Driver.js) cho trang chủ.
+ * Hướng dẫn dự thi dạng spotlight (Driver.js) cho trang chủ.
  * - Lần đầu vào trang chủ: hỏi có muốn xem hướng dẫn không (lưu lựa chọn trong localStorage).
- * - Nút "Hướng dẫn sử dụng" cố định góc trái và link có [data-tour-start] mở lại hướng dẫn từ bất kỳ trang nào.
+ * - Nút "Hướng dẫn dự thi" cố định góc trái và link có [data-tour-start] mở lại hướng dẫn từ bất kỳ trang nào.
  * Chỉ đọc giao diện, không đụng tới form đăng ký hay đăng nhập.
  */
 
@@ -22,7 +22,7 @@ const copy = {
     welcomeBody: "Dành 1 phút để xem nhanh những phần quan trọng của trang: cuộc thi là gì, các vòng thi, mốc thời gian và cách đăng ký.",
     start: "Bắt đầu khám phá",
     later: "Để sau",
-    help: "Hướng dẫn sử dụng",
+    help: "Hướng dẫn dự thi",
     next: "Tiếp",
     prev: "Quay lại",
     done: "Hoàn tất",
@@ -44,7 +44,7 @@ const copy = {
     welcomeBody: "Take a minute for a quick look at the key parts of the site: what the competition is, the rounds, key dates and how to register.",
     start: "Start the tour",
     later: "Maybe later",
-    help: "How to use this site",
+    help: "How to take part",
     next: "Next",
     prev: "Back",
     done: "Finish",

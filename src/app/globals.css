@@ -254,7 +254,7 @@
   }
 }
 
-/* Hướng dẫn sử dụng (Driver.js): thẻ nổi gọn theo nhận diện NextGen */
+/* Hướng dẫn dự thi (Driver.js): thẻ nổi gọn theo nhận diện NextGen */
 .driver-popover.ng-tour {
   max-width: min(22rem, calc(100vw - 2rem));
   border-radius: 1.25rem;

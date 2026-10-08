@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
@@ -7,6 +8,7 @@ import { getContent } from "@/content";
 import { ApiError, apiBase, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
+import Icon from "./Icon";
 import PhotoUpload from "./PhotoUpload";
 import VideoUpload from "./VideoUpload";
 
@@ -66,6 +68,10 @@ const text = {
     thanks: "Cảm ơn bạn!",
     doneBody: "Ban Tổ chức sẽ gửi email xác nhận tới địa chỉ bạn đã đăng ký. Trước ngày thi Vòng Đơn, bạn sẽ nhận email mời thi gồm mã thí sinh, ca thi và đường link kích hoạt tài khoản để vào thi.",
     another: "Đăng ký cho người khác",
+    mailTitle: "Hãy kiểm tra email để nhận tài khoản",
+    mailBody: "Ban Tổ chức vừa gửi email xác nhận kèm mã thí sinh (kiểm tra cả mục Spam). Tài khoản thi và lịch thi sẽ được gửi qua email này trước ngày thi; làm theo hướng dẫn trong email để kích hoạt tài khoản.",
+    login: "Đăng nhập",
+    loginHint: "Đã có tài khoản thi?",
     legend: "Thông tin đăng ký",
     fullName: "Họ và tên *",
     phone: "Số điện thoại *",
@@ -150,6 +156,10 @@ const text = {
     thanks: "Thank you!",
     doneBody: "The Organizing Committee will email you a confirmation. Before the Application Round, you will receive an exam invitation with your candidate code, exam slot and a link to activate your exam account.",
     another: "Register someone else",
+    mailTitle: "Check your email for your account",
+    mailBody: "We just emailed you a confirmation with your candidate code (check Spam too). Your exam account and slot will be sent to the same address before the exam; follow the email to activate your account.",
+    login: "Log in",
+    loginHint: "Already have an exam account?",
     legend: "Registration details",
     fullName: "Full name *",
     phone: "Phone number *",
@@ -380,10 +390,21 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             <span className="text-2xl font-bold tracking-wider text-orange-ink">{candidateCode}</span>
           </p>
         )}
-        <p className="mt-3 text-sm leading-relaxed text-muted">
-          {t.doneBody}
-        </p>
-        <button type="button" className="btn-outline mt-6" onClick={() => setState("idle")}>
+        <div className="mx-auto mt-5 max-w-md rounded-2xl border border-orange/20 bg-[#fff8ef] p-5 text-left">
+          <p className="flex items-center gap-2 font-bold text-navy">
+            <Icon name="mail" className="h-5 w-5 text-orange" /> {t.mailTitle}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{t.mailBody}</p>
+        </div>
+        {apiBase && (
+          <div className="mt-6">
+            <p className="mb-2 text-[13px] text-muted">{t.loginHint}</p>
+            <Link href="/thi/" className="btn-primary px-8 py-3">
+              {t.login} <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
+        <button type="button" className="mt-5 text-sm font-semibold text-muted underline-offset-4 hover:text-navy hover:underline" onClick={() => setState("idle")}>
           {t.another}
         </button>
       </div>

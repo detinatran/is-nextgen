@@ -37,13 +37,6 @@ export const rulesText = {
     faqEyebrow: "Hỏi đáp",
     faqTitle: "Câu hỏi khác",
     register: "Đăng ký dự thi",
-    scriptHero: ["Go Further,", "Together"],
-    noteHero: ["Real People.", "Real Business.", "A Bigger You."],
-    scriptCampus: ["From Campus", "to the World"],
-    scriptRounds: ["4 chặng,", "1 hành trình lớn"],
-    scriptAi: ["Explore.", "Explain.", "Decide."],
-    scriptTimeline: ["A Brighter", "Tomorrow"],
-    scriptFaq: ["Good Questions,", "Better Opportunities"],
   },
   en: {
     heroEyebrow: "Competition rules",
@@ -73,13 +66,6 @@ export const rulesText = {
     faqEyebrow: "Q&A",
     faqTitle: "More questions",
     register: "Register to compete",
-    scriptHero: ["Go Further,", "Together"],
-    noteHero: ["Real People.", "Real Business.", "A Bigger You."],
-    scriptCampus: ["From Campus", "to the World"],
-    scriptRounds: ["4 rounds,", "1 big journey"],
-    scriptAi: ["Explore.", "Explain.", "Decide."],
-    scriptTimeline: ["A Brighter", "Tomorrow"],
-    scriptFaq: ["Good Questions,", "Better Opportunities"],
   },
 };
 
@@ -94,19 +80,6 @@ const compTones = ["#f26b1d", "#5b8a3a", "#2f6bf0", "#7c4ddb", "#e0513e", "#1f9a
 const compIcons: IconName[] = ["fileChart", "target", "usersGroup", "handshake", "landmark", "presentation"];
 
 const img = (name: string) => asset(`/images/rules/${name}.webp`);
-
-/** Chữ viết tay trang trí (Dancing Script), mỗi phần tử một dòng. */
-function Script({ lines, className = "" }: { lines: string[]; className?: string }) {
-  return (
-    <p aria-hidden className={`font-script leading-[1.05] ${className}`}>
-      {lines.map((l) => (
-        <span key={l} className="block">
-          {l}
-        </span>
-      ))}
-    </p>
-  );
-}
 
 function Block({ id, eyebrow, title, aside, children }: { id?: string; eyebrow: string; title: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -134,16 +107,6 @@ export default function RulesPage({ lang }: { lang: Lang }) {
         eyebrow={t.heroEyebrow}
         title={t.heroTitle}
         lead={t.heroLead}
-        aside={
-          <div aria-hidden className="pointer-events-none absolute top-1/2 right-0 hidden -translate-y-[40%] lg:block">
-            <Script lines={t.scriptHero} className="-rotate-[8deg] text-right text-5xl text-white/95 [text-shadow:0_2px_12px_rgb(7_21_51/0.6)]" />
-            <div className="relative mt-6 ml-16 w-64 rotate-[4deg] drop-shadow-xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img("paper")} alt="" className="w-full" />
-              <Script lines={t.noteHero} className="absolute inset-0 flex flex-col justify-center pl-14 text-[1.35rem] text-navy" />
-            </div>
-          </div>
-        }
       />
 
       <div className="relative overflow-hidden bg-[#fbf8f2]">
@@ -170,12 +133,11 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               <div className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img("campus")} alt="" aria-hidden className="mx-auto w-full max-w-xs" />
-                <Script lines={t.scriptCampus} className="absolute -top-4 right-0 rotate-[-6deg] text-right text-2xl text-navy" />
               </div>
             </div>
           </Block>
 
-          <Block eyebrow={t.formatEyebrow} title={t.formatTitle} aside={<Script lines={t.scriptRounds} className="hidden -rotate-6 text-right text-3xl text-navy/80 sm:block" />}>
+          <Block eyebrow={t.formatEyebrow} title={t.formatTitle}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={img("mountains")} alt="" aria-hidden className="pointer-events-none absolute inset-x-0 top-24 -z-0 w-full opacity-40" />
             <div className="relative grid gap-5 pt-4 md:grid-cols-2 xl:grid-cols-4">
@@ -240,11 +202,6 @@ export default function RulesPage({ lang }: { lang: Lang }) {
             <div className="relative min-h-72 lg:min-h-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={asset("/images/generated/hero-team.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[60%_center] lg:[clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]" />
-              <div className="absolute top-6 right-6 w-44 rotate-[5deg] drop-shadow-xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img("paper")} alt="" aria-hidden className="w-full" />
-                <Script lines={t.scriptAi} className="absolute inset-0 flex flex-col justify-center pl-10 text-xl text-navy" />
-              </div>
             </div>
           </section>
 
@@ -282,7 +239,6 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               <div aria-hidden className="relative -mb-4 hidden w-[24rem] lg:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img("skyline")} alt="" className="w-full" />
-                <Script lines={t.scriptTimeline} className="absolute -top-8 right-0 rotate-[-8deg] text-right text-3xl text-navy" />
               </div>
             }
           >
@@ -329,7 +285,6 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               <div className="relative mx-auto hidden w-72 lg:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img("notebook")} alt="" aria-hidden className="w-full" />
-                <Script lines={t.scriptFaq} className="absolute top-[30%] left-[24%] w-[55%] -rotate-[9deg] text-[1.6rem] text-navy" />
               </div>
             </div>
           </Block>

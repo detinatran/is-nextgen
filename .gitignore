@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+.DS_Store
+.cache/
+
+# Tài liệu nội bộ
+*.docx
+*.pdf
+__pycache__/
+
+# File ghi chú cho trợ lý AI do `next dev` tự sinh
+AGENTS.md
+CLAUDE.md

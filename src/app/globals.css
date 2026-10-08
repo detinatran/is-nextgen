@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-deep: #071533;
+  --color-navy: #0b1f4d;
+  --color-navy-soft: #16357a;
+  --color-brand: #1f5be0;
+  --color-sky: #8cc1ff;
+  --color-orange: #f26b1d;
+  --color-orange-ink: #d4500c;
+  --color-orange-soft: #ff9a3c;
+  --color-gold: #f5b83d;
+  --color-cream: #f7f5f1;
+  --color-mist: #f3f7fd;
+  --color-ink: #0f1f3d;
+  --color-muted: #475266;
+  --color-line: #e6ebf3;
+
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-dancing), cursive;
+
+  --shadow-card: 0 18px 40px -22px rgb(11 31 77 / 0.35);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-orange text-white;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-[77rem] px-4 sm:px-6 lg:px-8;
+}
+@utility h2-section {
+  @apply text-[1.9rem] leading-[1.18] font-bold text-balance text-navy sm:text-[2.5rem];
+}
+@utility lead {
+  @apply text-base leading-relaxed text-muted sm:text-[17px];
+}
+@utility eyebrow {
+  @apply flex items-center gap-3 text-[13px] font-semibold tracking-[0.14em] text-orange-ink uppercase;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition
+    focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+@utility btn-primary {
+  @apply btn bg-orange text-white hover:bg-orange-ink focus-visible:outline-orange;
+}
+@utility btn-outline {
+  @apply btn border border-navy/30 text-navy hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-navy;
+}
+@utility btn-glass {
+  @apply btn border border-white/50 bg-white/10 text-white backdrop-blur hover:bg-white/20 focus-visible:outline-white;
+}
+@utility btn-white {
+  @apply btn bg-white text-orange-ink hover:bg-cream focus-visible:outline-white;
+}
+@utility card {
+  @apply rounded-xl border border-line bg-white;
+}
+@utility text-gradient-orange {
+  @apply text-orange-ink;
+}
+/* Chữ trắng đặt trên ảnh: đổ bóng mềm để không chìm vào nền */
+@utility text-on-photo {
+  text-shadow:
+    0 1px 2px rgb(7 21 51 / 0.55),
+    0 2px 14px rgb(7 21 51 / 0.55);
+}
+
+/* Logo trắng hiển thị thành màu navy trên nền sáng */
+.logo-ink {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(46%) saturate(3420%) hue-rotate(214deg) brightness(91%);
+}
+
+/* Hoạ tiết dự phòng khi chưa có ảnh minh hoạ */
+.photo-fallback {
+  background:
+    radial-gradient(circle at 22% 25%, rgb(245 184 61 / 0.35), transparent 42%),
+    radial-gradient(circle at 80% 80%, rgb(242 107 29 / 0.3), transparent 45%),
+    linear-gradient(135deg, #2f6bf0, var(--color-navy));
+}
+
+/* Nền dải tối (giá trị, lộ trình, footer) khi ảnh chưa có vẫn đẹp */
+.band-fallback {
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(ellipse 60% 80% at 85% 60%, rgb(242 107 29 / 0.35), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 20%, rgb(31 91 224 / 0.45), transparent 60%),
+    linear-gradient(180deg, var(--color-navy-deep), var(--color-navy) 60%, var(--color-navy-soft));
+}
+
+/* Thanh cuộn ngang ẩn cho carousel */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hiệu ứng xuất hiện khi cuộn; chỉ ẩn khi trình duyệt chạy JS */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--delay, 0ms);
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Băng chuyền logo */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Mục đếm ngược: số lật khi đổi, ảnh nền phóng chậm, nút đăng ký toả sóng */
+@keyframes cd-tick {
+  from {
+    transform: translateY(-55%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.cd-tick {
+  animation: cd-tick 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14) translateX(-1.5%);
+  }
+}
+.kenburns {
+  animation: kenburns 18s ease-in-out infinite alternate;
+}
+@keyframes cta-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(242 107 29 / 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 16px rgb(242 107 29 / 0);
+  }
+}
+.cta-pulse {
+  animation: cta-pulse 2s ease-out infinite;
+}
+
+/* Điểm nhấn: các chấm mức năng lực sáng dần khi thẻ xuất hiện */
+.hl-dot {
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+  transition-delay: calc(var(--d, 0) * 35ms + 200ms);
+}
+.js .reveal:not(.is-visible) .hl-dot.on {
+  opacity: 0.25;
+  transform: scale(0.6);
+}
+
+/* Timeline: đường kẻ chạy dần, chấm bật lên khi section xuất hiện */
+.js .tl .tl-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s ease-out;
+  transition-delay: calc(var(--i) * 0.45s + 0.2s);
+}
+.js .tl .tl-dot {
+  transform: translateY(-50%) scale(0);
+  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition-delay: calc(var(--i) * 0.45s + 0.15s);
+}
+.js .tl.is-visible .tl-line {
+  transform: scaleX(1);
+}
+.js .tl.is-visible .tl-dot {
+  transform: translateY(-50%) scale(1);
+}
+@keyframes tl-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.tl-pulse {
+  animation: tl-pulse 1.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .tl .tl-line,
+  .js .tl .tl-dot {
+    transition: none;
+    transform: translateY(-50%) scale(1);
+  }
+  .js .tl .tl-line {
+    transform: none;
+  }
+  .hl-dot {
+    transition: none;
+  }
+  .tl-pulse,
+  .cd-tick,
+  .kenburns,
+  .cta-pulse {
+    animation: none;
+  }
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

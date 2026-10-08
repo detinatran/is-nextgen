@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "PHOTO_INVALID_FORMAT",
+    "message": "Photo must be JPEG, PNG or WebP",
+    "correlationId": "64e58e7e-3e68-45e9-9fe6-1f5eb1c5a465",
+    "details": {}
+  }
+}

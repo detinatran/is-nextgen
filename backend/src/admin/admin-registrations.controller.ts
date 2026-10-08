@@ -3,6 +3,7 @@ import { ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { createReadStream } from 'node:fs';
 import { Readable } from 'node:stream';
+import { AppException } from '../common/errors/app-error';
 import type { AuthenticatedRequest } from '../common/http/request-context';
 import { AdminGuard } from '../identity-access/guards/admin.guard';
 import { AuthGuard } from '../identity-access/guards/auth.guard';
@@ -82,6 +83,14 @@ export class AdminRegistrationsController {
         return;
       }
     }
+    // Lấy luồng từ Drive trước khi gửi header, để lỗi trả về đúng mã thay vì một phản hồi rỗng
+    let remote: globalThis.Response | undefined;
+    if (file.driveFileId) {
+      remote = await this.registrations.driveStream(file.driveFileId, start, end).catch((e: { status?: number }) => {
+        if (e?.status === 404) throw AppException.notFound('Video file is missing from Google Drive');
+        throw AppException.dependencyUnavailable('Google Drive is unavailable');
+      });
+    }
     if (start === 0) {
       await this.registrations.recordMediaView(req.auth!.userId, id, kind, req.correlationId ?? 'unknown');
     }
@@ -92,12 +101,7 @@ export class AdminRegistrationsController {
     if (range) res.setHeader('Content-Range', `bytes ${start}-${end}/${file.size}`);
     res.setHeader('Cache-Control', 'private, no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    if (file.driveFileId) {
-      const remote = await this.registrations.driveStream(file.driveFileId, start, end).catch(() => null);
-      if (!remote?.body) {
-        if (!res.headersSent) res.status(502).end();
-        return;
-      }
+    if (remote?.body) {
       const body = Readable.fromWeb(remote.body as import('node:stream/web').ReadableStream);
       body.on('error', () => res.destroy());
       body.pipe(res);

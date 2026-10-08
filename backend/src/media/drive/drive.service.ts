@@ -66,7 +66,12 @@ export class DriveService {
 
   /** Thư mục chứa video (tạo nếu chưa có). drive.file chỉ tìm thấy thư mục do backend tạo. */
   async folder(): Promise<string> {
-    if (this.folderId) return this.folderId;
+    if (this.folderId) {
+      // Thư mục có thể đã bị xoá hoặc chuyển vào thùng rác trên Drive: kiểm tra trước khi dùng lại
+      const check = await this.api(`/files/${encodeURIComponent(this.folderId)}?fields=trashed`);
+      if (check.ok && !((await check.json()) as { trashed: boolean }).trashed) return this.folderId;
+      this.folderId = undefined;
+    }
     const name = this.folderName;
     const q = `mimeType='application/vnd.google-apps.folder' and name='${name.replace(/'/g, "\\'")}' and trashed=false`;
     const found = await this.api(`/files?${new URLSearchParams({ q, fields: 'files(id)', spaces: 'drive' })}`);
@@ -136,7 +141,7 @@ export class DriveService {
   /** Luồng tải một đoạn file (hỗ trợ Range) để trang quản trị phát video. */
   async download(fileId: string, start: number, end: number): Promise<Response> {
     const res = await this.api(`/files/${encodeURIComponent(fileId)}?alt=media`, { headers: { Range: `bytes=${start}-${end}` } });
-    if (!res.ok || !res.body) throw new Error(`Drive download failed: HTTP ${res.status}`);
+    if (!res.ok || !res.body) throw Object.assign(new Error(`Drive download failed: HTTP ${res.status}`), { status: res.status });
     return res;
   }
 }

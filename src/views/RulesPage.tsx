@@ -274,24 +274,30 @@ export default function RulesPage({ lang }: { lang: Lang }) {
             </div>
           </Block>
 
-          <Block id="lo-trinh" eyebrow={t.timelineEyebrow} title={t.timelineTitle}>
-            <div className="grid items-start gap-10 lg:grid-cols-[1fr_0.9fr]">
-              <ol className="relative space-y-5 border-l-2 border-dashed border-orange/40 pl-7">
-                {timeline.map((item) => (
-                  <li key={item.title} className="relative">
-                    <span className="absolute top-1.5 -left-[37px] h-4 w-4 rounded-full border-[3px] border-[#fbf8f2] bg-orange shadow" />
-                    <p className="text-[15px] font-bold text-orange-ink">{item.date}</p>
-                    <p className="font-semibold text-navy">{item.title}</p>
-                    <p className="text-[15px] text-muted">{item.body}</p>
-                  </li>
-                ))}
-              </ol>
-              <div className="relative lg:sticky lg:top-28">
+          <Block
+            id="lo-trinh"
+            eyebrow={t.timelineEyebrow}
+            title={t.timelineTitle}
+            aside={
+              <div aria-hidden className="relative -mb-4 hidden w-[24rem] lg:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img("skyline")} alt="" aria-hidden className="w-full" />
-                <Script lines={t.scriptTimeline} className="absolute -top-6 right-2 rotate-[-8deg] text-right text-3xl text-navy" />
+                <img src={img("skyline")} alt="" className="w-full" />
+                <Script lines={t.scriptTimeline} className="absolute -top-8 right-0 rotate-[-8deg] text-right text-3xl text-navy" />
               </div>
-            </div>
+            }
+          >
+            {/* Dòng thời gian ngang: đủ 9 mốc trên một hàng từ 1280px, nhỏ hơn thì vuốt ngang */}
+            <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-3 [scrollbar-width:thin] xl:mx-0 xl:grid xl:grid-cols-9 xl:overflow-visible xl:px-0">
+              {timeline.map((item, i) => (
+                <li key={item.title} className="relative w-44 shrink-0 snap-start pr-5 xl:w-auto xl:pr-3">
+                  {i < timeline.length - 1 && <span aria-hidden className="absolute top-[7px] right-0 left-4 h-0.5 bg-orange/30" />}
+                  <span aria-hidden className="relative block h-4 w-4 rounded-full bg-orange ring-4 ring-[#fbf8f2]" />
+                  <p className="mt-4 text-[14px] font-bold tracking-tight whitespace-nowrap text-orange-ink xl:text-[13px]">{item.date}</p>
+                  <p className="mt-1 text-[15px] leading-snug font-semibold text-navy">{item.title}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-muted">{item.body}</p>
+                </li>
+              ))}
+            </ol>
           </Block>
 
           <Block eyebrow={t.voteEyebrow} title={t.voteTitle}>

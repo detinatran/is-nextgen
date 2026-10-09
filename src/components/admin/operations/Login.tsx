@@ -222,7 +222,7 @@ export default function AdminLoginPage() {
                     ref={emailRef}
                     type="email"
                     autoComplete="username"
-                    placeholder="ten@vnuis.edu.vn"
+                    placeholder={t("ten@vnuis.edu.vn")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     aria-invalid={submitted && !!emailError}

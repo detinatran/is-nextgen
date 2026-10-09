@@ -26,7 +26,8 @@ export async function proxy(request: NextRequest) {
     if (!response.ok) return NextResponse.redirect(login);
   } catch {
     return new NextResponse(
-      "Không thể kết nối dịch vụ quản trị. Vui lòng thử lại.",
+      // Middleware chưa biết ngôn ngữ người dùng chọn (lưu ở trình duyệt) nên báo cả hai thứ tiếng
+      "Không thể kết nối dịch vụ quản trị. Vui lòng thử lại.\nCannot reach the admin service. Please try again.",
       {
         status: 503,
         headers: {

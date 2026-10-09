@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/tr";
 // Khi chạy dưới nextgen.vnuis.edu.vn/admin, API của admin đi qua /admin/api/v1 (nginx chuyển tới backend admin);
 // chạy local không đặt biến thì giữ /api/v1 như cũ.
 export const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_BASE ?? "/api/v1";
@@ -37,7 +38,7 @@ export async function adminApi<T>(
     throw new Error(
       Array.isArray(issues)
         ? issues.join("; ")
-        : (body?.error?.message ?? `Yêu cầu thất bại (${response.status})`),
+        : body?.error?.message ? tr(body.error.message) : tr("Yêu cầu thất bại ({0})", response.status),
     );
   }
   return response.status === 204 ? (undefined as T) : response.json();
@@ -50,7 +51,7 @@ export async function downloadAdmin(path: string, name: string) {
   });
   if (!response.ok) {
     const body = await response.json().catch(() => null);
-    throw new Error(body?.error?.message ?? "Không thể tải tệp");
+    throw new Error(body?.error?.message ?? tr("Không thể tải tệp"));
   }
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement("a");
@@ -162,6 +163,6 @@ export const viTime = (value: string | null) =>
       }).format(new Date(value))
     : "—";
 export const examStatus = (value: string) =>
-  ({ NOT_STARTED: "Chưa vào", IN_PROGRESS: "Đang làm", SUBMITTED: "Đã nộp" })[
+  ({ NOT_STARTED: tr("Chưa vào"), IN_PROGRESS: tr("Đang làm"), SUBMITTED: tr("Đã nộp") })[
     value
   ] ?? value;

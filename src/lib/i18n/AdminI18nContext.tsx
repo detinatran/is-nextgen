@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import { createContext, Fragment, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { adminTranslations, type AdminTranslationKey } from "./admin-translations";
+import { setTrLang } from "./tr";
 
 type Lang = "vi" | "en";
 
@@ -70,9 +71,11 @@ export function AdminI18nProvider({ children, initialLang = "vi" }: { children: 
     );
   }, [lang]);
 
+  // tr() đọc ngôn ngữ toàn cục: đặt trước khi các component con render, và dựng lại cây khi đổi ngôn ngữ
+  setTrLang(lang);
   return (
     <AdminI18nContext.Provider value={{ lang, setLang, t, toggleLang, isReady }}>
-      {children}
+      <Fragment key={lang}>{children}</Fragment>
     </AdminI18nContext.Provider>
   );
 }

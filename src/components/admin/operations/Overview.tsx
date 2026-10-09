@@ -5,6 +5,7 @@ import { adminAsset, AssignmentItem, Configuration, RegistrationItem, ScheduleIt
 import { findDuplicates } from "@/lib/admin/duplicates";
 import { emptyConfig, Notice, useResource } from "./common";
 import { Icon, IconTile, Pill, Skeleton, StatCard, type IconName, type Tone } from "@/components/admin/ui/kit";
+import { tr } from "@/lib/i18n/tr";
 
 const shortcuts: { href: string; title: string; desc: string; icon: IconName; tone: Tone }[] = [
   { href: "/admin/candidates", title: "Hồ sơ & tài khoản", desc: "Tra cứu hồ sơ, cấp và khoá tài khoản", icon: "users", tone: "blue" },
@@ -56,13 +57,13 @@ export default function Overview() {
   const attention: Item[] = [];
   // Chỉ tính khi đủ dữ liệu, tránh hiện số tạm sai trong lúc đang tải
   const ready = !candidates.loading && !schedules.loading && !assignments.loading;
-  if (ready && stats.open.length) attention.push({ tone: "blue", title: `${stats.open.length} ca thi đang mở`, detail: `${stats.inProgress} thí sinh đang làm bài`, href: "/admin/exams/monitor", action: "Giám sát" });
-  if (ready && stats.duplicates) attention.push({ tone: "red", title: `${stats.duplicates} nhóm hồ sơ trùng`, detail: "Trùng MSSV, email, số điện thoại hoặc Facebook", href: "/admin/candidates/duplicate-reviews", action: "Rà soát" });
-  if (ready && stats.unassigned) attention.push({ tone: "amber", title: `${stats.unassigned} hồ sơ đã nộp chưa xếp ca`, detail: "Cần xếp ca Vòng 1 trước khi gửi email mời thi", href: "/admin/exams/assignments", action: "Xếp ca" });
-  if (ready && stats.pendingActivation) attention.push({ tone: "amber", title: `${stats.pendingActivation} tài khoản chưa kích hoạt`, detail: "Thí sinh chưa đặt mật khẩu từ email mời thi", href: "/admin/candidates", action: "Xem hồ sơ" });
-  if (ready && noBlueprint.length) attention.push({ tone: "red", title: `${noBlueprint.length} ca sắp tới chưa có đề`, detail: "Ca chưa gắn bộ đề đã chốt nên không thể xếp thí sinh", href: "/admin/exams/schedules", action: "Kiểm tra" });
+  if (ready && stats.open.length) attention.push({ tone: "blue", title: tr("{0} ca thi đang mở", stats.open.length), detail: tr("{0} thí sinh đang làm bài", stats.inProgress), href: "/admin/exams/monitor", action: tr("Giám sát") });
+  if (ready && stats.duplicates) attention.push({ tone: "red", title: tr("{0} nhóm hồ sơ trùng", stats.duplicates), detail: tr("Trùng MSSV, email, số điện thoại hoặc Facebook"), href: "/admin/candidates/duplicate-reviews", action: tr("Rà soát") });
+  if (ready && stats.unassigned) attention.push({ tone: "amber", title: tr("{0} hồ sơ đã nộp chưa xếp ca", stats.unassigned), detail: tr("Cần xếp ca Vòng 1 trước khi gửi email mời thi"), href: "/admin/exams/assignments", action: tr("Xếp ca") });
+  if (ready && stats.pendingActivation) attention.push({ tone: "amber", title: tr("{0} tài khoản chưa kích hoạt", stats.pendingActivation), detail: tr("Thí sinh chưa đặt mật khẩu từ email mời thi"), href: "/admin/candidates", action: tr("Xem hồ sơ") });
+  if (ready && noBlueprint.length) attention.push({ tone: "red", title: tr("{0} ca sắp tới chưa có đề", noBlueprint.length), detail: tr("Ca chưa gắn bộ đề đã chốt nên không thể xếp thí sinh"), href: "/admin/exams/schedules", action: tr("Kiểm tra") });
   if (!config.loading && rubricMissing.length)
-    attention.push({ tone: "slate", title: `Chưa cấu hình Rubric ${rubricMissing.map((r) => (r === 2 ? "Vòng 2" : "Chung kết")).join(" và ")}`, detail: "Cần có tiêu chí chấm trước khi nhập điểm", href: "/admin/scoring/manual", action: "Cấu hình" });
+    attention.push({ tone: "slate", title: tr("Chưa cấu hình Rubric {0}", rubricMissing.map((r) => (r === 2 ? tr("Vòng 2") : tr("Chung kết"))).join(tr(" và "))), detail: tr("Cần có tiêu chí chấm trước khi nhập điểm"), href: "/admin/scoring/manual", action: tr("Cấu hình") });
 
   const error = candidates.error || schedules.error || assignments.error || config.error;
   const reload = () => {
@@ -79,16 +80,16 @@ export default function Overview() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#071533] via-[#071533]/85 to-transparent" aria-hidden />
         <div className="relative flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold tracking-[0.18em] text-[#8CC1FF] uppercase">Mùa I: The Manager in the AI Era</p>
+            <p className="text-xs font-semibold tracking-[0.18em] text-[#8CC1FF] uppercase">{tr("Mùa I: The Manager in the AI Era")}</p>
             <h1 className="mt-2 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-4xl">
               NEXTGEN <span className="text-adm-gold">MANAGER</span>
               <span className="block text-2xl font-bold text-[#8CC1FF] sm:text-3xl">CHALLENGE 2026</span>
             </h1>
-            <p className="mt-3 text-sm leading-relaxed text-white/75">Kiến tạo thế hệ nhà quản trị tương lai bằng tư duy số, hiểu biết AI và bản lĩnh hội nhập toàn cầu.</p>
+            <p className="mt-3 text-sm leading-relaxed text-white/75">{tr("Kiến tạo thế hệ nhà quản trị tương lai bằng tư duy số, hiểu biết AI và bản lĩnh hội nhập toàn cầu.")}</p>
           </div>
           <p className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[13px] text-white backdrop-blur-sm md:self-end">
             <span className="h-2 w-2 rounded-full bg-adm-gold" aria-hidden />
-            {schedules.loading && !schedules.updatedAt ? "Đang tải lịch thi…" : stats.open.length ? `${stats.open.length} ca thi đang diễn ra` : stats.upcoming[0] ? `Ca kế tiếp: ${viTime(stats.upcoming[0].opensAt)}` : "Chưa có ca thi sắp tới"}
+            {schedules.loading && !schedules.updatedAt ? tr("Đang tải lịch thi…") : stats.open.length ? tr("{0} ca thi đang diễn ra", stats.open.length) : stats.upcoming[0] ? tr("Ca kế tiếp: {0}", viTime(stats.upcoming[0].opensAt)) : tr("Chưa có ca thi sắp tới")}
           </p>
         </div>
       </section>
@@ -96,19 +97,18 @@ export default function Overview() {
       <Notice error message={error} onRetry={reload} />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatCard loading={loading} icon="fileCheck" tone="blue" label="Hồ sơ đã nộp" value={stats.submitted} hint={`${stats.drafts} hồ sơ đang nháp`} />
-        <StatCard loading={loading} icon="calendar" tone="cyan" label="Ca thi" value={schedules.data.length} hint={`${stats.upcoming.length} ca sắp diễn ra`} />
-        <StatCard loading={loading} icon="clock" tone="amber" label="Đang làm bài" value={stats.inProgress} hint="Thí sinh trong phòng thi" />
-        <StatCard loading={loading} icon="checkCircle" tone="green" label="Đã nộp bài" value={stats.done} hint={`trên ${assignments.data.length} thí sinh đã xếp ca`} />
+        <StatCard loading={loading} icon="fileCheck" tone="blue" label={tr("Hồ sơ đã nộp")} value={stats.submitted} hint={tr("{0} hồ sơ đang nháp", stats.drafts)} />
+        <StatCard loading={loading} icon="calendar" tone="cyan" label={tr("Ca thi")} value={schedules.data.length} hint={tr("{0} ca sắp diễn ra", stats.upcoming.length)} />
+        <StatCard loading={loading} icon="clock" tone="amber" label={tr("Đang làm bài")} value={stats.inProgress} hint={tr("Thí sinh trong phòng thi")} />
+        <StatCard loading={loading} icon="checkCircle" tone="green" label={tr("Đã nộp bài")} value={stats.done} hint={tr("trên {0} thí sinh đã xếp ca", assignments.data.length)} />
       </div>
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <section className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
           <div className="flex items-center justify-between border-b border-adm-border px-5 py-4">
-            <h2 className="text-[17px] font-semibold text-adm-text">Cần chú ý</h2>
+            <h2 className="text-[17px] font-semibold text-adm-text">{tr("Cần chú ý")}</h2>
             <button type="button" onClick={reload} className="flex items-center gap-1.5 text-[13px] text-adm-sub hover:text-adm-text">
-              <Icon name="refresh" className="h-3.5 w-3.5" /> Làm mới
-            </button>
+              <Icon name="refresh" className="h-3.5 w-3.5" /> {" "}{tr("Làm mới")}</button>
           </div>
           {!ready ? (
             <div className="space-y-3 p-5">
@@ -133,17 +133,15 @@ export default function Overview() {
             </ul>
           ) : (
             <p className="flex items-center gap-2 px-5 py-6 text-sm text-adm-sub">
-              <Icon name="checkCircle" className="text-adm-success" /> Không có việc tồn đọng.
-            </p>
+              <Icon name="checkCircle" className="text-adm-success" /> {" "}{tr("Không có việc tồn đọng.")}</p>
           )}
         </section>
 
         <section className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
           <div className="flex items-center justify-between border-b border-adm-border px-5 py-4">
-            <h2 className="text-[17px] font-semibold text-adm-text">Ca thi sắp tới</h2>
+            <h2 className="text-[17px] font-semibold text-adm-text">{tr("Ca thi sắp tới")}</h2>
             <Link href="/admin/exams/schedules" className="text-[13px] text-adm-sub hover:text-adm-text">
-              Tất cả
-            </Link>
+              {tr("Tất cả")}</Link>
           </div>
           {schedules.loading && !schedules.data.length ? (
             <div className="space-y-3 p-5">
@@ -161,12 +159,12 @@ export default function Overview() {
                   <span className="text-[13px] text-adm-sub tabular-nums">
                     {s.assigned}/{s.capacity}
                   </span>
-                  {!s.blueprintId && <Pill tone="red">Chưa có đề</Pill>}
+                  {!s.blueprintId && <Pill tone="red">{tr("Chưa có đề")}</Pill>}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-6 text-sm text-adm-sub">Chưa có ca thi sắp diễn ra.</p>
+            <p className="px-5 py-6 text-sm text-adm-sub">{tr("Chưa có ca thi sắp diễn ra.")}</p>
           )}
         </section>
       </div>
@@ -175,7 +173,7 @@ export default function Overview() {
         <div className="mb-5 flex items-center gap-3">
           <IconTile name="layers" tone="blue" size="sm" />
           <div>
-            <h2 className="text-[17px] font-semibold text-adm-text">Quản trị cuộc thi</h2>
+            <h2 className="text-[17px] font-semibold text-adm-text">{tr("Quản trị cuộc thi")}</h2>
             <p className="text-[13px] text-adm-sub">{competition?.name ?? "NextGen Manager Challenge 2026"}</p>
           </div>
         </div>
@@ -190,8 +188,8 @@ export default function Overview() {
                 <IconTile name={s.icon} tone={s.tone} size="sm" />
                 <Icon name="arrowRight" className="text-slate-300 transition group-hover:text-adm-primary motion-safe:group-hover:translate-x-0.5" />
               </div>
-              <p className="mt-3 font-semibold text-adm-text">{s.title}</p>
-              <p className="mt-1 text-xs leading-relaxed text-adm-sub">{s.desc}</p>
+              <p className="mt-3 font-semibold text-adm-text">{tr(s.title)}</p>
+              <p className="mt-1 text-xs leading-relaxed text-adm-sub">{tr(s.desc)}</p>
             </Link>
           ))}
         </div>

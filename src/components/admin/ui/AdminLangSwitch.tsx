@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { langFromPath } from "@/lib/i18n";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 import { useRef, useEffect } from "react";
+import { tr } from "@/lib/i18n/tr";
 
 export default function AdminLangSwitch() {
   const pathname = usePathname();
@@ -68,7 +69,7 @@ export default function AdminLangSwitch() {
             : "lang-inactive text-slate-400 opacity-70 hover:text-slate-600 hover:opacity-100"
         }`}
         aria-pressed={lang === "vi"}
-        aria-label="Chuyển sang Tiếng Việt"
+        aria-label={tr("Chuyển sang Tiếng Việt")}
       >
         VI
       </button>

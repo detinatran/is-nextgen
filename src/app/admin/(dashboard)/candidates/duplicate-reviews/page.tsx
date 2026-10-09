@@ -6,6 +6,7 @@ import { adminApi, RegistrationItem, viTime } from "@/lib/admin/api";
 import { duplicateFieldLabel, findDuplicates, type DuplicateField } from "@/lib/admin/duplicates";
 import { useResource, useOperations, Notice, Button, inputClass } from "@/components/admin/operations/common";
 import { Callout, EmptyState, Icon, PageHeader, Pill, Skeleton, StatCard, Tabs, useConfirm } from "@/components/admin/ui/kit";
+import { tr } from "@/lib/i18n/tr";
 
 const compareRows: [string, (r: RegistrationItem) => string | null][] = [
   ["Mã thí sinh", (r) => r.candidateCode],
@@ -14,9 +15,9 @@ const compareRows: [string, (r: RegistrationItem) => string | null][] = [
   ["Điện thoại", (r) => r.phone],
   ["Facebook", (r) => r.facebook],
   ["Trường", (r) => r.school],
-  ["Hồ sơ", (r) => (r.state === "SUBMITTED" ? "Đã nộp" : r.state === "DRAFT" ? "Bản nháp" : "Chưa đăng ký")],
-  ["Tài khoản", (r) => (!r.userId ? "Chưa có" : r.accountStatus === "ACTIVE" ? "Hoạt động" : r.accountStatus === "DISABLED" ? "Đã khoá" : "Chưa kích hoạt")],
-  ["Video", (r) => (r.videoId ? "Đã nộp" : "Chưa có")],
+  ["Hồ sơ", (r) => (r.state === "SUBMITTED" ? tr("Đã nộp") : r.state === "DRAFT" ? tr("Bản nháp") : tr("Chưa đăng ký"))],
+  ["Tài khoản", (r) => (!r.userId ? tr("Chưa có") : r.accountStatus === "ACTIVE" ? tr("Hoạt động") : r.accountStatus === "DISABLED" ? tr("Đã khoá") : tr("Chưa kích hoạt"))],
+  ["Video", (r) => (r.videoId ? tr("Đã nộp") : tr("Chưa có"))],
   ["Thời điểm nộp", (r) => (r.submittedAt ? viTime(r.submittedAt) : null)],
 ];
 
@@ -44,56 +45,53 @@ function DuplicateReviewsPage() {
 
   async function keep(groupId: string, c: RegistrationItem) {
     const r = await confirm({
-      title: "Chọn hồ sơ giữ lại",
+      title: tr("Chọn hồ sơ giữ lại"),
       description: (
         <>
-          Đánh dấu <strong className="text-adm-text">{c.fullName}</strong> ({c.candidateCode || c.email}) là hồ sơ chính thức của nhóm này. Lựa chọn được lưu trong hệ thống để cả Ban Tổ chức cùng thấy; hồ sơ và tài khoản thí sinh không thay đổi.
-        </>
+          {tr("Đánh dấu")}{" "}<strong className="text-adm-text">{c.fullName}</strong> ({c.candidateCode || c.email}{tr(") là hồ sơ chính thức của nhóm này. Lựa chọn được lưu trong hệ thống để cả Ban Tổ chức cùng thấy; hồ sơ và tài khoản thí sinh không thay đổi.")}</>
       ),
-      confirmText: "Giữ hồ sơ này",
+      confirmText: tr("Giữ hồ sơ này"),
     });
     if (!r.ok) return;
     void op.run(async () => {
       await adminApi("admin/duplicate-decisions", { method: "PUT", body: JSON.stringify({ groupKey: groupId, candidateId: c.id }) });
       await saved.reload();
-    }, `Đã ghi nhận giữ hồ sơ ${c.fullName}.`);
+    }, tr("Đã ghi nhận giữ hồ sơ {0}.", c.fullName));
   }
   function undo(groupId: string) {
     void op.run(async () => {
       await adminApi(`admin/duplicate-decisions?groupKey=${encodeURIComponent(groupId)}`, { method: "DELETE" });
       await saved.reload();
-    }, "Đã bỏ chọn.");
+    }, tr("Đã bỏ chọn."));
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Kiểm tra trùng lặp"
+        title={tr("Kiểm tra trùng lặp")}
         icon="search"
         tone="red"
-        description="Hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. So sánh và đánh dấu hồ sơ chính thức; khoá hoặc xoá tài khoản thừa ở trang Hồ sơ đăng ký."
+        description={tr("Hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. So sánh và đánh dấu hồ sơ chính thức; khoá hoặc xoá tài khoản thừa ở trang Hồ sơ đăng ký.")}
         actions={
           <Link href="/admin/candidates" className="inline-flex h-10 items-center gap-2 rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">
-            <Icon name="arrowLeft" /> Hồ sơ đăng ký
-          </Link>
+            <Icon name="arrowLeft" /> {" "}{tr("Hồ sơ đăng ký")}</Link>
         }
       />
       <Notice message={registrations.error || saved.error || op.error} error onRetry={registrations.reload} />
       <Notice message={op.message} />
       {(search || school) && (
-        <Callout title="Đang rà soát trong phạm vi bộ lọc">
-          {search && <>Từ khoá “{search}”. </>}
-          {school && <>Trường “{school}”. </>}
+        <Callout title={tr("Đang rà soát trong phạm vi bộ lọc")}>
+          {search && <>{tr("Từ khoá “")}{search}”. </>}
+          {school && <>{tr("Trường “")}{school}”. </>}
           <Link href="/admin/candidates/duplicate-reviews" className="font-medium text-adm-primary hover:underline">
-            Xem toàn bộ
-          </Link>
+            {tr("Xem toàn bộ")}</Link>
         </Callout>
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard loading={registrations.loading} icon="layers" tone="red" label="Nhóm trùng" value={groups.length} hint={`trên ${registrations.data.length} hồ sơ`} />
-        <StatCard loading={registrations.loading} icon="checkCircle" tone="green" label="Đã rà soát" value={reviewed} hint="Đã chọn hồ sơ giữ lại" />
-        <StatCard loading={registrations.loading} icon="alert" tone="amber" label="Chưa xử lý" value={groups.length - reviewed} />
+        <StatCard loading={registrations.loading} icon="layers" tone="red" label={tr("Nhóm trùng")} value={groups.length} hint={tr("trên {0} hồ sơ", registrations.data.length)} />
+        <StatCard loading={registrations.loading} icon="checkCircle" tone="green" label={tr("Đã rà soát")} value={reviewed} hint={tr("Đã chọn hồ sơ giữ lại")} />
+        <StatCard loading={registrations.loading} icon="alert" tone="amber" label={tr("Chưa xử lý")} value={groups.length - reviewed} />
       </div>
 
       <section className="rounded-xl border border-adm-border bg-white">
@@ -101,12 +99,12 @@ function DuplicateReviewsPage() {
           <Tabs
             value={tab}
             onChange={setTab}
-            items={[{ value: "" as const, label: "Tất cả", count: groups.length }, ...(["studentId", "email", "phone", "facebook"] as const).map((f) => ({ value: f, label: duplicateFieldLabel[f], count: counts[f] ?? 0 }))]}
+            items={[{ value: "" as const, label: tr("Tất cả"), count: groups.length }, ...(["studentId", "email", "phone", "facebook"] as const).map((f) => ({ value: f, label: tr(duplicateFieldLabel[f]), count: counts[f] ?? 0 }))]}
           />
           <label className="relative mb-3 w-full sm:w-72">
-            <span className="sr-only">Tìm trong nhóm trùng</span>
+            <span className="sr-only">{tr("Tìm trong nhóm trùng")}</span>
             <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-adm-muted" />
-            <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm MSSV, email, họ tên…" />
+            <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tr("Tìm MSSV, email, họ tên…")} />
           </label>
         </div>
 
@@ -118,7 +116,7 @@ function DuplicateReviewsPage() {
           </div>
         ) : !shown.length ? (
           <div className="border-t border-adm-border">
-            <EmptyState icon="checkCircle" title={groups.length ? "Không có nhóm phù hợp" : "Không có hồ sơ trùng"} description={groups.length ? "Thử đổi tab hoặc từ khoá." : "Chưa phát hiện hồ sơ trùng theo các tiêu chí hiện tại."} />
+            <EmptyState icon="checkCircle" title={groups.length ? tr("Không có nhóm phù hợp") : tr("Không có hồ sơ trùng")} description={groups.length ? tr("Thử đổi tab hoặc từ khoá.") : tr("Chưa phát hiện hồ sơ trùng theo các tiêu chí hiện tại.")} />
           </div>
         ) : (
           <ul className="divide-y divide-adm-border border-t border-adm-border">
@@ -134,10 +132,10 @@ function DuplicateReviewsPage() {
                     className="flex w-full items-center gap-4 px-5 py-3.5 text-left transition hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-adm-primary/40"
                   >
                     <Icon name="chevronRight" className={`text-adm-muted transition motion-reduce:transition-none ${isOpen ? "rotate-90" : ""}`} />
-                    <span className="w-28 shrink-0 text-[13px] text-adm-sub">{duplicateFieldLabel[g.field]}</span>
+                    <span className="w-28 shrink-0 text-[13px] text-adm-sub">{tr(duplicateFieldLabel[g.field])}</span>
                     <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-adm-text">{g.value}</span>
-                    <span className="hidden text-[13px] text-adm-sub tabular-nums sm:block">{g.candidates.length} hồ sơ</span>
-                    {kept ? <Pill tone="green">Đã chọn giữ lại</Pill> : <Pill tone="amber">Chưa xử lý</Pill>}
+                    <span className="hidden text-[13px] text-adm-sub tabular-nums sm:block">{g.candidates.length} {" "}{tr("hồ sơ")}</span>
+                    {kept ? <Pill tone="green">{tr("Đã chọn giữ lại")}</Pill> : <Pill tone="amber">{tr("Chưa xử lý")}</Pill>}
                   </button>
                   {isOpen && (
                     <div className="px-5 pb-5">
@@ -146,12 +144,11 @@ function DuplicateReviewsPage() {
                           <thead className="bg-adm-bg text-xs font-semibold text-adm-sub">
                             <tr>
                               <th scope="col" className="w-36 px-4 py-2.5">
-                                Thông tin
-                              </th>
+                                {tr("Thông tin")}</th>
                               {g.candidates.map((c) => (
                                 <th key={c.id} scope="col" className={`px-4 py-2.5 ${kept?.id === c.id ? "bg-emerald-50/70" : ""}`}>
                                   <span className="block text-sm font-semibold text-adm-text">{c.fullName}</span>
-                                  {kept?.id === c.id && <span className="font-medium text-adm-success">Hồ sơ giữ lại</span>}
+                                  {kept?.id === c.id && <span className="font-medium text-adm-success">{tr("Hồ sơ giữ lại")}</span>}
                                 </th>
                               ))}
                             </tr>
@@ -163,7 +160,7 @@ function DuplicateReviewsPage() {
                               return (
                                 <tr key={label} className="border-t border-adm-border">
                                   <th scope="row" className="px-4 py-2 text-[13px] font-medium text-adm-sub">
-                                    {label}
+                                    {tr(label)}
                                   </th>
                                   {values.map((v, i) => (
                                     <td key={g.candidates[i].id} className={`px-4 py-2 break-all text-[13px] ${differs ? "text-adm-text" : "text-adm-sub"} ${kept?.id === g.candidates[i].id ? "bg-emerald-50/40" : ""}`}>
@@ -179,12 +176,10 @@ function DuplicateReviewsPage() {
                                 <td key={c.id} className="px-4 py-3">
                                   {kept?.id === c.id ? (
                                     <Button size="sm" variant="ghost" disabled={op.busy} onClick={() => undo(g.id)}>
-                                      Bỏ chọn
-                                    </Button>
+                                      {tr("Bỏ chọn")}</Button>
                                   ) : (
                                     <Button size="sm" variant="secondary" disabled={op.busy} onClick={() => void keep(g.id, c)}>
-                                      Giữ hồ sơ này
-                                    </Button>
+                                      {tr("Giữ hồ sơ này")}</Button>
                                   )}
                                 </td>
                               ))}
@@ -192,7 +187,7 @@ function DuplicateReviewsPage() {
                           </tbody>
                         </table>
                       </div>
-                      <p className="mt-2 text-xs text-adm-muted">Lựa chọn được lưu trong hệ thống; hồ sơ và tài khoản thí sinh không thay đổi. Khoá/xoá tài khoản thừa ở trang Hồ sơ đăng ký.</p>
+                      <p className="mt-2 text-xs text-adm-muted">{tr("Lựa chọn được lưu trong hệ thống; hồ sơ và tài khoản thí sinh không thay đổi. Khoá/xoá tài khoản thừa ở trang Hồ sơ đăng ký.")}</p>
                     </div>
                   )}
                 </li>

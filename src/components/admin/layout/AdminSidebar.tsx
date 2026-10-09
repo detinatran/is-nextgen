@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 import { adminAsset } from "@/lib/admin/api";
+import { tr } from "@/lib/i18n/tr";
 
 interface NavGroup {
   title: string;
@@ -234,7 +235,7 @@ export default function AdminSidebar({
       </div>
 
       {/* Navigation Groups */}
-      <nav aria-label="Điều hướng quản trị" className="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
+      <nav aria-label={tr("Điều hướng quản trị")} className="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
         {navGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {/* Group Title - Hidden when collapsed, but maintain vertical spacing */}

@@ -5,12 +5,20 @@ import { ADMIN_API_BASE, adminApi, downloadAdmin, RegistrationItem, viTime } fro
 import { Button, Field, inputClass, Notice, Table, useOperations, useResource } from "./common";
 import { Callout, DetailList, Drawer, Icon, PageHeader, Pagination, RowMenu, status, useConfirm } from "@/components/admin/ui/kit";
 import { useDebounce } from "@/hooks/useDebounce";
+import { tr } from "@/lib/i18n/tr";
 
 type Account = "ACTIVE" | "PENDING" | "NONE" | "DISABLED" | "DELETED";
 const accountOf = (r: RegistrationItem): Account =>
   r.deleted ? "DELETED" : !r.userId ? "NONE" : r.accountStatus === "ACTIVE" ? "ACTIVE" : r.accountStatus === "DISABLED" ? "DISABLED" : "PENDING";
-const accountPill = { ACTIVE: status.active, PENDING: status.pendingActivation, NONE: status.noAccount, DISABLED: status.locked, DELETED: status.deleted };
-const statePill = (r: RegistrationItem) => (r.state === "SUBMITTED" ? status.submitted : r.state === "DRAFT" ? status.draft : <span className="text-[13px] text-adm-muted">Chưa đăng ký</span>);
+// getter: nhãn được dịch theo ngôn ngữ lúc render, không cố định lúc nạp file
+const accountPill = {
+  get ACTIVE() { return status.active; },
+  get PENDING() { return status.pendingActivation; },
+  get NONE() { return status.noAccount; },
+  get DISABLED() { return status.locked; },
+  get DELETED() { return status.deleted; },
+};
+const statePill = (r: RegistrationItem) => (r.state === "SUBMITTED" ? status.submitted : r.state === "DRAFT" ? status.draft : <span className="text-[13px] text-adm-muted">{tr("Chưa đăng ký")}</span>);
 
 type Credentials = { identifier: string; email: string; password: string };
 
@@ -52,11 +60,11 @@ export default function Registrations() {
 
   async function account(row: RegistrationItem, action: "PROVISION" | "ENABLE" | "DISABLE" | "RESET" | "DELETE") {
     const copy = {
-      PROVISION: { title: "Cấp tài khoản", description: `Tạo tài khoản đăng nhập cho ${row.fullName} và hiển thị mật khẩu một lần.`, confirmText: "Cấp tài khoản" },
-      ENABLE: { title: "Mở khoá tài khoản", description: `${row.fullName} sẽ đăng nhập lại được.`, confirmText: "Mở khoá" },
-      DISABLE: { title: "Khoá tài khoản", description: `${row.fullName} sẽ không đăng nhập được cho tới khi mở khoá. Phiên đang đăng nhập bị huỷ.`, confirmText: "Khoá tài khoản", danger: true },
-      RESET: { title: "Cấp lại mật khẩu", description: `Tạo mật khẩu mới cho ${row.fullName} và huỷ mọi phiên đăng nhập cũ.`, confirmText: "Cấp lại mật khẩu" },
-      DELETE: { title: "Xoá tài khoản", description: `Tài khoản của ${row.fullName} sẽ bị vô hiệu vĩnh viễn. Hồ sơ đăng ký vẫn được giữ.`, confirmText: "Xoá tài khoản", danger: true, reason: { label: "Lý do xoá", required: true } },
+      PROVISION: { title: tr("Cấp tài khoản"), description: tr("Tạo tài khoản đăng nhập cho {0} và hiển thị mật khẩu một lần.", row.fullName), confirmText: tr("Cấp tài khoản") },
+      ENABLE: { title: tr("Mở khoá tài khoản"), description: tr("{0} sẽ đăng nhập lại được.", row.fullName), confirmText: tr("Mở khoá") },
+      DISABLE: { title: tr("Khoá tài khoản"), description: tr("{0} sẽ không đăng nhập được cho tới khi mở khoá. Phiên đang đăng nhập bị huỷ.", row.fullName), confirmText: tr("Khoá tài khoản"), danger: true },
+      RESET: { title: tr("Cấp lại mật khẩu"), description: tr("Tạo mật khẩu mới cho {0} và huỷ mọi phiên đăng nhập cũ.", row.fullName), confirmText: tr("Cấp lại mật khẩu") },
+      DELETE: { title: tr("Xoá tài khoản"), description: tr("Tài khoản của {0} sẽ bị vô hiệu vĩnh viễn. Hồ sơ đăng ký vẫn được giữ.", row.fullName), confirmText: tr("Xoá tài khoản"), danger: true, reason: { label: tr("Lý do xoá"), required: true } },
     }[action];
     const r = await confirm(copy);
     if (!r.ok) return;
@@ -69,7 +77,7 @@ export default function Registrations() {
         setCredentials(result.password ? { ...result, password: result.password } : null);
         await all.reload();
       },
-      { PROVISION: "Đã cấp tài khoản.", ENABLE: "Đã mở khoá tài khoản.", DISABLE: "Đã khoá tài khoản.", RESET: "Đã cấp lại mật khẩu.", DELETE: "Đã xoá tài khoản." }[action],
+      { PROVISION: tr("Đã cấp tài khoản."), ENABLE: tr("Đã mở khoá tài khoản."), DISABLE: tr("Đã khoá tài khoản."), RESET: tr("Đã cấp lại mật khẩu."), DELETE: tr("Đã xoá tài khoản.") }[action],
     );
   }
 
@@ -82,13 +90,13 @@ export default function Registrations() {
       form.reset();
       setCreate(false);
       await all.reload();
-    }, "Đã cấp tài khoản mới.");
+    }, tr("Đã cấp tài khoản mới."));
   }
 
   const exportFile = (format: "csv" | "xlsx") =>
     void op.run(
       () => downloadAdmin(`registrations/export?format=${format}&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`, `registrations.${format}`),
-      format === "csv" ? "Đã xuất CSV." : "Đã xuất Excel.",
+      format === "csv" ? tr("Đã xuất CSV.") : tr("Đã xuất Excel."),
     );
   const clearFilters = () => {
     setSearch("");
@@ -100,11 +108,11 @@ export default function Registrations() {
   };
   const menuFor = (r: RegistrationItem) => {
     if (r.deleted) return [];
-    if (!r.userId) return [{ label: "Cấp tài khoản", onClick: () => void account(r, "PROVISION"), disabled: op.busy }];
+    if (!r.userId) return [{ label: tr("Cấp tài khoản"), onClick: () => void account(r, "PROVISION"), disabled: op.busy }];
     return [
-      { label: r.accountStatus === "DISABLED" ? "Mở khoá tài khoản" : "Khoá tài khoản", onClick: () => void account(r, r.accountStatus === "DISABLED" ? "ENABLE" : "DISABLE"), disabled: op.busy },
-      { label: "Cấp lại mật khẩu", onClick: () => void account(r, "RESET"), disabled: op.busy },
-      { label: "Xoá tài khoản", onClick: () => void account(r, "DELETE"), danger: true, disabled: op.busy },
+      { label: r.accountStatus === "DISABLED" ? tr("Mở khoá tài khoản") : tr("Khoá tài khoản"), onClick: () => void account(r, r.accountStatus === "DISABLED" ? "ENABLE" : "DISABLE"), disabled: op.busy },
+      { label: tr("Cấp lại mật khẩu"), onClick: () => void account(r, "RESET"), disabled: op.busy },
+      { label: tr("Xoá tài khoản"), onClick: () => void account(r, "DELETE"), danger: true, disabled: op.busy },
     ];
   };
   const dupHref = `/admin/candidates/duplicate-reviews?${new URLSearchParams({ search: debouncedSearch, school: debouncedSchool })}`;
@@ -112,14 +120,13 @@ export default function Registrations() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Hồ sơ đăng ký"
+        title={tr("Hồ sơ đăng ký")}
         icon="users"
-        description="Tra cứu hồ sơ thí sinh, xem video giới thiệu và quản lý tài khoản dự thi."
+        description={tr("Tra cứu hồ sơ thí sinh, xem video giới thiệu và quản lý tài khoản dự thi.")}
         actions={
           <>
             <Link href={dupHref} className="inline-flex h-10 items-center rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">
-              Kiểm tra trùng lặp
-            </Link>
+              {tr("Kiểm tra trùng lặp")}</Link>
             <Button variant="secondary" icon="download" disabled={op.busy || all.loading} onClick={() => exportFile("xlsx")}>
               Excel
             </Button>
@@ -127,8 +134,7 @@ export default function Registrations() {
               CSV
             </Button>
             <Button icon="plus" onClick={() => setCreate(true)}>
-              Cấp tài khoản mới
-            </Button>
+              {tr("Cấp tài khoản mới")}</Button>
           </>
         }
       />
@@ -138,24 +144,22 @@ export default function Registrations() {
       {credentials && (
         <Callout
           tone="warning"
-          title="Thông tin đăng nhập vừa cấp — chỉ hiển thị một lần"
+          title={tr("Thông tin đăng nhập vừa cấp — chỉ hiển thị một lần")}
           action={
             <div className="flex gap-2">
               <Button
                 size="sm"
                 variant="secondary"
-                onClick={() => void op.run(() => navigator.clipboard.writeText(`Tài khoản: ${credentials.identifier}\nEmail: ${credentials.email}\nMật khẩu: ${credentials.password}`), "Đã sao chép.")}
+                onClick={() => void op.run(() => navigator.clipboard.writeText(tr("Tài khoản: {0}\nEmail: {1}\nMật khẩu: {2}", credentials.identifier, credentials.email, credentials.password)), tr("Đã sao chép."))}
               >
-                Sao chép
-              </Button>
+                {tr("Sao chép")}</Button>
               <Button size="sm" variant="ghost" onClick={() => setCredentials(null)}>
-                Ẩn
-              </Button>
+                {tr("Ẩn")}</Button>
             </div>
           }
         >
           <span className="text-adm-text">
-            Tài khoản <strong>{credentials.identifier}</strong> · {credentials.email} · Mật khẩu <code className="rounded bg-white px-1.5 py-0.5 font-mono">{credentials.password}</code>
+            {tr("Tài khoản")}{" "}<strong>{credentials.identifier}</strong> · {credentials.email} {" "}{tr("· Mật khẩu")}{" "}<code className="rounded bg-white px-1.5 py-0.5 font-mono">{credentials.password}</code>
           </span>
         </Callout>
       )}
@@ -163,52 +167,51 @@ export default function Registrations() {
       <section className="rounded-xl border border-adm-border bg-white">
         <div className="flex flex-wrap items-center gap-3 p-4">
           <label className="relative min-w-60 flex-1">
-            <span className="sr-only">Tìm kiếm hồ sơ</span>
+            <span className="sr-only">{tr("Tìm kiếm hồ sơ")}</span>
             <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-adm-muted" />
-            <input className={`${inputClass} pl-9`} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} maxLength={200} placeholder="Tìm theo họ tên, MSSV, email hoặc mã thí sinh" />
+            <input className={`${inputClass} pl-9`} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} maxLength={200} placeholder={tr("Tìm theo họ tên, MSSV, email hoặc mã thí sinh")} />
           </label>
           <label className="w-full sm:w-60">
-            <span className="sr-only">Trường</span>
+            <span className="sr-only">{tr("Trường")}</span>
             <select className={inputClass} value={school} onChange={(e) => { setSchool(e.target.value); setPage(1); }}>
-              <option value="">Tất cả trường</option>
+              <option value="">{tr("Tất cả trường")}</option>
               {schools.map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </select>
           </label>
           <Button variant="secondary" icon="filter" onClick={() => setAdvanced((v) => !v)}>
-            Bộ lọc{advancedCount ? ` (${advancedCount})` : ""}
+            {tr("Bộ lọc")}{advancedCount ? ` (${advancedCount})` : ""}
           </Button>
           {filtering && (
             <Button variant="ghost" onClick={clearFilters}>
-              Xoá lọc
-            </Button>
+              {tr("Xoá lọc")}</Button>
           )}
         </div>
         {advanced && (
           <div className="grid gap-3 border-t border-adm-border p-4 sm:grid-cols-3">
-            <Field label="Trạng thái hồ sơ">
+            <Field label={tr("Trạng thái hồ sơ")}>
               <select className={inputClass} value={stateFilter} onChange={(e) => { setStateFilter(e.target.value); setPage(1); }}>
-                <option value="">Tất cả</option>
-                <option value="SUBMITTED">Đã nộp</option>
-                <option value="DRAFT">Bản nháp</option>
+                <option value="">{tr("Tất cả")}</option>
+                <option value="SUBMITTED">{tr("Đã nộp")}</option>
+                <option value="DRAFT">{tr("Bản nháp")}</option>
               </select>
             </Field>
-            <Field label="Tài khoản">
+            <Field label={tr("Tài khoản")}>
               <select className={inputClass} value={accountFilter} onChange={(e) => { setAccountFilter(e.target.value); setPage(1); }}>
-                <option value="">Tất cả</option>
-                <option value="ACTIVE">Hoạt động</option>
-                <option value="PENDING">Chưa kích hoạt</option>
-                <option value="NONE">Chưa có tài khoản</option>
-                <option value="DISABLED">Đã khoá</option>
-                <option value="DELETED">Đã xoá</option>
+                <option value="">{tr("Tất cả")}</option>
+                <option value="ACTIVE">{tr("Hoạt động")}</option>
+                <option value="PENDING">{tr("Chưa kích hoạt")}</option>
+                <option value="NONE">{tr("Chưa có tài khoản")}</option>
+                <option value="DISABLED">{tr("Đã khoá")}</option>
+                <option value="DELETED">{tr("Đã xoá")}</option>
               </select>
             </Field>
-            <Field label="Video giới thiệu">
+            <Field label={tr("Video giới thiệu")}>
               <select className={inputClass} value={videoFilter} onChange={(e) => { setVideoFilter(e.target.value); setPage(1); }}>
-                <option value="">Tất cả</option>
-                <option value="yes">Đã nộp video</option>
-                <option value="no">Chưa có video</option>
+                <option value="">{tr("Tất cả")}</option>
+                <option value="yes">{tr("Đã nộp video")}</option>
+                <option value="no">{tr("Chưa có video")}</option>
               </select>
             </Field>
           </div>
@@ -216,15 +219,15 @@ export default function Registrations() {
       </section>
 
       {all.error ? (
-        <Notice message={`Không tải được hồ sơ: ${all.error}`} error onRetry={all.reload} />
+        <Notice message={tr("Không tải được hồ sơ: {0}", all.error)} error onRetry={all.reload} />
       ) : (
         <Table
           loading={all.loading}
-          headers={["Mã thí sinh", "Họ tên", "Trường", "Hồ sơ", "Tài khoản", "Video", ""]}
+          headers={[tr("Mã thí sinh"), tr("Họ tên"), tr("Trường"), tr("Hồ sơ"), tr("Tài khoản"), "Video", ""]}
           empty={
             filtering
-              ? { icon: "search", title: "Không có hồ sơ phù hợp", description: "Thử đổi từ khoá hoặc bộ lọc.", action: <Button variant="secondary" onClick={clearFilters}>Xoá bộ lọc</Button> }
-              : { icon: "users", title: "Chưa có hồ sơ đăng ký", description: "Hồ sơ sẽ xuất hiện khi thí sinh đăng ký trên trang chính." }
+              ? { icon: "search", title: tr("Không có hồ sơ phù hợp"), description: tr("Thử đổi từ khoá hoặc bộ lọc."), action: <Button variant="secondary" onClick={clearFilters}>{tr("Xoá bộ lọc")}</Button> }
+              : { icon: "users", title: tr("Chưa có hồ sơ đăng ký"), description: tr("Hồ sơ sẽ xuất hiện khi thí sinh đăng ký trên trang chính.") }
           }
           rows={pageRows.map((r) => [
             <div key="c">
@@ -242,16 +245,15 @@ export default function Registrations() {
             accountPill[accountOf(r)],
             r.videoId && r.registrationId ? (
               <button key="v" type="button" onClick={() => setDetail(r)} className="text-[13px] font-medium whitespace-nowrap text-adm-primary hover:underline">
-                Xem video
+                {tr("Xem video")}
               </button>
             ) : (
-              <span key="v" className="text-[13px] text-adm-muted">Chưa có</span>
+              <span key="v" className="text-[13px] text-adm-muted">{tr("Chưa có")}</span>
             ),
             <div key="a" className="flex items-center justify-end gap-1">
               <Button size="sm" variant="secondary" onClick={() => setDetail(r)}>
-                Chi tiết
-              </Button>
-              <RowMenu label={`Thao tác tài khoản ${r.fullName}`} items={menuFor(r)} />
+                {tr("Chi tiết")}</Button>
+              <RowMenu label={tr("Thao tác tài khoản {0}", r.fullName)} items={menuFor(r)} />
             </div>,
           ])}
           footer={
@@ -260,7 +262,7 @@ export default function Registrations() {
                 page={page}
                 pageSize={pageSize}
                 total={filtered.length}
-                label="hồ sơ"
+                label={tr("hồ sơ")}
                 onPage={setPage}
                 onPageSize={(n) => {
                   setPageSize(n);
@@ -280,10 +282,9 @@ export default function Registrations() {
         footer={
           detail && (
             <>
-              <RowMenu label="Thao tác tài khoản" items={menuFor(detail).map((it) => ({ ...it, onClick: () => { setDetail(null); it.onClick(); } }))} />
+              <RowMenu label={tr("Thao tác tài khoản")} items={menuFor(detail).map((it) => ({ ...it, onClick: () => { setDetail(null); it.onClick(); } }))} />
               <Button variant="secondary" onClick={() => setDetail(null)}>
-                Đóng
-              </Button>
+                {tr("Đóng")}</Button>
             </>
           )
         }
@@ -296,24 +297,24 @@ export default function Registrations() {
             </div>
             <DetailList
               items={[
-                ["Mã thí sinh", detail.candidateCode],
-                ["MSSV", detail.studentId],
-                ["Ngày sinh", detail.dateOfBirth ? new Date(detail.dateOfBirth).toLocaleDateString("vi-VN") : null],
-                ["Điện thoại", detail.phone],
-                ["Trường", detail.school],
-                ["Khoa/Viện", detail.department],
-                ["Ngành", detail.major],
+                [tr("Mã thí sinh"), detail.candidateCode],
+                [tr("MSSV"), detail.studentId],
+                [tr("Ngày sinh"), detail.dateOfBirth ? new Date(detail.dateOfBirth).toLocaleDateString("vi-VN") : null],
+                [tr("Điện thoại"), detail.phone],
+                [tr("Trường"), detail.school],
+                [tr("Khoa/Viện"), detail.department],
+                [tr("Ngành"), detail.major],
                 ["Facebook", detail.facebook],
                 ["Email", detail.email],
-                ["Nộp hồ sơ lúc", detail.submittedAt ? viTime(detail.submittedAt) : null],
+                [tr("Nộp hồ sơ lúc"), detail.submittedAt ? viTime(detail.submittedAt) : null],
               ]}
             />
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-adm-text">Video giới thiệu</h3>
+              <h3 className="mb-2 text-sm font-semibold text-adm-text">{tr("Video giới thiệu")}</h3>
               {detail.videoId && detail.registrationId ? (
                 <video key={detail.videoId} controls preload="metadata" className="aspect-video w-full rounded-lg bg-black" src={`${ADMIN_API_BASE}/admin/registrations/${detail.registrationId}/video`} />
               ) : (
-                <p className="rounded-lg border border-dashed border-adm-border px-4 py-6 text-center text-[13px] text-adm-sub">Thí sinh chưa nộp video.</p>
+                <p className="rounded-lg border border-dashed border-adm-border px-4 py-6 text-center text-[13px] text-adm-sub">{tr("Thí sinh chưa nộp video.")}</p>
               )}
             </div>
           </div>
@@ -323,31 +324,29 @@ export default function Registrations() {
       <Drawer
         open={create}
         onClose={() => setCreate(false)}
-        title="Cấp tài khoản mới"
-        subtitle="Tạo hồ sơ và tài khoản cho thí sinh đăng ký trực tiếp với BTC"
+        title={tr("Cấp tài khoản mới")}
+        subtitle={tr("Tạo hồ sơ và tài khoản cho thí sinh đăng ký trực tiếp với BTC")}
         footer={
           <>
             <Button variant="ghost" onClick={() => setCreate(false)}>
-              Huỷ
-            </Button>
+              {tr("Huỷ")}</Button>
             <Button type="submit" form="create-candidate" loading={op.busy}>
-              Cấp tài khoản
-            </Button>
+              {tr("Cấp tài khoản")}</Button>
           </>
         }
       >
         <form id="create-candidate" onSubmit={add} className="space-y-4">
           {[
-            ["fullName", "Họ tên"],
+            ["fullName", tr("Họ tên")],
             ["email", "Email"],
-            ["studentId", "MSSV"],
-            ["school", "Trường"],
+            ["studentId", tr("MSSV")],
+            ["school", tr("Trường")],
           ].map(([name, label]) => (
             <Field label={label} key={name} required>
               <input required type={name === "email" ? "email" : "text"} className={inputClass} name={name} maxLength={name === "email" ? 255 : 200} />
             </Field>
           ))}
-          <p className="text-xs text-adm-sub">Mật khẩu được tạo tự động và chỉ hiển thị một lần sau khi cấp.</p>
+          <p className="text-xs text-adm-sub">{tr("Mật khẩu được tạo tự động và chỉ hiển thị một lần sau khi cấp.")}</p>
         </form>
       </Drawer>
     </div>

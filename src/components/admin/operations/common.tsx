@@ -4,6 +4,7 @@ import { adminApi, Configuration } from "@/lib/admin/api";
 
 import { cn } from "@/lib/utils";
 import { EmptyState, Icon, IconTile, Skeleton, type IconName, type Tone } from "@/components/admin/ui/kit";
+import { tr } from "@/lib/i18n/tr";
 
 export const inputClass =
   "h-[42px] w-full rounded-lg border border-adm-border bg-white px-3 text-sm text-adm-text placeholder:text-adm-muted transition focus:border-adm-primary focus:outline-none focus:ring-2 focus:ring-adm-primary/20 disabled:cursor-not-allowed disabled:bg-adm-bg aria-[invalid=true]:border-adm-error aria-[invalid=true]:focus:ring-adm-error/20";
@@ -146,8 +147,7 @@ export function Notice({
       <span className="flex-1">{message}</span>
       {onRetry && (
         <button type="button" onClick={onRetry} className="font-semibold underline-offset-2 hover:underline">
-          Thử lại
-        </button>
+          {tr("Thử lại")}</button>
       )}
     </div>
   ) : null;
@@ -207,7 +207,7 @@ export function Table({
           </tbody>
         </table>
       </div>
-      {!loading && !rows.length && <EmptyState icon={empty?.icon ?? "folder"} title={empty?.title ?? "Chưa có dữ liệu"} description={empty?.description} action={empty?.action} />}
+      {!loading && !rows.length && <EmptyState icon={empty?.icon ?? "folder"} title={empty?.title ?? tr("Chưa có dữ liệu")} description={empty?.description} action={empty?.action} />}
       {footer}
     </div>
   );
@@ -255,7 +255,7 @@ export function useOperations() {
   const pending = useRef(false);
   async function run(
     task: () => Promise<void>,
-    success = "Đã lưu thành công.",
+    success = tr("Đã lưu thành công."),
   ) {
     if (pending.current) return;
     pending.current = true;

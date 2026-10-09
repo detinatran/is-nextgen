@@ -3,6 +3,7 @@ import { ReactNode, useState } from "react";
 import { adminApi, downloadAdmin, ImportResult } from "@/lib/admin/api";
 import { Button, Notice, Panel, Table, useOperations } from "./common";
 import { FileUpload, Icon, StatCard } from "@/components/admin/ui/kit";
+import { tr } from "@/lib/i18n/tr";
 
 // Backend nhận tối đa 5.000.000 byte cho tệp nhập (admin.controller FileInterceptor)
 const MAX_BYTES = 5_000_000;
@@ -28,8 +29,7 @@ function TemplateCard({ name, ext, desc, onDownload, disabled }: { name: string;
         <p className="truncate text-xs text-adm-sub">{desc}</p>
       </div>
       <Button size="sm" variant="secondary" icon="download" disabled={disabled} onClick={onDownload}>
-        Tải về
-      </Button>
+        {tr("Tải về")}</Button>
     </div>
   );
 }
@@ -57,77 +57,73 @@ export default function ImportPanel({ kind = "questions", policyId = "", onImpor
         setCheckedPolicy(policyId);
         if (res.committed && onImported) await onImported();
       },
-      commit ? "Đã nhập dữ liệu." : "Đã kiểm tra tệp.",
+      commit ? tr("Đã nhập dữ liệu.") : tr("Đã kiểm tra tệp."),
     );
   }
-  const download = (path: string, name: string) => void op.run(() => downloadAdmin(path, name), "Đã tải tệp mẫu.");
+  const download = (path: string, name: string) => void op.run(() => downloadAdmin(path, name), tr("Đã tải tệp mẫu."));
 
   return (
     <Panel
       step={step}
       icon="upload"
       tone="amber"
-      title={kind === "questions" ? "Nhập ngân hàng câu hỏi" : "Nhập điểm giám khảo"}
-      description={kind === "questions" ? "Hệ thống kiểm tra toàn bộ tệp trước; dữ liệu chỉ được ghi khi không còn lỗi và bạn bấm Nhập." : "Kiểm tra trước, chỉ ghi điểm khi tệp hợp lệ với cấu hình Rubric đang chọn."}
+      title={kind === "questions" ? tr("Nhập ngân hàng câu hỏi") : tr("Nhập điểm giám khảo")}
+      description={kind === "questions" ? tr("Hệ thống kiểm tra toàn bộ tệp trước; dữ liệu chỉ được ghi khi không còn lỗi và bạn bấm Nhập.") : tr("Kiểm tra trước, chỉ ghi điểm khi tệp hợp lệ với cấu hình Rubric đang chọn.")}
     >
       <div className="space-y-6">
-        <Step n={1} title="Tải tệp mẫu">
+        <Step n={1} title={tr("Tải tệp mẫu")}>
           <div className="grid gap-3 lg:grid-cols-2">
             <TemplateCard
               ext="XLSX"
-              name="Mẫu Excel"
-              desc={kind === "questions" ? "Cột prompt, A–D, answer, difficulty, pool" : "Cột subjectType, code, judge, criterion, score"}
+              name={tr("Mẫu Excel")}
+              desc={kind === "questions" ? tr("Cột prompt, A–D, answer, difficulty, pool") : tr("Cột subjectType, code, judge, criterion, score")}
               disabled={op.busy}
               onDownload={() => download(`${kind}/template`, `${kind}-template.xlsx`)}
             />
-            {kind === "questions" && <TemplateCard ext="DOCX" name="Mẫu Word" desc="Một bảng với các cột như mẫu Excel" disabled={op.busy} onDownload={() => download("questions/template.docx", "questions-template.docx")} />}
+            {kind === "questions" && <TemplateCard ext="DOCX" name={tr("Mẫu Word")} desc={tr("Một bảng với các cột như mẫu Excel")} disabled={op.busy} onDownload={() => download("questions/template.docx", "questions-template.docx")} />}
           </div>
           <p className="text-xs text-adm-sub">
             {kind === "questions" ? (
               <>
-                <code>answer</code> dùng A/B/C/D; <code>difficulty</code> dùng EASY/MEDIUM/HARD. Giữ nguyên tên cột trong mẫu.
-              </>
+                <code>answer</code> {" "}{tr("dùng A/B/C/D;")}{" "}<code>difficulty</code> {" "}{tr("dùng EASY/MEDIUM/HARD. Giữ nguyên tên cột trong mẫu.")}</>
             ) : (
               <>
-                <code>subjectType</code> là CANDIDATE hoặc TEAM. Mỗi giám khảo cần nhập đủ các tiêu chí của Rubric cho từng thí sinh/đội.
-              </>
+                <code>subjectType</code> {" "}{tr("là CANDIDATE hoặc TEAM. Mỗi giám khảo cần nhập đủ các tiêu chí của Rubric cho từng thí sinh/đội.")}</>
             )}
           </p>
         </Step>
 
-        <Step n={2} title="Chọn tệp">
-          <FileUpload file={file} onChange={pick} accept={accept} maxBytes={MAX_BYTES} hint={`${accept.replaceAll(",", ", ")} · tối đa 5 MB`} />
+        <Step n={2} title={tr("Chọn tệp")}>
+          <FileUpload file={file} onChange={pick} accept={accept} maxBytes={MAX_BYTES} hint={tr("{0} · tối đa 5 MB", accept.replaceAll(",", ", "))} />
         </Step>
 
-        <Step n={3} title="Kiểm tra và nhập">
+        <Step n={3} title={tr("Kiểm tra và nhập")}>
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="secondary" loading={op.busy && !result} disabled={op.busy || !file || (kind === "scores" && !policyId)} onClick={() => void upload(false)}>
-              Kiểm tra tệp
-            </Button>
+              {tr("Kiểm tra tệp")}</Button>
             <Button disabled={op.busy || !canCommit} loading={op.busy && !!result} onClick={() => void upload(true)}>
-              Nhập dữ liệu
-            </Button>
-            {kind === "scores" && !policyId && <span className="text-[13px] text-adm-sub">Chọn cấu hình Rubric trước.</span>}
-            {!file && <span className="text-[13px] text-adm-muted">Chọn tệp ở bước 2.</span>}
+              {tr("Nhập dữ liệu")}</Button>
+            {kind === "scores" && !policyId && <span className="text-[13px] text-adm-sub">{tr("Chọn cấu hình Rubric trước.")}</span>}
+            {!file && <span className="text-[13px] text-adm-muted">{tr("Chọn tệp ở bước 2.")}</span>}
           </div>
           <Notice message={op.error} error />
 
           {result && (
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-3">
-                <StatCard icon="checkCircle" tone="green" label={result.committed ? "Dòng đã nhập" : "Dòng hợp lệ"} value={result.errors.length ? Math.max(0, result.rows.length - result.errors.length) : result.rows.length} />
-                <StatCard icon="alert" tone="red" label="Lỗi" value={<span className={result.errors.length ? "text-adm-error" : ""}>{result.errors.length}</span>} />
+                <StatCard icon="checkCircle" tone="green" label={result.committed ? tr("Dòng đã nhập") : tr("Dòng hợp lệ")} value={result.errors.length ? Math.max(0, result.rows.length - result.errors.length) : result.rows.length} />
+                <StatCard icon="alert" tone="red" label={tr("Lỗi")} value={<span className={result.errors.length ? "text-adm-error" : ""}>{result.errors.length}</span>} />
                 <div className="flex items-center gap-2 rounded-xl border border-adm-border bg-white px-5 py-4 text-sm">
                   <Icon name={result.committed ? "checkCircle" : result.errors.length ? "alert" : "check"} className={result.errors.length ? "text-adm-error" : "text-adm-success"} />
                   <span className="text-adm-text">
-                    {result.committed ? "Đã ghi vào hệ thống" : result.errors.length ? "Chưa ghi dữ liệu — sửa tệp rồi kiểm tra lại" : "Tệp hợp lệ, sẵn sàng nhập"}
+                    {result.committed ? tr("Đã ghi vào hệ thống") : result.errors.length ? tr("Chưa ghi dữ liệu — sửa tệp rồi kiểm tra lại") : tr("Tệp hợp lệ, sẵn sàng nhập")}
                   </span>
                 </div>
               </div>
-              {result.errors.length > 0 && <Table headers={["Dòng", "Lỗi"]} numeric={[]} rows={result.errors.map((e) => [<span key="r" className="tabular-nums">{e.row || "Toàn tệp"}</span>, e.message])} />}
+              {result.errors.length > 0 && <Table headers={[tr("Dòng"), tr("Lỗi")]} numeric={[]} rows={result.errors.map((e) => [<span key="r" className="tabular-nums">{e.row || tr("Toàn tệp")}</span>, e.message])} />}
               {!result.errors.length && kind === "questions" && (
                 <Table
-                  headers={["Nội dung", "Độ khó", "Đáp án"]}
+                  headers={[tr("Nội dung"), tr("Độ khó"), tr("Đáp án")]}
                   rows={(result.rows as { prompt: string; difficulty: string; answer: number }[]).slice(0, 30).map((r) => [
                     <span key="p" className="line-clamp-2 max-w-2xl">
                       {r.prompt}
@@ -135,10 +131,10 @@ export default function ImportPanel({ kind = "questions", policyId = "", onImpor
                     r.difficulty,
                     String.fromCharCode(65 + r.answer),
                   ])}
-                  footer={result.rows.length > 30 && <p className="border-t border-adm-border px-4 py-2 text-xs text-adm-sub">Hiển thị 30/{result.rows.length} dòng đầu.</p>}
+                  footer={result.rows.length > 30 && <p className="border-t border-adm-border px-4 py-2 text-xs text-adm-sub">{tr("Hiển thị 30/")}{result.rows.length} {" "}{tr("dòng đầu.")}</p>}
                 />
               )}
-              {result.summary && <Table headers={["Mã", "Loại", "Giám khảo", "Điểm tổng hợp"]} numeric={[2, 3]} rows={result.summary.map((r) => [r.code, r.subjectType, r.judges, r.points])} />}
+              {result.summary && <Table headers={[tr("Mã"), tr("Loại"), tr("Giám khảo"), tr("Điểm tổng hợp")]} numeric={[2, 3]} rows={result.summary.map((r) => [r.code, r.subjectType, r.judges, r.points])} />}
             </div>
           )}
         </Step>

@@ -1,6 +1,7 @@
 "use client";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 /* Bộ icon nét (24x24, stroke) dùng chung cho admin */
 const paths: Record<string, ReactNode> = {
@@ -144,20 +145,44 @@ export function Pill({ tone = "slate", children }: { tone?: PillTone; children: 
   );
 }
 
-/** Quy ước màu trạng thái dùng chung toàn hệ thống. */
+/** Quy ước màu trạng thái dùng chung toàn hệ thống (getter: dịch theo ngôn ngữ lúc render). */
 export const status = {
-  submitted: <Pill tone="green">Đã nộp</Pill>,
-  draft: <Pill tone="slate">Bản nháp</Pill>,
-  pendingActivation: <Pill tone="amber">Chưa kích hoạt</Pill>,
-  active: <Pill tone="green">Hoạt động</Pill>,
-  noAccount: <Pill tone="slate">Chưa có tài khoản</Pill>,
-  locked: <Pill tone="red">Đã khoá</Pill>,
-  deleted: <Pill tone="red">Đã xoá</Pill>,
-  inProgress: <Pill tone="blue">Đang làm bài</Pill>,
-  completed: <Pill tone="green">Đã nộp bài</Pill>,
-  notStarted: <Pill tone="slate">Chưa vào thi</Pill>,
-  needsReview: <Pill tone="red">Cần xử lý</Pill>,
-  graded: <Pill tone="green">Đã chấm</Pill>,
+  get submitted() {
+    return <Pill tone="green">{tr("Đã nộp")}</Pill>;
+  },
+  get draft() {
+    return <Pill tone="slate">{tr("Bản nháp")}</Pill>;
+  },
+  get pendingActivation() {
+    return <Pill tone="amber">{tr("Chưa kích hoạt")}</Pill>;
+  },
+  get active() {
+    return <Pill tone="green">{tr("Hoạt động")}</Pill>;
+  },
+  get noAccount() {
+    return <Pill tone="slate">{tr("Chưa có tài khoản")}</Pill>;
+  },
+  get locked() {
+    return <Pill tone="red">{tr("Đã khoá")}</Pill>;
+  },
+  get deleted() {
+    return <Pill tone="red">{tr("Đã xoá")}</Pill>;
+  },
+  get inProgress() {
+    return <Pill tone="blue">{tr("Đang làm bài")}</Pill>;
+  },
+  get completed() {
+    return <Pill tone="green">{tr("Đã nộp bài")}</Pill>;
+  },
+  get notStarted() {
+    return <Pill tone="slate">{tr("Chưa vào thi")}</Pill>;
+  },
+  get needsReview() {
+    return <Pill tone="red">{tr("Cần xử lý")}</Pill>;
+  },
+  get graded() {
+    return <Pill tone="green">{tr("Đã chấm")}</Pill>;
+  },
 };
 
 export function EmptyState({ icon = "folder", title, description, action }: { icon?: IconName; title: string; description?: string; action?: ReactNode }) {
@@ -192,7 +217,7 @@ export function Callout({ tone = "info", title, children, action }: { tone?: "in
 /* ───────── Bảng ───────── */
 
 /** Phân trang + chọn số dòng mỗi trang. */
-export function Pagination({ page, pageSize, total, onPage, onPageSize, label = "mục" }: { page: number; pageSize: number; total: number; onPage: (p: number) => void; onPageSize?: (n: number) => void; label?: string }) {
+export function Pagination({ page, pageSize, total, onPage, onPageSize, label = tr("mục") }: { page: number; pageSize: number; total: number; onPage: (p: number) => void; onPageSize?: (n: number) => void; label?: string }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const from = total ? (page - 1) * pageSize + 1 : 0;
   const to = Math.min(total, page * pageSize);
@@ -210,8 +235,7 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
       <div className="flex items-center gap-3">
         {onPageSize && (
           <label className="flex items-center gap-2">
-            Số dòng
-            <select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))} className="h-8 rounded-md border border-adm-border bg-white px-2 text-[13px] text-adm-text">
+            {tr("Số dòng")}<select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))} className="h-8 rounded-md border border-adm-border bg-white px-2 text-[13px] text-adm-text">
               {[10, 20, 50, 100].map((n) => (
                 <option key={n} value={n}>
                   {n}
@@ -220,8 +244,8 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
             </select>
           </label>
         )}
-        <nav className="flex items-center gap-0.5" aria-label="Phân trang">
-          <button type="button" className={cn(btn, "text-adm-sub hover:bg-slate-100")} disabled={page <= 1} onClick={() => onPage(page - 1)} aria-label="Trang trước">
+        <nav className="flex items-center gap-0.5" aria-label={tr("Phân trang")}>
+          <button type="button" className={cn(btn, "text-adm-sub hover:bg-slate-100")} disabled={page <= 1} onClick={() => onPage(page - 1)} aria-label={tr("Trang trước")}>
             <Icon name="chevronLeft" />
           </button>
           {nums.map((n, i) =>
@@ -245,7 +269,7 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
 }
 
 /** Menu thao tác phụ (nút …). Đóng khi bấm ra ngoài hoặc Esc. */
-export function RowMenu({ items, label = "Thao tác khác" }: { items: { label: string; onClick: () => void; danger?: boolean; disabled?: boolean }[]; label?: string }) {
+export function RowMenu({ items, label = tr("Thao tác khác") }: { items: { label: string; onClick: () => void; danger?: boolean; disabled?: boolean }[]; label?: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -300,7 +324,7 @@ export function RowMenu({ items, label = "Thao tác khác" }: { items: { label: 
 
 type ConfirmOptions = { title: string; description?: ReactNode; confirmText?: string; danger?: boolean; reason?: { label: string; required?: boolean } };
 type ConfirmResult = { ok: boolean; reason?: string };
-const ConfirmCtx = createContext<(o: ConfirmOptions) => Promise<ConfirmResult>>(async () => ({ ok: window.confirm("Xác nhận?") }));
+const ConfirmCtx = createContext<(o: ConfirmOptions) => Promise<ConfirmResult>>(async () => ({ ok: window.confirm(tr("Xác nhận?")) }));
 
 /** Bọc ứng dụng để dùng useConfirm(): hộp xác nhận thay cho window.confirm/prompt. */
 export function ConfirmProvider({ children }: { children: ReactNode }) {
@@ -346,8 +370,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
             )}
             <div className="mt-6 flex justify-end gap-2">
               <button type="button" onClick={() => close(false)} className="h-10 rounded-lg px-4 text-sm font-medium text-adm-sub hover:bg-slate-100">
-                Huỷ
-              </button>
+                {tr("Huỷ")}</button>
               <button
                 ref={confirmRef}
                 type="button"
@@ -355,7 +378,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 onClick={() => close(true)}
                 className={cn("h-10 rounded-lg px-4 text-sm font-semibold text-white disabled:opacity-50", state.danger ? "bg-adm-error hover:bg-red-700" : "bg-adm-primary hover:bg-adm-primary-hover")}
               >
-                {state.confirmText ?? "Xác nhận"}
+                {state.confirmText ?? tr("Xác nhận")}
               </button>
             </div>
           </div>
@@ -379,8 +402,8 @@ export function FileUpload({ file, onChange, accept, maxBytes, hint }: { file: F
     setError("");
     if (!f) return;
     const ext = "." + (f.name.split(".").pop() ?? "").toLowerCase();
-    if (!accept.split(",").includes(ext)) return setError(`Định dạng không hỗ trợ. Chỉ nhận ${accept.replaceAll(",", ", ")}.`);
-    if (f.size > maxBytes) return setError(`Tệp lớn hơn giới hạn ${fmtSize(maxBytes)}.`);
+    if (!accept.split(",").includes(ext)) return setError(tr("Định dạng không hỗ trợ. Chỉ nhận {0}.", accept.replaceAll(",", ", ")));
+    if (f.size > maxBytes) return setError(tr("Tệp lớn hơn giới hạn {0}.", fmtSize(maxBytes)));
     onChange(f);
   };
   if (file)
@@ -392,8 +415,7 @@ export function FileUpload({ file, onChange, accept, maxBytes, hint }: { file: F
           <p className="text-xs text-adm-muted">{fmtSize(file.size)}</p>
         </div>
         <button type="button" onClick={() => onChange(null)} className="rounded-md px-2 py-1 text-[13px] font-medium text-adm-sub hover:bg-slate-100">
-          Chọn tệp khác
-        </button>
+          {tr("Chọn tệp khác")}</button>
       </div>
     );
   return (
@@ -418,11 +440,11 @@ export function FileUpload({ file, onChange, accept, maxBytes, hint }: { file: F
       >
         <Icon name="upload" className="h-5 w-5 text-adm-sub" />
         <span className="mt-2 text-sm font-medium text-adm-text">
-          Kéo thả tệp vào đây hoặc <span className="text-adm-primary">chọn tệp</span>
+          {tr("Kéo thả tệp vào đây hoặc")}{" "}<span className="text-adm-primary">{tr("chọn tệp")}</span>
         </span>
-        <span className="mt-1 text-xs text-adm-muted">{hint ?? `${accept.replaceAll(",", ", ")} · tối đa ${fmtSize(maxBytes)}`}</span>
+        <span className="mt-1 text-xs text-adm-muted">{hint ?? tr("{0} · tối đa {1}", accept.replaceAll(",", ", "), fmtSize(maxBytes))}</span>
       </button>
-      <input ref={input} type="file" accept={accept} className="hidden" aria-label="Chọn tệp" onChange={(e) => take(e.target.files?.[0])} />
+      <input ref={input} type="file" accept={accept} className="hidden" aria-label={tr("Chọn tệp")} onChange={(e) => take(e.target.files?.[0])} />
       {error && (
         <p className="mt-2 text-[13px] text-adm-error" role="alert">
           {error}
@@ -461,7 +483,7 @@ export function Drawer({ open, onClose, title, subtitle, children, footer }: { o
             </h2>
             {subtitle && <p className="truncate text-xs text-adm-sub">{subtitle}</p>}
           </div>
-          <button type="button" onClick={onClose} aria-label="Đóng" className="flex h-8 w-8 items-center justify-center rounded-md text-adm-sub hover:bg-slate-100">
+          <button type="button" onClick={onClose} aria-label={tr("Đóng")} className="flex h-8 w-8 items-center justify-center rounded-md text-adm-sub hover:bg-slate-100">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>

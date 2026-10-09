@@ -25,6 +25,7 @@ import {
   validateQuestion,
 } from "./domain";
 import { SpreadsheetsService } from "./spreadsheets.service";
+import { Round1OpsService } from "./round1-ops.service";
 
 type Tx = Prisma.TransactionClient;
 type RegistrationRow = {
@@ -75,6 +76,7 @@ export class AdminService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly sheets: SpreadsheetsService,
+    private readonly round1Ops: Round1OpsService,
   ) {}
 
   private conflict(message: string): never {
@@ -653,13 +655,14 @@ export class AdminService {
       const candidate = await tx.candidates.findUnique({
         where: { id: dto.candidateId },
       });
-      if (!candidate?.user_id || !candidate.candidate_code)
-        throw AppException.validation("Thí sinh cần mã định danh và tài khoản");
-      const user = await tx.users.findUniqueOrThrow({
-        where: { id: candidate.user_id },
-      });
-      if (user.status !== "ACTIVE")
-        throw AppException.validation("Tài khoản thí sinh chưa hoạt động");
+      if (!candidate?.candidate_code)
+        throw AppException.validation("Thí sinh cần mã định danh");
+      // Chưa có tài khoản thì tạo tài khoản chờ kích hoạt; thí sinh tự đặt mật khẩu qua email mời thi
+      const account = await this.round1Ops.ensureAccount(tx, dto.candidateId, req.auth!.userId);
+      if (!account)
+        throw AppException.validation(
+          "Tài khoản thí sinh đã bị khoá/xoá hoặc email trùng với thí sinh khác",
+        );
       await tx.$queryRaw`SELECT id FROM candidates WHERE id=${dto.candidateId}::uuid FOR UPDATE`;
       const schedule = await tx.exam_schedules.findUnique({
         where: { id: dto.scheduleId },

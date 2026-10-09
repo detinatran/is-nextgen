@@ -30,6 +30,10 @@ services:
       CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
       SMTP_URL: ${SMTP_URL:-}
       MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}
+      # Đọc video đã chép sang Google Drive (chỉ đọc); cùng khoá với backend trang chính
+      GOOGLE_DRIVE_CLIENT_ID: ${GOOGLE_DRIVE_CLIENT_ID:-}
+      GOOGLE_DRIVE_CLIENT_SECRET: ${GOOGLE_DRIVE_CLIENT_SECRET:-}
+      GOOGLE_DRIVE_REFRESH_TOKEN: ${GOOGLE_DRIVE_REFRESH_TOKEN:-}
     volumes:
       - media:/var/lib/isnextgen/media:ro
     networks:

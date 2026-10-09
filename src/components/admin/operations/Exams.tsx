@@ -207,6 +207,44 @@ export function Assignments() {
       changed_at: string;
     }[]
   >([]);
+  const [batchResult, setBatchResult] = useState("");
+  const [inviteSchedule, setInviteSchedule] = useState("");
+
+  // Xếp ca tự động: hồ sơ đã nộp chưa có ca → ca sắp diễn ra còn nhiều chỗ nhất
+  function autoAssign() {
+    setBatchResult("");
+    void op.run(async () => {
+      const r = await adminApi<{ assigned: number; skipped: number; waiting: number }>("admin/assignments/auto", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      setBatchResult(
+        `Đã xếp ${r.assigned} thí sinh vào ca.` +
+          (r.waiting ? ` Còn ${r.waiting} thí sinh chưa xếp được vì các ca đã đầy: hãy thêm ca hoặc tăng sức chứa.` : "") +
+          (r.skipped ? ` Bỏ qua ${r.skipped} thí sinh (tài khoản bị khoá/xoá hoặc email trùng).` : ""),
+      );
+      await Promise.all([list.reload(), schedules.reload(), candidates.reload()]);
+    }, "");
+  }
+
+  // Email mời thi: ca thi + link kích hoạt tài khoản (thí sinh tự đặt mật khẩu); người đã kích hoạt không nhận lại
+  function invite() {
+    const target = schedules.data.find((s) => s.id === inviteSchedule);
+    if (!window.confirm(`Gửi email mời thi cho thí sinh ${target ? target.name : "tất cả các ca"} chưa kích hoạt tài khoản?`)) return;
+    setBatchResult("");
+    void op.run(async () => {
+      const r = await adminApi<{ invited: number; alreadyActive: number; problems: { candidateCode: string | null; message: string }[] }>(
+        "admin/invitations",
+        { method: "POST", body: JSON.stringify(inviteSchedule ? { scheduleId: inviteSchedule } : {}) },
+      );
+      setBatchResult(
+        `Đã gửi ${r.invited} email mời thi.` +
+          (r.alreadyActive ? ` ${r.alreadyActive} thí sinh đã kích hoạt tài khoản nên không gửi lại.` : "") +
+          (r.problems.length ? ` Lỗi ${r.problems.length}: ${r.problems.map((p) => `${p.candidateCode ?? "?"} (${p.message})`).join("; ")}` : ""),
+      );
+      await candidates.reload();
+    }, "");
+  }
 
   // Client-side filtering
   const filteredList = useMemo(() => {
@@ -247,13 +285,39 @@ export function Assignments() {
         error
       />
       <Notice message={op.message} />
+      <Notice message={batchResult} />
+      <Panel title="Xếp ca và mời thi hàng loạt">
+        <div className="flex flex-wrap items-end gap-3">
+          <AdminButton disabled={op.busy} onClick={autoAssign}>
+            Tự động xếp ca
+          </AdminButton>
+          <Field label="Gửi email mời thi cho">
+            <select className={inputClass} value={inviteSchedule} onChange={(e) => setInviteSchedule(e.target.value)}>
+              <option value="">Tất cả các ca</option>
+              {schedules.data.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} · {viTime(s.opensAt)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <AdminButton disabled={op.busy || !list.data.length} onClick={invite}>
+            Gửi email mời thi
+          </AdminButton>
+        </div>
+        <p className="mt-3 text-sm text-slate-500">
+          Tự động xếp ca: các hồ sơ đã nộp chưa có ca được xếp vào ca sắp diễn ra còn nhiều chỗ nhất. Email mời thi gồm mã
+          thí sinh, giờ thi và link kích hoạt tài khoản; thí sinh tự đặt mật khẩu, BTC không cần phát mật khẩu. Thí sinh đã
+          kích hoạt tài khoản không nhận lại email.
+        </p>
+      </Panel>
       <Panel title="Gán thí sinh hoặc đổi ca">
         <form onSubmit={assign} className="grid sm:grid-cols-2 gap-4">
           <Field label="Thí sinh">
             <select required name="candidateId" className={inputClass}>
               <option value="">Chọn thí sinh</option>
               {candidates.data
-                .filter((c) => c.accountStatus === "ACTIVE" && !c.deleted)
+                .filter((c) => c.state === "SUBMITTED" && c.accountStatus !== "DISABLED" && !c.deleted)
                 .map((c) => (
                   <option value={c.id} key={`${c.id}-${c.registrationId}`}>
                     {c.candidateCode} · {c.fullName}

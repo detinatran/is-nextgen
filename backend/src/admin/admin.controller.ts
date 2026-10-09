@@ -18,12 +18,16 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import type { Response } from "express";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { Readable } from "node:stream";
 import { AuthGuard } from "../identity-access/guards/auth.guard";
 import { AdminGuard } from "../identity-access/guards/admin.guard";
 import { CsrfGuard } from "../identity-access/guards/csrf.guard";
 import type { AuthenticatedRequest } from "../common/http/request-context";
 import { LocalStorageService } from "../media/storage/local-storage.service";
+import { DriveReadService } from "../media/drive/drive-read.service";
+import { PrismaService } from "../database/prisma.service";
 import { AppException } from "../common/errors/app-error";
 import { AdminService } from "./admin.service";
 import {
@@ -52,6 +56,8 @@ export class AdminOperationsController {
     private readonly admin: AdminService,
     private readonly sheets: SpreadsheetsService,
     private readonly config: ConfigService,
+    private readonly drive: DriveReadService,
+    private readonly prisma: PrismaService,
   ) {}
   private competition(value?: string) {
     if (
@@ -139,6 +145,16 @@ export class AdminOperationsController {
     const storage = new LocalStorageService(
       resolve(this.config.get("mediaStorageDir", "./.data/media")),
     );
+    const localPath = storage.pathFor(media.object_key);
+    // Video đã chép sang Google Drive và xoá khỏi máy chủ: phát thẳng từ Drive (hỗ trợ tua)
+    if (!existsSync(localPath)) {
+      const copy = await this.prisma.$queryRaw<{ drive_file_id: string; size_bytes: bigint }[]>`
+        SELECT drive_file_id, size_bytes FROM media_drive_copies WHERE media_object_id = ${media.id}::uuid`;
+      if (copy[0] && this.drive.enabled) {
+        await this.fromDrive(copy[0].drive_file_id, Number(copy[0].size_bytes), media.mime_type, req, res);
+        return;
+      }
+    }
     res.setHeader("Cache-Control", "private, no-store");
     res.setHeader("Content-Type", media.mime_type);
     res.setHeader("X-Content-Type-Options", "nosniff");
@@ -155,6 +171,35 @@ export class AdminOperationsController {
         },
       );
     });
+  }
+  private async fromDrive(fileId: string, size: number, mimeType: string, req: AuthenticatedRequest, res: Response) {
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.header("range") ?? "");
+    let start = 0;
+    let end = size - 1;
+    if (range) {
+      if (range[1]) start = Number(range[1]);
+      if (range[2]) end = Math.min(Number(range[2]), size - 1);
+      if (!range[1] && range[2]) start = Math.max(0, size - Number(range[2]));
+      if (start > end || start >= size) {
+        res.status(416).setHeader("Content-Range", `bytes */${size}`).end();
+        return;
+      }
+    }
+    // Lấy luồng từ Drive trước khi gửi header để lỗi trả đúng mã
+    const remote = await this.drive.download(fileId, start, end).catch((e: { status?: number }) => {
+      if (e?.status === 404) throw AppException.notFound("Không tìm thấy video trên Google Drive");
+      throw AppException.dependencyUnavailable("Google Drive tạm thời không phản hồi");
+    });
+    res.status(range ? 206 : 200);
+    res.setHeader("Content-Type", mimeType);
+    res.setHeader("Content-Length", String(end - start + 1));
+    res.setHeader("Accept-Ranges", "bytes");
+    if (range) res.setHeader("Content-Range", `bytes ${start}-${end}/${size}`);
+    res.setHeader("Cache-Control", "private, no-store");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    const body = Readable.fromWeb(remote.body as import("node:stream/web").ReadableStream);
+    body.on("error", () => res.destroy());
+    body.pipe(res);
   }
   @Get("questions") questions() {
     return this.admin.questions();

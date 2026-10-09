@@ -8,11 +8,17 @@ export type ResultItem = {
   status: ResultStatus;
   date: string;
   link: string;
+  /** Bản tiếng Anh (cột round_en, title_en, date_en trong Google Sheet); trống thì dùng bản tiếng Việt */
+  roundEn: string;
+  titleEn: string;
+  dateEn: string;
 };
+
+type RawResult = Partial<Record<"round" | "title" | "status" | "date" | "link" | "roundEn" | "titleEn" | "dateEn" | "round_en" | "title_en" | "date_en", string>>;
 
 const STATUSES: ResultStatus[] = ["upcoming", "soon", "published"];
 
-function normalize(raw: Partial<Record<keyof ResultItem, string>>): ResultItem {
+function normalize(raw: RawResult): ResultItem {
   const status = (raw.status || "").trim().toLowerCase() as ResultStatus;
   return {
     round: (raw.round || "").trim(),
@@ -20,6 +26,9 @@ function normalize(raw: Partial<Record<keyof ResultItem, string>>): ResultItem {
     status: STATUSES.includes(status) ? status : "upcoming",
     date: (raw.date || "").trim(),
     link: (raw.link || "").trim(),
+    roundEn: (raw.roundEn || raw.round_en || "").trim(),
+    titleEn: (raw.titleEn || raw.title_en || "").trim(),
+    dateEn: (raw.dateEn || raw.date_en || "").trim(),
   };
 }
 
@@ -73,6 +82,6 @@ export async function loadResults(): Promise<ResultItem[]> {
   }
   const res = await fetch(asset("/data/results.json"), { cache: "no-store" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = (await res.json()) as { items: Partial<ResultItem>[] };
+  const data = (await res.json()) as { items: RawResult[] };
   return data.items.map(normalize);
 }

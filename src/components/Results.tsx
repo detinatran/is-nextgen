@@ -43,13 +43,14 @@ export default function Results({ lang }: { lang: Lang }) {
     <ul className="space-y-3">
       {items.map((item) => {
         const linked = item.status === "published" && item.link;
+        const en = lang === "en";
         return (
           <li
             key={item.round + item.title}
             className="card grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-2 px-5 py-4 sm:grid-cols-[7rem_1fr_auto]"
           >
-            <span className="text-sm font-bold tracking-wider text-orange-ink uppercase">{item.round}</span>
-            <span className="text-sm text-ink sm:text-[15px]">{item.title}</span>
+            <span className="text-sm font-bold tracking-wider text-orange-ink uppercase">{(en && item.roundEn) || item.round}</span>
+            <span className="text-sm text-ink sm:text-[15px]">{(en && item.titleEn) || item.title}</span>
             <span className="col-span-2 flex flex-wrap items-center gap-3 sm:col-span-1 sm:justify-end">
               <span className={`rounded-full px-3 py-1 text-[13px] font-semibold ${badgeClass[item.status]}`}>{t.status[item.status]}</span>
               {linked ? (
@@ -62,7 +63,7 @@ export default function Results({ lang }: { lang: Lang }) {
                   {t.view}
                 </a>
               ) : (
-                <span className="text-sm text-muted">{item.date}</span>
+                <span className="text-sm text-muted">{(en && item.dateEn) || item.date}</span>
               )}
             </span>
           </li>

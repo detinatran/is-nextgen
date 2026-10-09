@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiCallError, apiCall, idempotencyKey, uuid, type AttemptView } from "@/lib/examApi";
+import { langFromPath, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import Icon from "../Icon";
 
@@ -11,6 +12,99 @@ type QState = { selected: string | null; revision: number; flagged: boolean; fla
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 const LETTERS = "ABCDEFGH";
+
+const copy = {
+  vi: {
+    loadError: "Không tải được bài thi. Vui lòng tải lại trang.",
+    submitError: "Chưa nộp được bài. Kiểm tra kết nối mạng rồi bấm Nộp bài lần nữa; đáp án đã chọn vẫn được giữ.",
+    wrongPassword: "Mật khẩu không đúng.",
+    takeoverError: "Chưa tiếp tục được. Hãy nhập mật khẩu để xác nhận.",
+    missing: "Thiếu mã bài thi.",
+    expiredA: "Phiên đăng nhập đã hết.",
+    signInAgain: "Đăng nhập lại",
+    expiredB: "rồi bấm Tiếp tục làm bài; đáp án đã chọn vẫn được giữ.",
+    submitted: "Đã nộp bài",
+    timeout: "Hết thời gian làm bài, hệ thống đã tự nộp bài của bạn.",
+    recorded: "Bài làm của bạn đã được ghi nhận.",
+    results: "Kết quả sẽ được Ban Tổ chức công bố.",
+    back: "Về trang thi",
+    loading: "Đang tải bài thi...",
+    timeLeft: "Thời gian còn lại",
+    left: "Còn lại",
+    submit: "Nộp bài",
+    leftPage: (n: number) => `Bạn đã rời trang làm bài ${n} lần. Mỗi lần rời trang đều được ghi nhận gửi Ban Tổ chức.`,
+    question: (i: number, n: number) => `Câu ${i}/${n}`,
+    flagged: "Đã đánh dấu",
+    flag: "Đánh dấu xem lại",
+    prev: "Câu trước",
+    next: "Câu sau",
+    saving: "Đang lưu...",
+    saved: "Đã lưu",
+    saveError: "Lỗi lưu, hãy chọn lại",
+    list: "Danh sách câu hỏi",
+    progress: (a: number, n: number) => `Đã làm ${a}/${n}`,
+    flaggedCount: (n: number) => ` · Đánh dấu ${n}`,
+    questionLabel: (i: number) => `Câu ${i}`,
+    answeredLegend: "Đã trả lời",
+    unansweredLegend: "Chưa trả lời",
+    flagLegend: "Đánh dấu xem lại",
+    confirmTitle: "Nộp bài?",
+    confirmAnswered: (a: number, n: number) => `Bạn đã trả lời ${a}/${n} câu`,
+    confirmLeft: (n: number) => `, còn ${n} câu chưa làm`,
+    confirmFlagged: (n: number) => `, ${n} câu đang đánh dấu`,
+    confirmEnd: ". Sau khi nộp, bạn không thể sửa bài.",
+    keepGoing: "Làm tiếp",
+    takeoverTitle: "Tiếp tục làm bài tại đây?",
+    takeoverBody: "Bài thi đang gắn với một phiên đăng nhập khác (tab, thiết bị khác hoặc lần đăng nhập trước). Nhập mật khẩu để tiếp tục làm bài tại đây; đáp án đã chọn vẫn được giữ, nơi kia sẽ không lưu được nữa. Đồng hồ vẫn chạy.",
+    password: "Mật khẩu",
+    takeover: "Tiếp tục tại đây",
+  },
+  en: {
+    loadError: "Could not load the exam. Please reload the page.",
+    submitError: "Your exam was not submitted. Check your connection and press Submit again; your answers are kept.",
+    wrongPassword: "Incorrect password.",
+    takeoverError: "Could not continue yet. Enter your password to confirm.",
+    missing: "Missing exam code.",
+    expiredA: "Your session has expired.",
+    signInAgain: "Sign in again",
+    expiredB: "and press Continue exam; your answers are kept.",
+    submitted: "Exam submitted",
+    timeout: "Time is up, the system has submitted your exam.",
+    recorded: "Your answers have been recorded.",
+    results: "Results will be announced by the Organizing Committee.",
+    back: "Back to exam page",
+    loading: "Loading the exam...",
+    timeLeft: "Time left",
+    left: "Time left",
+    submit: "Submit",
+    leftPage: (n: number) => `You have left the exam page ${n} ${n === 1 ? "time" : "times"}. Every time is recorded and reported to the Organizing Committee.`,
+    question: (i: number, n: number) => `Question ${i}/${n}`,
+    flagged: "Flagged",
+    flag: "Flag for review",
+    prev: "Previous",
+    next: "Next",
+    saving: "Saving...",
+    saved: "Saved",
+    saveError: "Could not save, please choose again",
+    list: "Questions",
+    progress: (a: number, n: number) => `Answered ${a}/${n}`,
+    flaggedCount: (n: number) => ` · Flagged ${n}`,
+    questionLabel: (i: number) => `Question ${i}`,
+    answeredLegend: "Answered",
+    unansweredLegend: "Not answered",
+    flagLegend: "Flagged for review",
+    confirmTitle: "Submit your exam?",
+    confirmAnswered: (a: number, n: number) => `You have answered ${a}/${n} questions`,
+    confirmLeft: (n: number) => `, ${n} still unanswered`,
+    confirmFlagged: (n: number) => `, ${n} flagged`,
+    confirmEnd: ". You cannot change your answers after submitting.",
+    keepGoing: "Keep working",
+    takeoverTitle: "Continue the exam here?",
+    takeoverBody: "This exam is linked to another session (another tab, device or an earlier sign-in). Enter your password to continue here; your answers are kept and the other place will no longer save. The timer keeps running.",
+    password: "Password",
+    takeover: "Continue here",
+  },
+};
 
 function fmtClock(ms: number) {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -20,6 +114,8 @@ function fmtClock(ms: number) {
 /** Phòng thi Vòng 1 (FR-3.3): đồng hồ theo giờ server, tự lưu, đánh dấu, tự nộp khi hết giờ, ghi nhận rời trang. */
 export default function ExamRoom() {
   const attemptId = useSearchParams().get("a") ?? "";
+  const lang = langFromPath(usePathname());
+  const t = copy[lang];
   const [view, setView] = useState<AttemptView | null>(null);
   const [answers, setAnswers] = useState<Record<string, QState>>({});
   const [current, setCurrent] = useState(0);
@@ -59,9 +155,9 @@ export default function ExamRoom() {
       } else setNeedTakeover(false);
       if (v.attempt.state === "FINALIZED") setFinished("TIMEOUT");
     } catch (err) {
-      setError(err instanceof ApiCallError && err.status === 401 ? "LOGIN" : "Không tải được bài thi. Vui lòng tải lại trang.");
+      setError(err instanceof ApiCallError && err.status === 401 ? "LOGIN" : t.loadError);
     }
-  }, [attemptId]);
+  }, [attemptId, t]);
 
   useEffect(() => {
     if (attemptId) load();
@@ -96,14 +192,14 @@ export default function ExamRoom() {
             submitting.current = false;
             if (err instanceof ApiCallError && err.code === "STATE_CONFLICT") setNeedTakeover(true);
             else if (err instanceof ApiCallError && err.status === 401) setError("LOGIN");
-            else setSubmitError("Chưa nộp được bài. Kiểm tra kết nối mạng rồi bấm Nộp bài lần nữa; đáp án đã chọn vẫn được giữ.");
+            else setSubmitError(t.submitError);
             return;
           }
         }
       }
       setFinished(cause);
     },
-    [attemptId, view, writer],
+    [attemptId, view, writer, t],
   );
 
   // Hết giờ thì tự nộp
@@ -213,19 +309,19 @@ export default function ExamRoom() {
       setNeedTakeover(false);
       await load();
     } catch (err) {
-      setError(err instanceof ApiCallError && err.status === 401 ? "Mật khẩu không đúng." : "Chưa tiếp tục được. Hãy nhập mật khẩu để xác nhận.");
+      setError(err instanceof ApiCallError && err.status === 401 ? t.wrongPassword : t.takeoverError);
     }
   }
 
-  if (!attemptId) return <Center>Thiếu mã bài thi.</Center>;
+  if (!attemptId) return <Center>{t.missing}</Center>;
   if (error === "LOGIN")
     return (
       <Center>
-        Phiên đăng nhập đã hết.{" "}
-        <Link href="/thi/" className="font-semibold text-brand underline">
-          Đăng nhập lại
+        {t.expiredA}{" "}
+        <Link href={localePath(lang, "/thi/")} className="font-semibold text-brand underline">
+          {t.signInAgain}
         </Link>{" "}
-        rồi bấm Tiếp tục làm bài; đáp án đã chọn vẫn được giữ.
+        {t.expiredB}
       </Center>
     );
   if (finished)
@@ -234,16 +330,16 @@ export default function ExamRoom() {
         <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#e7f6ec] text-[#15803d]">
           <Icon name="check" className="h-7 w-7" strokeWidth={2.4} />
         </span>
-        <strong className="block text-xl text-navy">Đã nộp bài</strong>
+        <strong className="block text-xl text-navy">{t.submitted}</strong>
         <span className="mt-2 block text-muted">
-          {finished === "TIMEOUT" ? "Hết thời gian làm bài, hệ thống đã tự nộp bài của bạn." : "Bài làm của bạn đã được ghi nhận."} Kết quả sẽ được Ban Tổ chức công bố.
+          {finished === "TIMEOUT" ? t.timeout : t.recorded} {t.results}
         </span>
-        <Link href="/thi/" className="btn-primary mt-6">
-          Về trang thi
+        <Link href={localePath(lang, "/thi/")} className="btn-primary mt-6">
+          {t.back}
         </Link>
       </Center>
     );
-  if (!view) return <Center>{error || "Đang tải bài thi..."}</Center>;
+  if (!view) return <Center>{error || t.loading}</Center>;
 
   const qs = view.form;
   const q = qs[current];
@@ -258,8 +354,8 @@ export default function ExamRoom() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={asset("/images/logo-2026.png")} alt="NextGen Manager" className="h-10 w-auto" />
-          <div className={`rounded-xl px-4 py-1.5 text-center tabular-nums ${lowTime ? "bg-orange text-white" : "bg-navy text-white"}`} role="timer" aria-label="Thời gian còn lại">
-            <span className="block text-[11px] font-semibold tracking-wider uppercase opacity-80">Còn lại</span>
+          <div className={`rounded-xl px-4 py-1.5 text-center tabular-nums ${lowTime ? "bg-orange text-white" : "bg-navy text-white"}`} role="timer" aria-label={t.timeLeft}>
+            <span className="block text-[11px] font-semibold tracking-wider uppercase opacity-80">{t.left}</span>
             <span className="text-xl font-bold">{fmtClock(remaining)}</span>
           </div>
           <button
@@ -269,7 +365,7 @@ export default function ExamRoom() {
             }}
             className="btn-primary px-5 py-2.5"
           >
-            Nộp bài
+            {t.submit}
           </button>
         </div>
         {submitError && (
@@ -279,7 +375,7 @@ export default function ExamRoom() {
         )}
         {focusLost > 0 && (
           <p className="bg-[#fff1e6] px-4 py-1.5 text-center text-[13px] font-medium text-orange-ink">
-            Bạn đã rời trang làm bài {focusLost} lần. Mỗi lần rời trang đều được ghi nhận gửi Ban Tổ chức.
+            {t.leftPage(focusLost)}
           </p>
         )}
       </header>
@@ -288,13 +384,13 @@ export default function ExamRoom() {
         <section className="card p-6 sm:p-8">
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm font-semibold text-muted">
-              Câu {current + 1}/{qs.length}
+              {t.question(current + 1, qs.length)}
             </p>
             <button
               onClick={() => toggleFlag(q.deliveredQuestionId)}
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold ring-1 transition ${st?.flagged ? "bg-orange text-white ring-orange" : "text-muted ring-line hover:text-navy"}`}
             >
-              <Icon name="flag" className="h-4 w-4" /> {st?.flagged ? "Đã đánh dấu" : "Đánh dấu xem lại"}
+              <Icon name="flag" className="h-4 w-4" /> {st?.flagged ? t.flagged : t.flag}
             </button>
           </div>
           <h2 className="mt-4 text-lg leading-relaxed font-semibold whitespace-pre-line text-navy sm:text-xl">{q.prompt}</h2>
@@ -320,22 +416,22 @@ export default function ExamRoom() {
           </ul>
           <div className="mt-8 flex items-center justify-between gap-3">
             <button onClick={() => setCurrent((c) => Math.max(0, c - 1))} disabled={current === 0} className="btn-outline px-5 py-2.5 disabled:opacity-40">
-              <Icon name="chevronLeft" className="h-4 w-4" /> Câu trước
+              <Icon name="chevronLeft" className="h-4 w-4" /> {t.prev}
             </button>
             <span className="text-[13px] text-muted" aria-live="polite">
-              {status === "saving" ? "Đang lưu..." : status === "saved" ? "Đã lưu" : status === "error" ? "Lỗi lưu, hãy chọn lại" : ""}
+              {status === "saving" ? t.saving : status === "saved" ? t.saved : status === "error" ? t.saveError : ""}
             </span>
             <button onClick={() => setCurrent((c) => Math.min(qs.length - 1, c + 1))} disabled={current === qs.length - 1} className="btn-primary px-5 py-2.5 disabled:opacity-40">
-              Câu sau <Icon name="chevronRight" className="h-4 w-4" />
+              {t.next} <Icon name="chevronRight" className="h-4 w-4" />
             </button>
           </div>
         </section>
 
         <aside className="card h-max p-5 lg:sticky lg:top-24">
-          <p className="text-sm font-bold text-navy">Danh sách câu hỏi</p>
+          <p className="text-sm font-bold text-navy">{t.list}</p>
           <p className="mt-1 text-[13px] text-muted">
-            Đã làm {answered}/{qs.length}
-            {flaggedCount > 0 && ` · Đánh dấu ${flaggedCount}`}
+            {t.progress(answered, qs.length)}
+            {flaggedCount > 0 && t.flaggedCount(flaggedCount)}
           </p>
           <div className="mt-4 grid grid-cols-5 gap-2">
             {qs.map((x, i) => {
@@ -344,7 +440,7 @@ export default function ExamRoom() {
                 <button
                   key={x.deliveredQuestionId}
                   onClick={() => setCurrent(i)}
-                  aria-label={`Câu ${i + 1}`}
+                  aria-label={t.questionLabel(i + 1)}
                   className={`relative h-10 rounded-lg text-sm font-semibold transition ${
                     s?.selected ? "bg-navy text-white" : "bg-mist text-navy hover:bg-line"
                   } ${i === current ? "ring-2 ring-brand ring-offset-2" : ""}`}
@@ -356,27 +452,28 @@ export default function ExamRoom() {
             })}
           </div>
           <div className="mt-4 space-y-1.5 text-[12px] text-muted">
-            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-navy" /> Đã trả lời</p>
-            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-mist ring-1 ring-line" /> Chưa trả lời</p>
-            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-orange" /> Đánh dấu xem lại</p>
+            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-navy" /> {t.answeredLegend}</p>
+            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-mist ring-1 ring-line" /> {t.unansweredLegend}</p>
+            <p className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-orange" /> {t.flagLegend}</p>
           </div>
         </aside>
       </div>
 
       {confirming && (
         <Modal>
-          <h3 className="text-lg font-bold text-navy">Nộp bài?</h3>
+          <h3 className="text-lg font-bold text-navy">{t.confirmTitle}</h3>
           <p className="mt-2 text-[15px] text-muted">
-            Bạn đã trả lời {answered}/{qs.length} câu
-            {qs.length - answered > 0 && <strong className="text-orange-ink">, còn {qs.length - answered} câu chưa làm</strong>}
-            {flaggedCount > 0 && `, ${flaggedCount} câu đang đánh dấu`}. Sau khi nộp, bạn không thể sửa bài.
+            {t.confirmAnswered(answered, qs.length)}
+            {qs.length - answered > 0 && <strong className="text-orange-ink">{t.confirmLeft(qs.length - answered)}</strong>}
+            {flaggedCount > 0 && t.confirmFlagged(flaggedCount)}
+            {t.confirmEnd}
           </p>
           <div className="mt-6 flex justify-end gap-3">
             <button onClick={() => setConfirming(false)} className="btn-outline px-5 py-2.5">
-              Làm tiếp
+              {t.keepGoing}
             </button>
             <button onClick={() => submit("MANUAL")} className="btn-primary px-5 py-2.5">
-              Nộp bài
+              {t.submit}
             </button>
           </div>
         </Modal>
@@ -385,13 +482,13 @@ export default function ExamRoom() {
       {needTakeover && (
         <Modal>
           <form onSubmit={takeover}>
-            <h3 className="text-lg font-bold text-navy">Tiếp tục làm bài tại đây?</h3>
+            <h3 className="text-lg font-bold text-navy">{t.takeoverTitle}</h3>
             <p className="mt-2 text-[15px] text-muted">
-              Bài thi đang gắn với một phiên đăng nhập khác (tab, thiết bị khác hoặc lần đăng nhập trước). Nhập mật khẩu để tiếp tục làm bài tại đây; đáp án đã chọn vẫn được giữ, nơi kia sẽ không lưu được nữa. Đồng hồ vẫn chạy.
+              {t.takeoverBody}
             </p>
-            <input name="password" type="password" autoComplete="current-password" placeholder="Mật khẩu" className="mt-4 w-full rounded-xl border border-line px-4 py-3" />
+            <input name="password" type="password" autoComplete="current-password" placeholder={t.password} className="mt-4 w-full rounded-xl border border-line px-4 py-3" />
             {error && error !== "LOGIN" && <p className="mt-2 text-sm text-orange-ink">{error}</p>}
-            <button className="btn-primary mt-5 w-full py-3">Tiếp tục tại đây</button>
+            <button className="btn-primary mt-5 w-full py-3">{t.takeover}</button>
           </form>
         </Modal>
       )}

@@ -33,5 +33,5 @@ export const uuid = () =>
 
 export const idempotencyKey = () => uuid().replace(/-/g, "");
 
-export const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
+export const fmtTime = (iso: string, lang: "vi" | "en" = "vi") =>
+  new Date(iso).toLocaleString(lang === "en" ? "en-GB" : "vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });

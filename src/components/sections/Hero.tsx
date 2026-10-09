@@ -29,7 +29,7 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
 const organizerLogos: { src: string; srcEn?: string; alt: string; altEn?: string; className: string; classNameEn?: string; label?: { vi: string; en: string } }[] = [
   // Logo trường có bản tiếng Việt và tiếng Anh, hiển thị theo ngôn ngữ trang
   { src: "/images/org/truong.png", srcEn: "/images/org/truong-international.png", alt: "Trường Quốc tế - ĐHQGHN", altEn: "VNU International School", className: "h-12", classNameEn: "h-14" },
-  { src: "/images/org/doan.png", alt: "Liên chi đoàn", className: "h-12", label: { vi: "Liên chi đoàn", en: "Youth Union Branch" } },
+  { src: "/images/org/doan.png", alt: "Liên chi đoàn", altEn: "Youth Union Branch", className: "h-12", label: { vi: "Liên chi đoàn", en: "Youth Union Branch" } },
   { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-12" },
   { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-10" },
 ];
@@ -48,8 +48,8 @@ export default function Hero({ lang }: { lang: Lang }) {
         <HeroSlides label={t.slides} />
 
         {/* Lớp phủ: tối dần về bên trái (chữ giới thiệu) và phía trên (menu, logo) */}
-        <div aria-hidden className="absolute inset-0 hidden bg-linear-to-r from-navy-deep/55 via-navy-deep/15 via-30% to-transparent to-50% lg:block" />
-        <div aria-hidden className="absolute inset-x-0 top-0 hidden h-48 bg-linear-to-b from-navy-deep/60 to-transparent lg:block" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-navy-deep/55 via-navy-deep/15 via-30% to-transparent to-50% lg:block" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hidden h-48 bg-linear-to-b from-navy-deep/60 to-transparent lg:block" />
 
         {/* Mép dưới cong như vành kính (asset sinh bằng Codex, dự phòng bằng SVG) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden lg:block">
@@ -72,7 +72,7 @@ export default function Hero({ lang }: { lang: Lang }) {
         </div>
 
         {/* Khối giới thiệu bên trái: khung kính tối, đặt sát mép để không đè lên tiêu đề 3D */}
-        <div className="absolute top-[30%] left-[3%] hidden w-[15.5rem] rounded-2xl bg-navy-deep/45 p-5 shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl lg:block xl:left-[4%]">
+        <div className="absolute top-[30%] left-[3%] z-10 hidden w-[15.5rem] rounded-2xl bg-navy-deep/45 p-5 shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl lg:block xl:left-[4%]">
           <p className="text-[1.25rem] leading-snug font-bold whitespace-nowrap text-white">
             {t.audience[0]}
             <br />
@@ -83,10 +83,11 @@ export default function Hero({ lang }: { lang: Lang }) {
           <Ctas lang={lang} className="mt-4 flex-col gap-2" compact />
         </div>
 
-        <div className="absolute inset-0 hidden lg:block">
+        {/* Lớp chứa logo và tiêu đề phụ phủ cả banner: không bắt chuột để nút CTA và chấm chuyển ảnh bấm được */}
+        <div className="pointer-events-none absolute inset-0 hidden lg:block">
           <div className="container-x relative h-full">
             {/* Đơn vị tổ chức */}
-            <div className="absolute top-20 right-0 flex items-center gap-4 rounded-2xl bg-navy-deep/55 py-2 pr-2 pl-5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
+            <div className="pointer-events-auto absolute top-20 right-0 flex items-center gap-4 rounded-2xl bg-navy-deep/55 py-2 pr-2 pl-5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
               <span className="text-sm font-semibold text-white">{t.organizers}</span>
               {/* Logo gốc (có màu) đặt trên nền trắng để đọc rõ */}
               <ul className="flex items-center gap-5 rounded-xl bg-white px-4 py-2" aria-label={t.organizersAlt}>

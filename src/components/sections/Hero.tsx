@@ -7,8 +7,8 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"], slides: "Ảnh bìa" },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"], slides: "Cover image" },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Liên chi đoàn, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"], slides: "Ảnh bìa" },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union Branch, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"], slides: "Cover image" },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -26,12 +26,11 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
   );
 }
 
-const organizerLogos = [
-  { src: "/images/org/truong.png", alt: "Trường Quốc tế - ĐHQGHN", className: "h-8" },
-  { src: "/images/org/doan.png", alt: "Đoàn Thanh niên", className: "h-8" },
-  { src: "/images/org/clb.png", alt: "Ban CLB Hội nhóm", className: "h-8" },
-  { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-8" },
-  { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-7" },
+const organizerLogos: { src: string; alt: string; className: string; label?: { vi: string; en: string } }[] = [
+  { src: "/images/org/truong.png", alt: "Trường Quốc tế - ĐHQGHN", className: "h-12" },
+  { src: "/images/org/doan.png", alt: "Liên chi đoàn", className: "h-12", label: { vi: "Liên chi đoàn", en: "Youth Union Branch" } },
+  { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-12" },
+  { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-10" },
 ];
 
 export default function Hero({ lang }: { lang: Lang }) {
@@ -87,14 +86,15 @@ export default function Hero({ lang }: { lang: Lang }) {
         <div className="absolute inset-0 hidden lg:block">
           <div className="container-x relative h-full">
             {/* Đơn vị tổ chức */}
-            <div className="absolute top-20 right-8 flex items-center gap-3 rounded-xl bg-navy-deep/55 py-1.5 pr-1.5 pl-4 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
-              <span className="text-xs font-medium text-white/90">{t.organizers}</span>
+            <div className="absolute top-20 right-8 flex items-center gap-4 rounded-2xl bg-navy-deep/55 py-2 pr-2 pl-5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
+              <span className="text-sm font-semibold text-white">{t.organizers}</span>
               {/* Logo gốc (có màu) đặt trên nền trắng để đọc rõ */}
-              <ul className="flex items-center gap-3 rounded-lg bg-white px-3 py-1" aria-label={t.organizersAlt}>
+              <ul className="flex items-center gap-5 rounded-xl bg-white px-4 py-2" aria-label={t.organizersAlt}>
                 {organizerLogos.map((l) => (
-                  <li key={l.src}>
+                  <li key={l.src} className="flex items-center gap-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={asset(l.src)} alt={l.alt} className={`w-auto ${l.className}`} />
+                    {l.label && <span className="max-w-[5.5rem] text-[13px] leading-tight font-bold text-navy">{l.label[lang]}</span>}
                   </li>
                 ))}
               </ul>

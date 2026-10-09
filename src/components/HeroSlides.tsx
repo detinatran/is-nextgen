@@ -6,8 +6,8 @@ import { asset } from "@/lib/paths";
  *  `position` canh vị trí cắt ảnh trên màn hình lớn để chữ không bị dải logo che. */
 const slides = [
   { wide: "/images/generated/hero-a.webp", mobile: "/images/banner-a.webp", position: "50% 30%" },
-  { wide: "/images/generated/hero-b.webp", mobile: "/images/banner-b.webp", position: "50% 12%" },
-  { wide: "/images/generated/hero-c.webp", mobile: "/images/banner-c.webp", position: "50% 42%" },
+  { wide: "/images/generated/hero-b.webp", mobile: "/images/banner-b.webp", position: "50% 4%" },
+  { wide: "/images/generated/hero-c.webp", mobile: "/images/banner-c.webp", position: "50% 28%" },
 ];
 const INTERVAL = 5000;
 

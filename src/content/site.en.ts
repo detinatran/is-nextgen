@@ -264,8 +264,7 @@ export const minorPrizes =
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "VNU International School (VNU-IS)", logo: "/images/org/truong-crest.png" },
-  { name: "VNU-IS Youth Union", logo: "/images/org/doan.png" },
-  { name: "Clubs Board", logo: "/images/org/clb.png" },
+  { name: "Youth Union Branch", logo: "/images/org/doan.png" },
   { name: "Marketing Club (IMC)", logo: "/images/org/imc.png" },
   { name: "iSupport Club", logo: "/images/org/isupport.png" },
 ];

@@ -28,7 +28,7 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
 
 const organizerLogos: { src: string; srcEn?: string; alt: string; altEn?: string; className: string; classNameEn?: string; label?: { vi: string; en: string } }[] = [
   // Logo trường có bản tiếng Việt và tiếng Anh, hiển thị theo ngôn ngữ trang
-  { src: "/images/org/truong.png", srcEn: "/images/org/truong-en.png", alt: "Trường Quốc tế - ĐHQGHN", altEn: "VNU International School", className: "h-12", classNameEn: "h-14" },
+  { src: "/images/org/truong.png", srcEn: "/images/org/truong-international.png", alt: "Trường Quốc tế - ĐHQGHN", altEn: "VNU International School", className: "h-12", classNameEn: "h-14" },
   { src: "/images/org/doan.png", alt: "Liên chi đoàn", className: "h-12", label: { vi: "Liên chi đoàn", en: "Youth Union Branch" } },
   { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-12" },
   { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-10" },

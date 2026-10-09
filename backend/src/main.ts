@@ -64,6 +64,11 @@ async function bootstrap(): Promise<void> {
 
   const port = config.get('port', 3001);
   await app.listen(port);
+  // Trang quản trị (Next) gọi API qua kết nối keep-alive; giữ socket lâu hơn phía proxy để tránh lỗi
+  // "socket hang up" khi proxy dùng lại đúng lúc Node đóng kết nối nhàn rỗi (mặc định 5 giây)
+  const server = app.getHttpServer();
+  server.keepAliveTimeout = 65_000;
+  server.headersTimeout = 66_000;
   logger.log(`listening on port ${port} env=${config.get('env', 'development')}`);
 }
 

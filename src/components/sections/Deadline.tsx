@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
+import DeadlineLabel from "@/components/DeadlineLabel";
 import Icon from "@/components/Icon";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
@@ -35,7 +36,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
               <h2 className="text-[1.6rem] leading-tight font-bold text-navy sm:text-[2rem]">{t.title}</h2>
               <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted sm:text-base">{t.lead}</p>
               <p className="mt-1 text-sm text-muted">
-                {t.deadline}: <strong className="font-semibold text-orange-ink">{site.registrationDeadlineLabel}</strong>
+                {t.deadline}: <strong className="font-semibold text-orange-ink"><DeadlineLabel lang={lang} fallback={site.registrationDeadlineLabel} /></strong>
               </p>
             </div>
             <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">

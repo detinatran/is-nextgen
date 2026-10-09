@@ -7,6 +7,7 @@ import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
 import { ApiError, apiBase, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
+import { useRegistrationWindow } from "@/lib/registrationWindow";
 import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
 import Icon from "./Icon";
 import PhotoUpload from "./PhotoUpload";
@@ -233,9 +234,19 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [videoChecking, setVideoChecking] = useState(false);
 
+  // Hạn và giờ mở cổng theo hệ thống (BTC đổi trong CSDL là site tự theo); không tải được thì dùng hạn mặc định
+  const live = useRegistrationWindow();
+  const [notYetOpen, setNotYetOpen] = useState(false);
   useEffect(() => {
-    setClosed(Date.now() > new Date(deadline).getTime());
-  }, [deadline]);
+    const check = () => {
+      const now = Date.now();
+      setClosed(now > new Date(live?.closesAt ?? deadline).getTime());
+      setNotYetOpen(!!live && now < new Date(live.opensAt).getTime());
+    };
+    check();
+    const id = window.setInterval(check, 30_000);
+    return () => window.clearInterval(id);
+  }, [deadline, live]);
 
   function goTo(next: number) {
     setPage(next);
@@ -411,7 +422,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     );
   }
 
-  const unavailable = closed || (!endpoint && !apiBase);
+  const unavailable = closed || notYetOpen || (!endpoint && !apiBase);
 
   const busy = state === "uploading" || state === "sending";
   const inputProps = (name: string) => ({

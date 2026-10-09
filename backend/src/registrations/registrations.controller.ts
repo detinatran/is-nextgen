@@ -34,6 +34,14 @@ export class RegistrationsController {
     return this.registrationForm.getFormConfig();
   }
 
+  /** FR-28: khung giờ đăng ký đang áp dụng (công khai) để site hiển thị hạn chót và trạng thái cổng theo hệ thống. */
+  @Get('competitions/:code/registration-window')
+  async registrationWindow(
+    @Param('code') code: string,
+  ): Promise<{ name: string; opensAt: string; closesAt: string; serverTime: string }> {
+    return this.registrations.registrationWindow(code);
+  }
+
   /** FR-13: anonymous draft registration; capability tokens authorize later access. */
   @Post('registration-drafts')
   @HttpCode(HttpStatus.CREATED)

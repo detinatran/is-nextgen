@@ -76,6 +76,17 @@ export class RegistrationsService {
     private readonly challenges: ChallengeService,
   ) {}
 
+  async registrationWindow(code: string) {
+    const competition = await this.prisma.competitions.findUnique({ where: { code: code.trim().slice(0, 64) } });
+    if (!competition) throw AppException.notFound('Competition not found');
+    return {
+      name: competition.name,
+      opensAt: competition.registration_opens_at.toISOString(),
+      closesAt: competition.registration_closes_at.toISOString(),
+      serverTime: new Date().toISOString(),
+    };
+  }
+
   async createDraft(
     dto: CreateRegistrationDraftDto,
     correlationId: string,

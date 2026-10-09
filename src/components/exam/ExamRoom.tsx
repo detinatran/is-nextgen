@@ -47,7 +47,16 @@ export default function ExamRoom() {
         ),
       );
       setWriter(v.attempt.writerGeneration);
-      setNeedTakeover(v.attempt.state === "ACTIVE" && v.attempt.writerGeneration === null);
+      if (v.attempt.state === "ACTIVE" && v.attempt.writerGeneration === null) {
+        // Vừa đăng nhập lại (trong 5 phút) thì server cho tiếp quản ngay, không cần hỏi lại mật khẩu
+        try {
+          const res = await apiCall<{ writerGeneration: number }>(`/me/attempts/${attemptId}/session-takeover`, { method: "POST" });
+          setWriter(res.writerGeneration);
+          setNeedTakeover(false);
+        } catch {
+          setNeedTakeover(true);
+        }
+      } else setNeedTakeover(false);
       if (v.attempt.state === "FINALIZED") setFinished("TIMEOUT");
     } catch (err) {
       setError(err instanceof ApiCallError && err.status === 401 ? "LOGIN" : "Không tải được bài thi. Vui lòng tải lại trang.");
@@ -378,7 +387,7 @@ export default function ExamRoom() {
           <form onSubmit={takeover}>
             <h3 className="text-lg font-bold text-navy">Tiếp tục làm bài tại đây?</h3>
             <p className="mt-2 text-[15px] text-muted">
-              Bài thi đang được mở ở một tab hoặc thiết bị khác. Nhập mật khẩu để tiếp tục làm bài tại đây; nơi kia sẽ không lưu được nữa. Đồng hồ vẫn chạy.
+              Bài thi đang gắn với một phiên đăng nhập khác (tab, thiết bị khác hoặc lần đăng nhập trước). Nhập mật khẩu để tiếp tục làm bài tại đây; đáp án đã chọn vẫn được giữ, nơi kia sẽ không lưu được nữa. Đồng hồ vẫn chạy.
             </p>
             <input name="password" type="password" autoComplete="current-password" placeholder="Mật khẩu" className="mt-4 w-full rounded-xl border border-line px-4 py-3" />
             {error && error !== "LOGIN" && <p className="mt-2 text-sm text-orange-ink">{error}</p>}

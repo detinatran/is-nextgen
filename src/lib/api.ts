@@ -2,7 +2,7 @@
 // tạo bản nháp → tải ảnh → tải video → chờ kiểm tra video → gắn video → nộp.
 
 export const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
-const competitionCode = process.env.NEXT_PUBLIC_COMPETITION_CODE || "ISNG-2026";
+export const competitionCode = process.env.NEXT_PUBLIC_COMPETITION_CODE || "ISNG-2026";
 
 // Phiên bản lời cam kết thí sinh đã đọc; phải khớp registration-form.service.ts của backend
 const WORDING = { dataProcessing: "DATA-V1-2026", mediaUsage: "MEDIA-V1-2026" };

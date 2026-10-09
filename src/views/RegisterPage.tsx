@@ -2,6 +2,7 @@ import Countdown from "@/components/Countdown";
 import Icon from "@/components/Icon";
 import PageHero from "@/components/PageHero";
 import RegisterForm from "@/components/RegisterForm";
+import DeadlineLabel from "@/components/DeadlineLabel";
 import SiteShell from "@/components/SiteShell";
 import { getContent } from "@/content";
 import type { Lang } from "@/lib/i18n";
@@ -50,7 +51,7 @@ export default function RegisterPage({ lang }: { lang: Lang }) {
             <div className="mt-4">
               <Countdown lang={lang} deadline={site.registrationDeadline} />
             </div>
-            <p className="mt-3 text-center text-[13px] text-white/75">{site.registrationDeadlineLabel}</p>
+            <p className="mt-3 text-center text-[13px] text-white/75"><DeadlineLabel lang={lang} fallback={site.registrationDeadlineLabel} /></p>
           </div>
           <div className="card p-6">
             <h2 className="font-bold text-navy">{t.prepare}</h2>

@@ -173,6 +173,8 @@ export class AdminService {
           email_normalized: email,
           password_hash: hash,
           status: "ACTIVE",
+          // BTC trực tiếp cấp và giao thông tin đăng nhập: coi như đã xác minh email để vào thi được
+          email_verified_at: new Date(),
         },
       });
       const role = await tx.roles.findUniqueOrThrow({
@@ -261,6 +263,7 @@ export class AdminService {
             email_normalized: p.email_normalized,
             password_hash: hash,
             status: "ACTIVE",
+            email_verified_at: new Date(),
           },
         });
         userId = user.id;
@@ -293,7 +296,7 @@ export class AdminService {
             status: ["DISABLE", "DELETE"].includes(dto.action)
               ? "DISABLED"
               : "ACTIVE",
-            ...(dto.action === "RESET" ? { password_hash: hash } : {}),
+            ...(dto.action === "RESET" ? { password_hash: hash, email_verified_at: user.email_verified_at ?? new Date() } : {}),
             ...(dto.action === "DELETE" ? { password_hash: null } : {}),
             revision: { increment: 1 },
             updated_at: new Date(),
@@ -372,7 +375,7 @@ export class AdminService {
         r.state,
         r.submittedAt?.toISOString(),
         r.videoId
-          ? `/api/v1/admin/registrations/${r.registrationId}/video`
+          ? `${(process.env.ADMIN_PUBLIC_URL ?? "https://nextgen.vnuis.edu.vn/admin").replace(/\/$/, "")}/api/v1/admin/registrations/${r.registrationId}/video`
           : "",
       ]),
       format,
@@ -764,33 +767,36 @@ export class AdminService {
       competitionId = competition.id;
     }
     const rows = await this.assignments(competitionId);
+    // Các ca có thể có số câu khác nhau nên xếp hạng theo tỉ lệ điểm (%), không theo điểm thô
+    const percentOf = (r: { points: unknown; maxPoints: unknown }) =>
+      Number(r.maxPoints) > 0 ? Math.round((Number(r.points) / Number(r.maxPoints)) * 1e6) / 1e4 : 0;
     const scored = rows
       .filter((r) => r.points !== null)
+      .map((r) => ({ ...r, percent: percentOf(r) }))
       .sort(
         (a, b) =>
-          Number(b.points) - Number(a.points) ||
+          b.percent - a.percent ||
           a.candidateCode.localeCompare(b.candidateCode),
       );
     let rank = 0,
       previous: number | undefined;
     const ranked = scored.map((r, index) => {
-      const score = Number(r.points);
-      if (score !== previous) rank = index + 1;
-      previous = score;
+      if (r.percent !== previous) rank = index + 1;
+      previous = r.percent;
       return { ...r, rank, top40: rank <= 40, tieAtCutoff: false };
     });
-    const cutoff = ranked[39]?.points;
+    const cutoff = ranked[39]?.percent;
     const tied =
       cutoff !== undefined &&
-      ranked.filter((r) => Number(r.points) === Number(cutoff)).length > 1;
+      ranked.filter((r) => r.percent === cutoff).length > 1;
     return [
       ...ranked.map((r) => ({
         ...r,
-        tieAtCutoff: tied && Number(r.points) === Number(cutoff),
+        tieAtCutoff: tied && r.percent === cutoff,
       })),
       ...rows
         .filter((r) => r.points === null)
-        .map((r) => ({ ...r, rank: null, top40: false, tieAtCutoff: false })),
+        .map((r) => ({ ...r, percent: null, rank: null, top40: false, tieAtCutoff: false })),
     ];
   }
   async round1Export(
@@ -809,6 +815,7 @@ export class AdminService {
         "status",
         "points",
         "maxPoints",
+        "percent",
         "top40",
         "tieAtCutoff",
       ],
@@ -822,6 +829,7 @@ export class AdminService {
         r.status,
         r.points === null ? "" : Number(r.points),
         r.maxPoints === null ? "" : Number(r.maxPoints),
+        r.percent === null ? "" : r.percent,
         r.top40 ? "YES" : "NO",
         r.tieAtCutoff ? "REVIEW" : "",
       ]),

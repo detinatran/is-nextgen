@@ -482,9 +482,9 @@ export function Assignments() {
                 {schedules.data
                   .filter((s) => s.id !== current?.scheduleId)
                   .map((s) => (
-                    <option key={s.id} value={s.id} disabled={Number(s.assigned) >= s.capacity || !s.blueprintId}>
-                      {s.name} · {s.assigned}/{s.capacity}
-                      {!s.blueprintId ? " · chưa có đề" : Number(s.assigned) >= s.capacity ? " · đã đầy" : ""}
+                    <option key={s.id} value={s.id} disabled={Number(s.assigned) >= s.capacity || !s.blueprintId || new Date(s.closesAt).getTime() <= now}>
+                      {s.name} · {viTime(s.opensAt)} · {s.assigned}/{s.capacity}
+                      {new Date(s.closesAt).getTime() <= now ? " · đã đóng" : !s.blueprintId ? " · chưa có đề" : Number(s.assigned) >= s.capacity ? " · đã đầy" : ""}
                     </option>
                   ))}
               </select>
@@ -734,7 +734,7 @@ export function Round1() {
       <PageHeader
         title="Bảng điểm Vòng 1"
         icon="chart"
-        description="Điểm cao nhất của các lượt đã chấm. Đồng điểm giữ cùng hạng; đồng điểm tại ngưỡng Top 40 cần Ban Tổ chức xét thêm."
+        description="Xếp hạng theo tỉ lệ điểm (%) để công bằng giữa các ca có số câu khác nhau. Đồng hạng giữ nguyên; đồng điểm tại ngưỡng Top 40 cần Ban Tổ chức xét thêm."
         actions={
           <>
             {config.data.competitions.length > 1 && (
@@ -780,8 +780,8 @@ export function Round1() {
         ) : (
           <Table
             loading={list.loading}
-            numeric={[0, 5]}
-            headers={["Hạng", "Mã thí sinh", "Họ tên", "Ca thi", "Trạng thái", "Điểm", "Top 40"]}
+            numeric={[0, 5, 6]}
+            headers={["Hạng", "Mã thí sinh", "Họ tên", "Ca thi", "Trạng thái", "Điểm", "Tỉ lệ", "Top 40"]}
             rowClass={(i) => (rows[i]?.top40 ? "bg-[#F5B82E]/[0.07] hover:bg-[#F5B82E]/[0.12]" : "")}
             empty={search || onlyTop ? { icon: "search", title: "Không có thí sinh phù hợp" } : { icon: "chart", title: "Chưa có điểm", description: "Bảng xếp hạng hiển thị khi thí sinh nộp bài Vòng 1." }}
             rows={rows.map((a) => [
@@ -801,6 +801,9 @@ export function Round1() {
               <span key="p" className="font-semibold text-adm-text">
                 {a.points === null ? "—" : a.points}
                 {a.points !== null && <span className="font-normal text-adm-muted">/{a.maxPoints}</span>}
+              </span>,
+              <span key="pc" className="text-adm-sub">
+                {a.percent == null ? "—" : `${+a.percent.toFixed(2)}%`}
               </span>,
               a.tieAtCutoff ? (
                 <Pill key="t" tone="amber">Đồng điểm — cần xét</Pill>

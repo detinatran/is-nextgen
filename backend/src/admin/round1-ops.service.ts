@@ -133,9 +133,10 @@ export class Round1OpsService {
     const compId = await this.competitionId(competitionId);
     const actor = req.auth!.userId;
     const rows = await this.prisma.$queryRaw<
-      { assignment_id: string; candidate_id: string; candidate_code: string | null; full_name: string; email_normalized: string; opens_at: Date; closes_at: Date }[]
+      { assignment_id: string; candidate_id: string; candidate_code: string | null; full_name: string; email_normalized: string; opens_at: Date; closes_at: Date; duration_seconds: number | null }[]
     >`
-      SELECT a.id AS assignment_id, a.candidate_id, c.candidate_code, p.full_name, p.email_normalized, s.opens_at, s.closes_at
+      SELECT a.id AS assignment_id, a.candidate_id, c.candidate_code, p.full_name, p.email_normalized, s.opens_at, s.closes_at,
+        COALESCE(s.duration_seconds, e.duration_seconds) AS duration_seconds
       FROM candidate_assignments a
       JOIN exams e ON e.id=a.exam_id AND e.round=1 AND e.competition_id=${compId}::uuid
       JOIN exam_schedules s ON s.id=a.schedule_id
@@ -161,6 +162,7 @@ export class Round1OpsService {
                 fullName: r.full_name,
                 candidateCode: r.candidate_code ?? "",
                 schedule: `${vnTime(r.opens_at)} – ${vnTime(r.closes_at)} (giờ Việt Nam)`,
+                durationMinutes: String(Math.round(Number(r.duration_seconds ?? 3600) / 60)),
               },
               deduplication_key: `exam-invite:${r.assignment_id}:${batch}`,
               user_id: account.userId,

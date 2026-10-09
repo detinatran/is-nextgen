@@ -54,11 +54,13 @@ export default function Overview() {
 
   type Item = { tone: "amber" | "red" | "blue" | "slate"; title: string; detail: string; href: string; action: string };
   const attention: Item[] = [];
-  if (stats.open.length) attention.push({ tone: "blue", title: `${stats.open.length} ca thi đang mở`, detail: `${stats.inProgress} thí sinh đang làm bài`, href: "/admin/exams/monitor", action: "Giám sát" });
-  if (stats.duplicates) attention.push({ tone: "red", title: `${stats.duplicates} nhóm hồ sơ trùng`, detail: "Trùng MSSV, email, số điện thoại hoặc Facebook", href: "/admin/candidates/duplicate-reviews", action: "Rà soát" });
-  if (stats.unassigned) attention.push({ tone: "amber", title: `${stats.unassigned} hồ sơ đã nộp chưa xếp ca`, detail: "Cần xếp ca Vòng 1 trước khi gửi email mời thi", href: "/admin/exams/assignments", action: "Xếp ca" });
-  if (stats.pendingActivation) attention.push({ tone: "amber", title: `${stats.pendingActivation} tài khoản chưa kích hoạt`, detail: "Thí sinh chưa đặt mật khẩu từ email mời thi", href: "/admin/candidates", action: "Xem hồ sơ" });
-  if (noBlueprint.length) attention.push({ tone: "red", title: `${noBlueprint.length} ca sắp tới chưa có đề`, detail: "Ca chưa gắn bộ đề đã chốt nên không thể xếp thí sinh", href: "/admin/exams/schedules", action: "Kiểm tra" });
+  // Chỉ tính khi đủ dữ liệu, tránh hiện số tạm sai trong lúc đang tải
+  const ready = !candidates.loading && !schedules.loading && !assignments.loading;
+  if (ready && stats.open.length) attention.push({ tone: "blue", title: `${stats.open.length} ca thi đang mở`, detail: `${stats.inProgress} thí sinh đang làm bài`, href: "/admin/exams/monitor", action: "Giám sát" });
+  if (ready && stats.duplicates) attention.push({ tone: "red", title: `${stats.duplicates} nhóm hồ sơ trùng`, detail: "Trùng MSSV, email, số điện thoại hoặc Facebook", href: "/admin/candidates/duplicate-reviews", action: "Rà soát" });
+  if (ready && stats.unassigned) attention.push({ tone: "amber", title: `${stats.unassigned} hồ sơ đã nộp chưa xếp ca`, detail: "Cần xếp ca Vòng 1 trước khi gửi email mời thi", href: "/admin/exams/assignments", action: "Xếp ca" });
+  if (ready && stats.pendingActivation) attention.push({ tone: "amber", title: `${stats.pendingActivation} tài khoản chưa kích hoạt`, detail: "Thí sinh chưa đặt mật khẩu từ email mời thi", href: "/admin/candidates", action: "Xem hồ sơ" });
+  if (ready && noBlueprint.length) attention.push({ tone: "red", title: `${noBlueprint.length} ca sắp tới chưa có đề`, detail: "Ca chưa gắn bộ đề đã chốt nên không thể xếp thí sinh", href: "/admin/exams/schedules", action: "Kiểm tra" });
   if (!config.loading && rubricMissing.length)
     attention.push({ tone: "slate", title: `Chưa cấu hình Rubric ${rubricMissing.map((r) => (r === 2 ? "Vòng 2" : "Chung kết")).join(" và ")}`, detail: "Cần có tiêu chí chấm trước khi nhập điểm", href: "/admin/scoring/manual", action: "Cấu hình" });
 
@@ -86,7 +88,7 @@ export default function Overview() {
           </div>
           <p className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[13px] text-white backdrop-blur-sm md:self-end">
             <span className="h-2 w-2 rounded-full bg-adm-gold" aria-hidden />
-            {stats.open.length ? `${stats.open.length} ca thi đang diễn ra` : stats.upcoming[0] ? `Ca kế tiếp: ${viTime(stats.upcoming[0].opensAt)}` : "Chưa có ca thi sắp tới"}
+            {schedules.loading && !schedules.updatedAt ? "Đang tải lịch thi…" : stats.open.length ? `${stats.open.length} ca thi đang diễn ra` : stats.upcoming[0] ? `Ca kế tiếp: ${viTime(stats.upcoming[0].opensAt)}` : "Chưa có ca thi sắp tới"}
           </p>
         </div>
       </section>
@@ -108,7 +110,7 @@ export default function Overview() {
               <Icon name="refresh" className="h-3.5 w-3.5" /> Làm mới
             </button>
           </div>
-          {loading && !attention.length ? (
+          {!ready ? (
             <div className="space-y-3 p-5">
               {[0, 1, 2].map((i) => (
                 <Skeleton key={i} className="h-10 w-full" />

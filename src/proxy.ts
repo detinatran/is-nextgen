@@ -14,11 +14,14 @@ export async function proxy(request: NextRequest) {
       /\/$/,
       "",
     );
-    const response = await fetch(`${api}/api/v1/admin/session`, {
-      headers: { cookie: request.headers.get("cookie") ?? "" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(5000),
-    });
+    const check = () =>
+      fetch(`${api}/api/v1/admin/session`, {
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+    // Kết nối giữ sống tới backend thỉnh thoảng bị đóng giữa chừng: thử lại một lần trước khi báo lỗi
+    const response = await check().catch(check);
     if (!response.ok) return NextResponse.redirect(login);
   } catch {
     return new NextResponse(

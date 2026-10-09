@@ -118,6 +118,7 @@ export type AssignmentItem = {
   points: string | null;
   maxPoints: string | null;
   rank?: number | null;
+  percent?: number | null;
   top40?: boolean;
   tieAtCutoff?: boolean;
 };

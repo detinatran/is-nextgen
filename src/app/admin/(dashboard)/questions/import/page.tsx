@@ -1,21 +1,21 @@
 "use client";
+import Link from "next/link";
 import ImportPanel from "@/components/admin/operations/ImportPanel";
-import { Callout, PageIntro } from "@/components/admin/ui/kit";
+import { Icon, PageHeader } from "@/components/admin/ui/kit";
 
 export default function QuestionImportPage() {
   return (
     <div className="space-y-6">
-      <PageIntro
-        icon="upload"
-        tone="amber"
-        title="Import ngân hàng câu hỏi"
-        description="Nhập câu hỏi hàng loạt từ file Excel (.xlsx) hoặc Word (.docx) theo mẫu. Hệ thống kiểm tra toàn bộ tệp trước, chỉ ghi khi không còn lỗi."
+      <PageHeader
+        title="Import câu hỏi"
+        description="Nhập câu hỏi hàng loạt từ Excel (.xlsx) hoặc Word (.docx) theo tệp mẫu."
+        actions={
+          <Link href="/admin/questions" className="inline-flex h-10 items-center gap-2 rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">
+            <Icon name="arrowLeft" /> Ngân hàng câu hỏi
+          </Link>
+        }
       />
       <ImportPanel kind="questions" />
-      <Callout title="Lưu ý khi soạn tệp">
-        Mỗi dòng là một câu hỏi: <strong>prompt</strong> (nội dung), <strong>A–D</strong> (các lựa chọn), <strong>answer</strong> (A/B/C/D), <strong>difficulty</strong>{" "}
-        (EASY/MEDIUM/HARD) và <strong>pool</strong> (nhóm câu hỏi). Nên tải file mẫu và giữ nguyên tên cột.
-      </Callout>
     </div>
   );
 }

@@ -1,457 +1,341 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { FormEvent } from "react";
+import { ClipboardEvent, FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import AdminButton from "@/components/admin/ui/AdminButton";
-import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
-import { useToastHelpers } from "@/components/admin/ui/Toast";
+import AdminLangSwitch from "@/components/admin/ui/AdminLangSwitch";
 import { adminApi, adminAsset } from "@/lib/admin/api";
 import { Icon } from "@/components/admin/ui/kit";
+
+const DOMAINS = ["vnuis.edu.vn", "vnu.edu.vn", "is-nextgen.edu.vn", "vnu-is.edu.vn"];
+const RESEND_SECONDS = 30;
 
 export default function AdminLoginPage() {
   const { t } = useAdminI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { error: showError } = useToastHelpers();
   const [step, setStep] = useState<"CREDENTIALS" | "MFA">("CREDENTIALS");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mfaCode, setMfaCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; mfa?: string }>({});
-  const [challengeId, setChallengeId] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [code, setCode] = useState("");
+  const [challengeId, setChallengeId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [resendIn, setResendIn] = useState(0);
+  const [resent, setResent] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
   const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const formRef = useRef<HTMLFormElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
-  const inputRefs = useRef<{
-    email: HTMLInputElement | null;
-    password: HTMLInputElement | null;
-    mfa: HTMLInputElement | null;
-  }>({ email: null, password: null, mfa: null });
-
-  // Entrance animation
-  useGSAP(
-    () => {
-      const ctx = gsap.context(() => {
-        gsap.set([brandRef.current, cardRef.current], { opacity: 0 });
-
-        // Brand side animation
-        if (brandRef.current) {
-          gsap.to(brandRef.current, {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            ease: "power3.out",
-          });
-
-          gsap.fromTo(
-            brandRef.current?.querySelectorAll(".brand-stagger > *") || [],
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: "power3.out",
-              stagger: 0.1,
-              delay: 0.2,
-            }
-          );
-        }
-
-        // Card side animation
-        if (cardRef.current) {
-          gsap.to(cardRef.current, {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            ease: "power3.out",
-            delay: 0.15,
-          });
-
-          gsap.fromTo(
-            cardRef.current?.querySelectorAll(".card-stagger > *") || [],
-            { opacity: 0, y: 20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              ease: "power3.out",
-              stagger: 0.08,
-              delay: 0.35,
-            }
-          );
-        }
-
-        // Floating orbs animation
-        gsap.to(".floating-orb", {
-          y: -20,
-          x: 15,
-          rotation: 360,
-          duration: 20,
-          ease: "none",
-          repeat: -1,
-          yoyo: true,
-        });
-      }, cardRef);
-
-      return () => ctx.revert();
-    },
-    { scope: cardRef }
-  );
-
-  // Step transition animation
-  useGSAP(
-    () => {
-      if (!formRef.current) return;
-      const ctx = gsap.context(() => {
-        gsap.fromTo(
-          formRef.current!,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
-        );
-      }, formRef);
-      return () => ctx.revert();
-    },
-    { scope: formRef, dependencies: [step] }
-  );
-
-  // Auto-focus first input on step change
   useEffect(() => {
-    if (step === "CREDENTIALS") {
-      inputRefs.current.email?.focus();
-    } else {
-      setTimeout(() => inputRefs.current.mfa?.focus(), 100);
-    }
+    if (step === "CREDENTIALS") emailRef.current?.focus();
+    else digitRefs.current[0]?.focus();
   }, [step]);
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendIn]);
 
-  const validateEmail = (value: string): string | undefined => {
-    if (!value.trim()) return t("Vui lòng nhập email quản trị viên.");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(value)) return t("Định dạng email không hợp lệ.");
-    const validDomains = ["vnuis.edu.vn", "vnu.edu.vn", "is-nextgen.edu.vn", "vnu-is.edu.vn"];
-    const domain = value.split("@")[1]?.toLowerCase();
-    if (domain && !validDomains.includes(domain)) {
-      return t("Chỉ chấp nhận email miền @vnuis.edu.vn hoặc @vnu.edu.vn.");
-    }
-    return undefined;
-  };
+  const emailError = !email.trim()
+    ? t("Vui lòng nhập email quản trị viên.")
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+      ? t("Định dạng email không hợp lệ.")
+      : !DOMAINS.includes(email.trim().split("@")[1]?.toLowerCase() ?? "")
+        ? t("Chỉ chấp nhận email miền @vnuis.edu.vn hoặc @vnu.edu.vn.")
+        : "";
+  const passwordError = !password ? t("Vui lòng nhập mật khẩu.") : password.length < 8 ? t("Mật khẩu phải có ít nhất 8 ký tự.") : "";
 
-  const validatePassword = (value: string): string | undefined => {
-    if (!value) return t("Vui lòng nhập mật khẩu.");
-    if (value.length < 8) return t("Mật khẩu phải có ít nhất 8 ký tự.");
-    return undefined;
-  };
+  async function requestChallenge() {
+    const result = await adminApi<{ status?: string; challengeId?: string }>("auth/login", {
+      method: "POST",
+      body: JSON.stringify({ identifier: email.trim(), password }),
+    });
+    if (result.status === "MFA_REQUIRED" && result.challengeId) return result.challengeId;
+    await adminApi("auth/logout", { method: "POST" }).catch(() => undefined);
+    throw new Error("NOT_ADMIN");
+  }
 
-  const validateMfa = (value: string): string | undefined => {
-    if (!value.trim()) return t("Vui lòng nhập mã OTP 6 số.");
-    if (!/^\d{6}$/.test(value)) return t("Mã OTP phải là 6 chữ số.");
-    return undefined;
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    const err = validateEmail(value);
-    setErrors((prev) => ({ ...prev, email: err }));
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-    const err = validatePassword(value);
-    setErrors((prev) => ({ ...prev, password: err }));
-  };
-
-  const handleMfaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-    setMfaCode(value);
-    const err = validateMfa(value);
-    setErrors((prev) => ({ ...prev, mfa: err }));
-  };
-
-  const handleLoginSubmit = async (e: FormEvent) => {
+  async function submitCredentials(e: FormEvent) {
     e.preventDefault();
-
-    const emailErr = validateEmail(email);
-    const passwordErr = validatePassword(password);
-    if (emailErr || passwordErr) {
-      setErrors({ email: emailErr, password: passwordErr });
-      return;
-    }
-
-    setIsLoading(true);
-    setErrors({});
-
+    setSubmitted(true);
+    setFormError("");
+    if (emailError || passwordError) return;
+    setLoading(true);
     try {
-      const result = await adminApi<{
-        status?: string;
-        challengeId?: string;
-      }>("auth/login", {
-        method: "POST",
-        body: JSON.stringify({ identifier: email, password }),
-      });
-
-      setIsLoading(false);
-
-      if (result.status === "MFA_REQUIRED" && result.challengeId) {
-        setChallengeId(result.challengeId);
-        setStep("MFA");
-      } else {
-        await adminApi("auth/logout", { method: "POST" });
-        showError(t("Tài khoản này không có quyền quản trị."));
-        setErrors({ email: t("Tài khoản này không có quyền quản trị.") });
-      }
-    } catch (e) {
-      setIsLoading(false);
-      showError(t("Email hoặc mật khẩu không chính xác."));
-      setErrors({ email: t("Email hoặc mật khẩu không chính xác.") });
+      setChallengeId(await requestChallenge());
+      setCode("");
+      setOtpError("");
+      setResendIn(RESEND_SECONDS);
+      setStep("MFA");
+    } catch (err) {
+      setFormError((err as Error).message === "NOT_ADMIN" ? t("Tài khoản này không có quyền quản trị.") : t("Email hoặc mật khẩu không chính xác."));
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  const handleMfaSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  async function resend() {
+    setOtpError("");
+    setResent(false);
+    setLoading(true);
+    try {
+      setChallengeId(await requestChallenge());
+      setResendIn(RESEND_SECONDS);
+      setResent(true);
+    } catch {
+      setOtpError(t("Không gửi lại được mã. Vui lòng đăng nhập lại."));
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    const mfaErr = validateMfa(mfaCode);
-    if (mfaErr) {
-      setErrors((prev) => ({ ...prev, mfa: mfaErr }));
+  async function submitCode(e?: FormEvent) {
+    e?.preventDefault();
+    if (!/^\d{6}$/.test(code)) {
+      setOtpError(t("Mã OTP phải là 6 chữ số."));
       return;
     }
-
     if (!challengeId) return;
-
-    setIsLoading(true);
-    setErrors((prev) => ({ ...prev, mfa: undefined }));
-
+    setLoading(true);
+    setOtpError("");
     try {
-      await adminApi(`auth/admin/mfa-challenges/${challengeId}/verification`, {
-        method: "POST",
-        body: JSON.stringify({ code: mfaCode }),
-      });
-
+      await adminApi(`auth/admin/mfa-challenges/${challengeId}/verification`, { method: "POST", body: JSON.stringify({ code }) });
       await adminApi("admin/session");
-      setIsLoading(false);
-
       const requested = searchParams.get("redirect") || "/admin";
-      const target =
-        /^\/admin(?:\/|$)/.test(requested) &&
-        !requested.includes("\\") &&
-        !requested.startsWith("/admin/login")
-          ? requested
-          : "/admin";
-
+      const target = /^\/admin(?:\/|$)/.test(requested) && !requested.includes("\\") && !requested.startsWith("/admin/login") ? requested : "/admin";
       router.push(target);
       router.refresh();
-    } catch (e) {
-      setIsLoading(false);
-      showError(t("Mã xác thực 2 bước (OTP) không đúng hoặc đã hết hạn."));
-      setErrors({ mfa: t("Mã OTP không đúng hoặc đã hết hạn.") });
+    } catch {
+      // Giữ nguyên mã đã nhập để người dùng sửa từng ô
+      setOtpError(t("Mã OTP không đúng hoặc đã hết hạn."));
+      setLoading(false);
     }
-  };
+  }
 
-  const handleBackToLogin = () => {
-    setStep("CREDENTIALS");
-    setMfaCode("");
-    setChallengeId(null);
-    setErrors({});
-  };
-
-  const digits = Array.from({ length: 6 }, (_, i) => mfaCode[i] ?? "");
-  const setDigit = (i: number, raw: string) => {
+  const digits = Array.from({ length: 6 }, (_, i) => code[i] ?? "");
+  const focusDigit = (i: number) => digitRefs.current[Math.max(0, Math.min(5, i))]?.focus();
+  function fill(from: number, raw: string) {
     const clean = raw.replace(/\D/g, "");
-    if (clean.length > 1) {
-      // Dán cả mã: điền lần lượt các ô
-      const next = (mfaCode.slice(0, i) + clean).slice(0, 6);
-      handleMfaChange({ target: { value: next } } as React.ChangeEvent<HTMLInputElement>);
-      digitRefs.current[Math.min(next.length, 5)]?.focus();
-      return;
-    }
+    if (!clean) return;
     const arr = digits.slice();
-    arr[i] = clean;
-    const next = arr.join("").slice(0, 6);
-    handleMfaChange({ target: { value: next } } as React.ChangeEvent<HTMLInputElement>);
-    if (clean && i < 5) digitRefs.current[i + 1]?.focus();
+    for (let k = 0; k < clean.length && from + k < 6; k++) arr[from + k] = clean[k];
+    setCode(arr.join("").replace(/\s/g, ""));
+    setOtpError("");
+    focusDigit(from + clean.length);
+  }
+  function onDigitChange(i: number, raw: string) {
+    const v = raw.replace(/\D/g, "");
+    // Ô đang có số: giữ chữ số mới gõ; tự điền (one-time-code) hoặc dán: điền nhiều ô
+    if (v.length === 2 && digits[i]) fill(i, v[0] === digits[i] ? v[1] : v[0]);
+    else fill(i, v);
+  }
+  function onDigitKey(i: number, e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      const arr = digits.slice();
+      if (arr[i]) arr[i] = "";
+      else if (i > 0) {
+        arr[i - 1] = "";
+        focusDigit(i - 1);
+      }
+      setCode(arr.join(""));
+    } else if (e.key === "ArrowLeft") focusDigit(i - 1);
+    else if (e.key === "ArrowRight") focusDigit(i + 1);
+  }
+  const onPaste = (i: number, e: ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    fill(i, e.clipboardData.getData("text"));
   };
-  const inputBox =
-    "h-12 w-full rounded-xl border bg-white pl-11 pr-4 text-[15px] text-slate-800 placeholder:text-slate-400 transition focus:outline-none focus:ring-4";
-  const ok = "border-slate-200 focus:border-[#1F5BE0] focus:ring-blue-500/10";
-  const bad = "border-rose-300 focus:border-rose-400 focus:ring-rose-500/10";
+
+  const input =
+    "h-[42px] w-full rounded-lg border bg-white px-3 text-sm text-adm-text placeholder:text-adm-muted transition focus:outline-none focus:ring-2";
+  const fieldState = (bad: boolean) => (bad ? "border-adm-error focus:ring-adm-error/20" : "border-adm-border focus:border-adm-primary focus:ring-adm-primary/20");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#071533]">
-      {/* Nền: toà nhà trường về đêm + lớp phủ để chữ bên trái dễ đọc */}
-      <img src={adminAsset("/images/admin/login-bg.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[70%_center]" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#071533] via-[#071533]/85 to-[#071533]/20" aria-hidden />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#071533]/80 via-transparent to-[#071533]/40" aria-hidden />
-
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-14">
-        <header className="flex items-start justify-between gap-6">
-          <img src={adminAsset("/images/logo-white-2026.png")} alt="NextGen Manager" className="h-12 w-auto sm:h-16" />
-          <p className="hidden text-right text-xs font-semibold tracking-[0.2em] text-white/85 uppercase sm:block">
-            <span className="block">“{t("Tài năng hôm nay")}</span>
-            <span className="block">{t("kiến tạo ngày mai")}”</span>
-            <span className="mt-2 ml-auto block h-0.5 w-10 rounded-full bg-amber-400" />
+    <div className="flex min-h-screen bg-adm-bg">
+      {/* Cột thương hiệu: nền navy, lưới hình học mờ */}
+      <aside className="relative hidden w-[44%] max-w-[640px] flex-col justify-between overflow-hidden bg-gradient-to-br from-adm-navy to-adm-navy2 p-12 text-white lg:flex">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_top_left,black_30%,transparent_75%)]"
+        />
+        <img src={adminAsset("/images/logo-white-2026.png")} alt="NextGen Manager Challenge 2026" className="relative h-12 w-auto self-start" />
+        <div className="relative max-w-md">
+          <p className="text-[13px] font-medium text-slate-300">{t("Mùa I: The Manager in the AI Era")}</p>
+          <h1 className="mt-3 text-[32px] leading-tight font-bold tracking-tight">{t("Hệ thống quản trị cuộc thi")}</h1>
+          <p className="mt-4 text-[15px] leading-relaxed text-slate-300">
+            {t("Điều phối hồ sơ, ca thi, giám sát và chấm điểm NextGen Manager Challenge 2026.")}
           </p>
-        </header>
+          <dl className="mt-10 grid max-w-sm grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-4">
+            {[
+              ["40", t("vào Vòng 2")],
+              ["16", t("vào Chung kết")],
+              ["3", t("vòng thi")],
+            ].map(([n, label]) => (
+              <div key={label} className="px-4 first:pl-0">
+                <dt className="sr-only">{label}</dt>
+                <dd className="text-2xl font-semibold tabular-nums">{n}</dd>
+                <dd className="text-xs text-slate-400">{label}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+        <p className="relative text-xs leading-relaxed text-slate-400">
+          {t("Khoa Kinh tế và Quản lý")} · {t("Trường Quốc tế - ĐHQG Hà Nội")}
+        </p>
+      </aside>
 
-        <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[1.1fr_minmax(0,440px)] lg:gap-16">
-          <div ref={brandRef} className="hidden lg:block">
-            <div className="brand-stagger max-w-xl">
-              <p className="text-sm font-semibold tracking-[0.18em] text-[#8CC1FF] uppercase">{t("Mùa I: The Manager in the AI Era")}</p>
-              <h1 className="mt-4 text-5xl leading-[1.05] font-extrabold tracking-tight text-white xl:text-6xl">
-                <span className="block">{t("NEXTGEN")}</span>
-                <span className="block text-[#F5B83D]">{t("MANAGER")}</span>
-                <span className="mt-2 block text-3xl font-bold text-[#8CC1FF] xl:text-4xl">{t("CHALLENGE 2026")}</span>
-              </h1>
-              <p className="mt-6 text-base leading-relaxed text-white/75">
-                {t("Hệ thống quản trị cuộc thi tìm kiếm tài năng quản trị thế hệ mới. Được thiết kế cho Ban Tổ Chức để điều phối vòng thi, chấm điểm và công bố kết quả minh bạch.")}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {[
-                  ["40", t("Vòng 2"), "text-amber-400"],
-                  ["16", t("Chung kết"), "text-emerald-400"],
-                  ["12", t("Top đội"), "text-sky-400"],
-                ].map(([n, label, color]) => (
-                  <div key={label} className="flex items-baseline gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-                    <span className={`text-2xl font-extrabold ${color}`}>{n}</span>
-                    <span className="text-sm font-medium text-white/80">{label}</span>
+      <main className="flex flex-1 flex-col">
+        <div className="flex h-16 items-center justify-between px-6 sm:px-10">
+          <img src={adminAsset("/images/logo-2026.png")} alt="NextGen Manager Challenge 2026" className="h-9 w-auto lg:invisible" />
+          <AdminLangSwitch />
+        </div>
+        <div className="flex flex-1 items-center justify-center px-4 pb-16 sm:px-6">
+          <div className="w-full max-w-[400px]">
+            {step === "CREDENTIALS" ? (
+              <form onSubmit={submitCredentials} noValidate className="space-y-5">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight text-adm-text">{t("Đăng nhập quản trị")}</h2>
+                  <p className="mt-1 text-sm text-adm-sub">{t("Dành cho Ban Tổ chức. Đăng nhập gồm mật khẩu và mã xác thực gửi qua email.")}</p>
+                </div>
+                {formError && (
+                  <div role="alert" className="flex gap-2 rounded-lg border border-red-200 bg-red-50/70 px-3 py-2.5 text-[13px] text-[#991B1B]">
+                    <Icon name="alert" className="mt-0.5" /> {formError}
                   </div>
-                ))}
-              </div>
-              <div className="mt-12 text-sm leading-relaxed">
-                <p className="text-white/60">{t("Đơn vị tổ chức:")}</p>
-                <p className="font-semibold text-white">{t("Khoa Kinh tế và Quản lý")}</p>
-                <p className="text-white/60">{t("Trường Quốc tế - ĐHQG Hà Nội (VNU-IS)")}</p>
-              </div>
-            </div>
-          </div>
-
-          <div ref={cardRef} className="w-full">
-            <div className="card-stagger rounded-3xl bg-white p-7 shadow-2xl shadow-black/30 sm:p-9">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-[#0B1F4D]">{t("Chào mừng trở lại")}</h2>
-                <p className="mt-1 text-sm text-slate-500">{t("Đăng nhập để truy cập hệ thống quản trị")}</p>
-              </div>
-
-              {step === "CREDENTIALS" ? (
-                <form ref={formRef} onSubmit={handleLoginSubmit} noValidate className="mt-7 space-y-5">
-                  <label className="block">
-                    <span className="mb-1.5 flex justify-between text-sm font-semibold text-slate-700">
-                      {t("Email Quản trị viên")} <span className="text-rose-500">*</span>
+                )}
+                <label className="block">
+                  <span className="mb-1.5 block text-[13px] font-medium text-adm-text">{t("Email")}</span>
+                  <input
+                    ref={emailRef}
+                    type="email"
+                    autoComplete="username"
+                    placeholder="ten@vnuis.edu.vn"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={submitted && !!emailError}
+                    aria-describedby="email-error"
+                    className={`${input} ${fieldState(submitted && !!emailError)}`}
+                  />
+                  {submitted && emailError && (
+                    <span id="email-error" className="mt-1 block text-xs text-adm-error">
+                      {emailError}
                     </span>
-                    <span className="relative block">
-                      <Icon name="mail" className="pointer-events-none absolute top-1/2 left-4 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
-                      <input
-                        ref={(el) => { inputRefs.current.email = el; }}
-                        type="email"
-                        autoComplete="username"
-                        placeholder="nextgen@vnuis.edu.vn"
-                        value={email}
-                        onChange={handleEmailChange}
-                        aria-invalid={!!errors.email}
-                        className={`${inputBox} ${errors.email ? bad : ok}`}
-                      />
-                    </span>
-                    {errors.email && <span className="mt-1.5 block text-xs font-medium text-rose-600">{errors.email}</span>}
-                  </label>
-                  <label className="block">
-                    <span className="mb-1.5 flex justify-between text-sm font-semibold text-slate-700">
-                      {t("Mật khẩu")} <span className="text-rose-500">*</span>
-                    </span>
-                    <span className="relative block">
-                      <Icon name="lock" className="pointer-events-none absolute top-1/2 left-4 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
-                      <input
-                        ref={(el) => { inputRefs.current.password = el; }}
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={handlePasswordChange}
-                        aria-invalid={!!errors.password}
-                        className={`${inputBox} pr-12 ${errors.password ? bad : ok}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-                        aria-label={showPassword ? t("Ẩn mật khẩu") : t("Hiện mật khẩu")}
-                      >
-                        <Icon name={showPassword ? "eyeOff" : "eye"} className="h-[18px] w-[18px]" />
-                      </button>
-                    </span>
-                    {errors.password && <span className="mt-1.5 block text-xs font-medium text-rose-600">{errors.password}</span>}
-                  </label>
-                  <div className="flex justify-end">
-                    <a href="/thi/quen-mat-khau/" className="text-sm font-semibold text-[#1F5BE0] hover:underline">
+                  )}
+                </label>
+                <label className="block">
+                  <span className="mb-1.5 flex items-center justify-between text-[13px] font-medium text-adm-text">
+                    {t("Mật khẩu")}
+                    <a href="/thi/quen-mat-khau/" className="font-normal text-adm-primary hover:underline">
                       {t("Quên mật khẩu?")}
                     </a>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0B1F4D] text-[15px] font-semibold text-white shadow-lg shadow-[#0B1F4D]/25 transition hover:bg-[#13306f] disabled:opacity-60"
-                  >
-                    {isLoading ? t("Đang kiểm tra...") : t("Tiếp tục (Xác thực 2 bước)")}
-                    {!isLoading && <Icon name="arrowRight" className="h-4 w-4" />}
-                  </button>
-                </form>
-              ) : (
-                <form ref={formRef} onSubmit={handleMfaSubmit} noValidate className="mt-6 text-center">
-                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-[#1F5BE0] ring-8 ring-blue-50/50">
-                    <Icon name="shield" className="h-7 w-7" />
                   </span>
-                  <h3 className="mt-5 text-lg font-bold text-[#0B1F4D]">{t("Xác thực OTP 2 bước (MFA)")}</h3>
-                  <p className="mt-1 text-sm text-slate-500">{t("Nhập mã 6 số được gửi tới email quản trị của bạn")}</p>
-                  <div className="mt-6 grid grid-cols-6 gap-2 sm:gap-3">
+                  <span className="relative block">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      aria-invalid={submitted && !!passwordError}
+                      aria-describedby="password-error"
+                      className={`${input} pr-11 ${fieldState(submitted && !!passwordError)}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-md p-1.5 text-adm-muted hover:bg-slate-100 hover:text-adm-sub"
+                      aria-label={showPassword ? t("Ẩn mật khẩu") : t("Hiện mật khẩu")}
+                    >
+                      <Icon name={showPassword ? "eyeOff" : "eye"} />
+                    </button>
+                  </span>
+                  {submitted && passwordError && (
+                    <span id="password-error" className="mt-1 block text-xs text-adm-error">
+                      {passwordError}
+                    </span>
+                  )}
+                </label>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex h-[42px] w-full items-center justify-center gap-2 rounded-lg bg-adm-primary text-sm font-semibold text-white transition hover:bg-adm-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40 focus-visible:ring-offset-2 disabled:opacity-60"
+                >
+                  {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent motion-reduce:animate-none" aria-hidden />}
+                  {loading ? t("Đang kiểm tra…") : t("Tiếp tục")}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={submitCode} noValidate className="space-y-5">
+                <button type="button" onClick={() => setStep("CREDENTIALS")} className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-[13px] text-adm-sub hover:text-adm-text">
+                  <Icon name="arrowLeft" /> {t("Quay lại")}
+                </button>
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight text-adm-text">{t("Xác thực 2 bước")}</h2>
+                  <p className="mt-1 text-sm text-adm-sub">
+                    {t("Nhập mã 6 số đã gửi tới")} <strong className="font-medium text-adm-text">{email.trim()}</strong>
+                  </p>
+                </div>
+                <fieldset>
+                  <legend className="sr-only">{t("Mã xác thực 6 số")}</legend>
+                  <div className="grid grid-cols-6 gap-2">
                     {digits.map((d, i) => (
                       <input
                         key={i}
                         ref={(el) => {
                           digitRefs.current[i] = el;
-                          if (i === 0) inputRefs.current.mfa = el;
                         }}
                         value={d}
-                        onChange={(e) => setDigit(i, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !d && i > 0) digitRefs.current[i - 1]?.focus();
-                        }}
+                        onChange={(e) => onDigitChange(i, e.target.value)}
+                        onKeyDown={(e) => onDigitKey(i, e)}
+                        onPaste={(e) => onPaste(i, e)}
+                        onFocus={(e) => e.target.select()}
                         inputMode="numeric"
                         autoComplete={i === 0 ? "one-time-code" : "off"}
-                        maxLength={6}
                         aria-label={`${t("Số thứ")} ${i + 1}`}
-                        className={`h-14 w-full rounded-xl border text-center text-2xl font-bold text-[#1F5BE0] tabular-nums transition focus:outline-none focus:ring-4 ${errors.mfa ? bad : ok}`}
+                        aria-invalid={!!otpError}
+                        className={`h-12 w-full rounded-lg border bg-white text-center text-xl font-semibold text-adm-text tabular-nums transition focus:outline-none focus:ring-2 ${fieldState(!!otpError)}`}
                       />
                     ))}
                   </div>
-                  {errors.mfa && <p className="mt-2 text-xs font-medium text-rose-600">{errors.mfa}</p>}
-                  <button
-                    type="submit"
-                    disabled={isLoading || mfaCode.length !== 6}
-                    className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1F5BE0] text-[15px] font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:bg-[#184bc0] disabled:opacity-60"
-                  >
-                    {isLoading ? t("Đang xác thực...") : t("Đăng nhập vào Dashboard")}
-                    {!isLoading && <Icon name="arrowRight" className="h-4 w-4" />}
-                  </button>
-                  <button type="button" onClick={handleBackToLogin} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#1F5BE0] hover:underline">
-                    <Icon name="arrowLeft" className="h-4 w-4" /> {t("Quay lại đăng nhập")}
-                  </button>
-                </form>
-              )}
-
-              <div className="mt-8 border-t border-slate-100 pt-5 text-center text-xs leading-relaxed text-slate-400">
-                <p>{t("Hệ thống quản trị NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).")}</p>
-                <p className="mt-1">{t("Phiên bản 1.0.0 • Môi trường Production")}</p>
-              </div>
-            </div>
+                </fieldset>
+                {otpError && (
+                  <p role="alert" className="text-[13px] text-adm-error">
+                    {otpError}
+                  </p>
+                )}
+                {resent && !otpError && (
+                  <p role="status" className="text-[13px] text-adm-success">
+                    {t("Đã gửi mã mới. Mã cũ không còn hiệu lực.")}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={loading || code.length !== 6}
+                  className="flex h-[42px] w-full items-center justify-center gap-2 rounded-lg bg-adm-primary text-sm font-semibold text-white transition hover:bg-adm-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40 focus-visible:ring-offset-2 disabled:opacity-60"
+                >
+                  {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent motion-reduce:animate-none" aria-hidden />}
+                  {loading ? t("Đang xác thực…") : t("Xác nhận")}
+                </button>
+                <p className="text-center text-[13px] text-adm-sub">
+                  {t("Không nhận được mã?")}{" "}
+                  {resendIn > 0 ? (
+                    <span className="tabular-nums">
+                      {t("Gửi lại sau")} {resendIn}s
+                    </span>
+                  ) : (
+                    <button type="button" onClick={() => void resend()} disabled={loading} className="font-medium text-adm-primary hover:underline disabled:opacity-50">
+                      {t("Gửi lại mã")}
+                    </button>
+                  )}
+                </p>
+              </form>
+            )}
+            <p className="mt-10 text-center text-xs text-adm-muted">{t("Mọi truy cập trang quản trị đều được ghi nhật ký kiểm toán.")}</p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

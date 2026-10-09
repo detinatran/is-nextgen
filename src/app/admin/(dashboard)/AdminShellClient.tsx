@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/admin/layout/AdminSidebar";
 import AdminHeader from "@/components/admin/layout/AdminHeader";
 import { AdminI18nProvider } from "@/lib/i18n/AdminI18nContext";
 import { ToastProvider } from "@/components/admin/ui/Toast";
+import { ConfirmProvider } from "@/components/admin/ui/kit";
 
 export default function AdminShellClient({
   children,
@@ -29,7 +30,8 @@ export default function AdminShellClient({
   return (
     <AdminI18nProvider initialLang="vi">
       <ToastProvider>
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex overflow-x-clip">
+      <ConfirmProvider>
+        <div className="min-h-screen bg-adm-bg text-adm-text flex overflow-x-clip">
           {/* Fixed Sidebar */}
           <AdminSidebar
             collapsed={collapsed}
@@ -40,16 +42,17 @@ export default function AdminShellClient({
 
           {/* Main Content Area */}
           <div
-            className={`flex-1 flex flex-col transition-all duration-300 ease-out min-w-0 ${
-              collapsed ? "lg:pl-20" : "lg:pl-64"
+            className={`flex-1 flex flex-col transition-[padding] duration-200 ease-out motion-reduce:transition-none min-w-0 ${
+              collapsed ? "lg:pl-[72px]" : "lg:pl-[248px]"
             } pl-0`}
           >
             <AdminHeader onMobileMenuToggle={() => setMobileOpen((prev) => !prev)} />
-            <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
+            <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 py-6 sm:px-8 sm:py-7">
               {children}
             </main>
           </div>
         </div>
+      </ConfirmProvider>
       </ToastProvider>
     </AdminI18nProvider>
   );

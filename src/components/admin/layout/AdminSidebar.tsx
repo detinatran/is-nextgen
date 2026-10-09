@@ -146,16 +146,15 @@ export default function AdminSidebar({
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 z-40 h-screen bg-[#071533] border-r border-slate-800/80 transition-all duration-300 ease-out flex flex-col",
+        "fixed top-0 left-0 z-40 h-screen bg-adm-navy border-r border-white/5 transition-[width,transform] duration-200 ease-out motion-reduce:transition-none flex flex-col",
         collapsed ? "w-[var(--sidebar-width-icon)]" : "w-[var(--sidebar-width)]",
         "lg:translate-x-0",
         mobileOpen ? "translate-x-0" : "-translate-x-full",
         "lg:translate-x-0"
       )}
-      aria-hidden={!mobileOpen}
       style={{
-        '--sidebar-width': '16rem',
-        '--sidebar-width-icon': '5rem',
+        '--sidebar-width': '248px',
+        '--sidebar-width-icon': '72px',
       } as React.CSSProperties}
     >
       {/* Mobile Backdrop */}
@@ -169,7 +168,7 @@ export default function AdminSidebar({
       />
 
       {/* Brand Header */}
-      <div className="h-[72px] flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 relative">
         <Link
           href="/admin"
           className="flex items-center justify-center w-full transition-all duration-300 ease-out"
@@ -215,8 +214,7 @@ export default function AdminSidebar({
           ref={toggleBtnRef}
           onClick={onToggle}
           className={cn(
-            "hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border border-slate-700/50 shadow-md items-center justify-center cursor-pointer transition-all duration-200",
-            collapsed ? "bg-[#0B1F4D] hover:bg-[#16357A]" : "bg-slate-50 hover:bg-slate-100"
+            "hidden lg:flex absolute right-[-12px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border border-adm-border bg-white shadow-sm items-center justify-center cursor-pointer transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40"
           )}
           title={collapsed ? t("Mở rộng sidebar") : t("Thu gọn sidebar")}
           aria-label={collapsed ? t("Mở rộng sidebar") : t("Thu gọn sidebar")}
@@ -224,7 +222,7 @@ export default function AdminSidebar({
           <svg
             className={cn(
               "w-4 h-4 transition-transform duration-300 ease-out",
-              collapsed ? "rotate-180 text-white" : "text-slate-600"
+              collapsed ? "rotate-180 text-slate-500" : "text-slate-500"
             )}
             fill="none"
             stroke="currentColor"
@@ -236,12 +234,12 @@ export default function AdminSidebar({
       </div>
 
       {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 no-scrollbar">
+      <nav aria-label="Điều hướng quản trị" className="flex-1 overflow-y-auto py-4 px-3 space-y-5 no-scrollbar">
         {navGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {/* Group Title - Hidden when collapsed, but maintain vertical spacing */}
             <div className={cn(
-              "group-title px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 whitespace-nowrap transition-all duration-300 ease-out",
+              "group-title px-3 text-[11px] font-semibold text-slate-400 tracking-wide uppercase mb-1.5 whitespace-nowrap",
               collapsed ? "opacity-0 h-0 overflow-hidden m-0 p-0" : "opacity-100 h-auto"
             )}>
               {!collapsed && group.title}
@@ -271,20 +269,21 @@ export default function AdminSidebar({
                   onClick={() => onMobileClose?.()}
                   title={collapsed ? item.label : undefined}
                   className={cn(
-                    "flex items-center transition-all duration-200 rounded-lg text-xs sm:text-sm font-medium",
+                    "relative flex items-center rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#60A5FA]/60",
                     isActive
-                      ? "bg-[#16357A] text-white font-semibold shadow-[0_0_0_1px_rgba(31,91,224,0.3)]"
-                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white",
+                      ? "bg-white/[0.09] text-white font-semibold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-full before:bg-[#60A5FA]"
+                      : "text-slate-300 font-medium hover:bg-white/[0.05] hover:text-white",
                     collapsed
-                      ? "justify-center px-0 gap-0 h-10"
-                      : "justify-start px-3 gap-3 h-10"
+                      ? "justify-center px-0 gap-0 h-9"
+                      : "justify-start px-3 gap-3 h-9"
                   )}
                   aria-label={collapsed ? item.label : undefined}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   {/* Icon Wrapper - Fixed size, always centered */}
                   <span className={cn(
                     "flex size-5 shrink-0 items-center justify-center",
-                    isActive ? "text-white" : "text-slate-400"
+                    isActive ? "text-[#93C5FD]" : "text-slate-400"
                   )}>
                     {item.icon}
                   </span>
@@ -298,7 +297,7 @@ export default function AdminSidebar({
 
                   {/* Badge - Only render when not collapsed */}
                   {!collapsed && item.badge && (
-                    <span className="nav-badge shrink-0 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
+                    <span className="nav-badge shrink-0 text-[10px] text-emerald-300 bg-emerald-400/10 px-1.5 py-0.5 rounded font-semibold whitespace-nowrap">
                       {item.badge}
                     </span>
                   )}
@@ -307,21 +306,21 @@ export default function AdminSidebar({
             })}
           </div>
         ))}
-      </div>
+      </nav>
 
       {/* Footer User Info */}
-      <div className="p-3 border-t border-slate-800/80 bg-[#06122C]">
+      <div className="p-3 border-t border-white/5">
         <div className={cn(
           "flex items-center gap-3 transition-all duration-300 ease-out",
           collapsed ? "justify-center px-0" : "px-2"
         )}>
-          <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-[#1F5BE0]/40">
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-semibold shrink-0">
             AD
           </div>
           {!collapsed && (
             <div className="user-info flex-1 min-w-0 whitespace-nowrap">
               <p className="text-xs font-semibold text-white truncate whitespace-nowrap">{t("Ban Tổ Chức")}</p>
-              <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">nextgen@vnuis.edu.vn</p>
+              <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">{t("Quản trị viên")}</p>
             </div>
           )}
         </div>

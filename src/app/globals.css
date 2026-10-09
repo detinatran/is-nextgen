@@ -17,6 +17,20 @@
   --color-line: #e6ebf3;
 
   --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  /* Admin design tokens */
+  --color-adm-navy: #0b1736;
+  --color-adm-navy2: #10224b;
+  --color-adm-primary: #2563eb;
+  --color-adm-primary-hover: #1d4ed8;
+  --color-adm-gold: #f5b82e;
+  --color-adm-bg: #f7f9fc;
+  --color-adm-border: #e2e8f0;
+  --color-adm-text: #17233b;
+  --color-adm-sub: #64748b;
+  --color-adm-muted: #94a3b8;
+  --color-adm-success: #059669;
+  --color-adm-warning: #d97706;
+  --color-adm-error: #dc2626;
   --font-script: var(--font-dancing), cursive;
 
   --shadow-card: 0 18px 40px -22px rgb(11 31 77 / 0.35);

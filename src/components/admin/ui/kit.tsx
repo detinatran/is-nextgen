@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /* Bộ icon nét (24x24, stroke) dùng chung cho admin */
@@ -57,109 +57,110 @@ const paths: Record<string, ReactNode> = {
 };
 export type IconName = keyof typeof paths;
 
-export function Icon({ name, className = "h-5 w-5", strokeWidth = 1.8 }: { name: IconName; className?: string; strokeWidth?: number }) {
+export function Icon({ name, className, strokeWidth = 1.75 }: { name: IconName; className?: string; strokeWidth?: number }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={cn("shrink-0", className)} aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={cn("h-4 w-4 shrink-0", className)} aria-hidden>
       {paths[name]}
     </svg>
   );
 }
 
-/* Tông màu cho ô icon / thẻ thống kê */
-export type Tone = "blue" | "green" | "amber" | "violet" | "red" | "slate" | "cyan";
-const toneTile: Record<Tone, string> = {
-  blue: "bg-blue-50 text-[#1F5BE0] ring-blue-100",
-  green: "bg-emerald-50 text-emerald-600 ring-emerald-100",
-  amber: "bg-amber-50 text-amber-600 ring-amber-100",
-  violet: "bg-violet-50 text-violet-600 ring-violet-100",
-  red: "bg-rose-50 text-rose-600 ring-rose-100",
-  slate: "bg-slate-100 text-slate-600 ring-slate-200",
-  cyan: "bg-cyan-50 text-cyan-600 ring-cyan-100",
-};
+/* ───────── Bố cục trang ───────── */
 
-export function IconTile({ name, tone = "blue", size = "md" }: { name: IconName; tone?: Tone; size?: "sm" | "md" | "lg" }) {
-  const box = size === "lg" ? "h-14 w-14 rounded-2xl" : size === "sm" ? "h-9 w-9 rounded-lg" : "h-11 w-11 rounded-xl";
-  const ico = size === "lg" ? "h-7 w-7" : size === "sm" ? "h-[18px] w-[18px]" : "h-[22px] w-[22px]";
+/** Tiêu đề trang: H1 24px, mô tả ngắn, thao tác chính bên phải. */
+export function PageHeader({ title, description, actions }: { title: string; description?: ReactNode; actions?: ReactNode }) {
   return (
-    <span className={cn("inline-flex items-center justify-center ring-1", box, toneTile[tone])}>
-      <Icon name={name} className={ico} />
-    </span>
-  );
-}
-
-/** Thẻ đầu trang: icon lớn, tiêu đề, mô tả, nút/hình minh hoạ bên phải. */
-export function PageIntro({ icon, tone = "blue", title, description, aside }: { icon: IconName; tone?: Tone; title: string; description?: ReactNode; aside?: ReactNode }) {
-  return (
-    <section className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-blue-50/60 p-5 sm:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <IconTile name={icon} tone={tone} size="lg" />
-        <div className="min-w-0 flex-1">
-          <h2 className="text-lg font-bold text-[#0B1F4D] sm:text-xl">{title}</h2>
-          {description && <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-500">{description}</p>}
-        </div>
-        {aside && <div className="shrink-0">{aside}</div>}
-      </div>
-    </section>
-  );
-}
-
-/** Minh hoạ nhỏ bên phải PageIntro: icon trong khung thẻ + nhãn 2 dòng. */
-export function IntroBadge({ icon, title, subtitle }: { icon: IconName; title: string; subtitle?: string }) {
-  return (
-    <div className="hidden items-center gap-3 rounded-xl border border-blue-100 bg-white/80 px-4 py-3 shadow-sm md:flex">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 text-[#1F5BE0]">
-        <Icon name={icon} className="h-7 w-7" strokeWidth={1.6} />
-      </span>
-      <div className="text-xs leading-tight">
-        <p className="font-bold text-[#0B1F4D]">{title}</p>
-        {subtitle && <p className="mt-0.5 text-slate-500">{subtitle}</p>}
-      </div>
-    </div>
-  );
-}
-
-export function StatCard({ icon, tone = "blue", label, value, hint }: { icon: IconName; tone?: Tone; label: string; value: ReactNode; hint?: ReactNode }) {
-  return (
-    <div className="flex items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
-      <IconTile name={icon} tone={tone} />
+    <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
-        <p className="mt-0.5 text-2xl font-extrabold tabular-nums text-[#0B1F4D]">{value}</p>
-        {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+        <h1 className="text-2xl font-bold tracking-tight text-adm-text">{title}</h1>
+        {description && <p className="mt-1 max-w-3xl text-sm leading-relaxed text-adm-sub">{description}</p>}
       </div>
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
   );
 }
 
-export type PillTone = "green" | "amber" | "slate" | "red" | "blue" | "violet";
-const pillTone: Record<PillTone, string> = {
-  green: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  amber: "bg-amber-50 text-amber-700 ring-amber-200",
-  slate: "bg-slate-100 text-slate-600 ring-slate-200",
-  red: "bg-rose-50 text-rose-700 ring-rose-200",
-  blue: "bg-blue-50 text-blue-700 ring-blue-200",
-  violet: "bg-violet-50 text-violet-700 ring-violet-200",
-};
-export function Pill({ tone = "slate", children, dot = false }: { tone?: PillTone; children: ReactNode; dot?: boolean }) {
+/** Thẻ KPI: số lớn, nhãn nhỏ, ngữ cảnh tuỳ chọn. Không dùng icon màu. */
+export function StatCard({ label, value, hint, loading = false }: { label: string; value: ReactNode; hint?: ReactNode; loading?: boolean }) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1", pillTone[tone])}>
-      {dot && <span className="h-1.5 w-1.5 rounded-full bg-current" />}
+    <div className="rounded-xl border border-adm-border bg-white px-5 py-4">
+      <p className="text-[13px] font-medium text-adm-sub">{label}</p>
+      {loading ? <Skeleton className="mt-2 h-8 w-16" /> : <p className="mt-1 text-[30px] leading-tight font-bold tabular-nums text-adm-text">{value}</p>}
+      {hint && <p className="mt-1 text-xs text-adm-muted">{hint}</p>}
+    </div>
+  );
+}
+
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <span className={cn("block animate-pulse rounded-md bg-slate-200/70 motion-reduce:animate-none", className)} />;
+}
+
+/* ───────── Trạng thái ───────── */
+
+export type PillTone = "green" | "amber" | "slate" | "red" | "blue";
+const pillTone: Record<PillTone, string> = {
+  green: "bg-emerald-50 text-[#047857] ring-emerald-600/15",
+  amber: "bg-amber-50 text-[#B45309] ring-amber-600/20",
+  slate: "bg-slate-100 text-slate-600 ring-slate-500/15",
+  red: "bg-red-50 text-[#B91C1C] ring-red-600/15",
+  blue: "bg-blue-50 text-[#1D4ED8] ring-blue-600/15",
+};
+/** Nhãn trạng thái: có chấm màu + chữ (không chỉ dựa vào màu). */
+export function Pill({ tone = "slate", children }: { tone?: PillTone; children: ReactNode }) {
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset", pillTone[tone])}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden />
       {children}
     </span>
   );
 }
 
-export function EmptyState({ icon = "folder", title, description }: { icon?: IconName; title: string; description?: string }) {
+/** Quy ước màu trạng thái dùng chung toàn hệ thống. */
+export const status = {
+  submitted: <Pill tone="green">Đã nộp</Pill>,
+  draft: <Pill tone="slate">Bản nháp</Pill>,
+  pendingActivation: <Pill tone="amber">Chưa kích hoạt</Pill>,
+  active: <Pill tone="green">Hoạt động</Pill>,
+  noAccount: <Pill tone="slate">Chưa có tài khoản</Pill>,
+  locked: <Pill tone="red">Đã khoá</Pill>,
+  deleted: <Pill tone="red">Đã xoá</Pill>,
+  inProgress: <Pill tone="blue">Đang làm bài</Pill>,
+  completed: <Pill tone="green">Đã nộp bài</Pill>,
+  notStarted: <Pill tone="slate">Chưa vào thi</Pill>,
+  needsReview: <Pill tone="red">Cần xử lý</Pill>,
+  graded: <Pill tone="green">Đã chấm</Pill>,
+};
+
+export function EmptyState({ icon = "folder", title, description, action }: { icon?: IconName; title: string; description?: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-      <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 text-blue-400 ring-1 ring-blue-100">
-        <Icon name={icon} className="h-8 w-8" strokeWidth={1.5} />
+    <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
+      <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-adm-border bg-adm-bg text-adm-muted">
+        <Icon name={icon} className="h-5 w-5" />
       </span>
-      <p className="mt-4 font-semibold text-[#0B1F4D]">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm text-slate-500">{description}</p>}
+      <p className="mt-3 text-sm font-semibold text-adm-text">{title}</p>
+      {description && <p className="mt-1 max-w-sm text-[13px] text-adm-sub">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
+
+/** Hộp ghi chú gọn (thông tin / cảnh báo / lỗi). */
+export function Callout({ tone = "info", title, children, action }: { tone?: "info" | "warning" | "error"; title?: string; children: ReactNode; action?: ReactNode }) {
+  const cls = tone === "warning" ? "border-amber-200 bg-amber-50/60" : tone === "error" ? "border-red-200 bg-red-50/60" : "border-adm-border bg-adm-bg";
+  const ic = tone === "warning" ? "text-adm-warning" : tone === "error" ? "text-adm-error" : "text-adm-sub";
+  return (
+    <div className={cn("flex gap-3 rounded-lg border px-4 py-3 text-[13px] leading-relaxed text-adm-text", cls)} role={tone === "error" ? "alert" : undefined}>
+      <Icon name={tone === "info" ? "info" : "alert"} className={cn("mt-0.5 h-4 w-4", ic)} />
+      <div className="min-w-0 flex-1">
+        {title && <p className="font-semibold">{title}</p>}
+        <div className="text-adm-sub">{children}</div>
+      </div>
+      {action && <div className="shrink-0 self-center">{action}</div>}
+    </div>
+  );
+}
+
+/* ───────── Bảng ───────── */
 
 /** Phân trang + chọn số dòng mỗi trang. */
 export function Pagination({ page, pageSize, total, onPage, onPageSize, label = "mục" }: { page: number; pageSize: number; total: number; onPage: (p: number) => void; onPageSize?: (n: number) => void; label?: string }) {
@@ -171,17 +172,17 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
     if (i === 1 || i === pages || Math.abs(i - page) <= 1) nums.push(i);
     else if (nums[nums.length - 1] !== "…") nums.push("…");
   }
-  const btn = "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border px-2 text-sm font-semibold transition disabled:opacity-40";
+  const btn = "inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-[13px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40 disabled:opacity-40";
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 text-sm text-slate-500">
-      <span>
-        Hiển thị {from}–{to} của {total} {label}
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-adm-border px-4 py-2.5 text-[13px] text-adm-sub">
+      <span className="tabular-nums">
+        {from}–{to} / {total} {label}
       </span>
       <div className="flex items-center gap-3">
         {onPageSize && (
           <label className="flex items-center gap-2">
-            Hiển thị
-            <select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))} className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-700">
+            Số dòng
+            <select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))} className="h-8 rounded-md border border-adm-border bg-white px-2 text-[13px] text-adm-text">
               {[10, 20, 50, 100].map((n) => (
                 <option key={n} value={n}>
                   {n}
@@ -190,9 +191,9 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
             </select>
           </label>
         )}
-        <div className="flex items-center gap-1">
-          <button type="button" className={cn(btn, "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")} disabled={page <= 1} onClick={() => onPage(page - 1)} aria-label="Trang trước">
-            <Icon name="chevronLeft" className="h-4 w-4" />
+        <nav className="flex items-center gap-0.5" aria-label="Phân trang">
+          <button type="button" className={cn(btn, "text-adm-sub hover:bg-slate-100")} disabled={page <= 1} onClick={() => onPage(page - 1)} aria-label="Trang trước">
+            <Icon name="chevronLeft" />
           </button>
           {nums.map((n, i) =>
             n === "…" ? (
@@ -200,31 +201,281 @@ export function Pagination({ page, pageSize, total, onPage, onPageSize, label = 
                 …
               </span>
             ) : (
-              <button key={n} type="button" onClick={() => onPage(n)} className={cn(btn, n === page ? "border-[#1F5BE0] bg-[#1F5BE0] text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}>
+              <button key={n} type="button" onClick={() => onPage(n)} aria-current={n === page ? "page" : undefined} className={cn(btn, n === page ? "bg-adm-navy text-white" : "text-adm-text hover:bg-slate-100")}>
                 {n}
               </button>
             ),
           )}
-          <button type="button" className={cn(btn, "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")} disabled={page >= pages} onClick={() => onPage(page + 1)} aria-label="Trang sau">
-            <Icon name="chevronRight" className="h-4 w-4" />
+          <button type="button" className={cn(btn, "text-adm-sub hover:bg-slate-100")} disabled={page >= pages} onClick={() => onPage(page + 1)} aria-label="Trang sau">
+            <Icon name="chevronRight" />
           </button>
-        </div>
+        </nav>
       </div>
     </div>
   );
 }
 
-/** Hộp ghi chú (thông tin / cảnh báo). */
-export function Callout({ tone = "blue", icon = "info", title, children }: { tone?: "blue" | "amber" | "red"; icon?: IconName; title?: string; children: ReactNode }) {
-  const cls = tone === "amber" ? "border-amber-200 bg-amber-50/70 text-amber-800" : tone === "red" ? "border-rose-200 bg-rose-50 text-rose-800" : "border-blue-100 bg-blue-50/60 text-slate-600";
-  const ic = tone === "amber" ? "text-amber-500" : tone === "red" ? "text-rose-500" : "text-[#1F5BE0]";
+/** Menu thao tác phụ (nút …). Đóng khi bấm ra ngoài hoặc Esc. */
+export function RowMenu({ items, label = "Thao tác khác" }: { items: { label: string; onClick: () => void; danger?: boolean; disabled?: boolean }[]; label?: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+  if (!items.length) return null;
   return (
-    <div className={cn("flex gap-3 rounded-xl border px-4 py-3 text-sm leading-relaxed", cls)}>
-      <Icon name={icon} className={cn("mt-0.5 h-5 w-5", ic)} />
-      <div>
-        {title && <p className="font-semibold text-[#0B1F4D]">{title}</p>}
-        {children}
+    <div ref={ref} className="relative inline-block">
+      <button
+        type="button"
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-8 w-8 items-center justify-center rounded-md text-adm-sub transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40"
+      >
+        <Icon name="more" />
+      </button>
+      {open && (
+        <div role="menu" className="absolute top-full right-0 z-30 mt-1 w-52 overflow-hidden rounded-lg border border-adm-border bg-white py-1 shadow-lg shadow-slate-900/5">
+          {items.map((it) => (
+            <button
+              key={it.label}
+              type="button"
+              role="menuitem"
+              disabled={it.disabled}
+              onClick={() => {
+                setOpen(false);
+                it.onClick();
+              }}
+              className={cn("block w-full px-3 py-2 text-left text-[13px] transition hover:bg-slate-50 disabled:opacity-50", it.danger ? "text-adm-error" : "text-adm-text")}
+            >
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ───────── Hộp xác nhận ───────── */
+
+type ConfirmOptions = { title: string; description?: ReactNode; confirmText?: string; danger?: boolean; reason?: { label: string; required?: boolean } };
+type ConfirmResult = { ok: boolean; reason?: string };
+const ConfirmCtx = createContext<(o: ConfirmOptions) => Promise<ConfirmResult>>(async () => ({ ok: window.confirm("Xác nhận?") }));
+
+/** Bọc ứng dụng để dùng useConfirm(): hộp xác nhận thay cho window.confirm/prompt. */
+export function ConfirmProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<(ConfirmOptions & { resolve: (r: ConfirmResult) => void }) | null>(null);
+  const [reason, setReason] = useState("");
+  const confirmRef = useRef<HTMLButtonElement>(null);
+  const ask = useCallback(
+    (o: ConfirmOptions) =>
+      new Promise<ConfirmResult>((resolve) => {
+        setReason("");
+        setState({ ...o, resolve });
+      }),
+    [],
+  );
+  const close = (ok: boolean) => {
+    state?.resolve({ ok, reason: reason.trim() || undefined });
+    setState(null);
+  };
+  useEffect(() => {
+    if (!state) return;
+    if (!state.reason) confirmRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+  const blocked = !!state?.reason?.required && !reason.trim();
+  return (
+    <ConfirmCtx.Provider value={ask}>
+      {children}
+      {state && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4" onMouseDown={(e) => e.target === e.currentTarget && close(false)}>
+          <div role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-md rounded-xl border border-adm-border bg-white p-6 shadow-xl">
+            <h2 id="confirm-title" className="text-base font-semibold text-adm-text">
+              {state.title}
+            </h2>
+            {state.description && <div className="mt-2 text-sm leading-relaxed text-adm-sub">{state.description}</div>}
+            {state.reason && (
+              <label className="mt-4 block text-[13px] font-medium text-adm-text">
+                {state.reason.label}
+                {state.reason.required && <span className="text-adm-error"> *</span>}
+                <textarea autoFocus value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={500} className="mt-1.5 w-full rounded-lg border border-adm-border px-3 py-2 text-sm focus:border-adm-primary focus:ring-2 focus:ring-adm-primary/20 focus:outline-none" />
+              </label>
+            )}
+            <div className="mt-6 flex justify-end gap-2">
+              <button type="button" onClick={() => close(false)} className="h-10 rounded-lg px-4 text-sm font-medium text-adm-sub hover:bg-slate-100">
+                Huỷ
+              </button>
+              <button
+                ref={confirmRef}
+                type="button"
+                disabled={blocked}
+                onClick={() => close(true)}
+                className={cn("h-10 rounded-lg px-4 text-sm font-semibold text-white disabled:opacity-50", state.danger ? "bg-adm-error hover:bg-red-700" : "bg-adm-primary hover:bg-adm-primary-hover")}
+              >
+                {state.confirmText ?? "Xác nhận"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </ConfirmCtx.Provider>
+  );
+}
+export const useConfirm = () => useContext(ConfirmCtx);
+
+/* ───────── Tải tệp ───────── */
+
+const fmtSize = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`);
+
+/** Vùng chọn/kéo-thả tệp: hiện tên, dung lượng, bỏ chọn; kiểm tra định dạng và dung lượng tối đa. */
+export function FileUpload({ file, onChange, accept, maxBytes, hint }: { file: File | null; onChange: (f: File | null) => void; accept: string; maxBytes: number; hint?: string }) {
+  const [drag, setDrag] = useState(false);
+  const [error, setError] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  const take = (f: File | null | undefined) => {
+    setError("");
+    if (!f) return;
+    const ext = "." + (f.name.split(".").pop() ?? "").toLowerCase();
+    if (!accept.split(",").includes(ext)) return setError(`Định dạng không hỗ trợ. Chỉ nhận ${accept.replaceAll(",", ", ")}.`);
+    if (f.size > maxBytes) return setError(`Tệp lớn hơn giới hạn ${fmtSize(maxBytes)}.`);
+    onChange(f);
+  };
+  if (file)
+    return (
+      <div className="flex items-center gap-3 rounded-lg border border-adm-border bg-white px-4 py-3">
+        <Icon name="file" className="h-5 w-5 text-adm-sub" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-adm-text">{file.name}</p>
+          <p className="text-xs text-adm-muted">{fmtSize(file.size)}</p>
+        </div>
+        <button type="button" onClick={() => onChange(null)} className="rounded-md px-2 py-1 text-[13px] font-medium text-adm-sub hover:bg-slate-100">
+          Chọn tệp khác
+        </button>
+      </div>
+    );
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => input.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDrag(true);
+        }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDrag(false);
+          take(e.dataTransfer.files?.[0]);
+        }}
+        className={cn(
+          "flex w-full flex-col items-center justify-center rounded-lg border border-dashed px-6 py-8 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40",
+          drag ? "border-adm-primary bg-blue-50/50" : "border-slate-300 bg-adm-bg hover:border-slate-400",
+        )}
+      >
+        <Icon name="upload" className="h-5 w-5 text-adm-sub" />
+        <span className="mt-2 text-sm font-medium text-adm-text">
+          Kéo thả tệp vào đây hoặc <span className="text-adm-primary">chọn tệp</span>
+        </span>
+        <span className="mt-1 text-xs text-adm-muted">{hint ?? `${accept.replaceAll(",", ", ")} · tối đa ${fmtSize(maxBytes)}`}</span>
+      </button>
+      <input ref={input} type="file" accept={accept} className="hidden" aria-label="Chọn tệp" onChange={(e) => take(e.target.files?.[0])} />
+      {error && (
+        <p className="mt-2 text-[13px] text-adm-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ───────── Ngăn kéo chi tiết & tab ───────── */
+
+/** Ngăn chi tiết trượt từ bên phải (Esc hoặc bấm nền để đóng). */
+export function Drawer({ open, onClose, title, subtitle, children, footer }: { open: boolean; onClose: () => void; title: string; subtitle?: ReactNode; children: ReactNode; footer?: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    ref.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[90] flex justify-end bg-slate-900/30" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="drawer-title" className="flex h-full w-full max-w-xl flex-col bg-white shadow-xl outline-none">
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-adm-border px-6">
+          <div className="min-w-0 flex-1">
+            <h2 id="drawer-title" className="truncate text-base font-semibold text-adm-text">
+              {title}
+            </h2>
+            {subtitle && <p className="truncate text-xs text-adm-sub">{subtitle}</p>}
+          </div>
+          <button type="button" onClick={onClose} aria-label="Đóng" className="flex h-8 w-8 items-center justify-center rounded-md text-adm-sub hover:bg-slate-100">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        {footer && <div className="flex shrink-0 justify-end gap-2 border-t border-adm-border px-6 py-3">{footer}</div>}
       </div>
     </div>
+  );
+}
+
+/** Tab gạch chân (Linear/Vercel), có số đếm tuỳ chọn. */
+export function Tabs<T extends string>({ value, onChange, items }: { value: T; onChange: (v: T) => void; items: { value: T; label: string; count?: number }[] }) {
+  return (
+    <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-adm-border">
+      {items.map((it) => {
+        const on = it.value === value;
+        return (
+          <button
+            key={it.value}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            onClick={() => onChange(it.value)}
+            className={cn(
+              "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-2.5 text-[13px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-adm-primary/40",
+              on ? "border-adm-primary text-adm-text" : "border-transparent text-adm-sub hover:text-adm-text",
+            )}
+          >
+            {it.label}
+            {it.count !== undefined && <span className={cn("rounded px-1.5 text-[11px] tabular-nums", on ? "bg-blue-50 text-adm-primary" : "bg-slate-100 text-adm-sub")}>{it.count}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Danh sách nhãn – giá trị (thông tin hồ sơ). */
+export function DetailList({ items }: { items: [string, ReactNode][] }) {
+  return (
+    <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+      {items.map(([k, v]) => (
+        <div key={k} className="min-w-0">
+          <dt className="text-xs text-adm-sub">{k}</dt>
+          <dd className="mt-0.5 break-words text-sm font-medium text-adm-text">{v || "—"}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

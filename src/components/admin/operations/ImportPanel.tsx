@@ -1,28 +1,40 @@
 "use client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { adminApi, downloadAdmin, ImportResult } from "@/lib/admin/api";
-import {
-  Button,
-  inputClass,
-  Notice,
-  Panel,
-  Table,
-  useOperations,
-} from "./common";
-import { Icon } from "@/components/admin/ui/kit";
+import { Button, Notice, Panel, Table, useOperations } from "./common";
+import { FileUpload, Icon, StatCard } from "@/components/admin/ui/kit";
 
-export default function ImportPanel({
-  kind = "questions",
-  policyId = "",
-  onImported,
-  step,
-}: {
-  kind?: "questions" | "scores";
-  policyId?: string;
-  onImported?: () => Promise<void>;
-  step?: number;
-}) {
-  const [dragging, setDragging] = useState(false);
+// Backend nhận tối đa 5.000.000 byte cho tệp nhập (admin.controller FileInterceptor)
+const MAX_BYTES = 5_000_000;
+
+function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-[28px_minmax(0,1fr)]">
+      <span className="hidden h-6 w-6 items-center justify-center rounded-full border border-adm-border text-xs font-semibold text-adm-sub sm:flex">{n}</span>
+      <div className="min-w-0 space-y-3">
+        <h3 className="text-sm font-semibold text-adm-text">{title}</h3>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function TemplateCard({ name, ext, desc, onDownload, disabled }: { name: string; ext: string; desc: string; onDownload: () => void; disabled: boolean }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-adm-border px-4 py-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-adm-bg font-mono text-[11px] font-semibold text-adm-sub">{ext}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-adm-text">{name}</p>
+        <p className="truncate text-xs text-adm-sub">{desc}</p>
+      </div>
+      <Button size="sm" variant="secondary" icon="download" disabled={disabled} onClick={onDownload}>
+        Tải về
+      </Button>
+    </div>
+  );
+}
+
+export default function ImportPanel({ kind = "questions", policyId = "", onImported, step }: { kind?: "questions" | "scores"; policyId?: string; onImported?: () => Promise<void>; step?: number }) {
   const accept = kind === "questions" ? ".xlsx,.docx" : ".xlsx";
   const [file, setFile] = useState<File | null>(null),
     [result, setResult] = useState<ImportResult | null>(null),
@@ -32,132 +44,103 @@ export default function ImportPanel({
     setFile(f);
     setResult(null);
   };
-  const canCommit =
-    result &&
-    !result.errors.length &&
-    !result.committed &&
-    checkedPolicy === policyId;
+  const valid = !!result && !result.errors.length && checkedPolicy === policyId;
+  const canCommit = valid && !result?.committed;
   async function upload(commit: boolean) {
     if (!file) return;
     await op.run(
       async () => {
         const body = new FormData();
         body.set("file", file);
-        const res = await adminApi<ImportResult>(
-          `admin/${kind}/import?commit=${commit}${kind === "scores" ? `&policyId=${encodeURIComponent(policyId)}` : ""}`,
-          { method: "POST", body },
-        );
+        const res = await adminApi<ImportResult>(`admin/${kind}/import?commit=${commit}${kind === "scores" ? `&policyId=${encodeURIComponent(policyId)}` : ""}`, { method: "POST", body });
         setResult(res);
         setCheckedPolicy(policyId);
         if (res.committed && onImported) await onImported();
       },
-      commit
-        ? "Đã xử lý yêu cầu nhập. Xem kết quả bên dưới."
-        : "Đã kiểm tra tệp.",
+      commit ? "Đã nhập dữ liệu." : "Đã kiểm tra tệp.",
     );
   }
+  const download = (path: string, name: string) => void op.run(() => downloadAdmin(path, name), "Đã tải tệp mẫu.");
+
   return (
     <Panel
       step={step}
-      icon="upload"
-      title={kind === "questions" ? "Nhập ngân hàng câu hỏi" : "Nhập điểm từ Excel giám khảo"}
-      description={
-        kind === "questions"
-          ? "Tệp .xlsx hoặc .docx gồm một bảng với các cột: prompt, A, B, C, D, answer, difficulty, pool. answer dùng A/B/C/D; difficulty dùng EASY/MEDIUM/HARD."
-          : "Các cột: subjectType (CANDIDATE/TEAM), code, judge, criterion, score. Mỗi giám khảo cần nhập đủ các tiêu chí đã cấu hình cho từng thí sinh/đội."
-      }
-      actions={
-        kind === "questions" && (
-          <Button variant="soft" icon="download" disabled={op.busy} onClick={() => void op.run(() => downloadAdmin("questions/template.docx", "questions-template.docx"), "Đã tải mẫu DOCX.")}>
-            Tải mẫu DOCX
-          </Button>
-        )
-      }
+      title={kind === "questions" ? "Nhập ngân hàng câu hỏi" : "Nhập điểm giám khảo"}
+      description={kind === "questions" ? "Hệ thống kiểm tra toàn bộ tệp trước; dữ liệu chỉ được ghi khi không còn lỗi và bạn bấm Nhập." : "Kiểm tra trước, chỉ ghi điểm khi tệp hợp lệ với cấu hình Rubric đang chọn."}
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <Button icon="download" disabled={op.busy} onClick={() => void op.run(() => downloadAdmin(`${kind}/template`, `${kind}-template.xlsx`), "Đã tải mẫu.")}>
-          Tải mẫu Excel
-        </Button>
-        <label className="flex h-10 min-w-56 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-500 hover:border-[#1F5BE0]/40">
-          <Icon name="file" className="h-4 w-4 text-slate-400" />
-          <span className="truncate">{file ? file.name : "Chọn tệp (chưa có tệp nào)"}</span>
-          <input aria-label="Chọn tệp nhập" className="hidden" type="file" accept={accept} onChange={(e) => pick(e.target.files?.[0] ?? null)} />
-        </label>
-        <Button icon="search" disabled={op.busy || !file || (kind === "scores" && !policyId)} onClick={() => void upload(false)}>
-          Kiểm tra tệp
-        </Button>
-        <Button variant="soft" icon="upload" disabled={op.busy || !canCommit} onClick={() => void upload(true)}>
-          Xác nhận nhập
-        </Button>
+      <div className="space-y-6">
+        <Step n={1} title="Tải tệp mẫu">
+          <div className="grid gap-3 lg:grid-cols-2">
+            <TemplateCard
+              ext="XLSX"
+              name="Mẫu Excel"
+              desc={kind === "questions" ? "Cột prompt, A–D, answer, difficulty, pool" : "Cột subjectType, code, judge, criterion, score"}
+              disabled={op.busy}
+              onDownload={() => download(`${kind}/template`, `${kind}-template.xlsx`)}
+            />
+            {kind === "questions" && <TemplateCard ext="DOCX" name="Mẫu Word" desc="Một bảng với các cột như mẫu Excel" disabled={op.busy} onDownload={() => download("questions/template.docx", "questions-template.docx")} />}
+          </div>
+          <p className="text-xs text-adm-sub">
+            {kind === "questions" ? (
+              <>
+                <code>answer</code> dùng A/B/C/D; <code>difficulty</code> dùng EASY/MEDIUM/HARD. Giữ nguyên tên cột trong mẫu.
+              </>
+            ) : (
+              <>
+                <code>subjectType</code> là CANDIDATE hoặc TEAM. Mỗi giám khảo cần nhập đủ các tiêu chí của Rubric cho từng thí sinh/đội.
+              </>
+            )}
+          </p>
+        </Step>
+
+        <Step n={2} title="Chọn tệp">
+          <FileUpload file={file} onChange={pick} accept={accept} maxBytes={MAX_BYTES} hint={`${accept.replaceAll(",", ", ")} · tối đa 5 MB`} />
+        </Step>
+
+        <Step n={3} title="Kiểm tra và nhập">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="secondary" loading={op.busy && !result} disabled={op.busy || !file || (kind === "scores" && !policyId)} onClick={() => void upload(false)}>
+              Kiểm tra tệp
+            </Button>
+            <Button disabled={op.busy || !canCommit} loading={op.busy && !!result} onClick={() => void upload(true)}>
+              Nhập dữ liệu
+            </Button>
+            {kind === "scores" && !policyId && <span className="text-[13px] text-adm-sub">Chọn cấu hình Rubric trước.</span>}
+            {!file && <span className="text-[13px] text-adm-muted">Chọn tệp ở bước 2.</span>}
+          </div>
+          <Notice message={op.error} error />
+
+          {result && (
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <StatCard label={result.committed ? "Dòng đã nhập" : "Dòng hợp lệ"} value={result.errors.length ? Math.max(0, result.rows.length - result.errors.length) : result.rows.length} />
+                <StatCard label="Lỗi" value={<span className={result.errors.length ? "text-adm-error" : ""}>{result.errors.length}</span>} />
+                <div className="flex items-center gap-2 rounded-xl border border-adm-border bg-white px-5 py-4 text-sm">
+                  <Icon name={result.committed ? "checkCircle" : result.errors.length ? "alert" : "check"} className={result.errors.length ? "text-adm-error" : "text-adm-success"} />
+                  <span className="text-adm-text">
+                    {result.committed ? "Đã ghi vào hệ thống" : result.errors.length ? "Chưa ghi dữ liệu — sửa tệp rồi kiểm tra lại" : "Tệp hợp lệ, sẵn sàng nhập"}
+                  </span>
+                </div>
+              </div>
+              {result.errors.length > 0 && <Table headers={["Dòng", "Lỗi"]} numeric={[]} rows={result.errors.map((e) => [<span key="r" className="tabular-nums">{e.row || "Toàn tệp"}</span>, e.message])} />}
+              {!result.errors.length && kind === "questions" && (
+                <Table
+                  headers={["Nội dung", "Độ khó", "Đáp án"]}
+                  rows={(result.rows as { prompt: string; difficulty: string; answer: number }[]).slice(0, 30).map((r) => [
+                    <span key="p" className="line-clamp-2 max-w-2xl">
+                      {r.prompt}
+                    </span>,
+                    r.difficulty,
+                    String.fromCharCode(65 + r.answer),
+                  ])}
+                  footer={result.rows.length > 30 && <p className="border-t border-adm-border px-4 py-2 text-xs text-adm-sub">Hiển thị 30/{result.rows.length} dòng đầu.</p>}
+                />
+              )}
+              {result.summary && <Table headers={["Mã", "Loại", "Giám khảo", "Điểm tổng hợp"]} numeric={[2, 3]} rows={result.summary.map((r) => [r.code, r.subjectType, r.judges, r.points])} />}
+            </div>
+          )}
+        </Step>
       </div>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          pick(e.dataTransfer.files?.[0] ?? null);
-        }}
-        className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-6 text-center transition ${dragging ? "border-[#1F5BE0] bg-blue-50" : "border-slate-200 bg-slate-50/50"}`}
-      >
-        <Icon name="upload" className="h-6 w-6 text-[#1F5BE0]" />
-        <p className="mt-2 text-sm font-semibold text-[#0B1F4D]">Hoặc kéo thả file vào đây</p>
-        <p className="mt-0.5 text-xs text-slate-500">Hỗ trợ {kind === "questions" ? ".xlsx, .docx" : ".xlsx"}. Hệ thống kiểm tra trước, chỉ ghi dữ liệu khi bấm Xác nhận nhập.</p>
-      </div>
-      <Notice message={op.error} error />
-      <Notice message={op.message} />
-      {result && (
-        <>
-          <Notice
-            error={!!result.errors.length}
-            message={
-              result.committed
-                ? `Đã lưu ${result.rows.length} dòng.`
-                : result.errors.length
-                  ? `Có ${result.errors.length} lỗi. Chưa ghi dữ liệu; sửa tệp rồi kiểm tra lại.`
-                  : `${result.rows.length} dòng hợp lệ. Bạn có thể xác nhận nhập.`
-            }
-          />
-          {result.errors.length > 0 && (
-            <Table
-              headers={["Dòng", "Lỗi"]}
-              rows={result.errors.map((e) => [e.row || "Toàn tệp", e.message])}
-            />
-          )}
-          {!result.errors.length && kind === "questions" && (
-            <Table
-              headers={["Nội dung", "Độ khó", "Đáp án"]}
-              rows={(
-                result.rows as {
-                  prompt: string;
-                  difficulty: string;
-                  answer: number;
-                }[]
-              )
-                .slice(0, 30)
-                .map((r) => [
-                  r.prompt,
-                  r.difficulty,
-                  String.fromCharCode(65 + r.answer),
-                ])}
-            />
-          )}
-          {result.summary && (
-            <Table
-              headers={["Mã", "Loại", "Giám khảo", "Điểm tổng hợp"]}
-              rows={result.summary.map((r) => [
-                r.code,
-                r.subjectType,
-                r.judges,
-                r.points,
-              ])}
-            />
-          )}
-        </>
-      )}
     </Panel>
   );
 }

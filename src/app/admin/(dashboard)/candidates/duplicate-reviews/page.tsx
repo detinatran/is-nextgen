@@ -1,222 +1,222 @@
 "use client";
-import { useState, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { RegistrationItem, viTime } from "@/lib/admin/api";
+import { duplicateFieldLabel, findDuplicates, type DuplicateField } from "@/lib/admin/duplicates";
 import { useResource, Notice, Button, inputClass } from "@/components/admin/operations/common";
-import { Callout, EmptyState, Icon, IconTile, PageIntro, Pill, type IconName, type Tone } from "@/components/admin/ui/kit";
-import { Suspense } from "react";
+import { Callout, EmptyState, Icon, PageHeader, Pill, Skeleton, StatCard, Tabs, useConfirm } from "@/components/admin/ui/kit";
 
-interface DuplicateGroup {
-  field: string;
-  value: string;
-  candidates: RegistrationItem[];
-  similarityScore: number;
-}
+// Lựa chọn hồ sơ giữ lại chỉ là ghi chú rà soát, lưu trên trình duyệt này (chưa có API lưu vào hệ thống).
+const STORE = "admin.duplicateDecisions";
+const loadDecisions = (): Record<string, string> => {
+  try {
+    return JSON.parse(localStorage.getItem(STORE) ?? "{}");
+  } catch {
+    return {};
+  }
+};
+
+const compareRows: [string, (r: RegistrationItem) => string | null][] = [
+  ["Mã thí sinh", (r) => r.candidateCode],
+  ["MSSV", (r) => r.studentId],
+  ["Email", (r) => r.email],
+  ["Điện thoại", (r) => r.phone],
+  ["Facebook", (r) => r.facebook],
+  ["Trường", (r) => r.school],
+  ["Hồ sơ", (r) => (r.state === "SUBMITTED" ? "Đã nộp" : r.state === "DRAFT" ? "Bản nháp" : "Chưa đăng ký")],
+  ["Tài khoản", (r) => (!r.userId ? "Chưa có" : r.accountStatus === "ACTIVE" ? "Hoạt động" : r.accountStatus === "DISABLED" ? "Đã khoá" : "Chưa kích hoạt")],
+  ["Video", (r) => (r.videoId ? "Đã nộp" : "Chưa có")],
+  ["Thời điểm nộp", (r) => (r.submittedAt ? viTime(r.submittedAt) : null)],
+];
 
 function DuplicateReviewsPage() {
-  const searchParams = useSearchParams();
-  const search = searchParams.get("search") ?? "";
-  const school = searchParams.get("school") ?? "";
-
-  const registrations = useResource<RegistrationItem[]>(
-    `admin/registrations?search=${encodeURIComponent(search)}&school=${encodeURIComponent(school)}`,
-    [],
-  );
-
-  const [resolvingId, setResolvingId] = useState<string | null>(null);
-  const [resolutionNote, setResolutionNote] = useState("");
-  const [resolution, setResolution] = useState<Record<string, string>>({});
-  const [tab, setTab] = useState("");
+  const params = useSearchParams();
+  const search = params.get("search") ?? "";
+  const school = params.get("school") ?? "";
+  const registrations = useResource<RegistrationItem[]>(`admin/registrations?search=${encodeURIComponent(search)}&school=${encodeURIComponent(school)}`, []);
+  const confirm = useConfirm();
+  const [tab, setTab] = useState<"" | DuplicateField>("");
   const [query, setQuery] = useState("");
-  const [showGuide, setShowGuide] = useState(false);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [decisions, setDecisions] = useState<Record<string, string>>({});
+  useEffect(() => setDecisions(loadDecisions()), []);
 
-  const duplicateGroups = useMemo(() => {
-    if (!registrations.data.length) return [];
-
-    const groups: DuplicateGroup[] = [];
-    const byField = new Map<string, RegistrationItem[]>();
-
-    // Group by exact matches on different fields
-    const fieldsToCheck: { field: string; getter: (r: RegistrationItem) => string | null }[] = [
-      { field: "studentId", getter: (r) => r.studentId ?? null },
-      { field: "email", getter: (r) => r.email?.toLowerCase() ?? null },
-      { field: "phone", getter: (r) => r.phone?.replace(/\D/g, "") ?? null },
-      { field: "facebook", getter: (r) => r.facebook?.toLowerCase() ?? null },
-    ];
-
-    for (const { field, getter } of fieldsToCheck) {
-      byField.clear();
-      for (const r of registrations.data) {
-        const val = getter(r);
-        if (!val) continue;
-        const existing = byField.get(val) || [];
-        existing.push(r);
-        byField.set(val, existing);
-      }
-
-      for (const [value, candidates] of byField.entries()) {
-        if (candidates.length > 1) {
-          groups.push({
-            field,
-            value,
-            candidates,
-            similarityScore: 1.0, // Exact match = 100%
-          });
-        }
-      }
-    }
-
-    return groups;
-  }, [registrations.data]);
-
-  const handleResolve = (groupId: string, keepCandidateId: string) => {
-    setResolution((prev) => ({
-      ...prev,
-      [groupId]: keepCandidateId,
-    }));
-    setResolvingId(null);
-    setResolutionNote("");
-  };
-
-  const getFieldLabel = (field: string) => {
-    const labels: Record<string, string> = {
-      studentId: "MSSV",
-      email: "Email",
-      phone: "Số điện thoại",
-      facebook: "Facebook",
-    };
-    return labels[field] || field;
-  };
-
-  const fieldIcon: Record<string, { icon: IconName; tone: Tone }> = {
-    studentId: { icon: "graduation", tone: "red" },
-    email: { icon: "mail", tone: "violet" },
-    phone: { icon: "phone", tone: "green" },
-    facebook: { icon: "facebook", tone: "blue" },
-  };
-  const counts = duplicateGroups.reduce<Record<string, number>>((m, g) => ({ ...m, [g.field]: (m[g.field] ?? 0) + 1 }), {});
+  const groups = useMemo(() => findDuplicates(registrations.data), [registrations.data]);
+  const counts = groups.reduce<Record<string, number>>((m, g) => ({ ...m, [g.field]: (m[g.field] ?? 0) + 1 }), {});
+  const reviewed = groups.filter((g) => g.candidates.some((c) => c.id === decisions[g.id])).length;
   const needle = query.trim().toLowerCase();
-  const shown = duplicateGroups.filter(
-    (g) =>
-      (!tab || g.field === tab) &&
-      (!needle || g.value.toLowerCase().includes(needle) || g.candidates.some((c) => [c.fullName, c.email, c.studentId, c.candidateCode].some((v) => v?.toLowerCase().includes(needle)))),
+  const shown = groups.filter(
+    (g) => (!tab || g.field === tab) && (!needle || g.value.includes(needle) || g.candidates.some((c) => [c.fullName, c.email, c.studentId, c.candidateCode].some((v) => v?.toLowerCase().includes(needle)))),
   );
-  const chip = (on: boolean) =>
-    `rounded-full px-4 py-2 text-sm font-semibold ring-1 transition ${on ? "bg-blue-50 text-[#1F5BE0] ring-[#1F5BE0]/40" : "bg-white text-slate-600 ring-slate-200 hover:ring-slate-300"}`;
+
+  async function keep(groupId: string, c: RegistrationItem) {
+    const r = await confirm({
+      title: "Chọn hồ sơ giữ lại",
+      description: (
+        <>
+          Đánh dấu <strong className="text-adm-text">{c.fullName}</strong> ({c.candidateCode || c.email}) là hồ sơ chính thức của nhóm này. Lựa chọn chỉ được ghi nhận trên trình duyệt này để theo dõi rà soát; dữ liệu
+          thí sinh không thay đổi.
+        </>
+      ),
+      confirmText: "Giữ hồ sơ này",
+    });
+    if (!r.ok) return;
+    const next = { ...decisions, [groupId]: c.id };
+    setDecisions(next);
+    try {
+      localStorage.setItem(STORE, JSON.stringify(next));
+    } catch {}
+  }
+  function undo(groupId: string) {
+    const next = { ...decisions };
+    delete next[groupId];
+    setDecisions(next);
+    try {
+      localStorage.setItem(STORE, JSON.stringify(next));
+    } catch {}
+  }
 
   return (
     <div className="space-y-6">
-      <Notice message={registrations.error} error />
-
-      <PageIntro
-        icon="search"
-        title={`Kiểm tra trùng lặp hồ sơ (${duplicateGroups.length} nhóm)`}
-        description="Hệ thống phát hiện các hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. Hãy xem xét và chọn hồ sơ chính thức để giữ lại."
-        aside={
-          <Button variant="soft" icon="file" onClick={() => setShowGuide((v) => !v)}>
-            Hướng dẫn xử lý
-          </Button>
+      <PageHeader
+        title="Kiểm tra trùng lặp"
+        description="Hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. So sánh và đánh dấu hồ sơ chính thức; khoá hoặc xoá tài khoản thừa ở trang Hồ sơ đăng ký."
+        actions={
+          <Link href="/admin/candidates" className="inline-flex h-10 items-center gap-2 rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">
+            <Icon name="arrowLeft" /> Hồ sơ đăng ký
+          </Link>
         }
       />
-      {showGuide && (
-        <Callout title="Cách xử lý hồ sơ trùng">
-          Mở từng nhóm, so sánh thông tin và thời điểm nộp, bấm <strong>Giữ bản này</strong> ở hồ sơ chính thức. Hồ sơ còn lại có thể khoá tài khoản ở
-          trang Hồ sơ đăng ký. Lựa chọn ở đây chỉ để BTC ghi nhận khi rà soát, chưa thay đổi dữ liệu.
+      <Notice message={registrations.error} error onRetry={registrations.reload} />
+      {(search || school) && (
+        <Callout title="Đang rà soát trong phạm vi bộ lọc">
+          {search && <>Từ khoá “{search}”. </>}
+          {school && <>Trường “{school}”. </>}
+          <Link href="/admin/candidates/duplicate-reviews" className="font-medium text-adm-primary hover:underline">
+            Xem toàn bộ
+          </Link>
         </Callout>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" className={chip(!tab)} onClick={() => setTab("")}>
-          Tất cả nhóm ({duplicateGroups.length})
-        </button>
-        {["studentId", "email", "phone", "facebook"].map((f) => (
-          <button key={f} type="button" className={chip(tab === f)} onClick={() => setTab(f)}>
-            {getFieldLabel(f)} ({counts[f] ?? 0})
-          </button>
-        ))}
-        <span className="flex-1" />
-        <label className="relative w-full sm:w-72">
-          <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm theo MSSV, email, tên..." />
-        </label>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard loading={registrations.loading} label="Nhóm trùng" value={groups.length} hint={`trên ${registrations.data.length} hồ sơ`} />
+        <StatCard loading={registrations.loading} label="Đã rà soát" value={reviewed} hint="Đã chọn hồ sơ giữ lại" />
+        <StatCard loading={registrations.loading} label="Chưa xử lý" value={groups.length - reviewed} />
       </div>
 
-      {shown.map((group, idx) => {
-        const groupId = `${group.field}-${group.value}`;
-        const resolved = resolution[groupId];
-        const open = openGroups[groupId] ?? idx === 0;
-        const fi = fieldIcon[group.field] ?? { icon: "users" as IconName, tone: "slate" as Tone };
-        return (
-          <section key={groupId} className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)] ${open ? "border-rose-200" : "border-slate-200/80"}`}>
-            <button
-              type="button"
-              onClick={() => setOpenGroups((m) => ({ ...m, [groupId]: !open }))}
-              className={`flex w-full items-center gap-4 px-5 py-4 text-left ${open ? "bg-rose-50/40" : ""}`}
-              aria-expanded={open}
-            >
-              <IconTile name={fi.icon} tone={fi.tone} />
-              <span className="font-bold text-[#0B1F4D]">
-                Nhóm trùng lặp #{idx + 1}: {getFieldLabel(group.field)}
-              </span>
-              {resolved ? <Pill tone="green">Đã chọn hồ sơ giữ lại</Pill> : <Pill tone="red">{group.candidates.length} hồ sơ cần xử lý</Pill>}
-              <Icon name="chevronDown" className={`ml-auto h-5 w-5 text-slate-400 transition ${open ? "rotate-180" : ""}`} />
-            </button>
-            {open && (
-              <div className="space-y-3 px-5 pt-1 pb-5">
-                <Callout tone="red" icon="alert" title={`${getFieldLabel(group.field)}: ${group.value}`}>
-                  {group.candidates.length} hồ sơ có cùng giá trị — cần Ban Tổ chức xét duyệt
-                </Callout>
-                {group.candidates.map((candidate, cIdx) => {
-                  const kept = resolved === candidate.id;
-                  return (
-                    <div key={candidate.id} className={`flex flex-wrap items-center gap-4 rounded-xl border p-4 ${kept ? "border-emerald-300 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
-                      <span className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${kept ? "border-[#1F5BE0]" : "border-slate-300"}`}>
-                        {kept && <span className="h-2.5 w-2.5 rounded-full bg-[#1F5BE0]" />}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-500">Hồ sơ #{cIdx + 1}</span>
-                          <span className="font-bold text-[#0B1F4D]">{candidate.fullName}</span>
-                          {candidate.candidateCode && <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{candidate.candidateCode}</span>}
-                        </div>
-                        <p className="mt-1 text-sm text-slate-500">
-                          MSSV: {candidate.studentId || "—"} • Email: {candidate.email}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          Trường: {candidate.school || "—"} • Nộp: {candidate.submittedAt ? viTime(candidate.submittedAt) : "Chưa nộp"}
-                        </p>
-                      </div>
-                      {kept ? (
-                        <Pill tone="green">
-                          <Icon name="check" className="h-3.5 w-3.5" /> Đã chọn
-                        </Pill>
-                      ) : (
-                        <Button variant={resolved ? "outline" : "primary"} icon="check" disabled={!!resolved} onClick={() => handleResolve(groupId, candidate.id)}>
-                          Giữ bản này
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        );
-      })}
+      <section className="rounded-xl border border-adm-border bg-white">
+        <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-3">
+          <Tabs
+            value={tab}
+            onChange={setTab}
+            items={[{ value: "" as const, label: "Tất cả", count: groups.length }, ...(["studentId", "email", "phone", "facebook"] as const).map((f) => ({ value: f, label: duplicateFieldLabel[f], count: counts[f] ?? 0 }))]}
+          />
+          <label className="relative mb-3 w-full sm:w-72">
+            <span className="sr-only">Tìm trong nhóm trùng</span>
+            <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-adm-muted" />
+            <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm MSSV, email, họ tên…" />
+          </label>
+        </div>
 
-      {shown.length === 0 && !registrations.loading && (
-        <section className="rounded-2xl border border-slate-200/80 bg-white">
-          <EmptyState icon="checkCircle" title="Không tìm thấy trùng lặp" description="Không có hồ sơ nào trùng theo các tiêu chí hiện tại. Hãy kiểm tra lại sau khi có thêm dữ liệu." />
-        </section>
-      )}
+        {registrations.loading && !groups.length ? (
+          <div className="space-y-2 border-t border-adm-border p-5">
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        ) : !shown.length ? (
+          <div className="border-t border-adm-border">
+            <EmptyState icon="checkCircle" title={groups.length ? "Không có nhóm phù hợp" : "Không có hồ sơ trùng"} description={groups.length ? "Thử đổi tab hoặc từ khoá." : "Chưa phát hiện hồ sơ trùng theo các tiêu chí hiện tại."} />
+          </div>
+        ) : (
+          <ul className="divide-y divide-adm-border border-t border-adm-border">
+            {shown.map((g) => {
+              const kept = g.candidates.find((c) => c.id === decisions[g.id]);
+              const isOpen = !!open[g.id];
+              return (
+                <li key={g.id}>
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpen((m) => ({ ...m, [g.id]: !isOpen }))}
+                    className="flex w-full items-center gap-4 px-5 py-3.5 text-left transition hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-adm-primary/40"
+                  >
+                    <Icon name="chevronRight" className={`text-adm-muted transition motion-reduce:transition-none ${isOpen ? "rotate-90" : ""}`} />
+                    <span className="w-28 shrink-0 text-[13px] text-adm-sub">{duplicateFieldLabel[g.field]}</span>
+                    <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-adm-text">{g.value}</span>
+                    <span className="hidden text-[13px] text-adm-sub tabular-nums sm:block">{g.candidates.length} hồ sơ</span>
+                    {kept ? <Pill tone="green">Đã chọn giữ lại</Pill> : <Pill tone="amber">Chưa xử lý</Pill>}
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5">
+                      <div className="overflow-x-auto rounded-lg border border-adm-border">
+                        <table className="w-full min-w-[560px] text-left text-sm">
+                          <thead className="bg-adm-bg text-xs font-semibold text-adm-sub">
+                            <tr>
+                              <th scope="col" className="w-36 px-4 py-2.5">
+                                Thông tin
+                              </th>
+                              {g.candidates.map((c) => (
+                                <th key={c.id} scope="col" className={`px-4 py-2.5 ${kept?.id === c.id ? "bg-emerald-50/70" : ""}`}>
+                                  <span className="block text-sm font-semibold text-adm-text">{c.fullName}</span>
+                                  {kept?.id === c.id && <span className="font-medium text-adm-success">Hồ sơ giữ lại</span>}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {compareRows.map(([label, get]) => {
+                              const values = g.candidates.map(get);
+                              const differs = new Set(values.map((v) => v ?? "")).size > 1;
+                              return (
+                                <tr key={label} className="border-t border-adm-border">
+                                  <th scope="row" className="px-4 py-2 text-[13px] font-medium text-adm-sub">
+                                    {label}
+                                  </th>
+                                  {values.map((v, i) => (
+                                    <td key={g.candidates[i].id} className={`px-4 py-2 break-all text-[13px] ${differs ? "text-adm-text" : "text-adm-sub"} ${kept?.id === g.candidates[i].id ? "bg-emerald-50/40" : ""}`}>
+                                      {v || "—"}
+                                    </td>
+                                  ))}
+                                </tr>
+                              );
+                            })}
+                            <tr className="border-t border-adm-border">
+                              <td />
+                              {g.candidates.map((c) => (
+                                <td key={c.id} className="px-4 py-3">
+                                  {kept?.id === c.id ? (
+                                    <Button size="sm" variant="ghost" onClick={() => undo(g.id)}>
+                                      Bỏ chọn
+                                    </Button>
+                                  ) : (
+                                    <Button size="sm" variant="secondary" onClick={() => void keep(g.id, c)}>
+                                      Giữ hồ sơ này
+                                    </Button>
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="mt-2 text-xs text-adm-muted">Lựa chọn được lưu trên trình duyệt này để theo dõi rà soát, không thay đổi dữ liệu thí sinh.</p>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="p-6 text-slate-500">Đang tải...</div>}>
+    <Suspense fallback={<Skeleton className="h-40 w-full" />}>
       <DuplicateReviewsPage />
     </Suspense>
   );

@@ -12,6 +12,7 @@ import {
   useResource,
 } from "./common";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import { Icon, PageIntro, Pagination, Pill, StatCard } from "@/components/admin/ui/kit";
 import ImportPanel from "./ImportPanel";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -36,6 +37,11 @@ export default function Questions() {
     [],
   );
 
+  // Toàn bộ câu hỏi (không lọc) cho thẻ thống kê
+  const all = useResource<QuestionItem[]>("admin/questions", []);
+  const [page, setPage] = useState(1),
+    [pageSize, setPageSize] = useState(10),
+    [menuFor, setMenuFor] = useState<string | null>(null);
   const op = useOperations();
   const [form, setForm] = useState(blank),
     [editing, setEditing] = useState<QuestionItem | null>(null),
@@ -71,43 +77,43 @@ export default function Questions() {
     }
   }
 
+  const diffLabel: Record<string, string> = { EASY: "Dễ", MEDIUM: "Trung bình", HARD: "Khó" };
+  const diffPill = (d: string) => <Pill tone={d === "EASY" ? "green" : d === "MEDIUM" ? "amber" : "red"}>{diffLabel[d] ?? d}</Pill>;
+  const byDiff = (d: string) => all.data.filter((q) => q.difficulty === d).length;
+  const pools = new Set(all.data.map((q) => q.pool)).size;
+  const rows = list.data.slice((page - 1) * pageSize, page * pageSize);
+  const edit = (q: QuestionItem) => {
+    setEditing(q);
+    setForm({
+      prompt: q.prompt,
+      options: q.options.map((o) => o.text),
+      answer: q.options.findIndex((o) => o.isCorrect),
+      difficulty: q.difficulty,
+      pool: q.pool || "General",
+    });
+    setOpen(true);
+  };
+  const remove = (q: QuestionItem) => {
+    if (window.confirm("Xoá câu hỏi khỏi ngân hàng? Các phiên bản đã dùng vẫn được giữ lại."))
+      void op.run(async () => {
+        await adminApi(`admin/questions/${q.questionId}`, { method: "DELETE" });
+        await Promise.all([list.reload(), all.reload()]);
+      });
+  };
+  const menuItem = "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 disabled:opacity-50";
+
   return (
     <div className="space-y-6">
       <Notice message={op.error || list.error} error />
       <Notice message={op.message} />
 
-      <Panel title="Ngân hàng câu hỏi">
-        <div className="flex flex-wrap gap-3">
-          <div className="flex-1 min-w-60">
-            <Field label="Tìm kiếm câu hỏi">
-              <input
-                aria-label="Tìm nội dung câu hỏi"
-                placeholder="Tìm nội dung câu hỏi…"
-                className={inputClass}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </Field>
-          </div>
-          <Field label="Nhóm câu hỏi">
-            <select className={inputClass} value={poolFilter} onChange={(e) => setPoolFilter(e.target.value)}>
-              <option value="">Tất cả nhóm</option>
-              {config.data.pools.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Độ khó">
-            <select className={inputClass} value={difficultyFilter} onChange={(e) => setDifficultyFilter(e.target.value)}>
-              <option value="">Tất cả độ khó</option>
-              <option value="EASY">Dễ</option>
-              <option value="MEDIUM">Trung bình</option>
-              <option value="HARD">Khó</option>
-            </select>
-          </Field>
-          <AdminButton
+      <PageIntro
+        icon="folder"
+        title="Ngân hàng câu hỏi"
+        description="Tìm kiếm, xem và quản lý ngân hàng câu hỏi trắc nghiệm. Sửa câu hỏi tạo phiên bản mới; đề đã phát vẫn giữ phiên bản cũ."
+        aside={
+          <Button
+            icon="plus"
             onClick={() => {
               setForm(blank());
               setEditing(null);
@@ -115,74 +121,96 @@ export default function Questions() {
             }}
           >
             Thêm câu hỏi
-          </AdminButton>
-        </div>
+          </Button>
+        }
+      />
 
-        {list.loading && <p role="status" className="text-sm text-slate-500">Đang tải…</p>}
+      <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] sm:grid-cols-[1fr_220px_220px]">
+        <Field label="Tìm kiếm câu hỏi">
+          <span className="relative block">
+            <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input aria-label="Tìm nội dung câu hỏi" placeholder="Tìm nội dung câu hỏi…" className={`${inputClass} pl-9`} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
+          </span>
+        </Field>
+        <Field label="Nhóm câu hỏi">
+          <select className={inputClass} value={poolFilter} onChange={(e) => { setPoolFilter(e.target.value); setPage(1); }}>
+            <option value="">Tất cả nhóm</option>
+            {config.data.pools.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Độ khó">
+          <select className={inputClass} value={difficultyFilter} onChange={(e) => { setDifficultyFilter(e.target.value); setPage(1); }}>
+            <option value="">Tất cả độ khó</option>
+            <option value="EASY">Dễ</option>
+            <option value="MEDIUM">Trung bình</option>
+            <option value="HARD">Khó</option>
+          </select>
+        </Field>
+      </section>
 
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard icon="file" tone="blue" label="Tổng câu hỏi" value={all.data.length.toLocaleString("vi-VN")} hint="Đang dùng trong ngân hàng" />
+        <StatCard icon="folder" tone="green" label="Nhóm câu hỏi" value={pools} hint="Mỗi nhóm là một mảng kiến thức" />
+        <StatCard icon="bars" tone="amber" label="Độ khó (Dễ / TB / Khó)" value={`${byDiff("EASY")} / ${byDiff("MEDIUM")} / ${byDiff("HARD")}`} />
+        <StatCard icon="database" tone="violet" label="Định dạng import" value="DOCX / Excel" hint="Hỗ trợ nhập hàng loạt" />
+      </div>
+
+      <ImportPanel kind="questions" onImported={async () => { await Promise.all([list.reload(), all.reload()]); }} />
+
+      <Panel
+        title="Danh sách câu hỏi"
+        icon="clipboard"
+        description={list.loading ? "Đang tải…" : `${list.data.length} câu hỏi phù hợp`}
+        actions={
+          <Button variant="outline" icon="refresh" disabled={list.loading} onClick={() => void list.reload()}>
+            Làm mới
+          </Button>
+        }
+      >
         <Table
-          headers={["Nội dung", "Độ khó", "Nhóm", "Phiên bản", "Thao tác"]}
-          rows={list.data.map((q) => [
-            q.prompt,
-            q.difficulty,
-            q.pool,
-            q.version,
-            <div key={q.id} className="flex gap-2">
-              <AdminButton
-                onClick={() => {
-                  setEditing(q);
-                  setForm({
-                    prompt: q.prompt,
-                    options: q.options.map((o) => o.text),
-                    answer: q.options.findIndex((o) => o.isCorrect),
-                    difficulty: q.difficulty,
-                    pool: q.pool || "General",
-                  });
-                  setOpen(true);
-                }}
-              >
-                Sửa
-              </AdminButton>
-              <AdminButton
-                variant="outline"
-                size="sm"
-                disabled={op.busy}
-                onClick={() =>
-                  void op.run(
-                    async () => await loadHistory(q.questionId),
-                    "Đã tải lịch sử.",
-                  )
-                }
-              >
-                Lịch sử
-              </AdminButton>
-              <AdminButton
-                variant="danger"
-                size="sm"
-                disabled={op.busy}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Xoá câu hỏi khỏi ngân hàng? Các phiên bản đã dùng vẫn được giữ lại.",
-                    )
-                  )
-                    void op.run(async () => {
-                      await adminApi(`admin/questions/${q.questionId}`, {
-                        method: "DELETE",
-                      });
-                      await list.reload();
-                    });
-                }}
-              >
-                Xoá
-              </AdminButton>
+          headers={["#", "Nội dung câu hỏi", "Nhóm", "Độ khó", "Số lựa chọn", "Phiên bản", "Thao tác"]}
+          empty={{ icon: "help", title: "Chưa có câu hỏi", description: "Thêm câu hỏi hoặc nhập từ file Excel/DOCX." }}
+          rows={rows.map((q, i) => [
+            <span key="n" className="tabular-nums text-slate-400">{(page - 1) * pageSize + i + 1}</span>,
+            <span key="p" className="line-clamp-2 max-w-xl font-medium text-[#0B1F4D]">{q.prompt}</span>,
+            <span key="g" className="whitespace-nowrap text-[13px]">{q.pool}</span>,
+            diffPill(q.difficulty),
+            <span key="o" className="tabular-nums">{q.options.length}</span>,
+            <span key="v" className="tabular-nums text-slate-500">v{q.version}</span>,
+            <div key={q.id} className="relative">
+              <button type="button" aria-label="Thao tác" onClick={() => setMenuFor(menuFor === q.id ? null : q.id)} className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50">
+                <Icon name="more" className="h-4 w-4" />
+              </button>
+              {menuFor === q.id && (
+                <div className="absolute top-full right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl" onMouseLeave={() => setMenuFor(null)}>
+                  <button type="button" className={menuItem} onClick={() => { setMenuFor(null); edit(q); }}>
+                    <Icon name="edit" className="h-4 w-4" /> Sửa
+                  </button>
+                  <button type="button" className={menuItem} disabled={op.busy} onClick={() => { setMenuFor(null); void op.run(async () => await loadHistory(q.questionId), "Đã tải lịch sử."); }}>
+                    <Icon name="clock" className="h-4 w-4" /> Lịch sử phiên bản
+                  </button>
+                  <button type="button" className={`${menuItem} text-rose-600`} disabled={op.busy} onClick={() => { setMenuFor(null); remove(q); }}>
+                    <Icon name="alert" className="h-4 w-4" /> Xoá
+                  </button>
+                </div>
+              )}
             </div>,
           ])}
+          footer={
+            list.data.length > 0 && (
+              <Pagination page={page} pageSize={pageSize} total={list.data.length} label="câu hỏi" onPage={setPage} onPageSize={(n) => { setPageSize(n); setPage(1); }} />
+            )
+          }
         />
       </Panel>
 
       {open && (
         <Panel
+          icon={editing ? "edit" : "plus"}
           title={
             editing
               ? `Sửa câu hỏi · phiên bản mới từ v${editing.version}`
@@ -266,8 +294,8 @@ export default function Questions() {
                     setForm({ ...form, difficulty: e.target.value })
                   }
                 >
-                  {["EASY", "MEDIUM", "HARD"].map((d) => (
-                    <option key={d}>{d}</option>
+                  {[["EASY", "Dễ"], ["MEDIUM", "Trung bình"], ["HARD", "Khó"]].map(([d, label]) => (
+                    <option key={d} value={d}>{label}</option>
                   ))}
                 </select>
               </Field>
@@ -294,7 +322,7 @@ export default function Questions() {
       )}
 
       {!!history.length && (
-        <Panel title="Lịch sử phiên bản">
+        <Panel title="Lịch sử phiên bản" icon="clock">
           <Table
             headers={["Phiên bản", "Nội dung", "Lựa chọn và đáp án", "Độ khó"]}
             rows={history.map((q) => [
@@ -315,7 +343,6 @@ export default function Questions() {
         </Panel>
       )}
 
-      <ImportPanel kind="questions" onImported={() => list.reload()} />
     </div>
   );
 }

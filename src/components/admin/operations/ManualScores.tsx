@@ -19,6 +19,7 @@ import {
 } from "./common";
 import ImportPanel from "./ImportPanel";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import { Callout, IconTile, IntroBadge, PageIntro, Pill } from "@/components/admin/ui/kit";
 import { useDebounce } from "@/hooks/useDebounce";
 
 type Results = {
@@ -123,7 +124,13 @@ export default function ManualScores() {
     <div className="space-y-6">
       <Notice message={op.error || config.error} error />
       <Notice message={op.message} />
-      <Panel title="Điểm Vòng 2 & Chung kết">
+      <PageIntro
+        icon="clipboardCheck"
+        title="Chấm điểm Rubric Vòng 2 & Chung kết"
+        description="Nhập và chấm điểm theo bộ tiêu chí (Rubric) đã được Ban Tổ chức phê duyệt. Mỗi phiên bản công thức giữ nguyên các điểm đã nhập."
+        aside={<IntroBadge icon="clipboardCheck" title="Vòng 2 & Chung kết" subtitle="Chấm điểm Rubric" />}
+      />
+      <Panel title="Thông tin chấm điểm" step={1}>
         <div className="grid sm:grid-cols-3 gap-4">
           <Field label="Cuộc thi">
             <select
@@ -191,20 +198,16 @@ export default function ManualScores() {
             />
           </>
         ) : (
-          <p className="text-sm text-amber-800">
-            Chưa cấu hình công thức cho vòng này. Nhập trọng số và thang điểm
-            theo công thức BCM được Ban Tổ Chức duyệt trước khi nhập điểm.
-          </p>
+          <Callout tone="amber" icon="alert">
+            Chưa cấu hình công thức cho vòng này. Nhập trọng số và thang điểm theo công thức BCM được Ban Tổ chức duyệt trước khi nhập điểm.
+          </Callout>
         )}
-        <AdminButton
-          disabled={!competition}
-          onClick={() => setPolicyOpen(!policyOpen)}
-        >
+        <Button variant="outline" icon="settings" disabled={!competition} onClick={() => setPolicyOpen(!policyOpen)}>
           Cấu hình phiên bản công thức mới
-        </AdminButton>
+        </Button>
       </Panel>
       {policyOpen && (
-        <Panel title="Cấu hình công thức BCM">
+        <Panel title="Cấu hình công thức BCM" icon="settings">
           <p className="text-sm text-slate-500">
             Điền các tiêu chí theo quy định chính thức. Tổng trọng số phải bằng
             1. Mỗi phiên bản giữ nguyên công thức và các điểm đã nhập.
@@ -314,30 +317,49 @@ export default function ManualScores() {
           </form>
         </Panel>
       )}
-      <Panel title="Mã đội hợp lệ">
-        <form className="flex items-end gap-3" onSubmit={createTeam}>
-          <Field label="Mã đội">
-            <input required name="code" className={inputClass} maxLength={80} />
-          </Field>
-          <AdminButton type="submit" disabled={op.busy || !competition}>
-            Thêm mã đội
-          </AdminButton>
-        </form>
-        <p className="text-sm text-slate-500">
-          {config.data.teams
-            .filter((t) => t.competition_id === competition)
-            .map((t) => t.team_code)
-            .join(", ") || "Chưa có mã đội."}
-        </p>
+      <Panel title="Mã đội hợp lệ" step={2}>
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+          <div className="space-y-4">
+            <form className="flex flex-wrap items-end gap-3" onSubmit={createTeam}>
+              <div className="w-full sm:w-72">
+                <Field label="Mã đội">
+                  <input required name="code" className={inputClass} maxLength={80} placeholder="Nhập mã đội (VD: TEAM01)" />
+                </Field>
+              </div>
+              <Button type="submit" variant="dark" icon="plus" disabled={op.busy || !competition}>
+                Thêm mã đội
+              </Button>
+            </form>
+            <div className="flex flex-wrap gap-2">
+              {config.data.teams.filter((t) => t.competition_id === competition).length ? (
+                config.data.teams
+                  .filter((t) => t.competition_id === competition)
+                  .map((t) => (
+                    <Pill key={t.team_code} tone="blue">
+                      {t.team_code}
+                    </Pill>
+                  ))
+              ) : (
+                <p className="text-sm text-slate-500">Chưa có mã đội.</p>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-blue-100 bg-blue-50/50 p-5 text-center">
+            <IconTile name="team" size="lg" />
+            <p className="mt-3 font-bold text-[#0B1F4D]">Quản lý đội thi</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">Thêm mã đội để bắt đầu nhập điểm Rubric. Có thể thêm nhiều mã đội trước khi nhập điểm.</p>
+          </div>
+        </div>
       </Panel>
       <ImportPanel
+        step={3}
         key={policy?.id || "none"}
         kind="scores"
         policyId={policy?.id}
         onImported={reload}
       />
       {policy && (
-        <Panel title="Bảng điểm tổng hợp">
+        <Panel title="Bảng điểm tổng hợp" step={4}>
           <div className="flex flex-wrap gap-3 mb-4">
             <Field label="Tìm kiếm">
               <input
@@ -348,27 +370,16 @@ export default function ManualScores() {
                 maxLength={200}
               />
             </Field>
-            <AdminButton
-              disabled={op.busy}
-              onClick={() => void op.run(reload, "Đã tải bảng điểm.")}
-            >
-              Xem bảng điểm
-            </AdminButton>
-            <AdminButton
-              disabled={op.busy}
-              onClick={() =>
-                void op.run(
-                  () =>
-                    downloadAdmin(
-                      `scores/${policy.id}/export`,
-                      "manual-scores.xlsx",
-                    ),
-                  "Đã xuất bảng tổng hợp.",
-                )
-              }
-            >
-              Xuất Excel
-            </AdminButton>
+            <div className="self-end">
+              <Button icon="eye" disabled={op.busy} onClick={() => void op.run(reload, "Đã tải bảng điểm.")}>
+                Xem bảng điểm
+              </Button>
+            </div>
+            <div className="self-end">
+              <Button variant="outline" icon="upload" disabled={op.busy} onClick={() => void op.run(() => downloadAdmin(`scores/${policy.id}/export`, "manual-scores.xlsx"), "Đã xuất bảng tổng hợp.")}>
+                Xuất Excel
+              </Button>
+            </div>
           </div>
           {results && (
             <>

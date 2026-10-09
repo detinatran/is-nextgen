@@ -23,8 +23,24 @@ export default function AdminHeader({
   const titleRef = useRef<HTMLHeadingElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
 
+  // Bỏ dấu / cuối (trailingSlash) để so khớp đường dẫn
+  const page = pathname.replace(/\/+$/, "") || "/admin";
+  // Dòng mô tả ngắn dưới tiêu đề trang
+  const getPageSubtitle = (path: string) => {
+    if (path === "/admin") return t("Tổng quan hệ thống NextGen Manager Challenge 2026");
+    if (path.includes("/candidates/duplicate-reviews")) return t("Phát hiện và xử lý hồ sơ đăng ký trùng thông tin");
+    if (path.includes("/candidates")) return t("Tìm kiếm, xem và quản lý hồ sơ thí sinh đăng ký tham gia cuộc thi");
+    if (path.includes("/questions/import")) return t("Nhập câu hỏi hàng loạt từ file Excel hoặc DOCX");
+    if (path.includes("/questions")) return t("Quản lý câu hỏi trắc nghiệm theo nhóm và độ khó");
+    if (path.includes("/exams/schedules")) return t("Tạo ca thi, chốt đề và sức chứa từng ca");
+    if (path.includes("/exams/assignments")) return t("Xếp thí sinh vào ca thi và gửi email mời thi");
+    if (path.includes("/exams/monitor")) return t("Theo dõi thí sinh đang làm bài theo thời gian thực");
+    if (path.includes("/scoring/round-1")) return t("Bảng xếp hạng điểm trắc nghiệm và Top 40");
+    if (path.includes("/scoring/manual")) return t("Chấm điểm theo Rubric cho Vòng 2 và Chung kết");
+    return "";
+  };
   const getPageTitle = (path: string) => {
-    if (path === "/admin") return t("Tổng quan hệ thống");
+    if (path === "/admin") return t("Quản trị hệ thống");
     if (path.includes("/candidates/duplicate-reviews")) return t("Rà soát hồ sơ trùng lặp");
     if (path.includes("/candidates")) return t("Quản lý hồ sơ thí sinh");
     if (path.includes("/questions/import")) return t("Import ngân hàng câu hỏi");
@@ -75,7 +91,7 @@ export default function AdminHeader({
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between transition-all duration-300 ease-out shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
+      className="sticky top-0 z-30 h-[72px] bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between transition-all duration-300 ease-out shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
     >
       {/* Mobile Hamburger Button */}
       <button
@@ -102,14 +118,15 @@ export default function AdminHeader({
             {t("Admin")}
           </Link>
           <span className="flex-shrink-0">/</span>
-          <span className="text-slate-600 font-semibold truncate">{getPageTitle(pathname)}</span>
+          <span className="text-slate-600 font-semibold truncate">{getPageTitle(page)}</span>
         </div>
         <h1
           ref={titleRef}
           className="text-base sm:text-lg font-bold text-[#0B1F4D] tracking-tight truncate mt-0.5"
         >
-          {getPageTitle(pathname)}
+          {getPageTitle(page)}
         </h1>
+        <p className="hidden truncate text-xs text-slate-500 md:block">{getPageSubtitle(page)}</p>
       </div>
 
       {/* Right: Actions & Status */}
@@ -144,8 +161,11 @@ export default function AdminHeader({
 
         {/* Admin Profile & Logout */}
         <div className="flex items-center gap-2.5">
-          <div className="flex flex-col text-right hidden sm:block">
-            <span className="text-xs font-bold text-slate-800">{t("Ban Tổ Chức")}</span>
+          <div className="hidden items-center gap-2.5 sm:flex">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#1F5BE0] to-[#0B1F4D] text-xs font-bold text-white ring-2 ring-blue-100">
+              AD
+            </span>
+            <span className="text-sm font-bold text-slate-800">{t("Ban Tổ Chức")}</span>
           </div>
           <AdminPopconfirm
             title={t("Đăng xuất khỏi Admin")}

@@ -169,7 +169,7 @@ export default function AdminSidebar({
       />
 
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
+      <div className="h-[72px] flex items-center justify-between px-4 border-b border-slate-800/80 bg-[#071533] relative transition-all duration-300 ease-out">
         <Link
           href="/admin"
           className="flex items-center justify-center w-full transition-all duration-300 ease-out"
@@ -188,11 +188,11 @@ export default function AdminSidebar({
             {/* Expanded Brand Text - Only visible when not collapsed */}
             {!collapsed && (
               <div className="brand-text flex flex-col min-w-0 whitespace-nowrap ml-3 opacity-100 w-auto transition-all duration-300 ease-out">
-                <span className="font-bold text-white text-sm tracking-wide whitespace-nowrap">
+                <span className="font-extrabold text-white text-base leading-none tracking-wide whitespace-nowrap">
                   NEXTGEN
                 </span>
-                <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase whitespace-nowrap">
-                  Admin Manager
+                <span className="mt-1 text-[11px] leading-none text-amber-400 font-bold tracking-[0.3em] uppercase whitespace-nowrap">
+                  Manager
                 </span>
               </div>
             )}

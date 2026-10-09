@@ -12,15 +12,21 @@ import {
   useResource,
 } from "./common";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import { Icon, IconTile, Pagination, Pill } from "@/components/admin/ui/kit";
 import VideoReviewModal from "@/components/admin/candidate/VideoReviewModal";
 import { useDebounce } from "@/hooks/useDebounce";
 
-const ITEMS_PER_PAGE = 20;
 
 export default function Registrations() {
   const [search, setSearch] = useState(""),
     [school, setSchool] = useState(""),
     [page, setPage] = useState(1),
+    [pageSize, setPageSize] = useState(10),
+    [advanced, setAdvanced] = useState(false),
+    [stateFilter, setStateFilter] = useState(""),
+    [accountFilter, setAccountFilter] = useState(""),
+    [videoFilter, setVideoFilter] = useState(""),
+    [menuFor, setMenuFor] = useState<string | null>(null),
     [videoModalOpen, setVideoModalOpen] = useState(false),
     [selectedVideo, setSelectedVideo] = useState<{ candidateName: string; candidateCode: string; videoUrl: string } | null>(null);
 
@@ -42,13 +48,24 @@ export default function Registrations() {
   const op = useOperations(),
     [create, setCreate] = useState(false);
 
-  // Client-side pagination
-  const totalItems = allRegistrations.data.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  // Lọc nâng cao (phía trình duyệt) + phân trang
+  const accountOf = (r: RegistrationItem) =>
+    r.deleted ? "DELETED" : !r.userId ? "NONE" : r.accountStatus === "ACTIVE" ? "ACTIVE" : r.accountStatus === "DISABLED" ? "DISABLED" : "PENDING";
+  const filtered = useMemo(
+    () =>
+      allRegistrations.data.filter(
+        (r) =>
+          (!stateFilter || (r.state ?? "NONE") === stateFilter) &&
+          (!accountFilter || accountOf(r) === accountFilter) &&
+          (!videoFilter || (videoFilter === "yes") === !!r.videoId),
+      ),
+    [allRegistrations.data, stateFilter, accountFilter, videoFilter],
+  );
+  const totalItems = filtered.length;
   const paginatedData = useMemo(() => {
-    const start = (page - 1) * ITEMS_PER_PAGE;
-    return allRegistrations.data.slice(start, start + ITEMS_PER_PAGE);
-  }, [allRegistrations.data, page]);
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
 
   // Reset to page 1 when search/school changes
   const [prevSearch, setPrevSearch] = useState(debouncedSearch);
@@ -131,12 +148,37 @@ export default function Registrations() {
     window.location.href = `/admin/candidates/duplicate-reviews?${params.toString()}`;
   };
 
+  const statePill = (r: RegistrationItem) =>
+    r.state === "SUBMITTED" ? <Pill tone="green">Đã nộp</Pill> : r.state === "DRAFT" ? <Pill tone="slate">Bản nháp</Pill> : <Pill tone="slate">Chưa đăng ký</Pill>;
+  const accountPill = (r: RegistrationItem) => {
+    const a = accountOf(r);
+    return a === "ACTIVE" ? <Pill tone="green">Hoạt động</Pill> : a === "DISABLED" ? <Pill tone="red">Đã khoá</Pill> : a === "DELETED" ? <Pill tone="red">Đã xoá</Pill> : a === "PENDING" ? <Pill tone="amber">Chưa kích hoạt</Pill> : <Pill tone="slate">Chưa có</Pill>;
+  };
+  const exportFile = (format: "csv" | "xlsx") =>
+    void op.run(
+      () =>
+        downloadAdmin(
+          `registrations/export?format=${format}&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
+          `registrations.${format}`,
+        ),
+      format === "csv" ? "Đã xuất CSV." : "Đã xuất Excel.",
+    );
+  const clearFilters = () => {
+    setSearch("");
+    setSchool("");
+    setStateFilter("");
+    setAccountFilter("");
+    setVideoFilter("");
+    setPage(1);
+  };
+  const menuItem = "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 disabled:opacity-50";
+
   return (
     <div className="space-y-6">
       <Notice message={allRegistrations.error || op.error} error />
       <Notice message={op.message} />
 
-      <Panel title="Hồ sơ đăng ký & tài khoản thí sinh">
+      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] sm:p-6">
         <form
           className="flex flex-wrap items-end gap-3"
           onSubmit={(e) => {
@@ -144,199 +186,165 @@ export default function Registrations() {
             setPage(1);
           }}
         >
-          <div className="flex-1 min-w-60">
+          <span className="hidden sm:block">
+            <IconTile name="search" tone="blue" />
+          </span>
+          <div className="min-w-60 flex-1">
             <Field label="Tìm theo MSSV, họ tên, email hoặc mã thí sinh">
-              <input
-                className={inputClass}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                maxLength={200}
-                placeholder="Nhập từ khóa tìm kiếm..."
-              />
+              <input className={inputClass} value={search} onChange={(e) => setSearch(e.target.value)} maxLength={200} placeholder="Nhập từ khoá tìm kiếm..." />
             </Field>
           </div>
-          <Field label="Trường">
-            <select
-              className={inputClass}
-              value={school}
-              onChange={(e) => setSchool(e.target.value)}
-            >
-              <option value="">Tất cả</option>
-              {schools.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </Field>
-          <AdminButton type="submit">Tìm kiếm</AdminButton>
-          <AdminButton onClick={() => setCreate(!create)}>Cấp tài khoản mới</AdminButton>
-          <AdminButton variant="outline" onClick={handleDuplicateCheck} disabled={allRegistrations.loading}>
-            Kiểm tra trùng lặp
-          </AdminButton>
+          <div className="w-full sm:w-56">
+            <Field label="Trường">
+              <select className={inputClass} value={school} onChange={(e) => setSchool(e.target.value)}>
+                <option value="">Tất cả</option>
+                {schools.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
+          <Button type="submit" variant="dark" icon="search">
+            Tìm kiếm
+          </Button>
+          <Button variant="outline" icon="refresh" onClick={clearFilters}>
+            Xoá bộ lọc
+          </Button>
         </form>
-
-        <div className="flex flex-wrap gap-2">
-          <Button
-            disabled={op.busy || allRegistrations.loading}
-            onClick={() =>
-              void op.run(
-                () =>
-                  downloadAdmin(
-                    `registrations/export?format=csv&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
-                    "registrations.csv",
-                  ),
-                "Đã xuất CSV.",
-              )
-            }
-          >
-            Xuất CSV
-          </Button>
-          <Button
-            disabled={op.busy || allRegistrations.loading}
-            onClick={() =>
-              void op.run(
-                () =>
-                  downloadAdmin(
-                    `registrations/export?format=xlsx&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
-                    "registrations.xlsx",
-                  ),
-                "Đã xuất Excel.",
-              )
-            }
-          >
-            Xuất Excel
-          </Button>
-        </div>
-
-        {allRegistrations.loading && (
-          <p role="status" className="text-sm text-slate-500">
-            Đang tải hồ sơ…
-          </p>
+        <button type="button" onClick={() => setAdvanced((v) => !v)} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#1F5BE0]">
+          <Icon name="filter" className="h-4 w-4" /> Lọc nâng cao (tuỳ chọn)
+          <Icon name="chevronDown" className={`h-4 w-4 transition ${advanced ? "rotate-180" : ""}`} />
+        </button>
+        {advanced && (
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <Field label="Trạng thái hồ sơ">
+              <select className={inputClass} value={stateFilter} onChange={(e) => { setStateFilter(e.target.value); setPage(1); }}>
+                <option value="">Tất cả</option>
+                <option value="SUBMITTED">Đã nộp</option>
+                <option value="DRAFT">Bản nháp</option>
+              </select>
+            </Field>
+            <Field label="Tài khoản">
+              <select className={inputClass} value={accountFilter} onChange={(e) => { setAccountFilter(e.target.value); setPage(1); }}>
+                <option value="">Tất cả</option>
+                <option value="ACTIVE">Hoạt động</option>
+                <option value="PENDING">Chưa kích hoạt</option>
+                <option value="NONE">Chưa có tài khoản</option>
+                <option value="DISABLED">Đã khoá</option>
+                <option value="DELETED">Đã xoá</option>
+              </select>
+            </Field>
+            <Field label="Có video">
+              <select className={inputClass} value={videoFilter} onChange={(e) => { setVideoFilter(e.target.value); setPage(1); }}>
+                <option value="">Tất cả</option>
+                <option value="yes">Có video</option>
+                <option value="no">Chưa có video</option>
+              </select>
+            </Field>
+          </div>
         )}
+      </section>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <Button icon="plus" onClick={() => setCreate(!create)}>
+          Cấp tài khoản mới
+        </Button>
+        <Button variant="outline" icon="users" onClick={handleDuplicateCheck} disabled={allRegistrations.loading}>
+          Kiểm tra trùng lặp
+        </Button>
+        <span className="flex-1" />
+        <Button variant="outline" icon="download" disabled={op.busy || allRegistrations.loading} onClick={() => exportFile("csv")}>
+          Xuất CSV
+        </Button>
+        <Button variant="outline" icon="file" disabled={op.busy || allRegistrations.loading} onClick={() => exportFile("xlsx")}>
+          Xuất Excel
+        </Button>
+      </div>
+
+      <Panel
+        title="Danh sách hồ sơ đăng ký"
+        description={allRegistrations.loading ? "Đang tải hồ sơ…" : `Tổng ${totalItems} hồ sơ`}
+      >
         <Table
-          headers={[
-            "Mã thí sinh / MSSV",
-            "Họ tên / Email",
-            "Trường",
-            "Hồ sơ",
-            "Tài khoản",
-            "Video",
-            "Thao tác",
-          ]}
-          rows={paginatedData.map((r) => [
+          headers={["#", "Mã thí sinh / MSSV", "Họ tên / Email", "Trường", "Hồ sơ", "Tài khoản", "Video", "Thao tác"]}
+          empty={{ icon: "users", title: "Không có hồ sơ phù hợp", description: "Thử đổi từ khoá hoặc bộ lọc." }}
+          rows={paginatedData.map((r, i) => [
+            <span key="n" className="text-slate-400 tabular-nums">{(page - 1) * pageSize + i + 1}</span>,
             <div key={r.id}>
-              {r.candidateCode || "Chưa cấp mã"}
-              <div className="text-slate-500">{r.studentId}</div>
+              <span className="whitespace-nowrap font-mono text-[13px] font-semibold text-[#0B1F4D]">{r.candidateCode || "Chưa cấp mã"}</span>
+              <div className="text-xs text-slate-500">{r.studentId}</div>
             </div>,
             <div key={r.id}>
-              {r.fullName}
-              <div className="text-slate-500">{r.email}</div>
+              <span className="font-semibold text-[#0B1F4D]">{r.fullName}</span>
+              <div className="text-xs text-slate-500">{r.email}</div>
             </div>,
-            r.school,
-            r.state === "SUBMITTED"
-              ? "Đã nộp"
-              : r.state === "DRAFT"
-                ? "Bản nháp"
-                : "Chưa đăng ký",
-            r.deleted
-              ? "Đã xoá"
-              : r.accountStatus === "ACTIVE"
-                ? "Hoạt động"
-                : r.accountStatus === "DISABLED"
-                  ? "Đã khoá"
-                  : "Chưa kích hoạt",
-            <div className="flex items-center gap-2">
-              {r.videoId && r.registrationId ? (
-                <AdminButton
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleVideoReview(r)}
-                  disabled={op.busy}
-                >
-                  Xem video
-                </AdminButton>
-              ) : (
-                <span className="text-slate-400 text-xs">Chưa có</span>
-              )}
-            </div>,
-            <div key={r.id} className="flex flex-wrap gap-2 min-w-60">
-              <AdminButton onClick={() => setDetail(r)}>Chi tiết</AdminButton>
+            <span key="s" className="text-[13px]">{r.school}</span>,
+            statePill(r),
+            accountPill(r),
+            r.videoId && r.registrationId ? (
+              <button key="v" type="button" onClick={() => handleVideoReview(r)} disabled={op.busy} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-[#1F5BE0]/40 hover:text-[#1F5BE0]">
+                <Icon name="video" className="h-4 w-4" /> Xem video
+              </button>
+            ) : (
+              <span key="v" className="text-xs text-slate-400">Chưa có</span>
+            ),
+            <div key={r.id} className="relative flex items-center gap-2">
+              <button type="button" onClick={() => setDetail(r)} className="whitespace-nowrap rounded-lg bg-[#1F5BE0] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#184bc0]">
+                Chi tiết
+              </button>
               {!r.deleted && (
-                <>
+                <button
+                  type="button"
+                  aria-label="Thao tác tài khoản"
+                  onClick={() => setMenuFor(menuFor === r.id ? null : r.id)}
+                  className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50"
+                >
+                  <Icon name="more" className="h-4 w-4" />
+                </button>
+              )}
+              {menuFor === r.id && (
+                <div className="absolute top-full right-0 z-20 mt-1 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl" onMouseLeave={() => setMenuFor(null)}>
                   {!r.userId ? (
-                    <AdminButton
-                      disabled={op.busy}
-                      onClick={() => void account(r, "PROVISION")}
-                    >
-                      Cấp tài khoản
-                    </AdminButton>
+                    <button type="button" className={menuItem} disabled={op.busy} onClick={() => { setMenuFor(null); void account(r, "PROVISION"); }}>
+                      <Icon name="plus" className="h-4 w-4" /> Cấp tài khoản
+                    </button>
                   ) : (
                     <>
-                      <AdminButton
-                        disabled={op.busy}
-                        onClick={() =>
-                          void account(
-                            r,
-                            r.accountStatus === "ACTIVE" ? "DISABLE" : "ENABLE",
-                          )
-                        }
-                      >
-                        {r.accountStatus === "ACTIVE" ? "Khoá" : "Mở khoá"}
-                      </AdminButton>
-                      <AdminButton
-                        disabled={op.busy}
-                        onClick={() => void account(r, "RESET")}
-                      >
-                        Cấp lại
-                      </AdminButton>
-                      <AdminButton
-                        variant="danger"
-                        disabled={op.busy}
-                        onClick={() => void account(r, "DELETE")}
-                      >
-                        Xoá
-                      </AdminButton>
+                      <button type="button" className={menuItem} disabled={op.busy} onClick={() => { setMenuFor(null); void account(r, r.accountStatus === "ACTIVE" ? "DISABLE" : "ENABLE"); }}>
+                        <Icon name="lock" className="h-4 w-4" /> {r.accountStatus === "ACTIVE" ? "Khoá tài khoản" : "Mở khoá"}
+                      </button>
+                      <button type="button" className={menuItem} disabled={op.busy} onClick={() => { setMenuFor(null); void account(r, "RESET"); }}>
+                        <Icon name="refresh" className="h-4 w-4" /> Cấp lại mật khẩu
+                      </button>
+                      <button type="button" className={`${menuItem} text-rose-600`} disabled={op.busy} onClick={() => { setMenuFor(null); void account(r, "DELETE"); }}>
+                        <Icon name="alert" className="h-4 w-4" /> Xoá tài khoản
+                      </button>
                     </>
                   )}
-                </>
+                </div>
               )}
             </div>,
           ])}
+          footer={
+            totalItems > 0 && (
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                total={totalItems}
+                label="hồ sơ"
+                onPage={setPage}
+                onPageSize={(n) => {
+                  setPageSize(n);
+                  setPage(1);
+                }}
+              />
+            )
+          }
         />
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-slate-500">
-              Hiển thị {Math.min((page - 1) * ITEMS_PER_PAGE + 1, totalItems)}–{Math.min(page * ITEMS_PER_PAGE, totalItems)} của {totalItems} kết quả
-            </p>
-            <div className="flex items-center gap-2">
-              <AdminButton
-                size="sm"
-                variant="outline"
-                disabled={page === 1 || allRegistrations.loading}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Trước
-              </AdminButton>
-              <span className="text-sm text-slate-700 px-2">
-                Trang {page} / {totalPages}
-              </span>
-              <AdminButton
-                size="sm"
-                variant="outline"
-                disabled={page === totalPages || allRegistrations.loading}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Sau
-              </AdminButton>
-            </div>
-          </div>
-        )}
       </Panel>
 
       {create && (
-        <Panel title="Cấp tài khoản thí sinh">
+        <Panel title="Cấp tài khoản thí sinh" icon="plus">
           <form onSubmit={add} className="grid sm:grid-cols-2 gap-4">
             {[
               ["fullName", "Họ tên"],
@@ -362,7 +370,7 @@ export default function Registrations() {
       )}
 
       {credentials && (
-        <Panel title="Thông tin đăng nhập vừa cấp">
+        <Panel title="Thông tin đăng nhập vừa cấp" icon="lock" tone="amber">
           <p className="text-sm text-slate-500">
             Lưu thông tin để chuyển cho thí sinh. Mật khẩu chỉ xuất hiện trong
             lần cấp này.
@@ -394,7 +402,7 @@ export default function Registrations() {
       )}
 
       {detail && (
-        <Panel title={`Hồ sơ · ${detail.fullName}`}>
+        <Panel title={`Hồ sơ · ${detail.fullName}`} icon="id" actions={<Button variant="outline" onClick={() => setDetail(null)}>Đóng</Button>}>
           <dl className="grid sm:grid-cols-2 gap-3 text-sm">
             {[
               ["Mã thí sinh", detail.candidateCode],

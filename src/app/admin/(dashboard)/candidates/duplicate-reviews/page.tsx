@@ -1,9 +1,9 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { adminApi, RegistrationItem } from "@/lib/admin/api";
-import { useResource, Panel, Notice } from "@/components/admin/operations/common";
-import AdminButton from "@/components/admin/ui/AdminButton";
+import { RegistrationItem, viTime } from "@/lib/admin/api";
+import { useResource, Notice, Button, inputClass } from "@/components/admin/operations/common";
+import { Callout, EmptyState, Icon, IconTile, PageIntro, Pill, type IconName, type Tone } from "@/components/admin/ui/kit";
 import { Suspense } from "react";
 
 interface DuplicateGroup {
@@ -26,6 +26,10 @@ function DuplicateReviewsPage() {
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [resolutionNote, setResolutionNote] = useState("");
   const [resolution, setResolution] = useState<Record<string, string>>({});
+  const [tab, setTab] = useState("");
+  const [query, setQuery] = useState("");
+  const [showGuide, setShowGuide] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const duplicateGroups = useMemo(() => {
     if (!registrations.data.length) return [];
@@ -85,92 +89,126 @@ function DuplicateReviewsPage() {
     return labels[field] || field;
   };
 
+  const fieldIcon: Record<string, { icon: IconName; tone: Tone }> = {
+    studentId: { icon: "graduation", tone: "red" },
+    email: { icon: "mail", tone: "violet" },
+    phone: { icon: "phone", tone: "green" },
+    facebook: { icon: "facebook", tone: "blue" },
+  };
+  const counts = duplicateGroups.reduce<Record<string, number>>((m, g) => ({ ...m, [g.field]: (m[g.field] ?? 0) + 1 }), {});
+  const needle = query.trim().toLowerCase();
+  const shown = duplicateGroups.filter(
+    (g) =>
+      (!tab || g.field === tab) &&
+      (!needle || g.value.toLowerCase().includes(needle) || g.candidates.some((c) => [c.fullName, c.email, c.studentId, c.candidateCode].some((v) => v?.toLowerCase().includes(needle)))),
+  );
+  const chip = (on: boolean) =>
+    `rounded-full px-4 py-2 text-sm font-semibold ring-1 transition ${on ? "bg-blue-50 text-[#1F5BE0] ring-[#1F5BE0]/40" : "bg-white text-slate-600 ring-slate-200 hover:ring-slate-300"}`;
+
   return (
     <div className="space-y-6">
       <Notice message={registrations.error} error />
 
-      <Panel title={`Kiểm tra trùng lặp hồ sơ (${duplicateGroups.length} nhóm)`}>
-        <p className="text-sm text-slate-500">
-          Hệ thống phát hiện các hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook.
-          Hãy xem xét và chọn hồ sơ chính thức để giữ lại.
-        </p>
-      </Panel>
+      <PageIntro
+        icon="search"
+        title={`Kiểm tra trùng lặp hồ sơ (${duplicateGroups.length} nhóm)`}
+        description="Hệ thống phát hiện các hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. Hãy xem xét và chọn hồ sơ chính thức để giữ lại."
+        aside={
+          <Button variant="soft" icon="file" onClick={() => setShowGuide((v) => !v)}>
+            Hướng dẫn xử lý
+          </Button>
+        }
+      />
+      {showGuide && (
+        <Callout title="Cách xử lý hồ sơ trùng">
+          Mở từng nhóm, so sánh thông tin và thời điểm nộp, bấm <strong>Giữ bản này</strong> ở hồ sơ chính thức. Hồ sơ còn lại có thể khoá tài khoản ở
+          trang Hồ sơ đăng ký. Lựa chọn ở đây chỉ để BTC ghi nhận khi rà soát, chưa thay đổi dữ liệu.
+        </Callout>
+      )}
 
-      {duplicateGroups.map((group, idx) => {
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" className={chip(!tab)} onClick={() => setTab("")}>
+          Tất cả nhóm ({duplicateGroups.length})
+        </button>
+        {["studentId", "email", "phone", "facebook"].map((f) => (
+          <button key={f} type="button" className={chip(tab === f)} onClick={() => setTab(f)}>
+            {getFieldLabel(f)} ({counts[f] ?? 0})
+          </button>
+        ))}
+        <span className="flex-1" />
+        <label className="relative w-full sm:w-72">
+          <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm theo MSSV, email, tên..." />
+        </label>
+      </div>
+
+      {shown.map((group, idx) => {
         const groupId = `${group.field}-${group.value}`;
         const resolved = resolution[groupId];
-
+        const open = openGroups[groupId] ?? idx === 0;
+        const fi = fieldIcon[group.field] ?? { icon: "users" as IconName, tone: "slate" as Tone };
         return (
-          <Panel key={groupId} title={`Nhóm trùng lặp #${idx + 1}: ${getFieldLabel(group.field)}`}>
-            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 mb-4">
-              <p className="text-sm font-semibold text-rose-800">
-                {getFieldLabel(group.field)}: <span className="font-mono">{group.value}</span>
-              </p>
-              <p className="text-xs text-rose-600 mt-1">
-                {group.candidates.length} hồ sơ cùng giá trị — cần Ban Tổ Chức xét duyệt
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {group.candidates.map((candidate, cIdx) => (
-                <div
-                  key={candidate.id}
-                  className={`p-4 rounded-lg border ${resolved === candidate.id ? "border-emerald-300 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-500">Hồ sơ #{cIdx + 1}</span>
-                        <span className="font-bold text-slate-900">{candidate.fullName}</span>
-                        {candidate.candidateCode && (
-                          <span className="text-xs font-mono bg-slate-200 px-2 py-0.5 rounded">
-                            {candidate.candidateCode}
-                          </span>
-                        )}
+          <section key={groupId} className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)] ${open ? "border-rose-200" : "border-slate-200/80"}`}>
+            <button
+              type="button"
+              onClick={() => setOpenGroups((m) => ({ ...m, [groupId]: !open }))}
+              className={`flex w-full items-center gap-4 px-5 py-4 text-left ${open ? "bg-rose-50/40" : ""}`}
+              aria-expanded={open}
+            >
+              <IconTile name={fi.icon} tone={fi.tone} />
+              <span className="font-bold text-[#0B1F4D]">
+                Nhóm trùng lặp #{idx + 1}: {getFieldLabel(group.field)}
+              </span>
+              {resolved ? <Pill tone="green">Đã chọn hồ sơ giữ lại</Pill> : <Pill tone="red">{group.candidates.length} hồ sơ cần xử lý</Pill>}
+              <Icon name="chevronDown" className={`ml-auto h-5 w-5 text-slate-400 transition ${open ? "rotate-180" : ""}`} />
+            </button>
+            {open && (
+              <div className="space-y-3 px-5 pt-1 pb-5">
+                <Callout tone="red" icon="alert" title={`${getFieldLabel(group.field)}: ${group.value}`}>
+                  {group.candidates.length} hồ sơ có cùng giá trị — cần Ban Tổ chức xét duyệt
+                </Callout>
+                {group.candidates.map((candidate, cIdx) => {
+                  const kept = resolved === candidate.id;
+                  return (
+                    <div key={candidate.id} className={`flex flex-wrap items-center gap-4 rounded-xl border p-4 ${kept ? "border-emerald-300 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
+                      <span className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${kept ? "border-[#1F5BE0]" : "border-slate-300"}`}>
+                        {kept && <span className="h-2.5 w-2.5 rounded-full bg-[#1F5BE0]" />}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-semibold text-slate-500">Hồ sơ #{cIdx + 1}</span>
+                          <span className="font-bold text-[#0B1F4D]">{candidate.fullName}</span>
+                          {candidate.candidateCode && <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{candidate.candidateCode}</span>}
+                        </div>
+                        <p className="mt-1 text-sm text-slate-500">
+                          MSSV: {candidate.studentId || "—"} • Email: {candidate.email}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          Trường: {candidate.school || "—"} • Nộp: {candidate.submittedAt ? viTime(candidate.submittedAt) : "Chưa nộp"}
+                        </p>
                       </div>
-                      <div className="text-xs text-slate-500 mt-1">
-                        MSSV: {candidate.studentId} • Email: {candidate.email}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        Trường: {candidate.school} • Nộp: {candidate.submittedAt || "Chưa nộp"}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      {resolved === candidate.id ? (
-                        <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-1 rounded">
-                          Đã chọn
-                        </span>
+                      {kept ? (
+                        <Pill tone="green">
+                          <Icon name="check" className="h-3.5 w-3.5" /> Đã chọn
+                        </Pill>
                       ) : (
-                        <AdminButton
-                          size="sm"
-                          variant="brand"
-                          disabled={!!resolved}
-                          onClick={() => handleResolve(groupId, candidate.id)}
-                        >
+                        <Button variant={resolved ? "outline" : "primary"} icon="check" disabled={!!resolved} onClick={() => handleResolve(groupId, candidate.id)}>
                           Giữ bản này
-                        </AdminButton>
+                        </Button>
                       )}
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {resolved && (
-              <div className="mt-3 p-2 bg-emerald-50 rounded text-xs text-emerald-700">
-                Đã chọn giữ lại hồ sơ: {group.candidates.find((c) => c.id === resolved)?.fullName}
+                  );
+                })}
               </div>
             )}
-          </Panel>
+          </section>
         );
       })}
 
-      {duplicateGroups.length === 0 && !registrations.loading && (
-        <Panel title="Không tìm thấy trùng lặp">
-          <p className="text-sm text-slate-500">
-            Không có hồ sơ nào trùng lặp theo các tiêu chí hiện tại. Hãy kiểm tra lại sau khi có thêm dữ liệu.
-          </p>
-        </Panel>
+      {shown.length === 0 && !registrations.loading && (
+        <section className="rounded-2xl border border-slate-200/80 bg-white">
+          <EmptyState icon="checkCircle" title="Không tìm thấy trùng lặp" description="Không có hồ sơ nào trùng theo các tiêu chí hiện tại. Hãy kiểm tra lại sau khi có thêm dữ liệu." />
+        </section>
       )}
     </div>
   );

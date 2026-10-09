@@ -113,6 +113,7 @@ export default function Registrations() {
     <div className="space-y-6">
       <PageHeader
         title="Hồ sơ đăng ký"
+        icon="users"
         description="Tra cứu hồ sơ thí sinh, xem video giới thiệu và quản lý tài khoản dự thi."
         actions={
           <>

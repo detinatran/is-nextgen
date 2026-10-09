@@ -81,6 +81,8 @@ function DuplicateReviewsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Kiểm tra trùng lặp"
+        icon="search"
+        tone="red"
         description="Hồ sơ có cùng MSSV, email, số điện thoại hoặc Facebook. So sánh và đánh dấu hồ sơ chính thức; khoá hoặc xoá tài khoản thừa ở trang Hồ sơ đăng ký."
         actions={
           <Link href="/admin/candidates" className="inline-flex h-10 items-center gap-2 rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">
@@ -100,9 +102,9 @@ function DuplicateReviewsPage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard loading={registrations.loading} label="Nhóm trùng" value={groups.length} hint={`trên ${registrations.data.length} hồ sơ`} />
-        <StatCard loading={registrations.loading} label="Đã rà soát" value={reviewed} hint="Đã chọn hồ sơ giữ lại" />
-        <StatCard loading={registrations.loading} label="Chưa xử lý" value={groups.length - reviewed} />
+        <StatCard loading={registrations.loading} icon="layers" tone="red" label="Nhóm trùng" value={groups.length} hint={`trên ${registrations.data.length} hồ sơ`} />
+        <StatCard loading={registrations.loading} icon="checkCircle" tone="green" label="Đã rà soát" value={reviewed} hint="Đã chọn hồ sơ giữ lại" />
+        <StatCard loading={registrations.loading} icon="alert" tone="amber" label="Chưa xử lý" value={groups.length - reviewed} />
       </div>
 
       <section className="rounded-xl border border-adm-border bg-white">

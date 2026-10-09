@@ -65,6 +65,8 @@ export default function ImportPanel({ kind = "questions", policyId = "", onImpor
   return (
     <Panel
       step={step}
+      icon="upload"
+      tone="amber"
       title={kind === "questions" ? "Nhập ngân hàng câu hỏi" : "Nhập điểm giám khảo"}
       description={kind === "questions" ? "Hệ thống kiểm tra toàn bộ tệp trước; dữ liệu chỉ được ghi khi không còn lỗi và bạn bấm Nhập." : "Kiểm tra trước, chỉ ghi điểm khi tệp hợp lệ với cấu hình Rubric đang chọn."}
     >
@@ -113,8 +115,8 @@ export default function ImportPanel({ kind = "questions", policyId = "", onImpor
           {result && (
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-3">
-                <StatCard label={result.committed ? "Dòng đã nhập" : "Dòng hợp lệ"} value={result.errors.length ? Math.max(0, result.rows.length - result.errors.length) : result.rows.length} />
-                <StatCard label="Lỗi" value={<span className={result.errors.length ? "text-adm-error" : ""}>{result.errors.length}</span>} />
+                <StatCard icon="checkCircle" tone="green" label={result.committed ? "Dòng đã nhập" : "Dòng hợp lệ"} value={result.errors.length ? Math.max(0, result.rows.length - result.errors.length) : result.rows.length} />
+                <StatCard icon="alert" tone="red" label="Lỗi" value={<span className={result.errors.length ? "text-adm-error" : ""}>{result.errors.length}</span>} />
                 <div className="flex items-center gap-2 rounded-xl border border-adm-border bg-white px-5 py-4 text-sm">
                   <Icon name={result.committed ? "checkCircle" : result.errors.length ? "alert" : "check"} className={result.errors.length ? "text-adm-error" : "text-adm-success"} />
                   <span className="text-adm-text">

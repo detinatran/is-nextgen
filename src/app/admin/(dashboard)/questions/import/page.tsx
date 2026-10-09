@@ -8,6 +8,8 @@ export default function QuestionImportPage() {
     <div className="space-y-6">
       <PageHeader
         title="Import câu hỏi"
+        icon="upload"
+        tone="amber"
         description="Nhập câu hỏi hàng loạt từ Excel (.xlsx) hoặc Word (.docx) theo tệp mẫu."
         actions={
           <Link href="/admin/questions" className="inline-flex h-10 items-center gap-2 rounded-lg border border-adm-border bg-white px-4 text-sm font-medium text-adm-text hover:bg-slate-50">

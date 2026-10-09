@@ -155,51 +155,61 @@ export default function AdminLoginPage() {
   const fieldState = (bad: boolean) => (bad ? "border-adm-error focus:ring-adm-error/20" : "border-adm-border focus:border-adm-primary focus:ring-adm-primary/20");
 
   return (
-    <div className="flex min-h-screen bg-adm-bg">
-      {/* Cột thương hiệu: nền navy, lưới hình học mờ */}
-      <aside className="relative hidden w-[44%] max-w-[640px] flex-col justify-between overflow-hidden bg-gradient-to-br from-adm-navy to-adm-navy2 p-12 text-white lg:flex">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_top_left,black_30%,transparent_75%)]"
-        />
-        <img src={adminAsset("/images/logo-white-2026.png")} alt="NextGen Manager Challenge 2026" className="relative h-12 w-auto self-start" />
-        <div className="relative max-w-md">
-          <p className="text-[13px] font-medium text-slate-300">{t("Mùa I: The Manager in the AI Era")}</p>
-          <h1 className="mt-3 text-[32px] leading-tight font-bold tracking-tight">{t("Hệ thống quản trị cuộc thi")}</h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-slate-300">
-            {t("Điều phối hồ sơ, ca thi, giám sát và chấm điểm NextGen Manager Challenge 2026.")}
-          </p>
-          <dl className="mt-10 grid max-w-sm grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-4">
-            {[
-              ["40", t("vào Vòng 2")],
-              ["16", t("vào Chung kết")],
-              ["3", t("vòng thi")],
-            ].map(([n, label]) => (
-              <div key={label} className="px-4 first:pl-0">
-                <dt className="sr-only">{label}</dt>
-                <dd className="text-2xl font-semibold tabular-nums">{n}</dd>
-                <dd className="text-xs text-slate-400">{label}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-        <p className="relative text-xs leading-relaxed text-slate-400">
-          {t("Khoa Kinh tế và Quản lý")} · {t("Trường Quốc tế - ĐHQG Hà Nội")}
-        </p>
-      </aside>
+    <div className="relative min-h-screen overflow-hidden bg-[#071533]">
+      {/* Nền: toà nhà trường về đêm + lớp phủ để chữ dễ đọc */}
+      <img src={adminAsset("/images/admin/login-bg.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[70%_center]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#071533] via-[#071533]/85 to-[#071533]/20" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#071533]/80 via-transparent to-[#071533]/40" aria-hidden />
 
-      <main className="flex flex-1 flex-col">
-        <div className="flex h-16 items-center justify-between px-6 sm:px-10">
-          <img src={adminAsset("/images/logo-2026.png")} alt="NextGen Manager Challenge 2026" className="h-9 w-auto lg:invisible" />
-          <AdminLangSwitch />
-        </div>
-        <div className="flex flex-1 items-center justify-center px-4 pb-16 sm:px-6">
-          <div className="w-full max-w-[400px]">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-6 sm:px-10 sm:py-8 lg:px-14">
+        <header className="flex items-center justify-between gap-6">
+          <img src={adminAsset("/images/logo-white-2026.png")} alt="NextGen Manager Challenge 2026" className="h-10 w-auto sm:h-14" />
+          <div className="flex items-center gap-6">
+            <p className="hidden text-right text-xs font-semibold tracking-[0.2em] text-white/85 uppercase md:block">
+              <span className="block">“{t("Tài năng hôm nay")}</span>
+              <span className="block">{t("kiến tạo ngày mai")}”</span>
+              <span className="mt-2 ml-auto block h-0.5 w-10 rounded-full bg-adm-gold" />
+            </p>
+            <AdminLangSwitch />
+          </div>
+        </header>
+
+        <div className="grid flex-1 items-center gap-10 py-8 lg:grid-cols-[1.1fr_minmax(0,440px)] lg:gap-16">
+          <div className="hidden max-w-xl lg:block">
+            <p className="text-sm font-semibold tracking-[0.18em] text-[#8CC1FF] uppercase">{t("Mùa I: The Manager in the AI Era")}</p>
+            <h1 className="mt-4 text-5xl leading-[1.05] font-extrabold tracking-tight text-white xl:text-6xl">
+              <span className="block">NEXTGEN</span>
+              <span className="block text-adm-gold">MANAGER</span>
+              <span className="mt-2 block text-3xl font-bold text-[#8CC1FF] xl:text-4xl">CHALLENGE 2026</span>
+            </h1>
+            <p className="mt-6 text-base leading-relaxed text-white/75">
+              {t("Hệ thống quản trị cuộc thi: điều phối hồ sơ, ca thi, giám sát và chấm điểm minh bạch.")}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {[
+                ["40", t("vào Vòng 2"), "text-amber-400"],
+                ["16", t("vào Chung kết"), "text-emerald-400"],
+                ["3", t("vòng thi"), "text-sky-400"],
+              ].map(([n, label, color]) => (
+                <div key={label} className="flex items-baseline gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+                  <span className={`text-2xl font-extrabold tabular-nums ${color}`}>{n}</span>
+                  <span className="text-sm font-medium text-white/80">{label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-12 text-sm leading-relaxed">
+              <p className="text-white/60">{t("Đơn vị tổ chức:")}</p>
+              <p className="font-semibold text-white">{t("Khoa Kinh tế và Quản lý")}</p>
+              <p className="text-white/60">{t("Trường Quốc tế - ĐHQG Hà Nội")}</p>
+            </div>
+          </div>
+
+          <div className="mx-auto w-full max-w-[440px] rounded-3xl bg-white p-7 shadow-2xl shadow-black/30 sm:p-9">
             {step === "CREDENTIALS" ? (
               <form onSubmit={submitCredentials} noValidate className="space-y-5">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight text-adm-text">{t("Đăng nhập quản trị")}</h2>
-                  <p className="mt-1 text-sm text-adm-sub">{t("Dành cho Ban Tổ chức. Đăng nhập gồm mật khẩu và mã xác thực gửi qua email.")}</p>
+                  <h2 className="text-2xl font-bold tracking-tight text-adm-text">{t("Chào mừng trở lại")}</h2>
+                  <p className="mt-1 text-sm text-adm-sub">{t("Đăng nhập để truy cập hệ thống quản trị. Bước tiếp theo là mã xác thực gửi qua email.")}</p>
                 </div>
                 {formError && (
                   <div role="alert" className="flex gap-2 rounded-lg border border-red-200 bg-red-50/70 px-3 py-2.5 text-[13px] text-[#991B1B]">
@@ -332,10 +342,10 @@ export default function AdminLoginPage() {
                 </p>
               </form>
             )}
-            <p className="mt-10 text-center text-xs text-adm-muted">{t("Mọi truy cập trang quản trị đều được ghi nhật ký kiểm toán.")}</p>
+            <p className="mt-8 border-t border-slate-100 pt-5 text-center text-xs text-adm-muted">{t("Mọi truy cập trang quản trị đều được ghi nhật ký kiểm toán.")}</p>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

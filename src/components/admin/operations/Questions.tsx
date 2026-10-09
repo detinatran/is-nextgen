@@ -77,6 +77,8 @@ export default function Questions() {
     <div className="space-y-6">
       <PageHeader
         title="Ngân hàng câu hỏi"
+        icon="folder"
+        tone="violet"
         description="Câu hỏi trắc nghiệm cho Vòng 1. Sửa câu hỏi sẽ tạo phiên bản mới; đề đã phát vẫn giữ phiên bản cũ."
         actions={
           <>

@@ -3,7 +3,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { adminApi, Configuration } from "@/lib/admin/api";
 
 import { cn } from "@/lib/utils";
-import { EmptyState, Icon, Skeleton, type IconName } from "@/components/admin/ui/kit";
+import { EmptyState, Icon, IconTile, Skeleton, type IconName, type Tone } from "@/components/admin/ui/kit";
 
 export const inputClass =
   "h-[42px] w-full rounded-lg border border-adm-border bg-white px-3 text-sm text-adm-text placeholder:text-adm-muted transition focus:border-adm-primary focus:outline-none focus:ring-2 focus:ring-adm-primary/20 disabled:cursor-not-allowed disabled:bg-adm-bg aria-[invalid=true]:border-adm-error aria-[invalid=true]:focus:ring-adm-error/20";
@@ -97,20 +97,23 @@ export function Panel({
   actions,
   step,
   id,
+  icon,
+  tone = "blue",
 }: {
   title: string;
   children: ReactNode;
   icon?: IconName;
-  tone?: string;
+  tone?: Tone;
   description?: ReactNode;
   actions?: ReactNode;
   step?: number;
   id?: string;
 }) {
   return (
-    <section id={id} className="rounded-xl border border-adm-border bg-white p-5 sm:p-6">
+    <section id={id} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] sm:p-6">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
+          {icon && step === undefined && <IconTile name={icon} tone={tone} size="sm" />}
           {step !== undefined && (
             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-adm-navy text-xs font-semibold text-white">{step}</span>
           )}

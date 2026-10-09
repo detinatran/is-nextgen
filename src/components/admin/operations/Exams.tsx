@@ -113,6 +113,8 @@ export function Schedules() {
     <div className="space-y-6">
       <PageHeader
         title="Lịch thi & ca thi"
+        icon="calendar"
+        tone="cyan"
         description="Ca thi Vòng 1: khung giờ mở/đóng theo giờ Việt Nam (UTC+7), thời lượng làm bài, sức chứa và đề được chốt từ một nhóm câu hỏi."
         actions={
           !formOpen && (
@@ -127,7 +129,7 @@ export function Schedules() {
 
       {formOpen && (
         <div ref={formRef}>
-          <Panel title="Tạo ca thi mới" description="Đề thi được chốt ngay khi tạo ca. Nhóm câu hỏi cần có đủ số câu.">
+          <Panel icon="plus" title="Tạo ca thi mới" description="Đề thi được chốt ngay khi tạo ca. Nhóm câu hỏi cần có đủ số câu.">
             <form onSubmit={create} noValidate className="space-y-6">
               <fieldset className="grid gap-4 md:grid-cols-2">
                 <legend className="mb-3 text-[13px] font-semibold text-adm-sub">Thông tin ca</legend>
@@ -376,7 +378,7 @@ export function Assignments() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Phân ca thí sinh" description="Xếp thí sinh đã nộp hồ sơ vào ca thi Vòng 1, đổi ca khi cần và gửi email mời thi." />
+      <PageHeader icon="clipboard" title="Phân ca thí sinh" description="Xếp thí sinh đã nộp hồ sơ vào ca thi Vòng 1, đổi ca khi cần và gửi email mời thi." />
       <Notice message={op.error || schedules.error || candidates.error} error onRetry={op.error ? undefined : () => void reload()} />
       <Notice message={op.message} />
       {batchResult && (
@@ -395,14 +397,14 @@ export function Assignments() {
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatCard loading={loadingAll} label="Chưa có ca" value={eligible.length} hint="Hồ sơ đã nộp đủ điều kiện" />
-        <StatCard loading={loadingAll} label="Chỗ trống" value={capacityLeft} hint={`${openSlots.length} ca sắp diễn ra đã chốt đề`} />
-        <StatCard loading={loadingAll} label="Đã xếp ca" value={list.data.length} />
-        <StatCard loading={loadingAll} label="Chưa kích hoạt" value={list.data.filter((a) => regById.get(a.candidateId)?.accountStatus !== "ACTIVE").length} hint="Trong số thí sinh đã xếp ca" />
+        <StatCard loading={loadingAll} icon="users" tone="amber" label="Chưa có ca" value={eligible.length} hint="Hồ sơ đã nộp đủ điều kiện" />
+        <StatCard loading={loadingAll} icon="calendar" tone="cyan" label="Chỗ trống" value={capacityLeft} hint={`${openSlots.length} ca sắp diễn ra đã chốt đề`} />
+        <StatCard loading={loadingAll} icon="checkCircle" tone="green" label="Đã xếp ca" value={list.data.length} />
+        <StatCard loading={loadingAll} icon="mail" tone="violet" label="Chưa kích hoạt" value={list.data.filter((a) => regById.get(a.candidateId)?.accountStatus !== "ACTIVE").length} hint="Trong số thí sinh đã xếp ca" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="Thao tác hàng loạt" description="Mỗi thao tác hiển thị số lượng ảnh hưởng để xác nhận trước khi chạy.">
+        <Panel icon="users" title="Thao tác hàng loạt" description="Mỗi thao tác hiển thị số lượng ảnh hưởng để xác nhận trước khi chạy.">
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-adm-border px-4 py-3">
             <div className="min-w-0">
               <p className="text-sm font-medium text-adm-text">Tự động xếp ca</p>
@@ -433,7 +435,7 @@ export function Assignments() {
           </div>
         </Panel>
 
-        <Panel title="Xếp ca thủ công">
+        <Panel icon="settings" tone="slate" title="Xếp ca thủ công">
           <div role="radiogroup" aria-label="Loại thao tác" className="inline-flex rounded-lg border border-adm-border bg-adm-bg p-0.5">
             {(
               [
@@ -611,6 +613,8 @@ export function Monitor() {
     <div ref={boardRef} className="space-y-6 [&:fullscreen]:overflow-auto [&:fullscreen]:bg-adm-bg [&:fullscreen]:p-8">
       <PageHeader
         title="Phòng giám sát"
+        icon="video"
+        tone="green"
         description="Trạng thái bài thi Vòng 1 theo dữ liệu đã lưu trên máy chủ."
         actions={
           <>
@@ -640,10 +644,10 @@ export function Monitor() {
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatCard loading={firstLoad} label="Đã xếp ca" value={list.data.length} />
-        <StatCard loading={firstLoad} label="Đang làm bài" value={count("IN_PROGRESS")} />
-        <StatCard loading={firstLoad} label="Chưa vào thi" value={count("NOT_STARTED")} />
-        <StatCard loading={firstLoad} label="Đã nộp bài" value={count("SUBMITTED")} />
+        <StatCard loading={firstLoad} icon="users" tone="blue" label="Đã xếp ca" value={list.data.length} />
+        <StatCard loading={firstLoad} icon="clock" tone="green" label="Đang làm bài" value={count("IN_PROGRESS")} />
+        <StatCard loading={firstLoad} icon="calendar" tone="amber" label="Chưa vào thi" value={count("NOT_STARTED")} />
+        <StatCard loading={firstLoad} icon="checkCircle" tone="violet" label="Đã nộp bài" value={count("SUBMITTED")} />
       </div>
 
       <section className="space-y-3">
@@ -729,6 +733,7 @@ export function Round1() {
     <div className="space-y-6">
       <PageHeader
         title="Bảng điểm Vòng 1"
+        icon="chart"
         description="Điểm cao nhất của các lượt đã chấm. Đồng điểm giữ cùng hạng; đồng điểm tại ngưỡng Top 40 cần Ban Tổ chức xét thêm."
         actions={
           <>
@@ -751,10 +756,10 @@ export function Round1() {
       <Notice message={op.message} />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatCard loading={list.loading && !list.updatedAt} label="Thí sinh" value={list.data.length.toLocaleString("vi-VN")} />
-        <StatCard loading={list.loading && !list.updatedAt} label="Đã có điểm" value={scored.length.toLocaleString("vi-VN")} />
-        <StatCard loading={list.loading && !list.updatedAt} label="Top 40" value={top} hint={ties ? `${ties} thí sinh đồng điểm ở ngưỡng` : undefined} />
-        <StatCard loading={list.loading && !list.updatedAt} label="Điểm cao nhất" value={best ?? "—"} hint={scored[0]?.maxPoints ? `Thang ${scored[0].maxPoints}` : undefined} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="users" tone="blue" label="Thí sinh" value={list.data.length.toLocaleString("vi-VN")} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="fileCheck" tone="green" label="Đã có điểm" value={scored.length.toLocaleString("vi-VN")} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="trophy" tone="amber" label="Top 40" value={top} hint={ties ? `${ties} thí sinh đồng điểm ở ngưỡng` : undefined} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="bars" tone="violet" label="Điểm cao nhất" value={best ?? "—"} hint={scored[0]?.maxPoints ? `Thang ${scored[0].maxPoints}` : undefined} />
       </div>
       {ties > 0 && (
         <Callout tone="warning" title={`${ties} thí sinh đồng điểm tại ngưỡng Top 40`}>

@@ -99,7 +99,7 @@ export default function ManualScores() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Chấm điểm Rubric" description="Điểm Vòng 2 và Chung kết theo bộ tiêu chí Ban Tổ chức phê duyệt. Mỗi phiên bản Rubric giữ nguyên điểm đã nhập theo phiên bản đó." />
+      <PageHeader icon="clipboardCheck" tone="violet" title="Chấm điểm Rubric" description="Điểm Vòng 2 và Chung kết theo bộ tiêu chí Ban Tổ chức phê duyệt. Mỗi phiên bản Rubric giữ nguyên điểm đã nhập theo phiên bản đó." />
       <Notice message={op.error} error />
       <Notice message={op.message} />
       {config.error && <Notice message={`Không tải được cấu hình: ${config.error}`} error onRetry={config.reload} />}
@@ -204,6 +204,7 @@ export default function ManualScores() {
       <ImportPanel step={3} key={policy?.id || "none"} kind="scores" policyId={policy?.id} onImported={loadResults} />
 
       <Panel
+        icon="chart"
         title="Kết quả"
         description={policy ? `${policy.config.label} · v${policy.version}` : "Chọn hoặc tạo Rubric để xem kết quả."}
         actions={

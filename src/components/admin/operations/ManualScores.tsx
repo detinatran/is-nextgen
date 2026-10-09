@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useMemo } from "react";
 import {
   adminApi,
   Configuration,
@@ -18,6 +18,8 @@ import {
   useResource,
 } from "./common";
 import ImportPanel from "./ImportPanel";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type Results = {
   summary: {
@@ -45,15 +47,40 @@ export default function ManualScores() {
       { code: "TOTAL", weight: 1, max: 100 },
     ]);
   const [results, setResults] = useState<Results | null>(null);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+
   const competition = competitionId || config.data.competitions[0]?.id || "";
   const policies = config.data.policies.filter(
     (p) => p.competition_id === competition && p.round === round,
   );
   const policy = policies.find((p) => p.id === chosenPolicy) || policies[0];
+
   async function reload() {
     if (policy)
       setResults(await adminApi<Results>(`admin/scores/${policy.id}`));
   }
+
+  // Client-side search filter
+  const filteredSummary = useMemo(() => {
+    if (!results || !debouncedSearch) return results?.summary ?? [];
+    const needle = debouncedSearch.toLowerCase();
+    return results.summary.filter((r) =>
+      r.code.toLowerCase().includes(needle) ||
+      r.subjectType.toLowerCase().includes(needle)
+    );
+  }, [results, debouncedSearch]);
+
+  const filteredRows = useMemo(() => {
+    if (!results || !debouncedSearch) return results?.rows ?? [];
+    const needle = debouncedSearch.toLowerCase();
+    return results.rows.filter((r) =>
+      r.code.toLowerCase().includes(needle) ||
+      r.judge.toLowerCase().includes(needle) ||
+      r.criterion.toLowerCase().includes(needle)
+    );
+  }, [results, debouncedSearch]);
+
   function savePolicy(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget,
@@ -75,6 +102,7 @@ export default function ManualScores() {
       await config.reload();
     });
   }
+
   function createTeam(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -90,6 +118,7 @@ export default function ManualScores() {
       await config.reload();
     });
   }
+
   return (
     <div className="space-y-6">
       <Notice message={op.error || config.error} error />
@@ -167,12 +196,12 @@ export default function ManualScores() {
             theo công thức BCM được Ban Tổ Chức duyệt trước khi nhập điểm.
           </p>
         )}
-        <Button
+        <AdminButton
           disabled={!competition}
           onClick={() => setPolicyOpen(!policyOpen)}
         >
           Cấu hình phiên bản công thức mới
-        </Button>
+        </AdminButton>
       </Panel>
       {policyOpen && (
         <Panel title="Cấu hình công thức BCM">
@@ -262,23 +291,25 @@ export default function ManualScores() {
               </div>
             ))}
             <div className="flex flex-wrap gap-2">
-              <Button
+              <AdminButton
+                variant="outline"
                 disabled={criteria.length >= 30}
                 onClick={() =>
                   setCriteria([...criteria, { code: "", weight: 0.1, max: 10 }])
                 }
               >
                 Thêm tiêu chí
-              </Button>
-              <Button
+              </AdminButton>
+              <AdminButton
+                variant="outline"
                 disabled={criteria.length <= 1}
                 onClick={() => setCriteria(criteria.slice(0, -1))}
               >
                 Bỏ tiêu chí cuối
-              </Button>
-              <Button type="submit" disabled={op.busy}>
+              </AdminButton>
+              <AdminButton type="submit" disabled={op.busy}>
                 Lưu công thức
-              </Button>
+              </AdminButton>
             </div>
           </form>
         </Panel>
@@ -288,9 +319,9 @@ export default function ManualScores() {
           <Field label="Mã đội">
             <input required name="code" className={inputClass} maxLength={80} />
           </Field>
-          <Button type="submit" disabled={op.busy || !competition}>
+          <AdminButton type="submit" disabled={op.busy || !competition}>
             Thêm mã đội
-          </Button>
+          </AdminButton>
         </form>
         <p className="text-sm text-slate-500">
           {config.data.teams
@@ -307,14 +338,23 @@ export default function ManualScores() {
       />
       {policy && (
         <Panel title="Bảng điểm tổng hợp">
-          <div className="flex gap-3">
-            <Button
+          <div className="flex flex-wrap gap-3 mb-4">
+            <Field label="Tìm kiếm">
+              <input
+                className={inputClass}
+                placeholder="Tìm theo mã, loại, giám khảo, tiêu chí..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                maxLength={200}
+              />
+            </Field>
+            <AdminButton
               disabled={op.busy}
               onClick={() => void op.run(reload, "Đã tải bảng điểm.")}
             >
               Xem bảng điểm
-            </Button>
-            <Button
+            </AdminButton>
+            <AdminButton
               disabled={op.busy}
               onClick={() =>
                 void op.run(
@@ -328,13 +368,13 @@ export default function ManualScores() {
               }
             >
               Xuất Excel
-            </Button>
+            </AdminButton>
           </div>
           {results && (
             <>
               <Table
                 headers={["Mã", "Loại", "Giám khảo", "Điểm tổng hợp"]}
-                rows={results.summary.map((r) => [
+                rows={filteredSummary.map((r) => [
                   r.code,
                   r.subjectType === "TEAM" ? "Đội" : "Thí sinh",
                   r.judges,
@@ -343,7 +383,7 @@ export default function ManualScores() {
               />
               <Table
                 headers={["Mã", "Giám khảo", "Tiêu chí", "Điểm"]}
-                rows={results.rows.map((r) => [
+                rows={filteredRows.map((r) => [
                   r.code,
                   r.judge,
                   r.criterion,

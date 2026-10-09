@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useMemo } from "react";
 import {
   adminApi,
   AssignmentItem,
@@ -21,11 +21,16 @@ import {
   useOperations,
   useResource,
 } from "./common";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export function Schedules() {
   const list = useResource<ScheduleItem[]>("admin/schedules", []),
     config = useResource<Configuration>("admin/configuration", emptyConfig),
     op = useOperations();
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+
   function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget,
@@ -34,19 +39,31 @@ export function Schedules() {
       await adminApi("admin/schedules", {
         method: "POST",
         body: JSON.stringify({
-          ...fields,
+          competitionId: fields.competitionId,
+          name: fields.name,
           opensAt: new Date(`${fields.opensAt}:00+07:00`).toISOString(),
           closesAt: new Date(`${fields.closesAt}:00+07:00`).toISOString(),
+          durationSeconds: Number(fields.durationMinutes) * 60,
           capacity: Number(fields.capacity),
           questionCount: Number(fields.questionCount),
-          durationSeconds: Number(fields.durationMinutes) * 60,
-          durationMinutes: undefined,
+          poolId: fields.poolId,
         }),
       });
       form.reset();
       await list.reload();
     });
   }
+
+  // Filter schedules by search
+  const filteredSchedules = useMemo(() => {
+    if (!debouncedSearch) return list.data;
+    const needle = debouncedSearch.toLowerCase();
+    return list.data.filter((s) =>
+      s.name.toLowerCase().includes(needle) ||
+      s.competitionId.toLowerCase().includes(needle)
+    );
+  }, [list.data, debouncedSearch]);
+
   return (
     <div className="space-y-6">
       <Notice message={op.error || list.error || config.error} error />
@@ -140,14 +157,31 @@ export function Schedules() {
         </form>
       </Panel>
       <Panel title="Danh sách ca thi">
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Field label="Tìm kiếm ca thi">
+            <input
+              className={inputClass}
+              placeholder="Tìm theo tên ca, cuộc thi..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              maxLength={200}
+            />
+          </Field>
+          <Button disabled={op.busy || list.loading} onClick={() => void list.reload()}>
+            Làm mới
+          </Button>
+        </div>
+        {list.loading && <p role="status" className="text-sm text-slate-500">Đang tải…</p>}
         <Table
-          headers={["Ca thi", "Mở", "Đóng", "Thời lượng", "Số thí sinh"]}
-          rows={list.data.map((s) => [
+          headers={["Ca thi", "Cuộc thi", "Mở", "Đóng", "Thời lượng", "Số thí sinh", "Blueprint"]}
+          rows={filteredSchedules.map((s) => [
             s.name,
+            s.competitionId,
             viTime(s.opensAt),
             viTime(s.closesAt),
             `${s.durationSeconds / 60} phút`,
             `${s.assigned}/${s.capacity}`,
+            s.blueprintId ? `v${s.blueprintId.slice(-6)}` : "—",
           ])}
         />
       </Panel>
@@ -156,11 +190,15 @@ export function Schedules() {
 }
 
 export function Assignments() {
+  const [search, setSearch] = useState("");
+  const [scheduleFilter, setScheduleFilter] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+  const debouncedScheduleFilter = useDebounce(scheduleFilter, 300);
+
   const list = useResource<AssignmentItem[]>("admin/assignments", []),
     schedules = useResource<ScheduleItem[]>("admin/schedules", []),
     candidates = useResource<RegistrationItem[]>("admin/registrations", []),
     op = useOperations();
-  const [filter, setFilter] = useState("");
   const [history, setHistory] = useState<
     {
       old_schedule_id: string;
@@ -169,17 +207,39 @@ export function Assignments() {
       changed_at: string;
     }[]
   >([]);
+
+  // Client-side filtering
+  const filteredList = useMemo(() => {
+    let data = list.data;
+    if (debouncedSearch) {
+      const needle = debouncedSearch.toLowerCase();
+      data = data.filter((a) =>
+        a.candidateCode.toLowerCase().includes(needle) ||
+        a.fullName.toLowerCase().includes(needle)
+      );
+    }
+    if (debouncedScheduleFilter) {
+      data = data.filter((a) => a.scheduleId === debouncedScheduleFilter);
+    }
+    return data;
+  }, [list.data, debouncedSearch, debouncedScheduleFilter]);
+
   function assign(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const fields = Object.fromEntries(new FormData(event.currentTarget));
     void op.run(async () => {
       await adminApi("admin/assignments", {
         method: "POST",
-        body: JSON.stringify(fields),
+        body: JSON.stringify({
+          candidateId: fields.candidateId,
+          scheduleId: fields.scheduleId,
+          reason: fields.reason || undefined,
+        }),
       });
       await Promise.all([list.reload(), schedules.reload()]);
     });
   }
+
   return (
     <div className="space-y-6">
       <Notice
@@ -219,51 +279,66 @@ export function Assignments() {
             <input name="reason" className={inputClass} maxLength={500} />
           </Field>
           <div className="self-end">
-            <Button type="submit" disabled={op.busy}>
+            <AdminButton type="submit" disabled={op.busy}>
               Lưu phân ca
-            </Button>
+            </AdminButton>
           </div>
         </form>
       </Panel>
       <Panel title="Danh sách thí sinh theo ca">
-        <Field label="Lọc ca">
-          <select
-            className={inputClass}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">Tất cả</option>
-            {schedules.data.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </Field>
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Field label="Tìm kiếm thí sinh">
+            <input
+              className={inputClass}
+              placeholder="Tìm theo mã, tên..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              maxLength={200}
+            />
+          </Field>
+          <Field label="Lọc ca">
+            <select
+              className={inputClass}
+              value={scheduleFilter}
+              onChange={(e) => setScheduleFilter(e.target.value)}
+            >
+              <option value="">Tất cả ca</option>
+              {schedules.data.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Button disabled={op.busy || list.loading} onClick={() => void list.reload()}>
+            Làm mới
+          </Button>
+        </div>
+        {list.loading && <p role="status" className="text-sm text-slate-500">Đang tải…</p>}
         <Table
           headers={["Mã thí sinh", "Họ tên", "Ca", "Trạng thái", "Lịch sử"]}
-          rows={list.data
-            .filter((a) => !filter || a.scheduleId === filter)
-            .map((a) => [
-              a.candidateCode,
-              a.fullName,
-              a.scheduleName,
-              examStatus(a.status),
-              <Button
-                key={a.id}
-                disabled={op.busy}
-                onClick={() =>
-                  void op.run(async () => {
-                    const rows = await adminApi<typeof history>(
-                      `admin/assignments/${a.id}/history`,
-                    );
-                    setHistory(rows);
-                  }, "Đã tải lịch sử đổi ca.")
-                }
-              >
-                Xem lịch sử
-              </Button>,
-            ])}
+          rows={filteredList.map((a) => [
+            a.candidateCode,
+            a.fullName,
+            a.scheduleName,
+            examStatus(a.status),
+            <AdminButton
+              key={a.id}
+              size="sm"
+              variant="outline"
+              disabled={op.busy}
+              onClick={() =>
+                void op.run(async () => {
+                  const rows = await adminApi<typeof history>(
+                    `admin/assignments/${a.id}/history`,
+                  );
+                  setHistory(rows);
+                }, "Đã tải lịch sử đổi ca.")
+              }
+            >
+              Xem lịch sử
+            </AdminButton>,
+          ])}
         />
       </Panel>
       {!!history.length && (
@@ -279,7 +354,9 @@ export function Assignments() {
               viTime(h.changed_at),
             ])}
           />
-          <Button onClick={() => setHistory([])}>Đóng</Button>
+          <AdminButton variant="outline" onClick={() => setHistory([])}>
+            Đóng
+          </AdminButton>
         </Panel>
       )}
     </div>
@@ -287,19 +364,49 @@ export function Assignments() {
 }
 
 export function Monitor() {
-  const list = useResource<AssignmentItem[]>("admin/monitor", []),
-    op = useOperations();
-  const [filter, setFilter] = useState(""),
-    [scheduleFilter, setScheduleFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [scheduleFilter, setScheduleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+  const debouncedScheduleFilter = useDebounce(scheduleFilter, 300);
+  const debouncedStatusFilter = useDebounce(statusFilter, 300);
+
+  const list = useResource<AssignmentItem[]>("admin/monitor", []);
+  const op = useOperations();
+
+  // Auto-refresh every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       void list.reload();
     }, 5000);
     return () => clearInterval(timer);
   }, [list.reload]);
-  const schedules = [
-    ...new Map(list.data.map((a) => [a.scheduleId, a.scheduleName])).entries(),
-  ];
+
+  // Build schedule list from data
+  const schedules = useMemo(
+    () => [...new Map(list.data.map((a) => [a.scheduleId, a.scheduleName])).entries()],
+    [list.data],
+  );
+
+  // Client-side filtering
+  const filteredList = useMemo(() => {
+    let data = list.data;
+    if (debouncedSearch) {
+      const needle = debouncedSearch.toLowerCase();
+      data = data.filter((a) =>
+        a.candidateCode.toLowerCase().includes(needle) ||
+        a.fullName.toLowerCase().includes(needle)
+      );
+    }
+    if (debouncedScheduleFilter) {
+      data = data.filter((a) => a.scheduleId === debouncedScheduleFilter);
+    }
+    if (debouncedStatusFilter) {
+      data = data.filter((a) => a.status === debouncedStatusFilter);
+    }
+    return data;
+  }, [list.data, debouncedSearch, debouncedScheduleFilter, debouncedStatusFilter]);
+
   return (
     <div className="space-y-6">
       <Notice message={list.error || op.error} error />
@@ -309,6 +416,15 @@ export function Monitor() {
           Nam (UTC+7).
         </p>
         <div className="flex flex-wrap gap-3">
+          <Field label="Tìm kiếm">
+            <input
+              className={inputClass}
+              placeholder="Tìm theo mã, tên..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              maxLength={200}
+            />
+          </Field>
           <Field label="Ca thi">
             <select
               className={inputClass}
@@ -326,8 +442,8 @@ export function Monitor() {
           <Field label="Trạng thái">
             <select
               className={inputClass}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="">Tất cả</option>
               {["NOT_STARTED", "IN_PROGRESS", "SUBMITTED"].map((s) => (
@@ -347,6 +463,7 @@ export function Monitor() {
             trạng thái mới.
           </p>
         )}
+        {list.loading && <p role="status" className="text-sm text-slate-500">Đang tải…</p>}
         <Table
           headers={[
             "Mã",
@@ -357,21 +474,15 @@ export function Monitor() {
             "Bắt đầu",
             "Nộp lúc",
           ]}
-          rows={list.data
-            .filter(
-              (a) =>
-                (!filter || a.status === filter) &&
-                (!scheduleFilter || a.scheduleId === scheduleFilter),
-            )
-            .map((a) => [
-              a.candidateCode,
-              a.fullName,
-              a.scheduleName,
-              examStatus(a.status),
-              a.answered,
-              viTime(a.startedAt),
-              viTime(a.finalizedAt),
-            ])}
+          rows={filteredList.map((a) => [
+            a.candidateCode,
+            a.fullName,
+            a.scheduleName,
+            examStatus(a.status),
+            a.answered,
+            viTime(a.startedAt),
+            viTime(a.finalizedAt),
+          ])}
         />
       </Panel>
     </div>
@@ -381,30 +492,55 @@ export function Monitor() {
 export function Round1() {
   const config = useResource<Configuration>("admin/configuration", emptyConfig),
     [competition, setCompetition] = useState(""),
+    [search, setSearch] = useState(""),
     op = useOperations();
+  const debouncedSearch = useDebounce(search, 300);
   const selected = competition || config.data.competitions[0]?.id || "";
   const list = useResource<AssignmentItem[]>(
     `admin/results/round-1?competitionId=${selected}`,
     [],
   );
+
+  // Client-side search filter
+  const filteredList = useMemo(() => {
+    if (!debouncedSearch) return list.data;
+    const needle = debouncedSearch.toLowerCase();
+    return list.data.filter((a) =>
+      a.candidateCode.toLowerCase().includes(needle) ||
+      a.fullName.toLowerCase().includes(needle) ||
+      a.scheduleName.toLowerCase().includes(needle)
+    );
+  }, [list.data, debouncedSearch]);
+
   return (
     <div className="space-y-6">
       <Notice message={op.error || list.error || config.error} error />
       <Notice message={op.message} />
       <Panel title="Bảng điểm Vòng 1">
-        <Field label="Cuộc thi">
-          <select
-            className={inputClass}
-            value={selected}
-            onChange={(e) => setCompetition(e.target.value)}
-          >
-            {config.data.competitions.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </Field>
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Field label="Cuộc thi">
+            <select
+              className={inputClass}
+              value={selected}
+              onChange={(e) => setCompetition(e.target.value)}
+            >
+              {config.data.competitions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Tìm kiếm">
+            <input
+              className={inputClass}
+              placeholder="Tìm theo mã, tên, ca..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              maxLength={200}
+            />
+          </Field>
+        </div>
         <p className="text-sm text-slate-500">
           Điểm cao nhất của các lượt đã chấm. Đồng điểm giữ cùng hạng; các
           trường hợp đồng điểm ở ngưỡng Top 40 cần Ban Tổ Chức xét thêm.
@@ -437,7 +573,7 @@ export function Round1() {
             "Điểm",
             "Top 40",
           ]}
-          rows={list.data.map((a) => [
+          rows={filteredList.map((a) => [
             a.rank,
             a.candidateCode,
             a.fullName,

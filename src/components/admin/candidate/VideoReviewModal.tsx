@@ -12,7 +12,7 @@ interface VideoReviewModalProps {
   onClose: () => void;
   candidateName: string;
   candidateCode: string;
-  media: MediaObject | null;
+  media?: MediaObject | null;
   videoUrl?: string;
   onApprove?: () => void;
   onReject?: (reason: string) => void;
@@ -32,8 +32,6 @@ export default function VideoReviewModal({
   const [rejecting, setRejecting] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
-  if (!media) return null;
-
   const handleRejectConfirm = () => {
     if (!rejectionReason.trim()) {
       alert(t("Vui lòng nhập lý do từ chối video!"));
@@ -47,8 +45,8 @@ export default function VideoReviewModal({
     }
   };
 
-  const isDurationValid = media.duration_seconds <= 120;
-  const isSizeValid = media.size_bytes <= 500000000; // 500MB limit
+  const isDurationValid = media?.duration_seconds ? media.duration_seconds <= 120 : true;
+  const isSizeValid = media?.size_bytes ? media.size_bytes <= 500000000 : true;
 
   return (
     <AdminModal
@@ -118,54 +116,56 @@ export default function VideoReviewModal({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="text-xs">{t("Trình phát video xem trước (Private S3 Secure Storage)")}</p>
-              <p className="text-[11px] text-slate-500 font-sans tabular-nums tracking-tight mt-1">{media.object_key}</p>
+              <p className="text-[11px] text-slate-500 font-sans tabular-nums tracking-tight mt-1">{media?.object_key || "—"}</p>
             </div>
           )}
         </div>
 
-        {/* Technical Validation Checks */}
-        <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <div>
-            <span className="text-slate-400 block">{t("Thời lượng (Quy định &le; 120s):")}</span>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
-                {media.duration_seconds} {t("giây")}
+        {/* Technical Validation Checks - Only show when media metadata is available */}
+        {media && (
+          <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div>
+              <span className="text-slate-400 block">{t("Thời lượng (Quy định &le; 120s):")}</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
+                  {media.duration_seconds} {t("giây")}
+                </span>
+                <AdminBadge variant={isDurationValid ? "success" : "danger"} size="sm">
+                  {isDurationValid ? t("Hợp lệ") : t("Quá thời lượng")}
+                </AdminBadge>
+              </div>
+            </div>
+            <div>
+              <span className="text-slate-400 block">{t("Dung lượng file:")}</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
+                  {(media.size_bytes / (1024 * 1024)).toFixed(2)} MB
+                </span>
+                <AdminBadge variant={isSizeValid ? "success" : "danger"} size="sm">
+                  {isSizeValid ? t("Dưới 500MB") : t("Vượt mức")}
+                </AdminBadge>
+              </div>
+            </div>
+            <div>
+              <span className="text-slate-400 block">{t("Định dạng MIME Type:")}</span>
+              <span className="font-semibold text-slate-800 font-sans tabular-nums tracking-tight">
+                {media.mime_type}
               </span>
-              <AdminBadge variant={isDurationValid ? "success" : "danger"} size="sm">
-                {isDurationValid ? t("Hợp lệ") : t("Quá thời lượng")}
-              </AdminBadge>
+            </div>
+            <div>
+              <span className="text-slate-400 block">{t("Trạng thái bảo mật:")}</span>
+              <span className="font-semibold text-emerald-700">
+                {media.is_private ? t("Private Encrypted S3") : t("Public")}
+              </span>
+            </div>
+            <div className="col-span-2 pt-2 border-t border-slate-200">
+              <span className="text-slate-400 block">{t("SHA-256 Checksum:")}</span>
+              <span className="font-sans tabular-nums tracking-tight text-[11px] text-slate-600 break-all select-all">
+                {media.checksum_sha256}
+              </span>
             </div>
           </div>
-          <div>
-            <span className="text-slate-400 block">{t("Dung lượng file:")}</span>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-bold text-slate-900 font-sans tabular-nums tracking-tight">
-                {(media.size_bytes / (1024 * 1024)).toFixed(2)} MB
-              </span>
-              <AdminBadge variant={isSizeValid ? "success" : "danger"} size="sm">
-                {isSizeValid ? t("Dưới 500MB") : t("Vượt mức")}
-              </AdminBadge>
-            </div>
-          </div>
-          <div>
-            <span className="text-slate-400 block">{t("Định dạng MIME Type:")}</span>
-            <span className="font-semibold text-slate-800 font-sans tabular-nums tracking-tight">
-              {media.mime_type}
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400 block">{t("Trạng thái bảo mật:")}</span>
-            <span className="font-semibold text-emerald-700">
-              {media.is_private ? t("Private Encrypted S3") : t("Public")}
-            </span>
-          </div>
-          <div className="col-span-2 pt-2 border-t border-slate-200">
-            <span className="text-slate-400 block">{t("SHA-256 Checksum:")}</span>
-            <span className="font-sans tabular-nums tracking-tight text-[11px] text-slate-600 break-all select-all">
-              {media.checksum_sha256}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
     </AdminModal>
   );

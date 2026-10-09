@@ -1,11 +1,6 @@
 "use client";
-import { FormEvent, useState } from "react";
-import {
-  adminApi,
-  downloadAdmin,
-  RegistrationItem,
-  viTime,
-} from "@/lib/admin/api";
+import { FormEvent, useState, useMemo, useCallback } from "react";
+import { adminApi, downloadAdmin, RegistrationItem, viTime } from "@/lib/admin/api";
 import {
   Button,
   Field,
@@ -16,16 +11,28 @@ import {
   useOperations,
   useResource,
 } from "./common";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import VideoReviewModal from "@/components/admin/candidate/VideoReviewModal";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const ITEMS_PER_PAGE = 20;
 
 export default function Registrations() {
   const [search, setSearch] = useState(""),
     [school, setSchool] = useState(""),
-    [query, setQuery] = useState("");
-  const list = useResource<RegistrationItem[]>(
-      `admin/registrations?${query}`,
-      [],
-    ),
-    all = useResource<RegistrationItem[]>("admin/registrations", []);
+    [page, setPage] = useState(1),
+    [videoModalOpen, setVideoModalOpen] = useState(false),
+    [selectedVideo, setSelectedVideo] = useState<{ candidateName: string; candidateCode: string; videoUrl: string } | null>(null);
+
+  const debouncedSearch = useDebounce(search, 300);
+  const debouncedSchool = useDebounce(school, 300);
+
+  // Fetch all registrations (backend returns full array, we paginate client-side)
+  const allRegistrations = useResource<RegistrationItem[]>(
+    `admin/registrations?search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
+    [],
+  );
+
   const [detail, setDetail] = useState<RegistrationItem | null>(null),
     [credentials, setCredentials] = useState<{
       identifier: string;
@@ -34,14 +41,34 @@ export default function Registrations() {
     } | null>(null);
   const op = useOperations(),
     [create, setCreate] = useState(false);
-  const schools = [
-    ...new Set(all.data.map((r) => r.school).filter(Boolean)),
-  ] as string[];
+
+  // Client-side pagination
+  const totalItems = allRegistrations.data.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return allRegistrations.data.slice(start, start + ITEMS_PER_PAGE);
+  }, [allRegistrations.data, page]);
+
+  // Reset to page 1 when search/school changes
+  const [prevSearch, setPrevSearch] = useState(debouncedSearch);
+  const [prevSchool, setPrevSchool] = useState(debouncedSchool);
+  if (debouncedSearch !== prevSearch || debouncedSchool !== prevSchool) {
+    setPage(1);
+    setPrevSearch(debouncedSearch);
+    setPrevSchool(debouncedSchool);
+  }
+
+  // Unique schools for filter dropdown (from all data)
+  const schools = useMemo(
+    () => [...new Set(allRegistrations.data.map((r) => r.school).filter(Boolean))] as string[],
+    [allRegistrations.data]
+  );
+
   async function account(row: RegistrationItem, action: string) {
     let reason: string | undefined;
     if (action === "DELETE") {
-      reason =
-        window.prompt(`Lý do xoá tài khoản ${row.fullName}:`) ?? undefined;
+      reason = window.prompt(`Lý do xoá tài khoản ${row.fullName}:`) ?? undefined;
       if (!reason?.trim()) return;
     }
     if (
@@ -63,9 +90,10 @@ export default function Registrations() {
       setCredentials(
         result.password ? { ...result, password: result.password } : null,
       );
-      await Promise.all([list.reload(), all.reload()]);
+      await allRegistrations.reload();
     });
   }
+
   function add(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget,
@@ -79,19 +107,41 @@ export default function Registrations() {
       );
       form.reset();
       setCreate(false);
-      await Promise.all([list.reload(), all.reload()]);
+      await allRegistrations.reload();
     });
   }
+
+  const handleVideoReview = (row: RegistrationItem) => {
+    if (row.videoId && row.registrationId) {
+      setSelectedVideo({
+        candidateName: row.fullName,
+        candidateCode: row.candidateCode || "N/A",
+        videoUrl: `/api/v1/admin/registrations/${row.registrationId}/video`,
+      });
+      setVideoModalOpen(true);
+    }
+  };
+
+  const handleDuplicateCheck = () => {
+    // Navigate to duplicate reviews page with current filtered data
+    const params = new URLSearchParams({
+      search: debouncedSearch,
+      school: debouncedSchool,
+    });
+    window.location.href = `/admin/candidates/duplicate-reviews?${params.toString()}`;
+  };
+
   return (
     <div className="space-y-6">
-      <Notice message={list.error || all.error || op.error} error />
+      <Notice message={allRegistrations.error || op.error} error />
       <Notice message={op.message} />
+
       <Panel title="Hồ sơ đăng ký & tài khoản thí sinh">
         <form
           className="flex flex-wrap items-end gap-3"
           onSubmit={(e) => {
             e.preventDefault();
-            setQuery(new URLSearchParams({ search, school }).toString());
+            setPage(1);
           }}
         >
           <div className="flex-1 min-w-60">
@@ -101,6 +151,7 @@ export default function Registrations() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 maxLength={200}
+                placeholder="Nhập từ khóa tìm kiếm..."
               />
             </Field>
           </div>
@@ -116,17 +167,21 @@ export default function Registrations() {
               ))}
             </select>
           </Field>
-          <Button type="submit">Tìm kiếm</Button>
-          <Button onClick={() => setCreate(!create)}>Cấp tài khoản mới</Button>
+          <AdminButton type="submit">Tìm kiếm</AdminButton>
+          <AdminButton onClick={() => setCreate(!create)}>Cấp tài khoản mới</AdminButton>
+          <AdminButton variant="outline" onClick={handleDuplicateCheck} disabled={allRegistrations.loading}>
+            Kiểm tra trùng lặp
+          </AdminButton>
         </form>
-        <div className="flex gap-2">
+
+        <div className="flex flex-wrap gap-2">
           <Button
-            disabled={op.busy || list.loading}
+            disabled={op.busy || allRegistrations.loading}
             onClick={() =>
               void op.run(
                 () =>
                   downloadAdmin(
-                    `registrations/export?format=csv&${query}`,
+                    `registrations/export?format=csv&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
                     "registrations.csv",
                   ),
                 "Đã xuất CSV.",
@@ -136,12 +191,12 @@ export default function Registrations() {
             Xuất CSV
           </Button>
           <Button
-            disabled={op.busy || list.loading}
+            disabled={op.busy || allRegistrations.loading}
             onClick={() =>
               void op.run(
                 () =>
                   downloadAdmin(
-                    `registrations/export?format=xlsx&${query}`,
+                    `registrations/export?format=xlsx&search=${encodeURIComponent(debouncedSearch)}&school=${encodeURIComponent(debouncedSchool)}`,
                     "registrations.xlsx",
                   ),
                 "Đã xuất Excel.",
@@ -151,11 +206,13 @@ export default function Registrations() {
             Xuất Excel
           </Button>
         </div>
-        {list.loading && (
+
+        {allRegistrations.loading && (
           <p role="status" className="text-sm text-slate-500">
             Đang tải hồ sơ…
           </p>
         )}
+
         <Table
           headers={[
             "Mã thí sinh / MSSV",
@@ -163,9 +220,10 @@ export default function Registrations() {
             "Trường",
             "Hồ sơ",
             "Tài khoản",
+            "Video",
             "Thao tác",
           ]}
-          rows={list.data.map((r) => [
+          rows={paginatedData.map((r) => [
             <div key={r.id}>
               {r.candidateCode || "Chưa cấp mã"}
               <div className="text-slate-500">{r.studentId}</div>
@@ -187,20 +245,34 @@ export default function Registrations() {
                 : r.accountStatus === "DISABLED"
                   ? "Đã khoá"
                   : "Chưa kích hoạt",
+            <div className="flex items-center gap-2">
+              {r.videoId && r.registrationId ? (
+                <AdminButton
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleVideoReview(r)}
+                  disabled={op.busy}
+                >
+                  Xem video
+                </AdminButton>
+              ) : (
+                <span className="text-slate-400 text-xs">Chưa có</span>
+              )}
+            </div>,
             <div key={r.id} className="flex flex-wrap gap-2 min-w-60">
-              <Button onClick={() => setDetail(r)}>Chi tiết</Button>
+              <AdminButton onClick={() => setDetail(r)}>Chi tiết</AdminButton>
               {!r.deleted && (
                 <>
                   {!r.userId ? (
-                    <Button
+                    <AdminButton
                       disabled={op.busy}
                       onClick={() => void account(r, "PROVISION")}
                     >
                       Cấp tài khoản
-                    </Button>
+                    </AdminButton>
                   ) : (
                     <>
-                      <Button
+                      <AdminButton
                         disabled={op.busy}
                         onClick={() =>
                           void account(
@@ -210,20 +282,20 @@ export default function Registrations() {
                         }
                       >
                         {r.accountStatus === "ACTIVE" ? "Khoá" : "Mở khoá"}
-                      </Button>
-                      <Button
+                      </AdminButton>
+                      <AdminButton
                         disabled={op.busy}
                         onClick={() => void account(r, "RESET")}
                       >
                         Cấp lại
-                      </Button>
-                      <Button
-                        danger
+                      </AdminButton>
+                      <AdminButton
+                        variant="danger"
                         disabled={op.busy}
                         onClick={() => void account(r, "DELETE")}
                       >
                         Xoá
-                      </Button>
+                      </AdminButton>
                     </>
                   )}
                 </>
@@ -231,7 +303,38 @@ export default function Registrations() {
             </div>,
           ])}
         />
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-sm text-slate-500">
+              Hiển thị {Math.min((page - 1) * ITEMS_PER_PAGE + 1, totalItems)}–{Math.min(page * ITEMS_PER_PAGE, totalItems)} của {totalItems} kết quả
+            </p>
+            <div className="flex items-center gap-2">
+              <AdminButton
+                size="sm"
+                variant="outline"
+                disabled={page === 1 || allRegistrations.loading}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Trước
+              </AdminButton>
+              <span className="text-sm text-slate-700 px-2">
+                Trang {page} / {totalPages}
+              </span>
+              <AdminButton
+                size="sm"
+                variant="outline"
+                disabled={page === totalPages || allRegistrations.loading}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Sau
+              </AdminButton>
+            </div>
+          </div>
+        )}
       </Panel>
+
       {create && (
         <Panel title="Cấp tài khoản thí sinh">
           <form onSubmit={add} className="grid sm:grid-cols-2 gap-4">
@@ -251,12 +354,13 @@ export default function Registrations() {
                 />
               </Field>
             ))}
-            <Button type="submit" disabled={op.busy}>
+            <AdminButton type="submit" disabled={op.busy}>
               Cấp tài khoản
-            </Button>
+            </AdminButton>
           </form>
         </Panel>
       )}
+
       {credentials && (
         <Panel title="Thông tin đăng nhập vừa cấp">
           <p className="text-sm text-slate-500">
@@ -271,7 +375,7 @@ export default function Registrations() {
             Mật khẩu: {credentials.password}
           </p>
           <div className="flex gap-2">
-            <Button
+            <AdminButton
               onClick={() =>
                 void op.run(
                   () =>
@@ -283,11 +387,12 @@ export default function Registrations() {
               }
             >
               Sao chép
-            </Button>
-            <Button onClick={() => setCredentials(null)}>Ẩn thông tin</Button>
+            </AdminButton>
+            <AdminButton onClick={() => setCredentials(null)}>Ẩn thông tin</AdminButton>
           </div>
         </Panel>
       )}
+
       {detail && (
         <Panel title={`Hồ sơ · ${detail.fullName}`}>
           <dl className="grid sm:grid-cols-2 gap-3 text-sm">
@@ -320,9 +425,36 @@ export default function Registrations() {
           ) : (
             <p className="text-sm text-slate-500">Chưa có video đã nộp.</p>
           )}
-          <Button onClick={() => setDetail(null)}>Đóng</Button>
+          <AdminButton onClick={() => setDetail(null)}>Đóng</AdminButton>
         </Panel>
       )}
+
+      {/* Video Review Modal */}
+      <VideoReviewModal
+        isOpen={videoModalOpen}
+        onClose={() => {
+          setVideoModalOpen(false);
+          setSelectedVideo(null);
+        }}
+        candidateName={selectedVideo?.candidateName || ""}
+        candidateCode={selectedVideo?.candidateCode || ""}
+        videoUrl={selectedVideo?.videoUrl}
+        media={selectedVideo
+          ? {
+              id: "temp",
+              upload_id: "temp",
+              registration_id: "temp",
+              object_key: "",
+              mime_type: "video/mp4",
+              size_bytes: 0,
+              duration_seconds: 0,
+              checksum_sha256: "",
+              is_private: true,
+              validated_at: new Date().toISOString(),
+              sealed_at: new Date().toISOString(),
+            }
+          : null}
+      />
     </div>
   );
 }

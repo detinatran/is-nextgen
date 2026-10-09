@@ -446,7 +446,7 @@ export class AdminExamsService {
       ws.addRow({
         rank: scored ? i + 1 : '',
         code: r.candidateCode, name: r.fullName, school: r.school, email: r.email,
-        points: r.points ?? '', max: r.maxPoints ?? '',
+        points: r.points == null ? '' : Math.round(r.points * 100) / 100, max: r.maxPoints == null ? '' : Math.round(r.maxPoints * 100) / 100,
         cause: r.finalizationCause === 'TIMEOUT' ? 'Hết giờ' : r.finalizationCause === 'MANUAL' ? 'Tự nộp' : r.attemptState === 'ACTIVE' ? 'Đang thi' : 'Chưa thi',
         focus: r.focusLost,
         top: scored && i < 40 ? 'Có' : '',

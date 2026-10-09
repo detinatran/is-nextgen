@@ -713,6 +713,9 @@ export function Monitor() {
 
 /* ───────── Bảng điểm Vòng 1 ───────── */
 
+// Điểm mỗi câu được làm tròn 4 chữ số (vd. 100/15 = 6.6667) nên tổng có thể là 100.0005: hiển thị tối đa 2 chữ số thập phân
+const fmtPoints = (n: number | string | null) => (n === null ? "—" : +Number(n).toFixed(2));
+
 export function Round1() {
   const config = useResource<Configuration>("admin/configuration", emptyConfig),
     [competition, setCompetition] = useState(""),
@@ -767,7 +770,7 @@ export function Round1() {
         <StatCard loading={list.loading && !list.updatedAt} icon="users" tone="blue" label="Thí sinh" value={list.data.length.toLocaleString("vi-VN")} />
         <StatCard loading={list.loading && !list.updatedAt} icon="fileCheck" tone="green" label="Đã có điểm" value={scored.length.toLocaleString("vi-VN")} />
         <StatCard loading={list.loading && !list.updatedAt} icon="trophy" tone="amber" label="Top 40" value={top} hint={ties ? `${ties} thí sinh đồng điểm ở ngưỡng` : undefined} />
-        <StatCard loading={list.loading && !list.updatedAt} icon="bars" tone="violet" label="Tỉ lệ cao nhất" value={leader?.percent != null ? `${+leader.percent.toFixed(2)}%` : "—"} hint={leader ? `${leader.points}/${leader.maxPoints} điểm` : undefined} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="bars" tone="violet" label="Tỉ lệ cao nhất" value={leader?.percent != null ? `${+leader.percent.toFixed(2)}%` : "—"} hint={leader ? `${fmtPoints(leader.points)}/${fmtPoints(leader.maxPoints)} điểm` : undefined} />
       </div>
       {ties > 0 && (
         <Callout tone="warning" title={`${ties} thí sinh đồng điểm tại ngưỡng Top 40`}>
@@ -807,8 +810,8 @@ export function Round1() {
               </span>,
               a.points === null ? <Pill key="st" tone="slate">Chưa có điểm</Pill> : status.graded,
               <span key="p" className="font-semibold text-adm-text">
-                {a.points === null ? "—" : a.points}
-                {a.points !== null && <span className="font-normal text-adm-muted">/{a.maxPoints}</span>}
+                {a.points === null ? "—" : fmtPoints(a.points)}
+                {a.points !== null && <span className="font-normal text-adm-muted">/{fmtPoints(a.maxPoints)}</span>}
               </span>,
               <span key="pc" className="text-adm-sub">
                 {a.percent == null ? "—" : `${+a.percent.toFixed(2)}%`}

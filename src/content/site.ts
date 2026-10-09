@@ -265,7 +265,7 @@ export const minorPrizes: string =
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
   { name: "Đoàn Thanh niên Trường Quốc tế", logo: "/images/org/doan.png" },
-  { name: "Ban CLB Hội nhóm", logo: "/images/org-clb.png", ink: true },
+  { name: "Ban CLB Hội nhóm", logo: "/images/org/clb.png" },
   { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
   { name: "CLB iSupport", logo: "/images/org/isupport.png" },
 ];

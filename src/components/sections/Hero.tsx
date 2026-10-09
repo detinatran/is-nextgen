@@ -28,7 +28,7 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
 const organizerLogos = [
   { src: "/images/org/truong.png", alt: "Trường Quốc tế - ĐHQGHN", className: "h-8" },
   { src: "/images/org/doan.png", alt: "Đoàn Thanh niên", className: "h-8" },
-  { src: "/images/org-clb.png", alt: "Ban CLB Hội nhóm", className: "logo-ink h-7" },
+  { src: "/images/org/clb.png", alt: "Ban CLB Hội nhóm", className: "h-8" },
   { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-8" },
   { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-7" },
 ];

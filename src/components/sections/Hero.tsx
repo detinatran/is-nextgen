@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Art from "@/components/Art";
+import HeroSlides from "@/components/HeroSlides";
 import Icon from "@/components/Icon";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"] },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"], slides: "Ảnh bìa" },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"], slides: "Cover image" },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -43,41 +44,8 @@ export default function Hero({ lang }: { lang: Lang }) {
       </h1>
 
       <div data-tour="hero" className="relative aspect-video overflow-hidden lg:aspect-[1920/900]">
-        {/* Di động: banner gốc đầy đủ */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={asset("/images/banner.webp")}
-          alt=""
-          width={1920}
-          height={1080}
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover lg:hidden"
-        />
-        {/* Màn hình lớn: key visual góc rộng (sinh bằng Codex); dự phòng là banner gốc trên nền chính nó làm mờ */}
-        <div className="absolute inset-0 hidden lg:block">
-          <Art
-            src="/images/generated/hero-wide.webp"
-            className="absolute inset-0 h-full w-full object-cover object-[50%_42%]"
-            fallback={
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={asset("/images/banner.webp")} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl brightness-90" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={asset("/images/banner.webp")}
-                  alt=""
-                  className="absolute top-[3%] left-[19%] w-[70%]"
-                  style={{
-                    maskImage:
-                      "linear-gradient(180deg, transparent 0, transparent 13.5%, #000 21%, #000 80%, transparent 100%), linear-gradient(90deg, transparent 0, #000 16%, #000 86%, transparent 100%)",
-                    maskComposite: "intersect",
-                    WebkitMaskComposite: "source-in",
-                  }}
-                />
-              </>
-            }
-          />
-        </div>
+        {/* 3 key visual (sinh bằng Codex) luân phiên 5 giây/lần; điện thoại dùng bản cắt 16:9 */}
+        <HeroSlides label={t.slides} />
 
         {/* Lớp phủ: tối dần về bên trái (chữ giới thiệu), phía trên (menu, logo) và góc phải (chữ viết tay) */}
         <div aria-hidden className="absolute inset-0 hidden bg-linear-to-r from-navy-deep/55 via-navy-deep/15 via-30% to-transparent to-50% lg:block" />

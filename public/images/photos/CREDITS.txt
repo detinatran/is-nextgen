@@ -8,7 +8,6 @@ hl-trip.webp       Nguyễn Hiệp        https://unsplash.com/photos/fWzr9v6ogL
 hero-team.webp     Quan Nguyen        https://unsplash.com/photos/ZBZBAH7Zve0
 about-city.webp    Cong Long Vu       https://unsplash.com/photos/dyzRCzqlVO0
 timeline-bg.webp   Huy Nguyen         https://unsplash.com/photos/FlTRDFs-Bas
-cta-students.webp  Tai Ngo            https://unsplash.com/photos/SWciCCkTgJ0
 persona-1.webp     Joni Lin           https://unsplash.com/photos/R2uZ0y4z6C4
 persona-2.webp     HACA Wedding Film  https://unsplash.com/photos/uXM5jcFGDTw
 persona-3.webp     Annika Palmari     https://unsplash.com/photos/RIt88XBR3G0

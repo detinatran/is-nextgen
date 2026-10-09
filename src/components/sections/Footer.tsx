@@ -70,7 +70,7 @@ function CtaBand({ lang }: { lang: Lang }) {
             </svg>
             {/* Ảnh sinh viên nhô lên khỏi mép trên của dải */}
             <Art
-              src="/images/photos/cta-students.webp"
+              src="/images/generated/cta-students.webp"
               className="pointer-events-none absolute inset-x-0 -top-14 bottom-0 h-[calc(100%+3.5rem)] w-full object-cover object-[50%_18%] [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]"
             />
           </div>

@@ -6,8 +6,8 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club", script: ["Shaping", "the next generation", "of managers"] },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Đoàn Thanh niên, Ban CLB Hội nhóm, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"] },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union, Clubs Board, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"] },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -24,6 +24,14 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
     </div>
   );
 }
+
+const organizerLogos = [
+  { src: "/images/org/truong.png", alt: "Trường Quốc tế - ĐHQGHN", className: "h-8" },
+  { src: "/images/org/doan.png", alt: "Đoàn Thanh niên", className: "h-8" },
+  { src: "/images/org-clb.png", alt: "Ban CLB Hội nhóm", className: "logo-ink h-7" },
+  { src: "/images/org/imc.png", alt: "CLB Marketing IMC", className: "h-8" },
+  { src: "/images/org/isupport.png", alt: "CLB iSupport", className: "h-7" },
+];
 
 export default function Hero({ lang }: { lang: Lang }) {
   const { heroStats, site } = getContent(lang);
@@ -111,10 +119,17 @@ export default function Hero({ lang }: { lang: Lang }) {
         <div className="absolute inset-0 hidden lg:block">
           <div className="container-x relative h-full">
             {/* Đơn vị tổ chức */}
-            <div className="absolute top-20 right-8 flex items-center gap-4 rounded-xl bg-navy-deep/55 px-4 py-1.5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
+            <div className="absolute top-20 right-8 flex items-center gap-3 rounded-xl bg-navy-deep/55 py-1.5 pr-1.5 pl-4 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
               <span className="text-xs font-medium text-white/90">{t.organizers}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={asset("/images/organizers.png")} alt={t.organizersAlt} className="h-8 w-auto" />
+              {/* Logo gốc (có màu) đặt trên nền trắng để đọc rõ */}
+              <ul className="flex items-center gap-3 rounded-lg bg-white px-3 py-1" aria-label={t.organizersAlt}>
+                {organizerLogos.map((l) => (
+                  <li key={l.src}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={asset(l.src)} alt={l.alt} className={`w-auto ${l.className}`} />
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* Chữ viết tay bên phải */}

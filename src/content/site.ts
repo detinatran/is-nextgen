@@ -263,12 +263,12 @@ export const minorPrizes: string =
   "Ngoài ra có hai giải phụ (Tinh thần hợp tác, Trình bày tiếng Anh xuất sắc) và giải Đội thi được yêu thích nhất, mỗi giải 1.000.000 đồng.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
-  { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/crest.png" },
+  { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
   { name: "Khoa Kinh tế và Quản lý" },
-  { name: "Đoàn Thanh niên Trường Quốc tế", logo: "/images/org-doan.png" },
+  { name: "Đoàn Thanh niên Trường Quốc tế", logo: "/images/org/doan.png" },
   { name: "Ban CLB Hội nhóm", logo: "/images/org-clb.png", ink: true },
-  { name: "CLB Marketing (IMC)", logo: "/images/org-imc.png", ink: true },
-  { name: "CLB iSupport" },
+  { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
+  { name: "CLB iSupport", logo: "/images/org/isupport.png" },
 ];
 
 // TODO(BTC): thêm nhà tài trợ khi ký thoả thuận, ví dụ { name: "Tên DN", logo: "/images/sponsors/ten-dn.png" }

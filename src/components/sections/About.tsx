@@ -41,7 +41,7 @@ export default function About({ lang }: { lang: Lang }) {
             </div>
           </div>
           <div className="reveal" style={{ "--delay": "120ms" } as React.CSSProperties}>
-            <Photo src="/images/generated/about-city.webp" alt={t.alt} className="aspect-[16/10] rounded-3xl shadow-2xl shadow-navy/15" />
+            <Photo src="/images/photos/about-city.webp" alt={t.alt} className="aspect-[16/10] rounded-3xl shadow-2xl shadow-navy/15" />
           </div>
         </div>
 

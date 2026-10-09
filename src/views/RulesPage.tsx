@@ -201,7 +201,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
             </div>
             <div className="relative min-h-72 lg:min-h-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={asset("/images/generated/hero-team.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[60%_center] lg:[clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]" />
+              <img src={asset("/images/photos/hero-team.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[60%_center] lg:[clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]" />
             </div>
           </section>
 

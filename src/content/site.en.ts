@@ -112,10 +112,10 @@ export const journey = {
   title: "Your journey",
   more: "See the full rules",
   items: [
-    { title: "Leaderless group discussion", body: "Groups of six solve a case with conflicting interests, with no appointed leader.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
-    { title: "Solve a management case with AI", body: "Handle a manager's in-tray: AI is allowed, but every decision must be explained.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
-    { title: "Company visit & talks", body: "See a real workplace and learn directly from managers.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
-    { title: "Join the talent community", body: "A networking dinner with companies, judges and alumni.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
+    { title: "Leaderless group discussion", body: "Groups of six solve a case with conflicting interests, with no appointed leader.", image: "/images/photos/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Solve a management case with AI", body: "Handle a manager's in-tray: AI is allowed, but every decision must be explained.", image: "/images/photos/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Company visit & talks", body: "See a real workplace and learn directly from managers.", image: "/images/photos/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Join the talent community", body: "A networking dinner with companies, judges and alumni.", image: "/images/photos/hl-dinner.webp", href: "/the-le/#ben-le" },
   ],
 };
 
@@ -191,32 +191,32 @@ export const values = {
 
 export const personas = [
   {
-    image: "/images/generated/persona-1.webp",
+    image: "/images/photos/persona-1.webp",
     title: "Analytical thinking and decision-making",
     body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
   },
   {
-    image: "/images/generated/persona-2.webp",
+    image: "/images/photos/persona-2.webp",
     title: "Systems thinking and prioritization",
     body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
   },
   {
-    image: "/images/generated/persona-3.webp",
+    image: "/images/photos/persona-3.webp",
     title: "Leadership and influence",
     body: "Propose a direction, persuade others, handle disagreement and take responsibility for your decisions.",
   },
   {
-    image: "/images/generated/persona-4.webp",
+    image: "/images/photos/persona-4.webp",
     title: "Collaboration and communication",
     body: "Listen, build on others' ideas and contribute to the shared outcome instead of competing for airtime.",
   },
   {
-    image: "/images/generated/persona-5.webp",
+    image: "/images/photos/persona-5.webp",
     title: "Ethics and responsibility",
     body: "Weigh the interests of all stakeholders, act with integrity in your proposals and recognize ethical risks.",
   },
   {
-    image: "/images/generated/persona-6.webp",
+    image: "/images/photos/persona-6.webp",
     title: "Presentation and language",
     body: "Structure messages clearly, persuade with words and visuals, and present confidently in English.",
   },

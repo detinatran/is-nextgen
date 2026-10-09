@@ -9,7 +9,7 @@ import AdminButton from "@/components/admin/ui/AdminButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
 import { useToastHelpers } from "@/components/admin/ui/Toast";
-import { adminApi } from "@/lib/admin/api";
+import { adminApi, adminAsset } from "@/lib/admin/api";
 
 export default function AdminLoginPage() {
   const { t } = useAdminI18n();
@@ -132,10 +132,10 @@ export default function AdminLoginPage() {
     if (!value.trim()) return t("Vui lòng nhập email quản trị viên.");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) return t("Định dạng email không hợp lệ.");
-    const validDomains = ["is-nextgen.edu.vn", "vnu-is.edu.vn"];
+    const validDomains = ["vnuis.edu.vn", "vnu.edu.vn", "is-nextgen.edu.vn", "vnu-is.edu.vn"];
     const domain = value.split("@")[1]?.toLowerCase();
     if (domain && !validDomains.includes(domain)) {
-      return t("Chỉ chấp nhận email miền @is-nextgen.edu.vn hoặc @vnu-is.edu.vn.");
+      return t("Chỉ chấp nhận email miền @vnuis.edu.vn hoặc @vnu.edu.vn.");
     }
     return undefined;
   };
@@ -308,7 +308,7 @@ export default function AdminLoginPage() {
                 aria-hidden="true"
               />
               <img
-                src="/images/logo.png"
+                src={adminAsset("/images/logo.png")}
                 alt="IS-NEXTGEN"
                 className="relative w-24 h-24 object-contain drop-shadow-[0_8px_32px_rgba(31,91,224,0.4)]"
                 onError={(e) => {
@@ -433,7 +433,7 @@ export default function AdminLoginPage() {
                     autoComplete="email"
                     value={email}
                     onChange={handleEmailChange}
-                    placeholder="admin@is-nextgen.edu.vn"
+                    placeholder="nextgen@vnuis.edu.vn"
                     error={errors.email}
                     leftIcon={
                       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

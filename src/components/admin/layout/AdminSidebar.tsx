@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAdminI18n } from "@/lib/i18n/AdminI18nContext";
+import { adminAsset } from "@/lib/admin/api";
 
 interface NavGroup {
   title: string;
@@ -176,7 +177,7 @@ export default function AdminSidebar({
           {/* Logo - Always centered */}
           <div className="flex items-center justify-center w-full">
             <img
-              src="/images/logo_min.png"
+              src={adminAsset("/images/logo_min.png")}
               alt="IS-NEXTGEN"
               className={cn(
                 "size-8 shrink-0 object-contain transition-all duration-300 ease-out",

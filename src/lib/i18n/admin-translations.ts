@@ -522,7 +522,7 @@ export const adminTranslations: Record<string, string> = {
   "Top đội": "Top Teams",
   "Vui lòng nhập email quản trị viên.": "Please enter admin email.",
   "Định dạng email không hợp lệ.": "Invalid email format.",
-  "Chỉ chấp nhận email miền @is-nextgen.edu.vn hoặc @vnu-is.edu.vn.": "Only @is-nextgen.edu.vn or @vnu-is.edu.vn domain emails are accepted.",
+  "Chỉ chấp nhận email miền @vnuis.edu.vn hoặc @vnu.edu.vn.": "Only @vnuis.edu.vn or @vnu.edu.vn email addresses are accepted.",
   "Vui lòng nhập mật khẩu.": "Please enter password.",
   "Mật khẩu phải có ít nhất 8 ký tự.": "Password must be at least 8 characters.",
   "Vui lòng nhập mã OTP 6 số.": "Please enter 6-digit OTP code.",

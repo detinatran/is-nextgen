@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent, useState, useMemo, useCallback } from "react";
-import { adminApi, downloadAdmin, RegistrationItem, viTime } from "@/lib/admin/api";
+import { ADMIN_API_BASE, adminApi, downloadAdmin, RegistrationItem, viTime } from "@/lib/admin/api";
 import {
   Button,
   Field,
@@ -116,7 +116,7 @@ export default function Registrations() {
       setSelectedVideo({
         candidateName: row.fullName,
         candidateCode: row.candidateCode || "N/A",
-        videoUrl: `/api/v1/admin/registrations/${row.registrationId}/video`,
+        videoUrl: `${ADMIN_API_BASE}/admin/registrations/${row.registrationId}/video`,
       });
       setVideoModalOpen(true);
     }
@@ -420,7 +420,7 @@ export default function Registrations() {
               controls
               preload="metadata"
               className="w-full max-h-96 rounded-lg bg-black"
-              src={`/api/v1/admin/registrations/${detail.registrationId}/video`}
+              src={`${ADMIN_API_BASE}/admin/registrations/${detail.registrationId}/video`}
             />
           ) : (
             <p className="text-sm text-slate-500">Chưa có video đã nộp.</p>

@@ -1,0 +1,49 @@
+# Admin (nhánh main) chạy cạnh web chính trên cùng máy chủ:
+#   admin-web : Next.js, nginx chuyển https://nextgen.vnuis.edu.vn/admin/* vào 127.0.0.1:3100
+#   admin-api : backend của nhánh main, nginx chuyển /admin/api/* vào 127.0.0.1:3102
+# Dùng chung PostgreSQL của web chính (mạng nextgen-backend_default). Các tác vụ nền (gửi mail, chấm điểm,
+# hết giờ) tắt ở đây vì backend chính đã chạy; email admin tạo ra vẫn được backend chính gửi đi.
+# Bí mật (POSTGRES_PASSWORD, SMTP_URL) đặt trong deploy/admin/.env trên máy chủ, không commit.
+services:
+  admin-web:
+    build:
+      context: ../..
+      dockerfile: deploy/admin/web.Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://admin-api:3001
+    depends_on:
+      - admin-api
+    ports:
+      - "127.0.0.1:3100:3000"
+
+  admin-api:
+    build: ../../backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://nextgen:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/nextgen?schema=public
+      MEDIA_STORAGE_DIR: /var/lib/isnextgen/media
+      TRUST_PROXY: "1"
+      WORKERS_DISABLED: "1"
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
+      SMTP_URL: ${SMTP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}
+    volumes:
+      - media:/var/lib/isnextgen/media:ro
+    networks:
+      - default
+      - main-backend
+    ports:
+      - "127.0.0.1:3102:3001"
+
+networks:
+  main-backend:
+    name: nextgen-backend_default
+    external: true
+
+volumes:
+  media:
+    name: nextgen-backend_media
+    external: true

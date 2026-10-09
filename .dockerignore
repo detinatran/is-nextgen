@@ -1,0 +1,10 @@
+node_modules
+.next
+backend
+assets
+is-nextgen
+src.zip
+docs
+deploy/admin/.env
+.git
+*.md

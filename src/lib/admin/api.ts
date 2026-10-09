@@ -1,3 +1,9 @@
+// Khi chạy dưới nextgen.vnuis.edu.vn/admin, API của admin đi qua /admin/api/v1 (nginx chuyển tới backend admin);
+// chạy local không đặt biến thì giữ /api/v1 như cũ.
+export const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_BASE ?? "/api/v1";
+/** Ảnh trong public/ của app admin (dưới /admin khi deploy chung tên miền với trang chính). */
+export const adminAsset = (path: string) => `${process.env.NEXT_PUBLIC_ADMIN_ASSET_BASE ?? ""}${path}`;
+
 export async function adminApi<T>(
   path: string,
   init: RequestInit = {},
@@ -13,7 +19,7 @@ export async function adminApi<T>(
           ?.slice("isng_csrf=".length)
       : undefined;
   if (csrf) headers.set("x-csrf-token", decodeURIComponent(csrf));
-  const response = await fetch(`/api/v1/${path}`, {
+  const response = await fetch(`${ADMIN_API_BASE}/${path}`, {
     ...init,
     headers,
     credentials: "same-origin",
@@ -38,7 +44,7 @@ export async function adminApi<T>(
 }
 
 export async function downloadAdmin(path: string, name: string) {
-  const response = await fetch(`/api/v1/admin/${path}`, {
+  const response = await fetch(`${ADMIN_API_BASE}/admin/${path}`, {
     credentials: "same-origin",
     cache: "no-store",
   });

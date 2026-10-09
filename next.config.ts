@@ -5,6 +5,9 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
   basePath,
+  // Deploy chung tên miền với trang chính: file JS/CSS của admin nằm dưới /admin/_next (xem deploy/admin)
+  assetPrefix: process.env.ADMIN_ASSET_PREFIX || undefined,
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   trailingSlash: true,
   images: { unoptimized: true },
   async rewrites() {

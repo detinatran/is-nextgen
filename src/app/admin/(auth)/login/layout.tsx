@@ -3,7 +3,7 @@ import { AdminI18nProvider } from "@/lib/i18n/AdminI18nContext";
 import { ToastProvider } from "@/components/admin/ui/Toast";
 
 export const metadata: Metadata = {
-  title: "Admin Login | IS-NextGen Manager Challenge 2026",
+  title: "Admin Login | NextGen Manager Challenge 2026",
   description: "Login to the administration system",
 };
 

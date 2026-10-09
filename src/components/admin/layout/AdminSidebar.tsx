@@ -177,8 +177,8 @@ export default function AdminSidebar({
           {/* Logo - Always centered */}
           <div className="flex items-center justify-center w-full">
             <img
-              src={adminAsset("/images/logo_min.png")}
-              alt="IS-NEXTGEN"
+              src={adminAsset("/images/logo-mark-2026.png")}
+              alt="NextGen Manager"
               className={cn(
                 "size-8 shrink-0 object-contain transition-all duration-300 ease-out",
                 collapsed ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none absolute"
@@ -189,7 +189,7 @@ export default function AdminSidebar({
             {!collapsed && (
               <div className="brand-text flex flex-col min-w-0 whitespace-nowrap ml-3 opacity-100 w-auto transition-all duration-300 ease-out">
                 <span className="font-bold text-white text-sm tracking-wide whitespace-nowrap">
-                  IS-NEXTGEN
+                  NEXTGEN
                 </span>
                 <span className="text-[10px] text-amber-400 font-medium tracking-widest uppercase whitespace-nowrap">
                   Admin Manager
@@ -321,7 +321,7 @@ export default function AdminSidebar({
           {!collapsed && (
             <div className="user-info flex-1 min-w-0 whitespace-nowrap">
               <p className="text-xs font-semibold text-white truncate whitespace-nowrap">{t("Ban Tổ Chức")}</p>
-              <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">admin@is-nextgen.edu.vn</p>
+              <p className="text-[11px] text-slate-400 truncate whitespace-nowrap">nextgen@vnuis.edu.vn</p>
             </div>
           )}
         </div>

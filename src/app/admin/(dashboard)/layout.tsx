@@ -6,8 +6,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | IS-NextGen Manager Challenge 2026",
-  description: "Phân hệ quản trị cuộc thi IS-NextGen Manager Challenge 2026",
+  title: "Admin Dashboard | NextGen Manager Challenge 2026",
+  description: "Phân hệ quản trị cuộc thi NextGen Manager Challenge 2026",
 };
 
 export default function AdminLayout({

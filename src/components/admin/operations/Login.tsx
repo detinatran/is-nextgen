@@ -308,9 +308,9 @@ export default function AdminLoginPage() {
                 aria-hidden="true"
               />
               <img
-                src={adminAsset("/images/logo.png")}
-                alt="IS-NEXTGEN"
-                className="relative w-24 h-24 object-contain drop-shadow-[0_8px_32px_rgba(31,91,224,0.4)]"
+                src={adminAsset("/images/logo-white-2026.png")}
+                alt="NextGen Manager"
+                className="relative h-20 w-auto object-contain drop-shadow-[0_8px_32px_rgba(31,91,224,0.4)]"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                   e.currentTarget.nextElementSibling?.classList.remove("hidden");
@@ -352,7 +352,7 @@ export default function AdminLoginPage() {
 
           {/* Main Title */}
           <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-            <span className="block">{t("IS-NEXTGEN")}</span>
+            <span className="block">{t("NEXTGEN")}</span>
             <span className="block text-[#F5B83D]">{t("MANAGER")}</span>
             <span className="block text-[#8CC1FF] text-2xl lg:text-3xl font-semibold mt-1">
               {t("CHALLENGE 2026")}
@@ -530,7 +530,7 @@ export default function AdminLoginPage() {
             {/* Footer */}
             <div className="mt-8 pt-6 border-t border-slate-100 text-center">
               <p className="text-[11px] text-slate-400">
-                {t("Hệ thống quản trị IS-NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).")}
+                {t("Hệ thống quản trị NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).")}
               </p>
               <p className="text-[11px] text-slate-400 mt-1">
                 {t("Phiên bản")} 1.0.0 • {t("Môi trường")} {process.env.NODE_ENV === "production" ? "Production" : "Development"}

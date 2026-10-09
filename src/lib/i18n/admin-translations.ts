@@ -51,7 +51,7 @@ export const adminTranslations: Record<string, string> = {
   "Nhập mã 6 số từ ứng dụng Authenticator hoặc email của bạn": "Enter 6-digit code from Authenticator app or your email",
   "Đăng nhập vào Dashboard": "Login to Dashboard",
   "← Quay lại đăng nhập": "← Back to Login",
-  "Hệ thống quản trị IS-NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).": "IS-NextGen Manager Challenge 2026 Admin System. All access is logged for audit evidence.",
+  "Hệ thống quản trị NextGen Manager Challenge 2026. Mọi truy cập đều được ghi log kiểm toán (Audit Evidence).": "NextGen Manager Challenge 2026 Admin System. All access is logged for audit evidence.",
   "Quản lý hồ sơ & Dữ liệu đăng ký": "Profile & Registration Data Management",
   "Tổng cộng": "Total",
   "hồ sơ": "profiles",

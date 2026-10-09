@@ -675,8 +675,8 @@ export function Monitor() {
         ) : (
           <Table
             loading={firstLoad}
-            numeric={[4]}
-            headers={["Mã thí sinh", "Họ tên", "Ca thi", "Trạng thái", "Đã trả lời", "Bắt đầu", "Nộp lúc"]}
+            numeric={[4, 5]}
+            headers={["Mã thí sinh", "Họ tên", "Ca thi", "Trạng thái", "Đã trả lời", "Rời trang", "Bắt đầu", "Nộp lúc"]}
             empty={search || scheduleFilter || statusFilter ? { icon: "search", title: "Không có thí sinh phù hợp bộ lọc" } : { icon: "monitor", title: "Chưa có thí sinh được xếp ca", description: "Danh sách hiển thị khi có thí sinh trong các ca Vòng 1." }}
             rows={filtered.map((a) => [
               <span key="c" className="font-mono text-[13px] font-medium whitespace-nowrap">
@@ -690,6 +690,13 @@ export function Monitor() {
               </span>,
               statusPill(a.status),
               a.answered,
+              Number(a.focusLost ?? 0) > 0 ? (
+                <span key="fl" className="font-semibold text-adm-warning" title="Số lần thí sinh chuyển tab hoặc rời trang làm bài">
+                  {Number(a.focusLost)}
+                </span>
+              ) : (
+                <span key="fl" className="text-adm-muted">0</span>
+              ),
               <span key="st" className="whitespace-nowrap tabular-nums">
                 {viTime(a.startedAt)}
               </span>,
@@ -726,7 +733,8 @@ export function Round1() {
   const scored = list.data.filter((a) => a.points !== null);
   const top = list.data.filter((a) => a.top40).length;
   const ties = list.data.filter((a) => a.tieAtCutoff).length;
-  const best = scored.length ? Math.max(...scored.map((a) => Number(a.points))) : null;
+  // Bảng đã xếp theo tỉ lệ: người đứng đầu là tỉ lệ cao nhất
+  const leader = list.data.find((a) => a.rank === 1 && a.points !== null);
   const rows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
@@ -759,7 +767,7 @@ export function Round1() {
         <StatCard loading={list.loading && !list.updatedAt} icon="users" tone="blue" label="Thí sinh" value={list.data.length.toLocaleString("vi-VN")} />
         <StatCard loading={list.loading && !list.updatedAt} icon="fileCheck" tone="green" label="Đã có điểm" value={scored.length.toLocaleString("vi-VN")} />
         <StatCard loading={list.loading && !list.updatedAt} icon="trophy" tone="amber" label="Top 40" value={top} hint={ties ? `${ties} thí sinh đồng điểm ở ngưỡng` : undefined} />
-        <StatCard loading={list.loading && !list.updatedAt} icon="bars" tone="violet" label="Điểm cao nhất" value={best ?? "—"} hint={scored[0]?.maxPoints ? `Thang ${scored[0].maxPoints}` : undefined} />
+        <StatCard loading={list.loading && !list.updatedAt} icon="bars" tone="violet" label="Tỉ lệ cao nhất" value={leader?.percent != null ? `${+leader.percent.toFixed(2)}%` : "—"} hint={leader ? `${leader.points}/${leader.maxPoints} điểm` : undefined} />
       </div>
       {ties > 0 && (
         <Callout tone="warning" title={`${ties} thí sinh đồng điểm tại ngưỡng Top 40`}>

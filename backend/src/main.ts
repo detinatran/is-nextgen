@@ -22,6 +22,14 @@ async function bootstrap(): Promise<void> {
     res.setHeader('x-correlation-id', correlationId);
     next();
   });
+  // Header bảo mật cho mọi phản hồi API; HSTS chỉ gửi khi yêu cầu đi qua HTTPS (sau proxy: dựa vào trust proxy)
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+    next();
+  });
   // Frontend tĩnh chạy ở origin khác (vd. localhost:3002, nextgen.vnuis.edu.vn): chỉ mở CORS cho các origin khai báo
   const corsOrigins = (process.env.CORS_ORIGINS ?? '').split(',').map((o) => o.trim()).filter(Boolean);
   if (corsOrigins.length > 0) {

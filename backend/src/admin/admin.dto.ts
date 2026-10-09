@@ -77,3 +77,8 @@ export class TeamDto {
   @IsUUID() competitionId!: string;
   @IsString() @MinLength(1) @MaxLength(80) code!: string;
 }
+
+export class DuplicateDecisionDto {
+  @IsString() @MinLength(1) @MaxLength(600) groupKey!: string;
+  @IsUUID() candidateId!: string;
+}

@@ -11,13 +11,13 @@ export async function adminApi<T>(
   const headers = new Headers(init.headers);
   if (init.body && !(init.body instanceof FormData))
     headers.set("Content-Type", "application/json");
-  const csrf =
-    typeof document !== "undefined"
-      ? document.cookie
-          .split("; ")
-          .find((c) => c.startsWith("isng_csrf="))
-          ?.slice("isng_csrf=".length)
-      : undefined;
+  // Ưu tiên cookie CSRF riêng của admin; cookie isng_csrf có thể là của phiên thí sinh cùng tên miền
+  const readCookie = (name: string) =>
+    document.cookie
+      .split("; ")
+      .find((c) => c.startsWith(`${name}=`))
+      ?.slice(name.length + 1);
+  const csrf = typeof document !== "undefined" ? (readCookie("isng_admin_csrf") ?? readCookie("isng_csrf")) : undefined;
   if (csrf) headers.set("x-csrf-token", decodeURIComponent(csrf));
   const response = await fetch(`${ADMIN_API_BASE}/${path}`, {
     ...init,
@@ -117,6 +117,7 @@ export type AssignmentItem = {
   answered: number;
   points: string | null;
   maxPoints: string | null;
+  focusLost?: number | string;
   rank?: number | null;
   percent?: number | null;
   top40?: boolean;

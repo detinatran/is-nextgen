@@ -1,7 +1,9 @@
 import type { Request } from 'express';
 
-export const SESSION_COOKIE = 'isng_session';
-export const CSRF_COOKIE = 'isng_csrf';
+// Trang quản trị chạy cùng tên miền với trang thí sinh: đặt tên cookie riêng (SESSION_COOKIE_NAME/CSRF_COOKIE_NAME)
+// để đăng nhập vai thí sinh không đè phiên quản trị và ngược lại.
+export const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME || 'isng_session';
+export const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'isng_csrf';
 export const CSRF_HEADER = 'x-csrf-token';
 
 export interface AuthContext {

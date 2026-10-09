@@ -1,21 +1,11 @@
 "use client";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { RegistrationItem, viTime } from "@/lib/admin/api";
+import { adminApi, RegistrationItem, viTime } from "@/lib/admin/api";
 import { duplicateFieldLabel, findDuplicates, type DuplicateField } from "@/lib/admin/duplicates";
-import { useResource, Notice, Button, inputClass } from "@/components/admin/operations/common";
+import { useResource, useOperations, Notice, Button, inputClass } from "@/components/admin/operations/common";
 import { Callout, EmptyState, Icon, PageHeader, Pill, Skeleton, StatCard, Tabs, useConfirm } from "@/components/admin/ui/kit";
-
-// Lựa chọn hồ sơ giữ lại chỉ là ghi chú rà soát, lưu trên trình duyệt này (chưa có API lưu vào hệ thống).
-const STORE = "admin.duplicateDecisions";
-const loadDecisions = (): Record<string, string> => {
-  try {
-    return JSON.parse(localStorage.getItem(STORE) ?? "{}");
-  } catch {
-    return {};
-  }
-};
 
 const compareRows: [string, (r: RegistrationItem) => string | null][] = [
   ["Mã thí sinh", (r) => r.candidateCode],
@@ -39,8 +29,10 @@ function DuplicateReviewsPage() {
   const [tab, setTab] = useState<"" | DuplicateField>("");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [decisions, setDecisions] = useState<Record<string, string>>({});
-  useEffect(() => setDecisions(loadDecisions()), []);
+  // Quyết định giữ hồ sơ được lưu trong hệ thống (bảng admin_duplicate_decisions), cả BTC cùng thấy
+  const saved = useResource<Record<string, { candidateId: string }>>("admin/duplicate-decisions", {});
+  const decisions = useMemo(() => Object.fromEntries(Object.entries(saved.data).map(([k, v]) => [k, v.candidateId])), [saved.data]);
+  const op = useOperations();
 
   const groups = useMemo(() => findDuplicates(registrations.data), [registrations.data]);
   const counts = groups.reduce<Record<string, number>>((m, g) => ({ ...m, [g.field]: (m[g.field] ?? 0) + 1 }), {});
@@ -55,26 +47,22 @@ function DuplicateReviewsPage() {
       title: "Chọn hồ sơ giữ lại",
       description: (
         <>
-          Đánh dấu <strong className="text-adm-text">{c.fullName}</strong> ({c.candidateCode || c.email}) là hồ sơ chính thức của nhóm này. Lựa chọn chỉ được ghi nhận trên trình duyệt này để theo dõi rà soát; dữ liệu
-          thí sinh không thay đổi.
+          Đánh dấu <strong className="text-adm-text">{c.fullName}</strong> ({c.candidateCode || c.email}) là hồ sơ chính thức của nhóm này. Lựa chọn được lưu trong hệ thống để cả Ban Tổ chức cùng thấy; hồ sơ và tài khoản thí sinh không thay đổi.
         </>
       ),
       confirmText: "Giữ hồ sơ này",
     });
     if (!r.ok) return;
-    const next = { ...decisions, [groupId]: c.id };
-    setDecisions(next);
-    try {
-      localStorage.setItem(STORE, JSON.stringify(next));
-    } catch {}
+    void op.run(async () => {
+      await adminApi("admin/duplicate-decisions", { method: "PUT", body: JSON.stringify({ groupKey: groupId, candidateId: c.id }) });
+      await saved.reload();
+    }, `Đã ghi nhận giữ hồ sơ ${c.fullName}.`);
   }
   function undo(groupId: string) {
-    const next = { ...decisions };
-    delete next[groupId];
-    setDecisions(next);
-    try {
-      localStorage.setItem(STORE, JSON.stringify(next));
-    } catch {}
+    void op.run(async () => {
+      await adminApi(`admin/duplicate-decisions?groupKey=${encodeURIComponent(groupId)}`, { method: "DELETE" });
+      await saved.reload();
+    }, "Đã bỏ chọn.");
   }
 
   return (
@@ -90,7 +78,8 @@ function DuplicateReviewsPage() {
           </Link>
         }
       />
-      <Notice message={registrations.error} error onRetry={registrations.reload} />
+      <Notice message={registrations.error || saved.error || op.error} error onRetry={registrations.reload} />
+      <Notice message={op.message} />
       {(search || school) && (
         <Callout title="Đang rà soát trong phạm vi bộ lọc">
           {search && <>Từ khoá “{search}”. </>}
@@ -189,11 +178,11 @@ function DuplicateReviewsPage() {
                               {g.candidates.map((c) => (
                                 <td key={c.id} className="px-4 py-3">
                                   {kept?.id === c.id ? (
-                                    <Button size="sm" variant="ghost" onClick={() => undo(g.id)}>
+                                    <Button size="sm" variant="ghost" disabled={op.busy} onClick={() => undo(g.id)}>
                                       Bỏ chọn
                                     </Button>
                                   ) : (
-                                    <Button size="sm" variant="secondary" onClick={() => void keep(g.id, c)}>
+                                    <Button size="sm" variant="secondary" disabled={op.busy} onClick={() => void keep(g.id, c)}>
                                       Giữ hồ sơ này
                                     </Button>
                                   )}
@@ -203,7 +192,7 @@ function DuplicateReviewsPage() {
                           </tbody>
                         </table>
                       </div>
-                      <p className="mt-2 text-xs text-adm-muted">Lựa chọn được lưu trên trình duyệt này để theo dõi rà soát, không thay đổi dữ liệu thí sinh.</p>
+                      <p className="mt-2 text-xs text-adm-muted">Lựa chọn được lưu trong hệ thống; hồ sơ và tài khoản thí sinh không thay đổi. Khoá/xoá tài khoản thừa ở trang Hồ sơ đăng ký.</p>
                     </div>
                   )}
                 </li>

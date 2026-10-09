@@ -68,6 +68,7 @@ type AssignmentRow = {
   answered: bigint;
   points: Prisma.Decimal | null;
   maxPoints: Prisma.Decimal | null;
+  focusLost: bigint;
 };
 
 @Injectable()
@@ -119,6 +120,32 @@ export class AdminService {
       target_id: id,
       metadata,
       reason,
+    });
+  }
+
+  /** Hồ sơ trùng: quyết định giữ hồ sơ nào, lưu trong hệ thống để cả BTC cùng thấy. */
+  async duplicateDecisions() {
+    const rows = await this.prisma.admin_duplicate_decisions.findMany();
+    return Object.fromEntries(rows.map((r) => [r.group_key, { candidateId: r.kept_candidate_id, decidedAt: r.decided_at }]));
+  }
+  decideDuplicate(groupKey: string, candidateId: string, req: AuthenticatedRequest) {
+    return this.transaction(async (tx) => {
+      if (!(await tx.candidates.findUnique({ where: { id: candidateId } })))
+        throw AppException.notFound("Hồ sơ không tồn tại");
+      await tx.admin_duplicate_decisions.upsert({
+        where: { group_key: groupKey },
+        create: { group_key: groupKey, kept_candidate_id: candidateId, decided_by_user_id: req.auth!.userId },
+        update: { kept_candidate_id: candidateId, decided_by_user_id: req.auth!.userId, decided_at: new Date() },
+      });
+      await this.record(tx, req, "admin.duplicate.kept", "candidate", candidateId, { groupKey });
+      return { groupKey, candidateId };
+    });
+  }
+  clearDuplicate(groupKey: string, req: AuthenticatedRequest) {
+    return this.transaction(async (tx) => {
+      await tx.admin_duplicate_decisions.deleteMany({ where: { group_key: groupKey } });
+      await this.record(tx, req, "admin.duplicate.cleared", "candidate", undefined, { groupKey });
+      return { groupKey };
     });
   }
 
@@ -645,7 +672,9 @@ export class AdminService {
         CASE WHEN latest.state='ACTIVE' THEN 'IN_PROGRESS' WHEN latest.state='FINALIZED' THEN 'SUBMITTED' ELSE 'NOT_STARTED' END AS status,
         latest.id AS "attemptId",latest.ordinal,latest.started_at AS "startedAt",latest.finalized_at AS "finalizedAt",
         (SELECT count(*) FROM answers ans WHERE ans.attempt_id=latest.id AND ans.selected_delivered_option_id IS NOT NULL) AS answered,
-        final.points,sc.max_points AS "maxPoints"
+        final.points,sc.max_points AS "maxPoints",
+        (SELECT count(*) FROM audit_events ev WHERE ev.action='exam.focus_lost'
+           AND ev.target_id IN (SELECT at2.id FROM attempts at2 WHERE at2.assignment_id=a.id)) AS "focusLost"
       FROM candidate_assignments a JOIN candidates c ON c.id=a.candidate_id JOIN candidate_profiles p ON p.candidate_id=c.id
       JOIN exam_schedules s ON s.id=a.schedule_id JOIN exams e ON e.id=a.exam_id
       LEFT JOIN LATERAL (SELECT * FROM attempts at WHERE at.assignment_id=a.id ORDER BY at.ordinal DESC LIMIT 1) latest ON true

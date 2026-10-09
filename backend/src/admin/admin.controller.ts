@@ -39,6 +39,7 @@ import {
   AccountActionDto,
   AssignmentDto,
   CandidateDto,
+  DuplicateDecisionDto,
   PolicyDto,
   QuestionDto,
   ScheduleDto,
@@ -286,6 +287,22 @@ export class AdminOperationsController {
     @Param("id", ParseUUIDPipe) id: string,
   ) {
     return this.admin.history(id);
+  }
+  @Get("duplicate-decisions") duplicateDecisions() {
+    return this.admin.duplicateDecisions();
+  }
+  @Put("duplicate-decisions") decideDuplicate(
+    @Body() dto: DuplicateDecisionDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.admin.decideDuplicate(dto.groupKey, dto.candidateId, req);
+  }
+  @Delete("duplicate-decisions") clearDuplicate(
+    @Query("groupKey") groupKey: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    if (!groupKey || groupKey.length > 600) throw AppException.validation("Thiếu nhóm trùng");
+    return this.admin.clearDuplicate(groupKey, req);
   }
   @Get("monitor") monitor(@Query("competitionId") competitionId?: string) {
     return this.admin.assignments(this.competition(competitionId));

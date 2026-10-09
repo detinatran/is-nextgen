@@ -8,7 +8,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   const login = new URL("/admin/login", request.url);
   login.searchParams.set("redirect", request.nextUrl.pathname);
-  if (!request.cookies.get("isng_session")) return NextResponse.redirect(login);
+  // Admin dùng cookie riêng (isng_admin_session); bản chạy thử local cũ vẫn dùng isng_session
+  if (!request.cookies.get("isng_admin_session") && !request.cookies.get("isng_session")) return NextResponse.redirect(login);
   try {
     const api = (process.env.BACKEND_URL || "http://127.0.0.1:3001").replace(
       /\/$/,

@@ -27,6 +27,9 @@ services:
       MEDIA_STORAGE_DIR: /var/lib/isnextgen/media
       TRUST_PROXY: "1"
       WORKERS_DISABLED: "1"
+      # Cookie riêng cho admin, không trùng cookie phiên của trang thí sinh (cùng tên miền)
+      SESSION_COOKIE_NAME: isng_admin_session
+      CSRF_COOKIE_NAME: isng_admin_csrf
       CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
       SMTP_URL: ${SMTP_URL:-}
       MAIL_FROM: ${MAIL_FROM:-NextGen Manager <nextgen@vnuis.edu.vn>}

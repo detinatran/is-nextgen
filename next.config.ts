@@ -10,6 +10,21 @@ const nextConfig: NextConfig = {
   output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   trailingSlash: true,
   images: { unoptimized: true },
+  poweredByHeader: false,
+  // Header bảo mật cho các trang admin (nginx chỉ chuyển tiếp)
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     const backend = (process.env.BACKEND_URL || 'http://127.0.0.1:3001').replace(/\/$/, '');
     return [{ source: '/api/v1/:path*', destination: `${backend}/api/v1/:path*` }];

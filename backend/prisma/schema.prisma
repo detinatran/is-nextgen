@@ -380,6 +380,13 @@ model admin_account_deletions {
   deleted_at DateTime @default(now()) @db.Timestamptz(6)
 }
 
+model admin_duplicate_decisions {
+  group_key          String   @id
+  kept_candidate_id  String   @db.Uuid
+  decided_by_user_id String   @db.Uuid
+  decided_at         DateTime @default(now()) @db.Timestamptz(6)
+}
+
 model admin_schedule_blueprints {
   schedule_id String @id @db.Uuid
   blueprint_version_id String @db.Uuid

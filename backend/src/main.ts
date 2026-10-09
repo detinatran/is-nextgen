@@ -27,7 +27,7 @@ async function bootstrap(): Promise<void> {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+    if (req.secure || req.header('x-forwarded-proto') === 'https') res.setHeader('Strict-Transport-Security', 'max-age=31536000');
     next();
   });
   // Frontend tĩnh chạy ở origin khác (vd. localhost:3002, nextgen.vnuis.edu.vn): chỉ mở CORS cho các origin khai báo

@@ -187,11 +187,11 @@ export default function AdminSidebar({
 
             {/* Expanded Brand Text - Only visible when not collapsed */}
             {!collapsed && (
-              <div className="brand-text flex flex-col min-w-0 whitespace-nowrap ml-3 opacity-100 w-auto transition-all duration-300 ease-out">
+              <div className="brand-text flex flex-col items-center text-center min-w-0 whitespace-nowrap opacity-100 w-auto transition-all duration-300 ease-out">
                 <span className="font-extrabold text-white text-base leading-none tracking-wide whitespace-nowrap">
                   NEXTGEN
                 </span>
-                <span className="mt-1 text-[11px] leading-none text-amber-400 font-bold tracking-[0.3em] uppercase whitespace-nowrap">
+                <span className="mt-1 pl-[0.3em] text-[11px] leading-none text-amber-400 font-bold tracking-[0.3em] uppercase whitespace-nowrap">
                   Manager
                 </span>
               </div>

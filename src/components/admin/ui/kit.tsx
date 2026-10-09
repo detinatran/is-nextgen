@@ -437,13 +437,19 @@ export function FileUpload({ file, onChange, accept, maxBytes, hint }: { file: F
 /** Ngăn chi tiết trượt từ bên phải (Esc hoặc bấm nền để đóng). */
 export function Drawer({ open, onClose, title, subtitle, children, footer }: { open: boolean; onClose: () => void; title: string; subtitle?: ReactNode; children: ReactNode; footer?: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  // onClose thường là hàm inline (đổi mỗi lần render): giữ trong ref để chỉ focus khi vừa mở,
+  // không giật focus khỏi ô đang gõ trong ngăn sau mỗi phím
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  });
   useEffect(() => {
     if (!open) return;
     ref.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeRef.current();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[90] flex justify-end bg-slate-900/30" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

@@ -94,7 +94,7 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
             {preview && <img src={preview} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-[15px] font-semibold text-navy">{file.name}</p>
-              <p className="text-sm text-muted">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
+              <p className="text-sm text-muted">{file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}</p>
               {uploading && (
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
                   <div className="h-full rounded-full bg-orange transition-[width]" style={{ width: `${progress * 100}%` }} />

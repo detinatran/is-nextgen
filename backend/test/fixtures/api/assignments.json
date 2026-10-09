@@ -14,7 +14,7 @@
         "capacity": 100
       },
       "attemptsUsed": 0,
-      "attemptQuota": 3,
+      "attemptQuota": 1,
       "activeAttemptId": null,
       "finalScore": null
     }

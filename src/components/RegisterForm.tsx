@@ -116,8 +116,8 @@ const text = {
     uploading: "Đang tải video...",
     sending: "Đang gửi...",
     submit: "Gửi đăng ký",
-    closed: "Đã hết hạn đăng ký mùa I.",
-    notOpen: "Cổng đăng ký hiện chưa mở. Vui lòng quay lại sau.",
+    closed: "Đã hết hạn đăng ký mùa I. Cần hỗ trợ, liên hệ nextgen@vnuis.edu.vn hoặc hotline 0962 132 535.",
+    notOpen: "Cổng đăng ký hiện chưa mở. Vui lòng quay lại sau hoặc liên hệ nextgen@vnuis.edu.vn.",
   },
   en: {
     uploadError: "Could not upload your photo or video. Check your connection and try again.",
@@ -204,8 +204,8 @@ const text = {
     uploading: "Uploading video...",
     sending: "Sending...",
     submit: "Submit registration",
-    closed: "Registration for Season I has closed.",
-    notOpen: "Registration is not open yet. Please check back later.",
+    closed: "Registration for Season I has closed. For help, contact nextgen@vnuis.edu.vn or hotline 0962 132 535.",
+    notOpen: "Registration is not open yet. Please check back later or contact nextgen@vnuis.edu.vn.",
   },
 };
 const yearValues = text.vi.years;

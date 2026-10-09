@@ -25,6 +25,7 @@ export default function ExamRoom() {
   const [current, setCurrent] = useState(0);
   const [writer, setWriter] = useState<number | null>(null);
   const [needTakeover, setNeedTakeover] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [error, setError] = useState("");
   const [confirming, setConfirming] = useState(false);
@@ -77,8 +78,19 @@ export default function ExamRoom() {
           headers: { "Idempotency-Key": idempotencyKey() },
           body: JSON.stringify({ writerGeneration: writer ?? 1 }),
         });
-      } catch {
-        // Hết giờ: server tự chốt bài (worker) nên vẫn coi như đã nộp
+      } catch (err) {
+        // Hết giờ: server tự chốt bài (worker) nên vẫn coi như đã nộp.
+        // Nộp tay mà lỗi thì không được báo "Đã nộp": kiểm tra lại trạng thái thật trên server.
+        if (cause === "MANUAL") {
+          const latest = await apiCall<AttemptView>(`/me/attempts/${attemptId}`).catch(() => null);
+          if (latest?.attempt.state !== "FINALIZED") {
+            submitting.current = false;
+            if (err instanceof ApiCallError && err.code === "STATE_CONFLICT") setNeedTakeover(true);
+            else if (err instanceof ApiCallError && err.status === 401) setError("LOGIN");
+            else setSubmitError("Chưa nộp được bài. Kiểm tra kết nối mạng rồi bấm Nộp bài lần nữa; đáp án đã chọn vẫn được giữ.");
+            return;
+          }
+        }
       }
       setFinished(cause);
     },
@@ -241,10 +253,21 @@ export default function ExamRoom() {
             <span className="block text-[11px] font-semibold tracking-wider uppercase opacity-80">Còn lại</span>
             <span className="text-xl font-bold">{fmtClock(remaining)}</span>
           </div>
-          <button onClick={() => setConfirming(true)} className="btn-primary px-5 py-2.5">
+          <button
+            onClick={() => {
+              setSubmitError("");
+              setConfirming(true);
+            }}
+            className="btn-primary px-5 py-2.5"
+          >
             Nộp bài
           </button>
         </div>
+        {submitError && (
+          <p role="alert" className="bg-[#fde8e8] px-4 py-2 text-center text-[13px] font-semibold text-[#b42318]">
+            {submitError}
+          </p>
+        )}
         {focusLost > 0 && (
           <p className="bg-[#fff1e6] px-4 py-1.5 text-center text-[13px] font-medium text-orange-ink">
             Bạn đã rời trang làm bài {focusLost} lần. Mỗi lần rời trang đều được ghi nhận gửi Ban Tổ chức.

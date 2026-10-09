@@ -138,7 +138,7 @@ export class NotificationsService {
           subject: 'NextGen Manager: Tài khoản và lịch thi Vòng 1',
           text:
             `Chào ${text('fullName') || 'bạn'},\n\n` +
-            `Bạn đã được xếp lịch thi Vòng 1 (trắc nghiệm trực tuyến, 60 phút).\n` +
+            `Bạn đã được xếp lịch thi Vòng 1 (trắc nghiệm trực tuyến, ${text('durationMinutes') || '60'} phút).\n` +
             `Mã thí sinh: ${candidateCode}\n` +
             `Ca thi: ${text('schedule')}\n\n` +
             `Bước 1: Kích hoạt tài khoản và đặt mật khẩu tại ${site}/thi/kich-hoat/ (dùng email này để nhận mã).\n` +

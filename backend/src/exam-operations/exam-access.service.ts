@@ -9,7 +9,16 @@ import { PrismaService } from '../database/prisma.service';
 import { parseSelectionPolicy, selectFrozenVersions } from './domain/selection-policy';
 import type { AssignmentSummary, AttemptStartedResponse, AvailabilityResponse } from './dto/exam-access.dto';
 
-const ATTEMPT_QUOTA = 3;
+// FR-19: làm xong (đã nộp/hết giờ) thì không vào lại; BTC muốn cho thi lại thì nâng EXAM_ATTEMPT_QUOTA
+const ATTEMPT_QUOTA = Math.max(1, Number(process.env.EXAM_ATTEMPT_QUOTA) || 1);
+
+/** Thời lượng làm bài theo ca (cột duration_seconds do trang quản trị thêm vào exam_schedules); chưa có thì dùng thời lượng của kỳ thi. */
+async function scheduleDurationSeconds(db: Prisma.TransactionClient | PrismaService, scheduleId: string, fallback: number): Promise<number> {
+  const rows = await db.$queryRaw<{ d: number | null }[]>`
+    SELECT (to_jsonb(s)->>'duration_seconds')::int AS d FROM exam_schedules s WHERE s.id = ${scheduleId}::uuid`;
+  const d = rows[0]?.d;
+  return d && d > 0 ? d : fallback;
+}
 
 /**
  * FR-19 exam access: assignments view, availability and the atomic Start.
@@ -52,7 +61,7 @@ export class ExamAccessService {
           id: exam.id,
           round: exam.round,
           name: exam.name,
-          durationSeconds: exam.duration_seconds,
+          durationSeconds: await scheduleDurationSeconds(this.prisma, a.schedule_id, exam.duration_seconds),
         },
         schedule: {
           opensAt: schedule.opens_at.toISOString(),
@@ -201,7 +210,8 @@ export class ExamAccessService {
         }
 
         const startedAt = new Date();
-        const deadlineAt = new Date(startedAt.getTime() + exam.duration_seconds * 1000);
+        const durationSeconds = await scheduleDurationSeconds(tx, schedule.id, exam.duration_seconds);
+        const deadlineAt = new Date(startedAt.getTime() + durationSeconds * 1000);
         const attempt = await tx.attempts.create({
           data: {
             id: newAttemptId,

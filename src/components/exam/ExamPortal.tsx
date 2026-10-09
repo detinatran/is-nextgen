@@ -19,7 +19,7 @@ const REASONS: Record<string, string> = {
 };
 
 const RULES = [
-  "Bài thi gồm các câu trắc nghiệm, làm trong 60 phút tính từ lúc bấm Vào thi.",
+  "Bài thi gồm các câu trắc nghiệm; thời gian làm bài tính từ lúc bấm Vào thi.",
   "Đáp án được lưu tự động sau mỗi lần chọn. Hết giờ, hệ thống tự nộp bài.",
   "Không chuyển tab hoặc rời trang làm bài: mỗi lần rời trang đều được ghi nhận.",
   "Dùng máy tính có mạng ổn định. Nếu mất kết nối, đăng nhập lại và bấm Tiếp tục làm bài.",
@@ -227,7 +227,7 @@ export default function ExamPortal() {
                       <button onClick={() => start(a)} disabled={busy} className="btn-primary cta-pulse w-full py-4 text-lg disabled:opacity-60">
                         {a.activeAttemptId ? "Tiếp tục làm bài" : "Vào thi"} <Icon name="arrowRight" className="h-5 w-5" />
                       </button>
-                      <p className="mt-2 text-[13px] text-muted">Đồng hồ 60 phút bắt đầu chạy khi bạn bấm Vào thi.</p>
+                      <p className="mt-2 text-[13px] text-muted">Đồng hồ {Math.round(a.exam.durationSeconds / 60)} phút bắt đầu chạy khi bạn bấm Vào thi.</p>
                     </>
                   ) : wait > 0 ? (
                     <>

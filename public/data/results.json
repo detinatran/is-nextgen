@@ -1,9 +1,9 @@
 {
-  "_huong_dan": "Ban Tổ chức sửa file này sau mỗi vòng. status: upcoming (Chưa diễn ra) | soon (Sắp công bố) | published (Đã công bố). link: đường dẫn danh sách (Google Drive, PDF...).",
+  "_huong_dan": "Ban Tổ chức sửa file này sau mỗi vòng. status: upcoming (Chưa diễn ra) | soon (Sắp công bố) | published (Đã công bố). link: đường dẫn danh sách (Google Drive, PDF...). Các trường roundEn, titleEn, dateEn là bản tiếng Anh cho trang /en (để trống thì hiện bản tiếng Việt).",
   "items": [
-    { "round": "Vòng 01", "title": "Danh sách 40 thí sinh vào Vòng 2", "status": "upcoming", "date": "Dự kiến tuần 2/11/2026", "link": "" },
-    { "round": "Vòng 02", "title": "Danh sách 16 thí sinh vào Vòng 3", "status": "upcoming", "date": "Dự kiến tuần 4/11/2026", "link": "" },
-    { "round": "Vòng 03", "title": "12 thí sinh vào Chung kết và danh sách 03 đội", "status": "upcoming", "date": "Dự kiến tuần 2/12/2026", "link": "" },
-    { "round": "Chung kết", "title": "Kết quả chung cuộc và các giải thưởng", "status": "upcoming", "date": "Dự kiến tuần 4/12/2026", "link": "" }
+    { "round": "Vòng 01", "title": "Danh sách 40 thí sinh vào Vòng 2", "status": "upcoming", "date": "Dự kiến tuần 2/11/2026", "link": "", "roundEn": "Round 01", "titleEn": "The 40 candidates advancing to Round 2", "dateEn": "Expected week 2, November 2026" },
+    { "round": "Vòng 02", "title": "Danh sách 16 thí sinh vào Vòng 3", "status": "upcoming", "date": "Dự kiến tuần 4/11/2026", "link": "", "roundEn": "Round 02", "titleEn": "The 16 candidates advancing to Round 3", "dateEn": "Expected week 4, November 2026" },
+    { "round": "Vòng 03", "title": "12 thí sinh vào Chung kết và danh sách 03 đội", "status": "upcoming", "date": "Dự kiến tuần 2/12/2026", "link": "", "roundEn": "Round 03", "titleEn": "The 12 finalists and the 3 final teams", "dateEn": "Expected week 2, December 2026" },
+    { "round": "Chung kết", "title": "Kết quả chung cuộc và các giải thưởng", "status": "upcoming", "date": "Dự kiến tuần 4/12/2026", "link": "", "roundEn": "Final", "titleEn": "Final results and awards", "dateEn": "Expected week 4, December 2026" }
   ]
 }

@@ -22,7 +22,7 @@ export default function LangSwitch({ className = "" }: { className?: string }) {
         e.preventDefault();
         window.location.href = href + window.location.hash;
       }}
-      aria-label={to === "en" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
+      aria-label={to === "en" ? "Chuyển sang tiếng Anh" : "Switch to Vietnamese"}
       className={`inline-flex items-center gap-1.5 rounded-full border border-white/30 px-3 py-1.5 text-[13px] font-semibold text-white transition hover:border-white hover:bg-white/10 ${className}`}
     >
       <Icon name="globe" className="h-4 w-4" />

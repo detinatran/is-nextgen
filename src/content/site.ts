@@ -112,10 +112,10 @@ export const journey = {
   title: "Hành trình trải nghiệm",
   more: "Xem toàn bộ thể lệ",
   items: [
-    { title: "Thảo luận nhóm không người dẫn", body: "Nhóm 06 người cùng giải một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm.", image: "/images/generated/hl-lgd.webp", href: "/the-le/#vong-2" },
-    { title: "Giải bài toán quản trị cùng AI", body: "Xử lý hộp thư của nhà quản lý: được dùng AI nhưng phải giải trình từng quyết định.", image: "/images/generated/round-case.webp", href: "/the-le/#vong-3" },
-    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Quan sát môi trường làm việc thực tế và học hỏi trực tiếp từ nhà quản lý.", image: "/images/generated/hl-trip.webp", href: "/the-le/#ben-le" },
-    { title: "Kết nối cộng đồng nhân tài", body: "Tiệc tối Networking cùng doanh nghiệp, giám khảo và cựu sinh viên.", image: "/images/generated/hl-dinner.webp", href: "/the-le/#ben-le" },
+    { title: "Thảo luận nhóm không người dẫn", body: "Nhóm 06 người cùng giải một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm.", image: "/images/photos/hl-lgd.webp", href: "/the-le/#vong-2" },
+    { title: "Giải bài toán quản trị cùng AI", body: "Xử lý hộp thư của nhà quản lý: được dùng AI nhưng phải giải trình từng quyết định.", image: "/images/photos/round-case.webp", href: "/the-le/#vong-3" },
+    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Quan sát môi trường làm việc thực tế và học hỏi trực tiếp từ nhà quản lý.", image: "/images/photos/hl-trip.webp", href: "/the-le/#ben-le" },
+    { title: "Kết nối cộng đồng nhân tài", body: "Tiệc tối Networking cùng doanh nghiệp, giám khảo và cựu sinh viên.", image: "/images/photos/hl-dinner.webp", href: "/the-le/#ben-le" },
   ],
 };
 
@@ -191,32 +191,32 @@ export const values = {
 
 export const personas = [
   {
-    image: "/images/generated/persona-1.webp",
+    image: "/images/photos/persona-1.webp",
     title: "Tư duy phân tích và ra quyết định",
     body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
   },
   {
-    image: "/images/generated/persona-2.webp",
+    image: "/images/photos/persona-2.webp",
     title: "Tư duy hệ thống và sắp xếp ưu tiên",
     body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
   },
   {
-    image: "/images/generated/persona-3.webp",
+    image: "/images/photos/persona-3.webp",
     title: "Lãnh đạo và tạo ảnh hưởng",
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
-    image: "/images/generated/persona-4.webp",
+    image: "/images/photos/persona-4.webp",
     title: "Hợp tác và giao tiếp",
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
-    image: "/images/generated/persona-5.webp",
+    image: "/images/photos/persona-5.webp",
     title: "Đạo đức và trách nhiệm",
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
-    image: "/images/generated/persona-6.webp",
+    image: "/images/photos/persona-6.webp",
     title: "Trình bày và ngôn ngữ",
     body: "Cấu trúc thông điệp rõ ràng, thuyết phục bằng lời và hình ảnh, trình bày được bằng tiếng Anh.",
   },

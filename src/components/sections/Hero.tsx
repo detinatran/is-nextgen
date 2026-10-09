@@ -7,8 +7,8 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Liên chi đoàn, CLB Marketing IMC, CLB iSupport", script: ["Kiến tạo", "thế hệ quản trị", "tiếp theo"], slides: "Ảnh bìa" },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union Branch, IMC Marketing Club, iSupport Club", script: ["Shaping", "the next generation", "of managers"], slides: "Cover image" },
+  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], organizers: "Đơn vị tổ chức", organizersAlt: "Trường Quốc tế, Liên chi đoàn, CLB Marketing IMC, CLB iSupport", slides: "Ảnh bìa" },
+  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], organizers: "Organized by", organizersAlt: "VNU International School, Youth Union Branch, IMC Marketing Club, iSupport Club", slides: "Cover image" },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -46,10 +46,9 @@ export default function Hero({ lang }: { lang: Lang }) {
         {/* 3 key visual (sinh bằng Codex) luân phiên 5 giây/lần; điện thoại dùng bản cắt 16:9 */}
         <HeroSlides label={t.slides} />
 
-        {/* Lớp phủ: tối dần về bên trái (chữ giới thiệu), phía trên (menu, logo) và góc phải (chữ viết tay) */}
+        {/* Lớp phủ: tối dần về bên trái (chữ giới thiệu) và phía trên (menu, logo) */}
         <div aria-hidden className="absolute inset-0 hidden bg-linear-to-r from-navy-deep/55 via-navy-deep/15 via-30% to-transparent to-50% lg:block" />
         <div aria-hidden className="absolute inset-x-0 top-0 hidden h-48 bg-linear-to-b from-navy-deep/60 to-transparent lg:block" />
-        <div aria-hidden className="absolute top-0 right-0 hidden h-1/2 w-1/3 bg-[radial-gradient(ellipse_at_72%_50%,rgb(7_21_51/0.55),transparent_62%)] lg:block" />
 
         {/* Mép dưới cong như vành kính (asset sinh bằng Codex, dự phòng bằng SVG) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden lg:block">
@@ -86,7 +85,7 @@ export default function Hero({ lang }: { lang: Lang }) {
         <div className="absolute inset-0 hidden lg:block">
           <div className="container-x relative h-full">
             {/* Đơn vị tổ chức */}
-            <div className="absolute top-20 right-8 flex items-center gap-4 rounded-2xl bg-navy-deep/55 py-2 pr-2 pl-5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
+            <div className="absolute top-20 right-0 flex items-center gap-4 rounded-2xl bg-navy-deep/55 py-2 pr-2 pl-5 shadow-lg shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">
               <span className="text-sm font-semibold text-white">{t.organizers}</span>
               {/* Logo gốc (có màu) đặt trên nền trắng để đọc rõ */}
               <ul className="flex items-center gap-5 rounded-xl bg-white px-4 py-2" aria-label={t.organizersAlt}>
@@ -99,18 +98,6 @@ export default function Hero({ lang }: { lang: Lang }) {
                 ))}
               </ul>
             </div>
-
-            {/* Chữ viết tay bên phải */}
-            <p
-              aria-hidden
-              className="absolute top-[25%] right-6 -rotate-[8deg] [text-shadow:0_2px_4px_rgb(7_21_51/0.6),0_4px_20px_rgb(7_21_51/0.5)] text-right font-script text-[clamp(2rem,2.4vw,2.7rem)] leading-[1.05] text-white xl:right-0"
-            >
-              {t.script[0]}
-              <br />
-              {t.script[1]}
-              <br />
-              {t.script[2]}
-            </p>
 
             {/* Tiêu đề phụ đặt trong khung kính trên bục */}
             <div className="absolute top-[64%] left-1/2 w-max -translate-x-1/2 rounded-xl bg-navy-deep/45 px-7 py-2.5 text-center shadow-xl shadow-navy-deep/20 ring-1 ring-white/25 backdrop-blur-xl">

@@ -2,6 +2,7 @@ import Countdown from "@/components/Countdown";
 import Icon from "@/components/Icon";
 import PageHero from "@/components/PageHero";
 import RegisterForm from "@/components/RegisterForm";
+import DeadlineLabel from "@/components/DeadlineLabel";
 import SiteShell from "@/components/SiteShell";
 import { getContent } from "@/content";
 import type { Lang } from "@/lib/i18n";
@@ -16,7 +17,7 @@ export const registerText = {
     checklist: [
       "Thông tin cá nhân và mã số sinh viên",
       "Video giới thiệu tối đa 02 phút: giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố",
-      "File video (MP4, MOV...) dưới 300 MB, tải lên ngay trong form",
+      "File video MP4 dưới 300 MB, tải lên ngay trong form",
       "01 ảnh cá nhân rõ mặt (JPG, PNG) dưới 10 MB để Ban Tổ chức làm truyền thông",
       "Thẻ sinh viên hoặc giấy xác nhận để xuất trình ở các vòng thi trực tiếp",
     ],
@@ -30,7 +31,7 @@ export const registerText = {
     checklist: [
       "Your personal details and student ID",
       "An intro video of up to 02 minutes introducing yourself and answering the case question announced by the Organizing Committee",
-      "The video file (MP4, MOV...) under 300 MB, uploaded directly in the form",
+      "The video as an MP4 file under 300 MB, uploaded directly in the form",
       "01 clear personal photo (JPG, PNG) under 10 MB for the competition's communications",
       "Your student card or enrolment letter to show at in-person rounds",
     ],
@@ -50,7 +51,7 @@ export default function RegisterPage({ lang }: { lang: Lang }) {
             <div className="mt-4">
               <Countdown lang={lang} deadline={site.registrationDeadline} />
             </div>
-            <p className="mt-3 text-center text-[13px] text-white/75">{site.registrationDeadlineLabel}</p>
+            <p className="mt-3 text-center text-[13px] text-white/75"><DeadlineLabel lang={lang} fallback={site.registrationDeadlineLabel} /></p>
           </div>
           <div className="card p-6">
             <h2 className="font-bold text-navy">{t.prepare}</h2>

@@ -29,7 +29,7 @@ export class RegistrationFormService {
       },
       photo: {
         maxBytes: this.config.getOrThrow('photoMaxBytes'),
-        acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        acceptedTypes: ['image/jpeg', 'image/png'],
         statement:
           '01 bức ảnh cá nhân dùng cho hoạt động truyền thông của Cuộc thi.',
       },

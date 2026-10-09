@@ -76,6 +76,17 @@ export class RegistrationsService {
     private readonly challenges: ChallengeService,
   ) {}
 
+  async registrationWindow(code: string) {
+    const competition = await this.prisma.competitions.findUnique({ where: { code: code.trim().slice(0, 64) } });
+    if (!competition) throw AppException.notFound('Competition not found');
+    return {
+      name: competition.name,
+      opensAt: competition.registration_opens_at.toISOString(),
+      closesAt: competition.registration_closes_at.toISOString(),
+      serverTime: new Date().toISOString(),
+    };
+  }
+
   async createDraft(
     dto: CreateRegistrationDraftDto,
     correlationId: string,
@@ -83,6 +94,20 @@ export class RegistrationsService {
     if (!dto.consent.granted) {
       throw AppException.validation('Consent must be granted to register', { field: 'consent.granted' });
     }
+    const fullName = cleanText(dto.fullName);
+    const studentId = cleanText(dto.studentId);
+    const school = cleanText(dto.school);
+    const department = cleanText(dto.department);
+    const major = cleanText(dto.major);
+    if (!fullName || !studentId || !school || !department || !major) {
+      throw AppException.validation('Required profile fields cannot be empty');
+    }
+
+    const dob = new Date(`${dto.dateOfBirth}T00:00:00Z`);
+    if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+      throw AppException.validation('Date of birth cannot be in the future', { field: 'dateOfBirth' });
+    }
+
     const email = cleanText(dto.email);
     const emailNormalized = normalizeEmail(email);
     const phone = cleanText(dto.phone);
@@ -98,12 +123,12 @@ export class RegistrationsService {
       await tx.candidate_profiles.create({
         data: {
           candidate_id: candidate.id,
-          full_name: cleanText(dto.fullName),
-          date_of_birth: new Date(`${dto.dateOfBirth}T00:00:00Z`),
-          student_id: cleanText(dto.studentId),
-          school: cleanText(dto.school),
-          department: cleanText(dto.department),
-          major: cleanText(dto.major),
+          full_name: fullName,
+          date_of_birth: dob,
+          student_id: studentId,
+          school,
+          department,
+          major,
           email,
           email_normalized: emailNormalized,
           phone,
@@ -286,12 +311,38 @@ export class RegistrationsService {
       }
 
       const patch: Prisma.candidate_profilesUpdateInput = {};
-      if (dto.fullName !== undefined) patch.full_name = cleanText(dto.fullName);
-      if (dto.dateOfBirth !== undefined) patch.date_of_birth = new Date(`${dto.dateOfBirth}T00:00:00Z`);
-      if (dto.studentId !== undefined) patch.student_id = cleanText(dto.studentId);
-      if (dto.school !== undefined) patch.school = cleanText(dto.school);
-      if (dto.department !== undefined) patch.department = cleanText(dto.department);
-      if (dto.major !== undefined) patch.major = cleanText(dto.major);
+      if (dto.fullName !== undefined) {
+        const val = cleanText(dto.fullName);
+        if (!val) throw AppException.validation('Full name cannot be empty');
+        patch.full_name = val;
+      }
+      if (dto.dateOfBirth !== undefined) {
+        const dob = new Date(`${dto.dateOfBirth}T00:00:00Z`);
+        if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+          throw AppException.validation('Date of birth cannot be in the future');
+        }
+        patch.date_of_birth = dob;
+      }
+      if (dto.studentId !== undefined) {
+        const val = cleanText(dto.studentId);
+        if (!val) throw AppException.validation('Student ID cannot be empty');
+        patch.student_id = val;
+      }
+      if (dto.school !== undefined) {
+        const val = cleanText(dto.school);
+        if (!val) throw AppException.validation('School cannot be empty');
+        patch.school = val;
+      }
+      if (dto.department !== undefined) {
+        const val = cleanText(dto.department);
+        if (!val) throw AppException.validation('Department cannot be empty');
+        patch.department = val;
+      }
+      if (dto.major !== undefined) {
+        const val = cleanText(dto.major);
+        if (!val) throw AppException.validation('Major cannot be empty');
+        patch.major = val;
+      }
       if (dto.facebook !== undefined) patch.facebook = cleanText(dto.facebook);
       if (dto.email !== undefined) {
         if (registration.state === 'SUBMITTED') {

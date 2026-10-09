@@ -10,7 +10,8 @@ export interface EnqueueInput {
     | 'ACTIVATION'
     | 'EMAIL_VERIFY'
     | 'PASSWORD_RESET'
-    | 'REGISTRATION_CONFIRMED';
+    | 'REGISTRATION_CONFIRMED'
+    | 'EXAM_INVITATION';
   destinationEmail: string;
   payload: Record<string, unknown>;
   deduplicationKey: string;
@@ -104,29 +105,48 @@ export class NotificationsService {
   ): { subject: string; text: string } {
     const code = typeof payload['code'] === 'string' ? payload['code'] : '';
     const candidateCode = typeof payload['candidateCode'] === 'string' ? payload['candidateCode'] : '';
+    const site = process.env.PUBLIC_SITE_URL ?? 'https://nextgen.vnuis.edu.vn';
+    const text = (key: string) => (typeof payload[key] === 'string' ? (payload[key] as string) : '');
+    const sign = '\n\nBan Tổ chức NextGen Manager Challenge 2026\nnextgen@vnuis.edu.vn · Hotline 0962 132 535';
     switch (templateCode) {
       case 'ACTIVATION':
         return {
-          subject: 'IS-NextGen: Kích hoạt tài khoản',
-          text: `Ma kich hoat tai khoan cua ban la: ${code}. Ma co hieu luc 15 phut.`,
+          subject: 'NextGen Manager: Mã kích hoạt tài khoản thi',
+          text: `Mã kích hoạt tài khoản của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/kich-hoat/ để đặt mật khẩu.${sign}`,
         };
       case 'EMAIL_VERIFY':
         return {
-          subject: 'IS-NextGen: Xac thuc email',
-          text: `Ma xac thuc email cua ban la: ${code}. Ma co hieu luc 15 phut.`,
+          subject: 'NextGen Manager: Mã xác thực',
+          text: `Mã xác thực của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nếu bạn không yêu cầu mã này, hãy bỏ qua email.${sign}`,
         };
       case 'PASSWORD_RESET':
         return {
-          subject: 'IS-NextGen: Dat lai mat khau',
-          text: `Ma dat lai mat khau cua ban la: ${code}. Ma co hieu luc 15 phut.`,
+          subject: 'NextGen Manager: Đặt lại mật khẩu',
+          text: `Mã đặt lại mật khẩu của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/quen-mat-khau/.${sign}`,
         };
       case 'REGISTRATION_CONFIRMED':
         return {
-          subject: 'IS-NextGen: Xac nhan dang ky thanh cong',
-          text: `Ban da dang ky thanh cong. Ma dinh danh cua ban la: ${candidateCode}.`,
+          subject: 'NextGen Manager: Xác nhận đăng ký thành công',
+          text:
+            `Chúc mừng bạn đã đăng ký thành công NextGen Manager Challenge 2026.\n` +
+            `Mã thí sinh của bạn: ${candidateCode}\n\n` +
+            `Ban Tổ chức sẽ gửi email hướng dẫn tài khoản và lịch thi Vòng 1 (trắc nghiệm trực tuyến 60 phút) trước ngày thi. ` +
+            `Vui lòng theo dõi email và fanpage của cuộc thi.${sign}`,
+        };
+      case 'EXAM_INVITATION':
+        return {
+          subject: 'NextGen Manager: Tài khoản và lịch thi Vòng 1',
+          text:
+            `Chào ${text('fullName') || 'bạn'},\n\n` +
+            `Bạn đã được xếp lịch thi Vòng 1 (trắc nghiệm trực tuyến, ${text('durationMinutes') || '60'} phút).\n` +
+            `Mã thí sinh: ${candidateCode}\n` +
+            `Ca thi: ${text('schedule')}\n\n` +
+            `Bước 1: Kích hoạt tài khoản và đặt mật khẩu tại ${site}/thi/kich-hoat/ (dùng email này để nhận mã).\n` +
+            `Bước 2: Đến giờ thi, đăng nhập tại ${site}/thi/ và bấm "Vào thi".\n\n` +
+            `Lưu ý: dùng máy tính có kết nối ổn định; không chuyển tab trong khi làm bài; hết giờ hệ thống tự nộp bài.${sign}`,
         };
       default:
-        return { subject: 'IS-NextGen', text: '' };
+        return { subject: 'NextGen Manager', text: '' };
     }
   }
 }

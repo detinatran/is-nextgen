@@ -13,7 +13,7 @@ export class SmtpMailer implements Mailer {
 
   async send(message: MailMessage): Promise<void> {
     await this.transport.sendMail({
-      from: process.env.MAIL_FROM ?? 'IS-NextGen <no-reply@isnextgen.local>',
+      from: process.env.MAIL_FROM ?? 'NextGen Manager <nextgen@vnuis.edu.vn>',
       to: message.to,
       subject: message.subject,
       text: message.text,

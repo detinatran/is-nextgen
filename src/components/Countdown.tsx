@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Lang } from "@/lib/i18n";
+import { useRegistrationWindow } from "@/lib/registrationWindow";
 
 type Parts = { d: number; h: number; m: number; s: number };
 
@@ -22,7 +23,9 @@ const text = {
 
 export default function Countdown({ lang, deadline, large = false }: { lang: Lang; deadline: string; large?: boolean }) {
   const t = text[lang];
-  const target = new Date(deadline).getTime();
+  // Hạn theo hệ thống nếu tải được; không thì dùng hạn mặc định trong nội dung site
+  const live = useRegistrationWindow();
+  const target = new Date(live?.closesAt ?? deadline).getTime();
   // undefined trước khi hydrate để HTML tĩnh và client khớp nhau
   const [parts, setParts] = useState<Parts | null | undefined>(undefined);
 

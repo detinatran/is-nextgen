@@ -11,32 +11,37 @@ type Props = {
   onChange: (file: File | null) => void;
   /** 0..1 khi đang tải lên, null khi chưa tải */
   progress: number | null;
+  /** Lỗi do form báo, ví dụ chưa chọn ảnh */
+  formError?: string;
 };
+
+// Backend chỉ nhận 3 định dạng này (kiểm tra bằng magic bytes)
+const PHOTO_TYPES = ["image/jpeg", "image/png"];
 
 const text = {
   vi: {
     label: "Ảnh cá nhân *",
     hint: "01 ảnh chân dung rõ mặt, dùng cho truyền thông của Cuộc thi.",
-    notImage: "Vui lòng chọn file ảnh (JPG, PNG...).",
+    notImage: "Vui lòng chọn ảnh JPG hoặc PNG.",
     tooBig: `Ảnh lớn hơn ${MAX_PHOTO_MB} MB. Hãy chọn ảnh nhỏ hơn.`,
     drop: "Kéo thả ảnh vào đây hoặc bấm để chọn",
-    formats: `JPG, PNG, HEIC · tối đa ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG · tối đa ${MAX_PHOTO_MB} MB`,
     remove: "Bỏ ảnh đã chọn",
     pick: "Chọn ảnh cá nhân",
   },
   en: {
     label: "Personal photo *",
     hint: "01 clear portrait photo, used for the competition's communications.",
-    notImage: "Please choose an image file (JPG, PNG...).",
+    notImage: "Please choose a JPG or PNG image.",
     tooBig: `The photo is larger than ${MAX_PHOTO_MB} MB. Please choose a smaller one.`,
     drop: "Drag and drop your photo here, or click to choose",
-    formats: `JPG, PNG, HEIC · up to ${MAX_PHOTO_MB} MB`,
+    formats: `JPG, PNG · up to ${MAX_PHOTO_MB} MB`,
     remove: "Remove selected photo",
     pick: "Choose personal photo",
   },
 };
 
-export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
+export default function PhotoUpload({ lang, file, onChange, progress, formError }: Props) {
   const t = text[lang];
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
@@ -52,7 +57,7 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
   function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    if (!f.type.startsWith("image/")) return reject(t.notImage);
+    if (!PHOTO_TYPES.includes(f.type)) return reject(t.notImage);
     if (f.size > MAX_PHOTO_MB * 1024 * 1024) return reject(t.tooBig);
     onChange(f);
   }
@@ -89,7 +94,7 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
             {preview && <img src={preview} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-[15px] font-semibold text-navy">{file.name}</p>
-              <p className="text-sm text-muted">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
+              <p className="text-sm text-muted">{file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}</p>
               {uploading && (
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
                   <div className="h-full rounded-full bg-orange transition-[width]" style={{ width: `${progress * 100}%` }} />
@@ -112,16 +117,16 @@ export default function PhotoUpload({ lang, file, onChange, progress }: Props) {
         <input
           ref={input}
           type="file"
-          accept="image/*"
+          accept={PHOTO_TYPES.join(",")}
           required={!file}
           onChange={(e) => pick(e.target.files?.[0])}
           className={`absolute inset-0 cursor-pointer opacity-0 ${file ? "pointer-events-none" : ""}`}
           aria-label={t.pick}
         />
       </div>
-      {error && (
+      {(error || formError) && (
         <p className="mt-2 text-sm font-medium text-orange-ink" role="alert">
-          {error}
+          {error || formError}
         </p>
       )}
     </div>

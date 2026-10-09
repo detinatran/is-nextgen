@@ -4,13 +4,13 @@
       "purpose": "MEDIA_USAGE",
       "granted": false,
       "wordingVersion": "MEDIA-V1-2026",
-      "recordedAt": "2026-10-05T12:01:28.343Z"
+      "recordedAt": "2026-10-06T17:54:43.759Z"
     },
     {
       "purpose": "DATA_PROCESSING",
       "granted": true,
       "wordingVersion": "DATA-V1-2026",
-      "recordedAt": "2026-10-05T12:01:28.342Z"
+      "recordedAt": "2026-10-06T17:54:43.758Z"
     }
   ],
   "favoriteCandidateEligible": false

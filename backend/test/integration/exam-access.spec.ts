@@ -49,7 +49,7 @@ describe('FR-19 exam access and atomic start', () => {
     expect(res.body.assignments).toHaveLength(1);
     const a = res.body.assignments[0];
     expect(a.assignmentId).toBe(exam.assignmentId);
-    expect(a.attemptQuota).toBe(3);
+    expect(a.attemptQuota).toBe(1);
     expect(a.schedule.opensAt).toBeTruthy();
   });
 
@@ -140,9 +140,9 @@ describe('FR-19 exam access and atomic start', () => {
     expect(dbAttempts).toBe(1);
   });
 
-  it('enforces the 3-attempt quota', async () => {
+  it('blocks a new attempt once the candidate has finished (FR-19)', async () => {
     const exam = await setupExam(ctx, { studentEmail: email });
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 1; i++) {
       const startRes = await start(exam.assignmentId);
       expect(startRes.status).toBe(201);
       // Finalize manually to free the active slot (answers optional).
@@ -153,9 +153,9 @@ describe('FR-19 exam access and atomic start', () => {
         .send({ writerGeneration: 1 });
       expect(submit.status).toBe(200);
     }
-    const fourth = await start(exam.assignmentId);
-    expect(fourth.status).toBe(409);
-    expect(fourth.body.error.code).toBe('ATTEMPT_LIMIT_REACHED');
+    const again = await start(exam.assignmentId);
+    expect(again.status).toBe(409);
+    expect(again.body.error.code).toBe('ATTEMPT_LIMIT_REACHED');
   });
 
   it('finalizes the attempt when the candidate submits manually and preserves it for reconnect', async () => {

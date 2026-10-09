@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { randomInt, randomUUID } from 'node:crypto';
 import type { Prisma } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { ErrorCodes } from '../common/errors/error-codes';
@@ -9,7 +9,16 @@ import { PrismaService } from '../database/prisma.service';
 import { parseSelectionPolicy, selectFrozenVersions } from './domain/selection-policy';
 import type { AssignmentSummary, AttemptStartedResponse, AvailabilityResponse } from './dto/exam-access.dto';
 
-const ATTEMPT_QUOTA = 3;
+// FR-19: làm xong (đã nộp/hết giờ) thì không vào lại; BTC muốn cho thi lại thì nâng EXAM_ATTEMPT_QUOTA
+const ATTEMPT_QUOTA = Math.max(1, Number(process.env.EXAM_ATTEMPT_QUOTA) || 1);
+
+/** Thời lượng làm bài theo ca (cột duration_seconds do trang quản trị thêm vào exam_schedules); chưa có thì dùng thời lượng của kỳ thi. */
+async function scheduleDurationSeconds(db: Prisma.TransactionClient | PrismaService, scheduleId: string, fallback: number): Promise<number> {
+  const rows = await db.$queryRaw<{ d: number | null }[]>`
+    SELECT (to_jsonb(s)->>'duration_seconds')::int AS d FROM exam_schedules s WHERE s.id = ${scheduleId}::uuid`;
+  const d = rows[0]?.d;
+  return d && d > 0 ? d : fallback;
+}
 
 /**
  * FR-19 exam access: assignments view, availability and the atomic Start.
@@ -52,7 +61,7 @@ export class ExamAccessService {
           id: exam.id,
           round: exam.round,
           name: exam.name,
-          durationSeconds: schedule.duration_seconds,
+          durationSeconds: await scheduleDurationSeconds(this.prisma, a.schedule_id, exam.duration_seconds),
         },
         schedule: {
           opensAt: schedule.opens_at.toISOString(),
@@ -184,6 +193,7 @@ export class ExamAccessService {
           });
         }
 
+        const exam = await tx.exams.findUniqueOrThrow({ where: { id: assignment.exam_id } });
         const blueprint = await tx.blueprint_versions.findUniqueOrThrow({
           where: { id: assignment.blueprint_version_id },
         });
@@ -200,7 +210,8 @@ export class ExamAccessService {
         }
 
         const startedAt = new Date();
-        const deadlineAt = new Date(startedAt.getTime() + schedule.duration_seconds * 1000);
+        const durationSeconds = await scheduleDurationSeconds(tx, schedule.id, exam.duration_seconds);
+        const deadlineAt = new Date(startedAt.getTime() + durationSeconds * 1000);
         const attempt = await tx.attempts.create({
           data: {
             id: newAttemptId,
@@ -236,13 +247,19 @@ export class ExamAccessService {
             where: { question_version_id: questionVersionId },
             orderBy: { position: 'asc' },
           });
-          for (const option of options) {
+          // FR-3.2: thứ tự đáp án xáo trộn riêng cho từng lượt thi (Fisher-Yates, CSPRNG)
+          const positions = options.map((_, k) => k + 1);
+          for (let k = positions.length - 1; k > 0; k--) {
+            const j = randomInt(0, k + 1);
+            [positions[k], positions[j]] = [positions[j], positions[k]];
+          }
+          for (let k = 0; k < options.length; k++) {
             await tx.delivered_options.create({
               data: {
                 delivered_question_id: deliveredQuestion.id,
                 question_version_id: questionVersionId,
-                question_option_id: option.id,
-                position: option.position,
+                question_option_id: options[k].id,
+                position: positions[k],
               },
             });
           }

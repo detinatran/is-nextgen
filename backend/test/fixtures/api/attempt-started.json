@@ -1,9 +1,10 @@
 {
-  "attemptId": "68f06c81-6abd-4815-b130-5c5d84e95299",
-  "assignmentId": "c95da91c-8299-48f6-86fa-272c3c94e2ee",
+  "attemptId": "e3c8dd53-1a37-4473-9a9b-d49926505adc",
+  "assignmentId": "4f9cc948-2943-4e38-8171-e8f9e3e44ecb",
   "ordinal": 1,
   "state": "ACTIVE",
-  "startedAt": "2026-10-05T12:01:31.135Z",
-  "deadlineAt": "2026-10-05T13:01:31.135Z",
-  "serverTime": "2026-10-05T12:01:31.277Z"
+  "startedAt": "2026-10-06T17:54:46.097Z",
+  "deadlineAt": "2026-10-06T18:54:46.097Z",
+  "serverTime": "2026-10-06T17:54:46.211Z",
+  "writerGeneration": 1
 }

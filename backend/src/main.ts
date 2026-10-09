@@ -35,9 +35,10 @@ async function bootstrap(): Promise<void> {
   if (corsOrigins.length > 0) {
     app.enableCors({
       origin: corsOrigins,
+      // credentials: cookie phiên admin/thí sinh khi frontend chạy khác origin (môi trường dev)
       credentials: true,
-      allowedHeaders: ['Content-Type', 'x-registration-token', 'Idempotency-Key', 'x-correlation-id', 'x-csrf-token'],
-      exposedHeaders: ['x-correlation-id'],
+      allowedHeaders: ['Content-Type', 'x-registration-token', 'Idempotency-Key', 'x-correlation-id', 'x-csrf-token', 'Range'],
+      exposedHeaders: ['x-correlation-id', 'Content-Disposition', 'Content-Range', 'Accept-Ranges'],
     });
   }
   // Sau reverse proxy (nginx cùng máy): lấy IP thật của thí sinh cho rate limit và log
@@ -50,7 +51,7 @@ async function bootstrap(): Promise<void> {
 
   if (config.get('swaggerEnabled', true)) {
     const config = new DocumentBuilder()
-      .setTitle('IS-NextGen Backend API')
+      .setTitle('NextGen Manager Backend API')
       .setDescription('Candidate flow FR-13..FR-22 (NestJS + Prisma + PostgreSQL)')
       .setVersion('1.0')
       .addSecurity('cookie', { type: 'apiKey', in: 'cookie', name: 'isng_session' })

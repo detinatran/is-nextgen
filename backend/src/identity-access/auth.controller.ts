@@ -179,6 +179,17 @@ export class AuthController {
     return { status: 'verified' };
   }
 
+  @Post('activation-requests')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async requestActivation(
+    @Body() dto: EmailRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{ status: string; challengeId: string }> {
+    const { challengeId } = await this.authService.requestActivation(dto.email, req.correlationId ?? 'unknown');
+    return { status: 'accepted', challengeId };
+  }
+
   @Post('password-reset-requests')
   @HttpCode(HttpStatus.ACCEPTED)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })

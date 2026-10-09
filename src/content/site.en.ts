@@ -22,12 +22,15 @@ export const site = {
   // TODO(BTC): fill in real contact and social media details; leave empty to hide.
   contact: {
     email: "nextgen@vnuis.edu.vn",
-    phone: "",
-    fanpage: "",
+    phone: "0962 132 535",
+    // Người trực hotline
+    hotlineName: "Đào Công Tuấn",
+    hotlineEmail: "tuandc@vnu.edu.vn",
+    fanpage: "https://www.facebook.com/profile.php?id=61595115537350",
     sponsorDeck: "",
   },
   socials: {
-    facebook: "",
+    facebook: "https://www.facebook.com/profile.php?id=61595115537350",
     linkedin: "",
     youtube: "",
     tiktok: "",
@@ -91,7 +94,7 @@ export const about = {
   ],
 };
 
-// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..4
+// "Only at NextGen" cards: alternating peach/blue, 3D icons exp-icon-1..3, exp-icon-4-globe
 export const perks = {
   eyebrow: "About the competition",
   title: "Experiences you only get at NextGen Manager",
@@ -260,12 +263,10 @@ export const minorPrizes =
   "There are also two special awards (Best Teamwork, Best English Presentation) and a Fan Favorite Team award, each worth 1,000,000 VND.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
-  { name: "VNU International School (VNU-IS)", logo: "/images/crest.png" },
-  { name: "Faculty of Economics and Management" },
-  { name: "VNU-IS Youth Union", logo: "/images/org-doan.png" },
-  { name: "Clubs Board", logo: "/images/org-clb.png", ink: true },
-  { name: "Marketing Club (IMC)", logo: "/images/org-imc.png", ink: true },
-  { name: "iSupport Club" },
+  { name: "VNU International School (VNU-IS)", logo: "/images/org/truong-crest.png" },
+  { name: "Youth Union Branch", logo: "/images/org/doan.png" },
+  { name: "Marketing Club (IMC)", logo: "/images/org/imc.png" },
+  { name: "iSupport Club", logo: "/images/org/isupport.png" },
 ];
 
 // TODO(BTC): add sponsors once agreements are signed, e.g. { name: "Company name", logo: "/images/sponsors/company-name.png" }

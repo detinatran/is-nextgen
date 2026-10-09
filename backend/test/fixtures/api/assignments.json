@@ -1,20 +1,20 @@
 {
   "assignments": [
     {
-      "assignmentId": "c95da91c-8299-48f6-86fa-272c3c94e2ee",
+      "assignmentId": "4f9cc948-2943-4e38-8171-e8f9e3e44ecb",
       "exam": {
-        "id": "49fd2829-2f4c-4406-92d1-b57a44618b53",
+        "id": "63d3f8f3-ac5c-4e3e-96ed-9c31c9d8b0ab",
         "round": 1,
-        "name": "Round 1 of C-f4d84e76",
+        "name": "Round 1 of C-2abfb4a1",
         "durationSeconds": 3600
       },
       "schedule": {
-        "opensAt": "2026-10-05T11:01:30.552Z",
-        "closesAt": "2026-10-05T13:01:30.552Z",
+        "opensAt": "2026-10-06T16:54:45.738Z",
+        "closesAt": "2026-10-06T18:54:45.738Z",
         "capacity": 100
       },
       "attemptsUsed": 0,
-      "attemptQuota": 3,
+      "attemptQuota": 1,
       "activeAttemptId": null,
       "finalScore": null
     }

@@ -260,6 +260,23 @@ export class AuthService {
   }
 
   /** Same decoy contract as email verification (no account enumeration). */
+  /**
+   * Thí sinh được Ban Tổ chức cấp tài khoản (PROVISIONED) tự xin mã kích hoạt mới
+   * qua email. Không tiết lộ email có tồn tại hay không (luôn trả challengeId).
+   */
+  async requestActivation(email: string, correlationId: string): Promise<{ challengeId: string }> {
+    this.logger.log(`auth activation requested correlationId=${correlationId}`);
+    const normalized = normalizeEmail(email);
+    const user = await this.prisma.users.findUnique({ where: { email_normalized: normalized } });
+    if (user && user.status === 'PROVISIONED') {
+      const { challengeId } = await this.prisma.$transaction((tx) =>
+        this.challenges.issue(tx, 'ACTIVATION', normalized, user.id),
+      );
+      return { challengeId };
+    }
+    return { challengeId: randomUUID() };
+  }
+
   async requestPasswordReset(email: string, correlationId: string): Promise<{ challengeId: string }> {
     this.logger.log(`auth password reset requested correlationId=${correlationId}`);
     const normalized = normalizeEmail(email);

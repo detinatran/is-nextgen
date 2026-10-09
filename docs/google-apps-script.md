@@ -14,8 +14,8 @@ const VIDEO_FOLDER_ID = "DAN_ID_THU_MUC_VAO_DAY";
 const MAX_VIDEO_BYTES = 300 * 1024 * 1024;
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const FIELDS = [
-  "submittedAt", "fullName", "email", "phone", "school", "major",
-  "studentId", "year", "nationality", "videoUrl", "photoUrl", "mediaConsent",
+  "submittedAt", "fullName", "dateOfBirth", "email", "phone", "facebook", "school",
+  "department", "major", "studentId", "year", "nationality", "videoUrl", "photoUrl", "mediaConsent",
   "confirm", "shareProfile",
 ];
 

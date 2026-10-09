@@ -20,6 +20,12 @@ export interface AppConfig {
   timeoutSweepIntervalMs: number;
   scoringPollIntervalMs: number;
   notificationPollIntervalMs: number;
+  driveClientId: string;
+  driveClientSecret: string;
+  driveRefreshToken: string;
+  driveFolderName: string;
+  driveDeleteLocal: boolean;
+  driveSyncIntervalMs: number;
 }
 
 const bool = (v: string | undefined, dflt: boolean): boolean =>
@@ -44,7 +50,7 @@ export default (): AppConfig => ({
   photoMaxBytes: num(process.env.PHOTO_MAX_BYTES, 10_000_000),
   contactEmail: process.env.CONTACT_EMAIL ?? 'btc@isnextgen.local',
   smtpUrl: process.env.SMTP_URL ?? '',
-  mailFrom: process.env.MAIL_FROM ?? 'IS-NextGen <no-reply@isnextgen.local>',
+  mailFrom: process.env.MAIL_FROM ?? 'NextGen Manager <nextgen@vnuis.edu.vn>',
   fixturesEnabled: process.env.NODE_ENV !== 'production' && bool(process.env.FIXTURES_ENABLED, true),
   fixturesToken: process.env.FIXTURES_TOKEN ?? 'dev-fixtures-token',
   swaggerEnabled: bool(process.env.SWAGGER_ENABLED, process.env.NODE_ENV !== 'production'),
@@ -53,4 +59,11 @@ export default (): AppConfig => ({
   timeoutSweepIntervalMs: num(process.env.TIMEOUT_SWEEP_INTERVAL_MS, 10_000),
   scoringPollIntervalMs: num(process.env.SCORING_POLL_INTERVAL_MS, 2_000),
   notificationPollIntervalMs: num(process.env.NOTIFICATION_POLL_INTERVAL_MS, 2_000),
+  // Google Drive của nextgen@vnuis.edu.vn: nơi lưu bản chính video thí sinh (để trống = tắt)
+  driveClientId: process.env.GOOGLE_DRIVE_CLIENT_ID ?? '',
+  driveClientSecret: process.env.GOOGLE_DRIVE_CLIENT_SECRET ?? '',
+  driveRefreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN ?? '',
+  driveFolderName: process.env.GOOGLE_DRIVE_FOLDER ?? 'NextGen Manager 2026 - Video thí sinh',
+  driveDeleteLocal: bool(process.env.GOOGLE_DRIVE_DELETE_LOCAL, true),
+  driveSyncIntervalMs: num(process.env.GOOGLE_DRIVE_SYNC_INTERVAL_MS, 60_000),
 });

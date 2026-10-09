@@ -18,7 +18,7 @@ export default function About({ lang }: { lang: Lang }) {
       <Art src="/images/generated/deco-blue-waves.webp" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35" />
       <div className="container-x relative">
         <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
-          <div className="reveal">
+          <div data-tour="about" className="reveal">
             <p className="text-[13px] font-bold tracking-[0.16em] text-orange uppercase">{t.eyebrow}</p>
             <h2 className="h2-section mt-3">
               {about.title[0]} {about.title[1]}

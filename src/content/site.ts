@@ -22,12 +22,15 @@ export const site = {
   // TODO(BTC): điền thông tin liên hệ và mạng xã hội thật; để trống thì ẩn.
   contact: {
     email: "nextgen@vnuis.edu.vn",
-    phone: "",
-    fanpage: "",
+    phone: "0962 132 535",
+    // Người trực hotline
+    hotlineName: "Đào Công Tuấn",
+    hotlineEmail: "tuandc@vnu.edu.vn",
+    fanpage: "https://www.facebook.com/profile.php?id=61595115537350",
     sponsorDeck: "",
   },
   socials: {
-    facebook: "",
+    facebook: "https://www.facebook.com/profile.php?id=61595115537350",
     linkedin: "",
     youtube: "",
     tiktok: "",
@@ -91,7 +94,7 @@ export const about = {
   ],
 };
 
-// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..4
+// Thẻ "Những trải nghiệm chỉ có": tone peach/blue xen kẽ, icon 3D exp-icon-1..3, exp-icon-4-globe
 export const perks = {
   eyebrow: "Về cuộc thi",
   title: "Những trải nghiệm chỉ có tại NextGen Manager",
@@ -260,12 +263,10 @@ export const minorPrizes: string =
   "Ngoài ra có hai giải phụ (Tinh thần hợp tác, Trình bày tiếng Anh xuất sắc) và giải Đội thi được yêu thích nhất, mỗi giải 1.000.000 đồng.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
-  { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/crest.png" },
-  { name: "Khoa Kinh tế và Quản lý" },
-  { name: "Đoàn Thanh niên Trường Quốc tế", logo: "/images/org-doan.png" },
-  { name: "Ban CLB Hội nhóm", logo: "/images/org-clb.png", ink: true },
-  { name: "CLB Marketing (IMC)", logo: "/images/org-imc.png", ink: true },
-  { name: "CLB iSupport" },
+  { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
+  { name: "Liên chi đoàn", logo: "/images/org/doan.png" },
+  { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
+  { name: "CLB iSupport", logo: "/images/org/isupport.png" },
 ];
 
 // TODO(BTC): thêm nhà tài trợ khi ký thoả thuận, ví dụ { name: "Tên DN", logo: "/images/sponsors/ten-dn.png" }

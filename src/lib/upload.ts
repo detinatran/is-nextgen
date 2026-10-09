@@ -6,16 +6,26 @@ export const MAX_VIDEO_MB = 300;
 export const MAX_VIDEO_SECONDS = 120;
 export const MAX_PHOTO_MB = 10;
 
-/** Đọc thời lượng video ở client; trả null nếu trình duyệt không đọc được định dạng. */
-export function readVideoDuration(file: File): Promise<number | null> {
+/**
+ * Đọc thời lượng video ở client; trả null nếu trình duyệt không đọc được định dạng
+ * hoặc quá `timeoutMs` (một số trình duyệt không bao giờ phát sự kiện) — khi đó server kiểm tra.
+ */
+export function readVideoDuration(file: File, timeoutMs = 8000): Promise<number | null> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const video = document.createElement("video");
     video.preload = "metadata";
-    const done = (value: number | null) => {
+    video.muted = true;
+    let settled = false;
+    const timer = window.setTimeout(() => done(null), timeoutMs);
+    function done(value: number | null) {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      video.removeAttribute("src");
       URL.revokeObjectURL(url);
       resolve(value);
-    };
+    }
     video.onloadedmetadata = () => done(Number.isFinite(video.duration) ? video.duration : null);
     video.onerror = () => done(null);
     video.src = url;

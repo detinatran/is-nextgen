@@ -16,11 +16,13 @@ const text = {
     soon: "Sắp cập nhật",
     links: "Về cuộc thi",
     support: "Hỗ trợ",
+    guide: "Hướng dẫn dự thi",
     linkItems: [["/#gioi-thieu", "Giới thiệu"], ["/#trai-nghiem", "Trải nghiệm"], ["/#lo-trinh", "Lộ trình"], ["/#giai-thuong", "Giải thưởng"]],
     contact: "Liên hệ",
     terms: "Điều khoản & thể lệ",
     results: "Kết quả",
     language: "Ngôn ngữ",
+    hotline: "Hotline",
     qrTitle: "Quét mã để truy cập",
     qrAlt: "Mã QR dẫn tới nextgen.vnuis.edu.vn",
     qrDownload: "Tải mã QR",
@@ -33,11 +35,13 @@ const text = {
     soon: "Coming soon",
     links: "The competition",
     support: "Support",
+    guide: "How to take part",
     linkItems: [["/#gioi-thieu", "About"], ["/#trai-nghiem", "Experience"], ["/#lo-trinh", "Timeline"], ["/#giai-thuong", "Prizes"]],
     contact: "Contact",
     terms: "Terms & rules",
     results: "Results",
     language: "Language",
+    hotline: "Hotline",
     qrTitle: "Scan to visit",
     qrAlt: "QR code linking to nextgen.vnuis.edu.vn",
     qrDownload: "Download QR code",
@@ -86,7 +90,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
   const { site } = getContent(lang);
   const t = text[lang];
   const href = (path: string) => localePath(lang, path);
-  const { email, phone } = site.contact;
+  const { email, phone, hotlineName, hotlineEmail } = site.contact;
   const contactHref = email ? `mailto:${email}` : href("/#hoi-dap");
   return (
     <>
@@ -95,7 +99,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
         <div className="container-x relative grid gap-10 pb-8 md:grid-cols-[1.4fr_0.6fr_0.8fr] lg:grid-cols-[1.3fr_0.5fr_0.7fr_1.2fr]">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-white.png")} alt={site.name} className="h-11 w-auto" />
+            <img src={asset("/images/logo-white-2026.png")} alt={site.name} className="h-16 w-auto" />
             <p className="mt-3 text-base text-white/90">{site.tagline}</p>
             <ul className="mt-5 space-y-3 text-[15px] text-white/85">
               <li className="flex gap-2.5">
@@ -130,9 +134,21 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
               {phone && (
                 <li className="flex gap-2.5">
                   <Icon name="phone" className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                  <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white">
-                    {phone}
-                  </a>
+                  <span>
+                    {t.hotline}:{" "}
+                    <a href={`tel:${phone.replace(/\s/g, "")}`} className="font-semibold text-white hover:text-orange">
+                      {phone}
+                    </a>
+                    {hotlineName && <span className="text-white/70"> · {hotlineName}</span>}
+                    {hotlineEmail && (
+                      <>
+                        <br />
+                        <a href={`mailto:${hotlineEmail}`} className="text-white/70 hover:text-white">
+                          {hotlineEmail}
+                        </a>
+                      </>
+                    )}
+                  </span>
                 </li>
               )}
             </ul>
@@ -150,11 +166,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                   >
                     <Icon name={name} className="h-4 w-4" />
                   </a>
-                ) : (
-                  <span key={name} className="flex h-10 w-10 items-center justify-center rounded-full text-white/45 ring-1 ring-white/20" title={t.soon}>
-                    <Icon name={name} className="h-4 w-4" />
-                  </span>
-                );
+                ) : null; // Mạng xã hội chưa có thì ẩn hẳn
               })}
             </div>
             <div className="mt-6 flex items-center gap-3">
@@ -198,6 +210,11 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                 <Link href={href("/ket-qua/")} className={linkCls}>
                   {t.results}
                 </Link>
+              </li>
+              <li>
+                <a href={`${href("/")}?tour=1`} data-tour-start className={linkCls}>
+                  {t.guide}
+                </a>
               </li>
             </ul>
           </nav>

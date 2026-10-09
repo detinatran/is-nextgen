@@ -5,7 +5,8 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 
 export default function Faq({ lang }: { lang: Lang }) {
-  const { faqs } = getContent(lang);
+  const { faqs, site } = getContent(lang);
+  const c = site.contact;
   const en = lang === "en";
   return (
     <section id="hoi-dap" className="relative overflow-hidden bg-white py-16 pb-24 lg:py-20 lg:pb-28">
@@ -21,6 +22,37 @@ export default function Faq({ lang }: { lang: Lang }) {
             </Link>{" "}
             {en ? "or contact the Organizing Committee." : "hoặc liên hệ Ban Tổ chức."}
           </p>
+          {/* FR-1.4: liên hệ Ban Tổ chức */}
+          <div data-tour="contact" className="mt-6 space-y-3 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-line backdrop-blur-sm">
+            <p className="text-sm font-bold text-navy">{en ? "Contact the Organizing Committee" : "Liên hệ Ban Tổ chức"}</p>
+            {c.phone && (
+              <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 text-[15px] text-ink hover:text-orange-ink">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange">
+                  <Icon name="phone" className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="font-semibold">Hotline {c.phone}</span>
+                  {c.hotlineName && <span className="block text-[13px] text-muted">{c.hotlineName}</span>}
+                </span>
+              </a>
+            )}
+            {c.email && (
+              <a href={`mailto:${c.email}`} className="flex items-center gap-3 text-[15px] text-ink hover:text-orange-ink">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange">
+                  <Icon name="mail" className="h-4 w-4" />
+                </span>
+                {c.email}
+              </a>
+            )}
+            {c.fanpage && (
+              <a href={c.fanpage} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-[15px] text-ink hover:text-orange-ink">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange">
+                  <Icon name="facebook" className="h-4 w-4" />
+                </span>
+                {en ? "Fanpage NextGen Manager" : "Fanpage NextGen Manager"}
+              </a>
+            )}
+          </div>
         </div>
         <div className="reveal space-y-3">
           {faqs.map((f) => (

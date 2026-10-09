@@ -15,3 +15,7 @@ __pycache__/
 # File ghi chú cho trợ lý AI do `next dev` tự sinh
 AGENTS.md
 CLAUDE.md
+
+# Khoá OAuth Google (không commit)
+client_secret_*.json
+drive-token.json

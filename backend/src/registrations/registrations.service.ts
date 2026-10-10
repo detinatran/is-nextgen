@@ -569,7 +569,7 @@ export class RegistrationsService {
         data: {
           template_code: 'REGISTRATION_CONFIRMED',
           destination_email: profile.email,
-          payload: { candidateCode },
+          payload: { candidateCode, fullName: profile.full_name },
           deduplication_key: `reg-confirmed:${registration.id}`,
           candidate_id: candidate.id,
         },

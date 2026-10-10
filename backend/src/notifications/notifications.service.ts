@@ -4,6 +4,7 @@ import { PrismaService } from '../database/prisma.service';
 import { MAILER } from './mailer/mailer.tokens';
 import type { Mailer } from './mailer/mailer.interface';
 import type { Tx } from '../common/idempotency/idempotency.service';
+import { registrationConfirmed } from './templates/registration-confirmed';
 
 export interface EnqueueInput {
   templateCode:
@@ -102,7 +103,7 @@ export class NotificationsService {
   private render(
     templateCode: string,
     payload: Record<string, unknown>,
-  ): { subject: string; text: string } {
+  ): { subject: string; text: string; html?: string } {
     const code = typeof payload['code'] === 'string' ? payload['code'] : '';
     const candidateCode = typeof payload['candidateCode'] === 'string' ? payload['candidateCode'] : '';
     const site = process.env.PUBLIC_SITE_URL ?? 'https://nextgen.vnuis.edu.vn';
@@ -125,14 +126,7 @@ export class NotificationsService {
           text: `Mã đặt lại mật khẩu của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/quen-mat-khau/.${sign}`,
         };
       case 'REGISTRATION_CONFIRMED':
-        return {
-          subject: 'NextGen Manager: Xác nhận đăng ký thành công',
-          text:
-            `Chúc mừng bạn đã đăng ký thành công NextGen Manager Challenge 2026.\n` +
-            `Mã thí sinh của bạn: ${candidateCode}\n\n` +
-            `Ban Tổ chức sẽ gửi email hướng dẫn tài khoản và lịch thi Vòng 1 (trắc nghiệm trực tuyến 60 phút) trước ngày thi. ` +
-            `Vui lòng theo dõi email và fanpage của cuộc thi.${sign}`,
-        };
+        return registrationConfirmed({ fullName: text('fullName'), candidateCode, site });
       case 'EXAM_INVITATION':
         return {
           subject: 'NextGen Manager: Tài khoản và lịch thi Vòng 1',

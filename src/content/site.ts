@@ -114,7 +114,7 @@ export const journey = {
   items: [
     { title: "Thảo luận nhóm không người dẫn", body: "Vòng 2 – Decide: các đội xếp ngẫu nhiên cùng xử lý tình huống thực tiễn của doanh nghiệp, không có người điều phối.", image: "/images/is/sv-thao-luan.webp", href: "/the-le/#vong-2" },
     { title: "Xử lý tình huống điều hành", body: "Chung kết – Deliver: phần thi nhóm và phần thi cá nhân giải bài toán thực tiễn do doanh nghiệp đề xuất.", image: "/images/is/sv-man-hinh.webp", href: "/the-le/#vong-3" },
-    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Field trip 14/11: thí sinh Vòng 2 tham quan mô hình doanh nghiệp và toạ đàm với nhà quản lý.", image: "/images/is/sv-giang-duong.webp", href: "/the-le/#ben-le" },
+    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Field trip 14/11: thí sinh Vòng 2 tham quan mô hình doanh nghiệp và toạ đàm với nhà quản lý.", image: "/images/is/tham-quan-1.webp", images: ["/images/is/tham-quan-1.webp", "/images/is/tham-quan-2.webp"], href: "/the-le/#ben-le" },
     { title: "Gala dinner networking", body: "Tối 28/11: giao lưu, kết nối thí sinh với chuyên gia và doanh nghiệp đồng hành.", image: "/images/is/sv-ban-tron.webp", href: "/the-le/#ben-le" },
   ],
 };
@@ -285,6 +285,7 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
+    images: ["/images/is/tham-quan-1.webp", "/images/is/tham-quan-2.webp"],
     tag: "NextGen Business Trip",
     title: "Tham quan và trải nghiệm doanh nghiệp",
     when: "14/11/2026",
@@ -292,6 +293,7 @@ export const sideEvents = [
     body: "Tham quan không gian làm việc, tìm hiểu mô hình tổ chức, chiến lược, văn hoá và quy trình vận hành; trao đổi với đội ngũ quản lý về ra quyết định, sắp xếp ưu tiên, điều hành đội nhóm và các cơ hội thực tập, chương trình quản trị viên tập sự. Sau chuyến đi, mỗi thí sinh viết bản ghi nhận ngắn về một quyết định quản trị quan sát được (không tính điểm), làm tư liệu tham khảo cho phần thi cá nhân tại Chung kết.",
   },
   {
+    images: ["/images/is/sv-ban-tron.webp"],
     tag: "NextGen Networking Dinner",
     title: "Gala dinner kết nối doanh nghiệp",
     when: "18h30 – 22h00, 28/11/2026",

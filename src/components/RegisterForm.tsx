@@ -456,7 +456,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   return (
     <form ref={formRef} onSubmit={onSubmit} onInput={clearError} onChange={clearError} noValidate className="card scroll-mt-24 p-6 sm:p-8">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={asset("/images/logo-2026.png")} alt="" className="mb-6 h-16 w-auto" />
+      <span className="mb-6 inline-flex rounded-2xl bg-navy px-5 py-3.5"><img src={asset("/images/logo-lockup-white.png")} alt="NextGen Manager" className="h-12 w-auto" /></span>
 
       {/* Thanh bước */}
       <ol className="mb-7 grid grid-cols-3 gap-2" aria-label={t.stepOf(page + 1)}>

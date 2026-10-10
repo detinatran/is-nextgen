@@ -353,7 +353,7 @@ export default function ExamRoom() {
       <header className="sticky top-0 z-20 border-b border-line bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset("/images/logo-2026.png")} alt="NextGen Manager" className="h-10 w-auto" />
+          <span className="inline-flex rounded-xl bg-navy px-3 py-2"><img src={asset("/images/logo-lockup-white.png")} alt="NextGen Manager" className="h-8 w-auto" /></span>
           <div className={`rounded-xl px-4 py-1.5 text-center tabular-nums ${lowTime ? "bg-orange text-white" : "bg-navy text-white"}`} role="timer" aria-label={t.timeLeft}>
             <span className="block text-[11px] font-semibold tracking-wider uppercase opacity-80">{t.left}</span>
             <span className="text-xl font-bold">{fmtClock(remaining)}</span>

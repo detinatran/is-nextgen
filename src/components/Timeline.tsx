@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Icon from "@/components/Icon";
 import type { Lang } from "@/lib/i18n";
 
 export type TimelineItem = {
@@ -13,25 +12,26 @@ export type TimelineItem = {
   body: string;
 };
 
-const kindStyle = {
-  register: { bar: "bg-navy", pill: "bg-navy/8 text-navy" },
-  round: { bar: "bg-orange", pill: "bg-orange text-white" },
-  event: { bar: "bg-brand", pill: "bg-brand/10 text-brand" },
-  result: { bar: "bg-gold", pill: "bg-gold/20 text-[#8a5a00]" },
+// Mỗi loại mốc chỉ nhận diện bằng một chấm màu, chú giải ở đầu bảng
+const dotColor = {
+  register: "bg-navy/60",
+  round: "bg-orange",
+  event: "bg-brand",
+  result: "bg-gold",
 };
 
 const text = {
   vi: {
-    kind: { register: "Đăng ký", round: "Vòng thi", event: "Sự kiện", result: "Kết quả" },
+    kind: { round: "Vòng thi", event: "Sự kiện", result: "Kết quả", register: "Đăng ký" },
     weekday: ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"],
-    month: (m: number) => `Tháng ${m}`,
+    date: (d: number, m: number) => `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}`,
     today: "Hôm nay",
     next: "Sắp diễn ra",
   },
   en: {
-    kind: { register: "Registration", round: "Round", event: "Event", result: "Results" },
-    weekday: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    month: (m: number) => ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m - 1],
+    kind: { round: "Round", event: "Event", result: "Results", register: "Registration" },
+    weekday: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    date: (d: number, m: number) => `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m - 1]} ${d}`,
     today: "Today",
     next: "Up next",
   },
@@ -40,7 +40,7 @@ const text = {
 const endOfDay = (day: string) => new Date(`${day}T23:59:59+07:00`).getTime();
 const startOfDay = (day: string) => new Date(`${day}T00:00:00+07:00`).getTime();
 
-/** Lịch trình đầy đủ: ngày in to, nhãn loại mốc, giờ; mốc sắp tới được làm nổi (tính ở client theo ngày xem). */
+/** Lịch trình dạng dòng thời gian trong một bảng: chấm màu theo loại mốc, mốc sắp tới được đánh dấu (tính ở client theo ngày xem). */
 export default function Timeline({ items, lang }: { items: TimelineItem[]; lang: Lang }) {
   const t = text[lang];
   const [next, setNext] = useState(-1);
@@ -53,46 +53,60 @@ export default function Timeline({ items, lang }: { items: TimelineItem[]; lang:
     setToday(i !== -1 && now >= startOfDay(items[i].day));
   }, [items]);
 
+  // Hai cột từ lg: cột trái các mốc đầu, cột phải các mốc sau
+  const rows = Math.ceil(items.length / 2);
+
   return (
-    <ol className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
-      {items.map((it, i) => {
-        const [y, m, d] = it.day.split("-").map(Number);
-        const weekday = t.weekday[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-        const s = kindStyle[it.kind];
-        const isNext = i === next;
-        const isPast = next === -1 ? false : i < next;
-        return (
-          <li
-            key={it.day + it.title}
-            className={`relative flex gap-4 overflow-hidden rounded-2xl bg-white p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:block sm:p-5 ${isNext ? "ring-2 ring-orange" : "ring-1 ring-line"} ${isPast ? "opacity-60" : ""}`}
-          >
-            <span aria-hidden className={`absolute inset-y-0 left-0 w-1.5 sm:inset-x-0 sm:top-0 sm:bottom-auto sm:h-1.5 sm:w-auto ${s.bar}`} />
-            <p className="flex w-20 shrink-0 flex-col sm:w-auto sm:flex-row sm:items-end sm:gap-2.5">
-              <span className="text-[2.6rem] leading-none font-extrabold tracking-tight text-navy tabular-nums sm:text-5xl">{String(d).padStart(2, "0")}</span>
-              <span className="mt-1 text-[13px] leading-tight sm:mt-0 sm:pb-0.5">
-                <span className="block font-bold text-orange-ink uppercase">{t.month(m)}</span>
-                <span className="block text-muted">{weekday}</span>
-              </span>
-            </p>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-1.5 sm:mt-4">
-                {isNext && (
-                  <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-semibold text-white shadow-md shadow-orange/30">{today ? t.today : t.next}</span>
-                )}
-                <span className={`rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${s.pill}`}>{t.kind[it.kind]}</span>
-                {it.time && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-mist px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap text-navy">
-                    <Icon name="clock" className="h-3.5 w-3.5" strokeWidth={2.2} />
-                    {it.time}
-                  </span>
-                )}
-              </div>
-              <h3 className="mt-2 text-[16px] leading-snug font-bold text-navy">{it.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{it.body}</p>
-            </div>
+    <div className="rounded-3xl bg-white/90 p-6 shadow-card ring-1 ring-line backdrop-blur-sm sm:p-8 lg:px-12 lg:py-9">
+      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 border-b border-line pb-4 text-[12px] font-semibold text-muted">
+        {(["round", "event", "result", "register"] as const).map((k) => (
+          <li key={k} className="inline-flex items-center gap-1.5">
+            <span aria-hidden className={`h-2 w-2 rounded-full ${dotColor[k]}`} />
+            {t.kind[k]}
           </li>
-        );
-      })}
-    </ol>
+        ))}
+      </ul>
+
+      <ol className="mt-6 lg:grid lg:grid-flow-col lg:gap-x-16" style={{ gridTemplateRows: `repeat(${rows}, auto)` }}>
+        {items.map((it, i) => {
+          const [y, m, d] = it.day.split("-").map(Number);
+          const weekday = t.weekday[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+          const isNext = i === next;
+          const isPast = next === -1 ? false : i < next;
+          const lastAll = i === items.length - 1;
+          const lastCol = i === rows - 1;
+          return (
+            <li key={it.day + it.title} className={`flex gap-4 ${isPast ? "opacity-55" : ""}`}>
+              {/* Cột ngày */}
+              <p className="w-14 shrink-0 pt-px text-right">
+                <span className="block text-[17px] leading-tight font-extrabold tracking-tight text-navy tabular-nums">{t.date(d, m)}</span>
+                <span className="mt-0.5 block text-[11px] text-muted">{weekday}</span>
+              </p>
+
+              {/* Chấm và đường nối */}
+              <span className="flex shrink-0 flex-col items-center">
+                <span className="relative mt-1.5 flex h-3 w-3 items-center justify-center">
+                  {isNext && <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-orange/50" />}
+                  <span aria-hidden className={`relative h-2.5 w-2.5 rounded-full ${dotColor[it.kind]} ${isNext ? "ring-[3px] ring-orange/25" : ""}`} />
+                </span>
+                <span aria-hidden className={`mt-1.5 w-px flex-1 bg-line ${lastAll ? "hidden" : ""} ${lastCol ? "lg:hidden" : ""}`} />
+              </span>
+
+              {/* Nội dung */}
+              <div className={`min-w-0 flex-1 pb-7 ${lastAll ? "pb-0" : ""} ${lastCol ? "lg:pb-0" : ""}`}>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <h3 className="text-[15.5px] leading-snug font-bold text-navy">{it.title}</h3>
+                  {it.time && <span className="text-[13px] font-medium whitespace-nowrap text-muted">· {it.time}</span>}
+                  {isNext && (
+                    <span className="rounded-full bg-orange/10 px-2 py-px text-[11px] font-bold text-orange-ink">{today ? t.today : t.next}</span>
+                  )}
+                </div>
+                <p className="mt-0.5 text-[13.5px] leading-relaxed text-muted">{it.body}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }

@@ -212,6 +212,38 @@ export default function Onboarding({ lang }: { lang: Lang }) {
 
   useEffect(() => () => driverRef.current?.destroy(), []);
 
+  // Trang chủ: nút nằm ở góc dưới-trái banner (trên nền xanh) khi banner còn trong màn hình,
+  // cuộn qua banner thì về lại góc màn hình như các trang khác
+  useEffect(() => {
+    const btn = helpRef.current;
+    const banner = document.querySelector<HTMLElement>('#top [data-tour="hero"]');
+    if (!btn) return;
+    if (!banner) {
+      btn.style.bottom = "";
+      return;
+    }
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      const rect = banner.getBoundingClientRect();
+      const inside = 16;
+      const docked = rect.bottom > window.innerHeight || rect.bottom < btn.offsetHeight + inside + 24;
+      btn.style.bottom = docked ? "" : `${Math.round(window.innerHeight - rect.bottom + inside)}px`;
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(place);
+    };
+    place();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (frame) window.cancelAnimationFrame(frame);
+      btn.style.bottom = "";
+    };
+  }, [pathname]);
+
   useEffect(() => {
     if (!welcome) return;
     startRef.current?.focus();
@@ -235,7 +267,7 @@ export default function Onboarding({ lang }: { lang: Lang }) {
         data-tour="help"
         onClick={requestTour}
         aria-label={t.help}
-        className="group fixed bottom-5 left-5 z-40 flex h-11 items-center gap-2 rounded-full bg-white pr-2 pl-2 text-sm font-semibold text-navy shadow-lg shadow-navy/15 ring-1 ring-line transition hover:-translate-y-0.5 hover:shadow-xl sm:pr-4"
+        className="group fixed bottom-5 left-5 z-40 flex h-11 items-center gap-2 rounded-full bg-white pr-2 pl-2 text-sm font-semibold text-navy shadow-lg shadow-navy/15 ring-1 ring-line transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-xl sm:pr-4"
       >
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-orange text-white">
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

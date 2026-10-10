@@ -23,7 +23,7 @@ export function pageMetadata(lang: Lang, path: string, title?: string): Metadata
     openGraph: {
       title: fullTitle,
       description: descriptions[lang],
-      images: [{ url: asset("/images/og.jpg"), width: 1200, height: 630 }],
+      images: [{ url: asset("/images/og-v2.jpg"), width: 1200, height: 630 }],
       locale: lang === "en" ? "en_US" : "vi_VN",
       type: "website",
     },

@@ -64,14 +64,14 @@ function CtaBand({ lang }: { lang: Lang }) {
             </p>
           </div>
           <div className="relative hidden self-stretch lg:block">
-            <svg aria-hidden viewBox="0 0 160 60" className="absolute top-6 -left-16 h-12 w-32 text-white/85" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <svg aria-hidden viewBox="0 0 160 60" className="absolute top-4 -left-10 h-12 w-32 text-white/85" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
               <path d="M2 44c30-2 52-10 74-22 18-10 34 2 22 14s-30-2-12-14c14-9 36-12 58-6" />
               <path d="M140 12l6 4-7 3" />
             </svg>
-            {/* Ảnh sinh viên Trường Quốc tế, mờ dần hai bên vào nền cam */}
+            {/* Sinh viên Trường Quốc tế đã tách nền, đầu bạn đứng nhô lên khỏi mép trên của dải */}
             <Art
-              src="/images/is/sv-thao-luan.webp"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_30%] [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]"
+              src="/images/is/cta-sinh-vien.webp"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[calc(100%+4.5rem)] w-full object-contain object-bottom"
             />
           </div>
           <Link href={localePath(lang, "/dang-ky/")} className="btn-white w-max px-8 py-3.5 text-base">

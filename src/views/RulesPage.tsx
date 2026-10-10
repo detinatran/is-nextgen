@@ -12,19 +12,19 @@ export const rulesText = {
   vi: {
     heroEyebrow: "Thể lệ cuộc thi",
     heroTitle: "Thể lệ",
-    heroLead: "Bốn vòng thi, một khung sáu năng lực. Mọi vòng đều có tiêu chí và thang điểm công bố trước.",
+    heroLead: "Ba vòng thi Discover – Decide – Deliver, một khung sáu năng lực. Mọi vòng đều có tiêu chí và thang điểm công bố trước.",
     whoEyebrow: "Đối tượng",
     whoTitle: "Ai được tham gia?",
     formatEyebrow: "Thể thức",
-    formatTitle: "Bốn vòng thi",
+    formatTitle: "Ba vòng thi",
     compEyebrow: "Khung năng lực",
     compTitle: "Sáu nhóm năng lực được chấm",
     compLead:
       "Mỗi nhóm được mô tả bằng 05 mức hành vi quan sát được. Giám khảo ghi nhận hành vi cụ thể, sau đó quy đổi ra điểm theo bảng quy đổi thống nhất.",
-    aiEyebrow: "Vòng Bán kết và Chung kết",
-    aiTitle: "Được dùng AI, nhưng phải giải trình",
+    aiEyebrow: "Thảo luận nhóm không người hướng dẫn",
+    aiTitle: "Được dùng công nghệ để tra cứu, nhưng phải tự suy luận",
     aiBody:
-      "Khai báo bạn đã dùng công cụ như thế nào, phần nào là kết quả của công cụ, phần nào là phán đoán của bạn, và vì sao giữ hay bác bỏ từng gợi ý. Điểm số tập trung vào phần giải trình.",
+      "Cuộc thi cho phép thí sinh kết hợp công nghệ thông minh để tra cứu, đồng thời khai thác tối đa khả năng suy luận và sáng tạo của chính bạn. Doanh nghiệp đồng hành theo sát bài làm, giám khảo chấm theo khung năng lực hành vi.",
     judgingEyebrow: "Nguyên tắc chấm thi",
     sideEyebrow: "Hoạt động bên lề",
     sideTitle: "Gặp doanh nghiệp trước khi bước vào nghề",
@@ -33,7 +33,7 @@ export const rulesText = {
     timelineEyebrow: "Lộ trình",
     timelineTitle: "Lịch đầy đủ mùa I",
     voteEyebrow: "Giải phụ",
-    voteTitle: "Thể lệ bình chọn Đội thi được yêu thích nhất",
+    voteTitle: "Thể lệ bình chọn Cá nhân được yêu thích nhất",
     faqEyebrow: "Hỏi đáp",
     faqTitle: "Câu hỏi khác",
     register: "Đăng ký dự thi",
@@ -41,19 +41,19 @@ export const rulesText = {
   en: {
     heroEyebrow: "Competition rules",
     heroTitle: "Rules",
-    heroLead: "Four rounds, one six-competency framework. Every round has criteria and scoring published in advance.",
+    heroLead: "Three rounds, Discover – Decide – Deliver, one six-competency framework. Every round has criteria and scoring published in advance.",
     whoEyebrow: "Eligibility",
     whoTitle: "Who can take part?",
     formatEyebrow: "Format",
-    formatTitle: "Four rounds",
+    formatTitle: "Three rounds",
     compEyebrow: "Competency framework",
     compTitle: "Six competency areas assessed",
     compLead:
       "Each area is described by 05 levels of observable behaviour. Judges record specific behaviours, then convert them into scores using a shared conversion table.",
-    aiEyebrow: "Semi-final and Grand Final",
-    aiTitle: "AI is allowed, but you must explain it",
+    aiEyebrow: "Leaderless group discussion",
+    aiTitle: "Smart tools allowed for research, but the reasoning is yours",
     aiBody:
-      "State how you used each tool, which parts came from the tool and which from your own judgement, and why you kept or rejected each suggestion. Scoring focuses on that explanation.",
+      "Contestants may use smart tools to look things up, while making the most of their own reasoning and creativity. Partner companies follow the work closely and judges score against the behavioral competency framework.",
     judgingEyebrow: "Judging principles",
     sideEyebrow: "Side events",
     sideTitle: "Meet employers before you start your career",
@@ -62,14 +62,14 @@ export const rulesText = {
     timelineEyebrow: "Roadmap",
     timelineTitle: "Full Season I schedule",
     voteEyebrow: "Special award",
-    voteTitle: "Fan Favorite Team voting rules",
+    voteTitle: "Fan Favorite voting rules",
     faqEyebrow: "Q&A",
     faqTitle: "More questions",
     register: "Register to compete",
   },
 };
 
-// Tông màu 4 vòng (xanh lá, xanh dương, cam, đỏ gạch) và 6 nhóm năng lực, theo ảnh tham chiếu
+// Tông màu các vòng (xanh lá, xanh dương, cam, đỏ gạch) và 6 nhóm năng lực, theo ảnh tham chiếu
 const roundTones = [
   { card: "border-[#cfe3c0] bg-[#f4f9ef]", badge: "bg-[#5b8a3a]", ink: "text-[#4a7a2c]" },
   { card: "border-[#c9dbf6] bg-[#eff5fe]", badge: "bg-[#2f6bf0]", ink: "text-[#2557c9]" },
@@ -140,7 +140,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
           <Block eyebrow={t.formatEyebrow} title={t.formatTitle}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={img("mountains")} alt="" aria-hidden className="pointer-events-none absolute inset-x-0 top-24 -z-0 w-full opacity-40" />
-            <div className="relative grid gap-5 pt-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative grid gap-5 pt-4 md:grid-cols-3">
               {rounds.map((r, i) => {
                 const tone = roundTones[i % roundTones.length];
                 return (
@@ -201,7 +201,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
             </div>
             <div className="relative min-h-72 lg:min-h-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={asset("/images/photos/hero-team.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[60%_center] lg:[clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]" />
+              <img src={asset("/images/is/sv-thao-luan.webp")} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[60%_center] lg:[clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]" />
             </div>
           </section>
 
@@ -210,7 +210,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               {sideEvents.map((e, i) => (
                 <article key={e.tag} className="overflow-hidden rounded-2xl bg-white shadow-[0_12px_30px_-18px_rgb(11_31_77/0.4)] ring-1 ring-[#eadfca]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={asset(`/images/generated/${i === 0 ? "hl-trip" : "hl-dinner"}.webp`)} alt="" aria-hidden className="h-48 w-full object-cover" />
+                  <img src={asset(`/images/is/${i === 0 ? "sv-giang-duong" : "sv-ban-tron"}.webp`)} alt="" aria-hidden className="h-48 w-full object-cover" />
                   <div className="p-6 sm:p-7">
                     <p className="text-sm font-bold tracking-wider text-orange-ink uppercase">{e.tag}</p>
                     <h3 className="mt-2 text-xl font-bold text-navy">{e.title}</h3>
@@ -242,8 +242,8 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               </div>
             }
           >
-            {/* Dòng thời gian ngang: đủ 9 mốc trên một hàng từ 1280px, nhỏ hơn thì vuốt ngang */}
-            <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-3 [scrollbar-width:thin] xl:mx-0 xl:grid xl:grid-cols-9 xl:overflow-visible xl:px-0">
+            {/* Dòng thời gian ngang: đủ 10 mốc trên một hàng từ 1280px, nhỏ hơn thì vuốt ngang */}
+            <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-3 [scrollbar-width:thin] xl:mx-0 xl:grid xl:grid-cols-10 xl:overflow-visible xl:px-0">
               {timeline.map((item, i) => (
                 <li key={item.title} className="relative w-44 shrink-0 snap-start pr-5 xl:w-auto xl:pr-3">
                   {i < timeline.length - 1 && <span aria-hidden className="absolute top-[7px] right-0 left-4 h-0.5 bg-orange/30" />}

@@ -10,22 +10,22 @@ import { asset } from "@/lib/paths";
 const text = {
   vi: {
     title: ["Bạn có phải nhà quản trị", "chúng tôi đang tìm?"],
-    lead: "Sáu chân dung năng lực được chấm ở cả bốn vòng thi. Bạn thấy mình trong chân dung nào?",
+    lead: "Sáu chân dung năng lực được chấm ở cả ba vòng thi. Bạn thấy mình trong chân dung nào?",
     more: "Xem khung năng lực",
     partners: "Đơn vị tổ chức & đồng hành",
     sponsor: "Trở thành nhà tài trợ",
     group: "Nhóm năng lực",
-    every: "chấm ở cả bốn vòng",
+    every: "chấm ở cả ba vòng",
     label: "Sáu nhóm năng lực",
   },
   en: {
     title: ["Are you the manager", "we are looking for?"],
-    lead: "Six competency profiles, assessed in all four rounds. Which one sounds like you?",
+    lead: "Six competency profiles, assessed in all three rounds. Which one sounds like you?",
     more: "See the framework",
     partners: "Organizers & partners",
     sponsor: "Become a sponsor",
     group: "Competency",
-    every: "assessed in all four rounds",
+    every: "assessed in all three rounds",
     label: "Six competency areas",
   },
 };

@@ -21,7 +21,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
         <div data-tour="register" className="reveal relative overflow-hidden rounded-3xl border border-line bg-cream shadow-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={asset("/images/unsplash/countdown-students.webp")}
+            src={asset("/images/is/sv-ban-tron.webp")}
             alt=""
             loading="lazy"
             className="kenburns absolute inset-0 h-full w-full object-cover object-[50%_30%] opacity-60"

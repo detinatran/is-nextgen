@@ -11,12 +11,12 @@ export const registerText = {
   vi: {
     eyebrow: "Mùa I · 2026",
     title: "Đăng ký dự thi",
-    lead: "Đăng ký cá nhân, không thu lệ phí. Ban Tổ chức sẽ gửi email xác nhận và hướng dẫn làm bài Vòng Đơn.",
+    lead: "Đăng ký cá nhân, không thu lệ phí. Ban Tổ chức sẽ gửi email xác nhận và hướng dẫn làm bài Vòng 1.",
     deadline: "Thời hạn đăng ký",
     prepare: "Bạn cần chuẩn bị",
     checklist: [
       "Thông tin cá nhân và mã số sinh viên",
-      "Video giới thiệu tối đa 02 phút: giới thiệu bản thân và trả lời câu hỏi tình huống do Ban Tổ chức công bố",
+      "01 video cá nhân tối đa 02 phút, chủ đề tự chọn",
       "File video MP4 dưới 300 MB, tải lên ngay trong form",
       "01 ảnh cá nhân rõ mặt (JPG, PNG) dưới 10 MB để Ban Tổ chức làm truyền thông",
       "Thẻ sinh viên hoặc giấy xác nhận để xuất trình ở các vòng thi trực tiếp",
@@ -25,12 +25,12 @@ export const registerText = {
   en: {
     eyebrow: "Season I · 2026",
     title: "Register",
-    lead: "Individual entry, free of charge. The Organizing Committee will email you a confirmation and instructions for the Application Round.",
+    lead: "Individual entry, free of charge. The Organizing Committee will email you a confirmation and instructions for Round 1.",
     deadline: "Registration deadline",
     prepare: "What you need",
     checklist: [
       "Your personal details and student ID",
-      "An intro video of up to 02 minutes introducing yourself and answering the case question announced by the Organizing Committee",
+      "01 personal video of up to 02 minutes on a topic of your choice",
       "The video as an MP4 file under 300 MB, uploaded directly in the form",
       "01 clear personal photo (JPG, PNG) under 10 MB for the competition's communications",
       "Your student card or enrolment letter to show at in-person rounds",

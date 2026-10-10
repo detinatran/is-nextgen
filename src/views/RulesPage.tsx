@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
+import Slideshow from "@/components/Slideshow";
 import PageHero from "@/components/PageHero";
 import SiteShell from "@/components/SiteShell";
 import { getContent } from "@/content";
@@ -207,10 +208,9 @@ export default function RulesPage({ lang }: { lang: Lang }) {
 
           <Block id="ben-le" eyebrow={t.sideEyebrow} title={t.sideTitle}>
             <div className="grid gap-6 lg:grid-cols-2">
-              {sideEvents.map((e, i) => (
+              {sideEvents.map((e) => (
                 <article key={e.tag} className="overflow-hidden rounded-2xl bg-white shadow-[0_12px_30px_-18px_rgb(11_31_77/0.4)] ring-1 ring-[#eadfca]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={asset(`/images/is/${i === 0 ? "sv-giang-duong" : "sv-ban-tron"}.webp`)} alt="" aria-hidden className="h-48 w-full object-cover" />
+                  <Slideshow images={e.images} className="h-48" />
                   <div className="p-6 sm:p-7">
                     <p className="text-sm font-bold tracking-wider text-orange-ink uppercase">{e.tag}</p>
                     <h3 className="mt-2 text-xl font-bold text-navy">{e.title}</h3>

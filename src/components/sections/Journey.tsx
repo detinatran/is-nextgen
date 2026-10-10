@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
+import Slideshow from "@/components/Slideshow";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 
@@ -42,7 +43,11 @@ export default function Journey({ lang }: { lang: Lang }) {
                   href={localePath(lang, item.href)}
                   className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-line transition duration-300 hover:-translate-y-1.5 hover:shadow-xl"
                 >
-                  <Photo src={item.image} alt="" className="aspect-[16/10]" imgClassName="transition duration-700 group-hover:scale-105" />
+                  {"images" in item && item.images ? (
+                    <Slideshow images={item.images} className="aspect-[16/10]" imgClassName="group-hover:scale-105 [transition:opacity_1s,transform_.7s]" />
+                  ) : (
+                    <Photo src={item.image} alt="" className="aspect-[16/10]" imgClassName="transition duration-700 group-hover:scale-105" />
+                  )}
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="text-[17px] leading-snug font-bold text-navy">{item.title}</h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{item.body}</p>

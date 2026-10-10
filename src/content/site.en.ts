@@ -114,7 +114,7 @@ export const journey = {
   items: [
     { title: "Leaderless group discussion", body: "Round 2 – Decide: randomly formed teams solve a real company case with no facilitator.", image: "/images/is/sv-thao-luan.webp", href: "/the-le/#vong-2" },
     { title: "Executive case", body: "Final – Deliver: a team part and an individual part solving a real problem set by a company.", image: "/images/is/sv-man-hinh.webp", href: "/the-le/#vong-3" },
-    { title: "Company visit & talks", body: "Field trip on Nov 14: Round 2 contestants visit a company and talk with its managers.", image: "/images/is/sv-giang-duong.webp", href: "/the-le/#ben-le" },
+    { title: "Company visit & talks", body: "Field trip on Nov 14: Round 2 contestants visit a company and talk with its managers.", image: "/images/is/tham-quan-1.webp", images: ["/images/is/tham-quan-1.webp", "/images/is/tham-quan-2.webp"], href: "/the-le/#ben-le" },
     { title: "Gala networking dinner", body: "Evening of Nov 28: meet experts and partner companies.", image: "/images/is/sv-ban-tron.webp", href: "/the-le/#ben-le" },
   ],
 };
@@ -285,6 +285,7 @@ export const judgingRules = [
 
 export const sideEvents = [
   {
+    images: ["/images/is/tham-quan-1.webp", "/images/is/tham-quan-2.webp"],
     tag: "NextGen Business Trip",
     title: "Company visit and experience",
     when: "Nov 14, 2026",
@@ -292,6 +293,7 @@ export const sideEvents = [
     body: "Tour the workplace and learn about the company's structure, strategy, culture and operations; talk with managers about decision-making, prioritization, leading teams, internships and management trainee programs. Afterwards, each contestant writes a short note on one management decision they observed (not scored), used as reference for the individual part of the Final.",
   },
   {
+    images: ["/images/is/sv-ban-tron.webp"],
     tag: "NextGen Networking Dinner",
     title: "Gala networking dinner",
     when: "18:30 – 22:00, Nov 28, 2026",

@@ -42,6 +42,14 @@ export class RegistrationsController {
     return this.registrations.registrationWindow(code);
   }
 
+  /** Email đã dùng để đăng ký cuộc thi này chưa (mỗi email chỉ đăng ký một lần). */
+  @Post('competitions/:code/email-availability')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  async emailAvailability(@Param('code') code: string, @Body() body: { email?: unknown }): Promise<{ available: boolean }> {
+    return this.registrations.emailAvailability(code, typeof body?.email === 'string' ? body.email : '');
+  }
+
   /** FR-13: anonymous draft registration; capability tokens authorize later access. */
   @Post('registration-drafts')
   @HttpCode(HttpStatus.CREATED)

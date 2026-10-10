@@ -15,6 +15,8 @@ export const ErrorCodes = {
   ADMISSION_CLOSED: 'ADMISSION_CLOSED',
   CAPACITY_REACHED: 'CAPACITY_REACHED',
   DEADLINE_PASSED: 'DEADLINE_PASSED',
+  /** Mỗi email chỉ được một hồ sơ đã nộp trong một cuộc thi. */
+  EMAIL_ALREADY_REGISTERED: 'EMAIL_ALREADY_REGISTERED',
   RATE_LIMITED: 'RATE_LIMITED',
   DEPENDENCY_UNAVAILABLE: 'DEPENDENCY_UNAVAILABLE',
   // Candidate-flow specific, still stable machine codes.

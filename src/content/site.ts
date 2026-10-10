@@ -264,9 +264,10 @@ export const minorPrizes: string =
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
-  { name: "Liên chi đoàn", logo: "/images/org/doan.png" },
-  { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
+  { name: "Đoàn TNCS Hồ Chí Minh", logo: "/images/org/doan.png" },
+  { name: "Liên chi đoàn Kinh tế - Quản lý", logo: "/images/org/lcd-ktql-navy.png" },
   { name: "CLB iSupport", logo: "/images/org/isupport.png" },
+  { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
 ];
 
 // TODO(BTC): thêm nhà tài trợ khi ký thoả thuận, ví dụ { name: "Tên DN", logo: "/images/sponsors/ten-dn.png" }

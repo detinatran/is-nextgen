@@ -67,12 +67,12 @@ export default function Personas({ lang }: { lang: Lang }) {
               </a>
             )}
           </div>
-          <ul className="mt-4 flex flex-wrap items-start justify-center gap-x-8 gap-y-5 sm:gap-x-14">
+          <ul className="mt-4 flex flex-wrap items-start justify-center gap-x-6 gap-y-5 sm:gap-x-10 lg:gap-x-14">
             {partners.map((p) => (
               <li key={p.name} className="flex w-28 flex-col items-center gap-1.5 text-center sm:w-36" title={p.name}>
                 {p.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={asset(p.logo)} alt={p.name} className={`h-10 w-auto max-w-full object-contain ${p.ink ? "logo-ink" : ""}`} />
+                  <img src={asset(p.logo)} alt={p.name} className={`h-12 w-auto max-w-full object-contain ${p.ink ? "logo-ink" : ""}`} />
                 ) : (
                   <Icon name="landmark" className="h-8 w-8 text-navy-soft" strokeWidth={1.5} />
                 )}

@@ -1,6 +1,7 @@
 // Toàn bộ nội dung chữ của trang, lấy từ "Kế hoạch tổ chức cuộc thi IS NextGen Manager final".
 // Sửa chữ, số liệu, mốc thời gian tại đây; không cần đụng tới component.
 import type { IconName } from "@/components/Icon";
+import type { TimelineItem } from "@/components/Timeline";
 
 export const site = {
   name: "NextGen Manager Challenge 2026",
@@ -213,25 +214,18 @@ export const personas = [
 ];
 
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
-export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
-  { date: "11 - 31.10.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
-  { date: "07.11.2026", title: "Vòng 1 · Discover", icon: "fileChart", tone: "blue", until: "2026-11-11T23:59:00+07:00" },
-  { date: "21.11.2026", title: "Vòng 2 · Decide", icon: "messages", tone: "red", until: "2026-11-25T23:59:00+07:00" },
-  { date: "05.12.2026", title: "Chung kết · Deliver", icon: "trophy", tone: "gold", until: "2026-12-05T23:59:00+07:00" },
-];
-
-// Lộ trình đầy đủ (theo Hồ sơ tài trợ của Ban Tổ chức), hiển thị ở trang Thể lệ
-export const timeline = [
-  { date: "11/10/2026", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến, tiếp nhận hồ sơ và video" },
-  { date: "22/10/2026", title: "Lễ khai mạc & Workshop", body: "18h30, giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
-  { date: "31/10/2026", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ và video (23:59)" },
-  { date: "07/11/2026", title: "Vòng 1 · Discover", body: "8h00 – 23h59, thi trực tuyến, chấm tự động" },
-  { date: "11/11/2026", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
-  { date: "14/11/2026", title: "Field trip", body: "Tham quan mô hình doanh nghiệp, toạ đàm với nhà quản lý" },
-  { date: "21/11/2026", title: "Vòng 2 · Decide", body: "9h00 – 16h30, giải bài toán doanh nghiệp theo đội" },
-  { date: "25/11/2026", title: "Kết quả Vòng 2", body: "Công bố danh sách thí sinh vào Chung kết" },
-  { date: "28/11/2026", title: "Gala dinner networking", body: "18h30 – 22h00, kết nối với chuyên gia và doanh nghiệp" },
-  { date: "05/12/2026", title: "Chung kết · Deliver", body: "Phần thi nhóm và phần thi cá nhân" },
+// Lộ trình đầy đủ mùa I (theo Ban Tổ chức): hiển thị ở trang chủ và trang Thể lệ
+export const timeline: TimelineItem[] = [
+  { day: "2026-10-11", kind: "register", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến, tiếp nhận hồ sơ và video" },
+  { day: "2026-10-22", kind: "event", time: "18h30", title: "Lễ khai mạc & Workshop", body: "Giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
+  { day: "2026-10-31", kind: "register", time: "23h59", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ và video" },
+  { day: "2026-11-07", kind: "round", time: "8h00 – 23h59", title: "Vòng 1 · Discover", body: "Thi trực tuyến, chấm tự động" },
+  { day: "2026-11-11", kind: "result", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
+  { day: "2026-11-14", kind: "event", title: "Field trip", body: "Tham quan mô hình doanh nghiệp, toạ đàm với nhà quản lý" },
+  { day: "2026-11-21", kind: "round", time: "9h00 – 16h30", title: "Vòng 2 · Decide", body: "Giải bài toán doanh nghiệp theo đội" },
+  { day: "2026-11-25", kind: "result", title: "Kết quả Vòng 2", body: "Công bố danh sách thí sinh vào Chung kết" },
+  { day: "2026-11-28", kind: "event", time: "18h30 – 22h00", title: "Gala dinner networking", body: "Kết nối với chuyên gia và doanh nghiệp" },
+  { day: "2026-12-05", kind: "round", title: "Chung kết · Deliver", body: "Phần thi nhóm và phần thi cá nhân" },
 ];
 
 // Cơ cấu giải theo Ban Tổ chức; không công bố số tiền thưởng trên website

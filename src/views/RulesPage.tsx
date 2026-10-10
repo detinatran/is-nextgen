@@ -2,6 +2,7 @@ import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
 import Icon from "@/components/Icon";
 import Slideshow from "@/components/Slideshow";
+import Timeline from "@/components/Timeline";
 import PageHero from "@/components/PageHero";
 import SiteShell from "@/components/SiteShell";
 import { getContent } from "@/content";
@@ -242,18 +243,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
               </div>
             }
           >
-            {/* Dòng thời gian ngang: đủ 10 mốc trên một hàng từ 1280px, nhỏ hơn thì vuốt ngang */}
-            <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-3 [scrollbar-width:thin] xl:mx-0 xl:grid xl:grid-cols-10 xl:overflow-visible xl:px-0">
-              {timeline.map((item, i) => (
-                <li key={item.title} className="relative w-44 shrink-0 snap-start pr-5 xl:w-auto xl:pr-3">
-                  {i < timeline.length - 1 && <span aria-hidden className="absolute top-[7px] right-0 left-4 h-0.5 bg-orange/30" />}
-                  <span aria-hidden className="relative block h-4 w-4 rounded-full bg-orange ring-4 ring-[#fbf8f2]" />
-                  <p className="mt-4 text-[14px] font-bold tracking-tight whitespace-nowrap text-orange-ink xl:text-[13px]">{item.date}</p>
-                  <p className="mt-1 text-[15px] leading-snug font-semibold text-navy">{item.title}</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-muted">{item.body}</p>
-                </li>
-              ))}
-            </ol>
+            <Timeline items={timeline} lang={lang} />
           </Block>
 
           <Block eyebrow={t.voteEyebrow} title={t.voteTitle}>

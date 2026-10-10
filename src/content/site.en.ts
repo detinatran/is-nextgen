@@ -264,9 +264,10 @@ export const minorPrizes =
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "VNU International School (VNU-IS)", logo: "/images/org/truong-crest.png" },
-  { name: "Youth Union Branch", logo: "/images/org/doan.png" },
-  { name: "Marketing Club (IMC)", logo: "/images/org/imc.png" },
+  { name: "Ho Chi Minh Communist Youth Union", logo: "/images/org/doan.png" },
+  { name: "Youth Union Branch – Economics & Management", logo: "/images/org/lcd-ktql-navy.png" },
   { name: "iSupport Club", logo: "/images/org/isupport.png" },
+  { name: "Marketing Club (IMC)", logo: "/images/org/imc.png" },
 ];
 
 // TODO(BTC): add sponsors once agreements are signed, e.g. { name: "Company name", logo: "/images/sponsors/company-name.png" }

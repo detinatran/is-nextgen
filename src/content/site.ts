@@ -181,32 +181,32 @@ export const values = {
 
 export const personas = [
   {
-    image: "/images/is/chan-dung-1.webp",
+    image: "/images/is/gv-dao-cong-tuan.webp",
     title: "Tư duy phân tích và ra quyết định",
     body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
   },
   {
-    image: "/images/is/chan-dung-2.webp",
+    image: "/images/is/gv-ta-huy-hung.webp",
     title: "Tư duy hệ thống và sắp xếp ưu tiên",
     body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
   },
   {
-    image: "/images/is/chan-dung-3.webp",
+    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
     title: "Lãnh đạo và tạo ảnh hưởng",
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
-    image: "/images/is/chan-dung-4.webp",
+    image: "/images/is/gv-nguyen-phuong-mai.webp",
     title: "Hợp tác và giao tiếp",
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
-    image: "/images/is/chan-dung-5.webp",
+    image: "/images/is/gv-tran-cong-thanh.webp",
     title: "Đạo đức và trách nhiệm",
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
-    image: "/images/is/chan-dung-6.webp",
+    image: "/images/is/gv-le-thi-mai.webp",
     title: "Trình bày và ngôn ngữ",
     body: "Cấu trúc thông điệp rõ ràng, thuyết phục bằng lời và hình ảnh, trình bày được bằng tiếng Anh.",
   },

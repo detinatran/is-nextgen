@@ -223,7 +223,7 @@ export const milestones: { date: string; title: string; icon: IconName; tone: "o
 // Full schedule (per the Organizing Committee's sponsorship deck), shown on the Rules page
 export const timeline = [
   { date: "Oct 11, 2026", title: "Registration opens", body: "Online portal opens for profiles and videos" },
-  { date: "Oct 21, 2026", title: "Opening & Workshop", body: "Competition launch, skills and knowledge workshop" },
+  { date: "Oct 22, 2026", title: "Opening & Workshop", body: "18:30, competition launch, skills and knowledge workshop" },
   { date: "Oct 31, 2026", title: "Registration closes", body: "Last day to submit profiles and videos (23:59)" },
   { date: "Nov 7, 2026", title: "Round 1 · Discover", body: "8:00 – 23:59, online test, auto-scored" },
   { date: "Nov 11, 2026", title: "Round 1 results", body: "Contestants advancing to Round 2 announced" },
@@ -326,7 +326,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "calendar",
     q: "What is the detailed schedule?",
-    a: "Registration opens on Oct 11, 2026 (deadline 23:59, Oct 31), the opening ceremony is on Oct 21, Round 1 is online on Nov 7, the field trip on Nov 14, Round 2 on Nov 21, the Gala networking dinner on Nov 28 and the Final on Dec 5, 2026. The full schedule is on the Rules page.",
+    a: "Registration opens on Oct 11, 2026 (deadline 23:59, Oct 31), the opening ceremony is at 18:30 on Oct 22, Round 1 is online on Nov 7, the field trip on Nov 14, Round 2 on Nov 21, the Gala networking dinner on Nov 28 and the Final on Dec 5, 2026. The full schedule is on the Rules page.",
   },
   {
     icon: "briefcase",

@@ -223,7 +223,7 @@ export const milestones: { date: string; title: string; icon: IconName; tone: "o
 // Lộ trình đầy đủ (theo Hồ sơ tài trợ của Ban Tổ chức), hiển thị ở trang Thể lệ
 export const timeline = [
   { date: "11/10/2026", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến, tiếp nhận hồ sơ và video" },
-  { date: "21/10/2026", title: "Lễ khai mạc & Workshop", body: "Giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
+  { date: "22/10/2026", title: "Lễ khai mạc & Workshop", body: "18h30, giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
   { date: "31/10/2026", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ và video (23:59)" },
   { date: "07/11/2026", title: "Vòng 1 · Discover", body: "8h00 – 23h59, thi trực tuyến, chấm tự động" },
   { date: "11/11/2026", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
@@ -326,7 +326,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "calendar",
     q: "Lịch trình chi tiết của cuộc thi?",
-    a: "Mở đăng ký 11/10/2026 (hạn chót 23:59 ngày 31/10), Lễ khai mạc 21/10, Vòng 1 thi trực tuyến ngày 07/11, Field trip 14/11, Vòng 2 ngày 21/11, Gala dinner networking 28/11 và Chung kết ngày 05/12/2026. Lịch đầy đủ có ở trang Thể lệ.",
+    a: "Mở đăng ký 11/10/2026 (hạn chót 23:59 ngày 31/10), Lễ khai mạc 18h30 ngày 22/10, Vòng 1 thi trực tuyến ngày 07/11, Field trip 14/11, Vòng 2 ngày 21/11, Gala dinner networking 28/11 và Chung kết ngày 05/12/2026. Lịch đầy đủ có ở trang Thể lệ.",
   },
   {
     icon: "briefcase",

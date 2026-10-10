@@ -52,11 +52,11 @@ export default function Header() {
     onHome ? item.id === activeSection : pathname.startsWith(href(`/${item.id}`));
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-50 lg:top-3">
       <div className="mx-auto max-w-[77rem] lg:px-8">
         <div
-          // Luôn có nền: banner đầu trang có dải logo ở phía trên nên menu không đè lên ảnh
-          className="flex h-16 items-center justify-between gap-4 border border-t-0 border-white/10 bg-navy/95 px-4 shadow-xl shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-b-2xl"
+          // Luôn có nền; màn hình lớn: thanh menu nổi, cách mép trên một khoảng trắng
+          className="flex h-16 items-center justify-between gap-4 border border-t-0 border-white/10 bg-navy/95 px-4 shadow-xl shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-2xl lg:border-t"
         >
           <Link href={href("/#top")} className="flex min-w-0 items-center" onClick={() => setOpen(false)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

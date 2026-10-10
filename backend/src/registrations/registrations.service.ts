@@ -119,6 +119,8 @@ export class RegistrationsService {
         throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Registration window has closed');
       }
 
+      await this.assertEmailNotRegistered(tx, competition.id, emailNormalized);
+
       const candidate = await tx.candidates.create({ data: {} });
       await tx.candidate_profiles.create({
         data: {
@@ -493,6 +495,10 @@ export class RegistrationsService {
         throw AppException.validation('Registration profile is incomplete', { missingFields: missing });
       }
 
+      // Quy định: mỗi email chỉ đăng ký một lần. Khoá theo email trong giao dịch để hai lượt nộp đồng thời không cùng lọt.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${'reg-email:' + profile.email_normalized}))`;
+      await this.assertEmailNotRegistered(tx, competition.id, profile.email_normalized, registration.id);
+
       // Consents (latest answer per purpose wins; rows are append-only evidence):
       // - DATA_PROCESSING must be granted (registration itself)
       // - EVENT_COVERAGE is legacy evidence, never a general registration gate.
@@ -706,6 +712,42 @@ export class RegistrationsService {
       phoneNormalized: profile.phone_normalized,
       facebook: profile.facebook,
     };
+  }
+
+  /** Quy định: mỗi email chỉ có một hồ sơ ĐÃ NỘP trong một cuộc thi (hồ sơ nháp bỏ dở không tính). */
+  private async assertEmailNotRegistered(
+    tx: Tx,
+    competitionId: string,
+    emailNormalized: string,
+    exceptRegistrationId?: string,
+  ): Promise<void> {
+    const existing = await tx.$queryRaw<{ id: string }[]>`
+      SELECT r.id FROM registrations r
+      JOIN candidate_profiles p ON p.candidate_id = r.candidate_id
+      WHERE r.competition_id = ${competitionId}::uuid AND r.state = 'SUBMITTED'
+        AND p.email_normalized = ${emailNormalized}
+        AND r.id <> ${exceptRegistrationId ?? '00000000-0000-0000-0000-000000000000'}::uuid
+      LIMIT 1`;
+    if (existing.length > 0) {
+      throw AppException.conflict(ErrorCodes.EMAIL_ALREADY_REGISTERED, 'This email has already been used to register');
+    }
+  }
+
+  /** Kiểm tra trước ở bước 1 của form để thí sinh không phải tải ảnh, video rồi mới bị từ chối. */
+  async emailAvailability(code: string, email: string): Promise<{ available: boolean }> {
+    const normalized = normalizeEmail(cleanText(email));
+    if (!normalized || normalized.length > 320 || !normalized.includes('@')) {
+      throw AppException.validation('Invalid email', { field: 'email' });
+    }
+    const competition = await this.prisma.competitions.findUnique({ where: { code: code.trim().slice(0, 64) } });
+    if (!competition) throw AppException.notFound('Competition not found');
+    try {
+      await this.assertEmailNotRegistered(this.prisma as unknown as Tx, competition.id, normalized);
+      return { available: true };
+    } catch (e) {
+      if (e instanceof AppException) return { available: false };
+      throw e;
+    }
   }
 
   /** Duplicate heuristics flag review rows only — never auto-merge or auto-reject. */

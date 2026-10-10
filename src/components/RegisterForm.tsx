@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
-import { ApiError, apiBase, submitRegistration, type SubmitStep } from "@/lib/api";
+import { ApiError, apiBase, checkEmailAvailable, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { useRegistrationWindow } from "@/lib/registrationWindow";
 import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
@@ -57,7 +57,9 @@ const text = {
     waitVideo: "Đang kiểm tra video, vui lòng đợi trong giây lát.",
     needConsent: "Vui lòng chọn Đồng ý hoặc Không đồng ý.",
     needConfirm: "Vui lòng xác nhận để nộp đăng ký.",
-    duplicateNote: "Mỗi thí sinh chỉ đăng ký một lần. Hồ sơ trùng email hoặc mã số sinh viên sẽ được Ban Tổ chức rà soát; nếu cần sửa thông tin, hãy liên hệ",
+    duplicateNote: "Mỗi email chỉ được đăng ký một lần. Hồ sơ trùng mã số sinh viên sẽ được Ban Tổ chức rà soát; nếu cần sửa thông tin, hãy liên hệ",
+    emailTaken: "Email này đã được dùng để đăng ký. Mỗi email chỉ đăng ký một lần.",
+    checkingEmail: "Đang kiểm tra...",
     steps: ["Thông tin", "Ảnh & video", "Cam kết"],
     next: "Tiếp tục",
     back: "Quay lại",
@@ -96,6 +98,7 @@ const text = {
       PHOTO_TOO_LARGE: "Ảnh lớn hơn 10 MB.",
       VALIDATION_FAILED: "Thông tin chưa hợp lệ, vui lòng kiểm tra lại các ô đã nhập.",
       STATE_CONFLICT: "Cổng đăng ký hiện không mở.",
+      EMAIL_ALREADY_REGISTERED: "Email này đã được dùng để đăng ký. Mỗi email chỉ đăng ký một lần; cần hỗ trợ, liên hệ nextgen@vnuis.edu.vn.",
       RATE_LIMITED: "Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.",
       DEADLINE_PASSED: "Đã hết hạn đăng ký.",
       NOT_FOUND: "Cuộc thi chưa mở đăng ký trên hệ thống.",
@@ -145,7 +148,9 @@ const text = {
     waitVideo: "Checking your video, please wait a moment.",
     needConsent: "Please choose Agree or Do not agree.",
     needConfirm: "Please confirm to submit your registration.",
-    duplicateNote: "Each contestant may register only once. Registrations with a duplicate email or student ID are reviewed by the Organizing Committee; to change your details, contact",
+    duplicateNote: "Each email can be used to register only once. Registrations with a duplicate student ID are reviewed by the Organizing Committee; to change your details, contact",
+    emailTaken: "This email has already been used to register. Each email can register only once.",
+    checkingEmail: "Checking...",
     steps: ["Your details", "Photo & video", "Consent"],
     next: "Continue",
     back: "Back",
@@ -184,6 +189,7 @@ const text = {
       PHOTO_TOO_LARGE: "The photo is larger than 10 MB.",
       VALIDATION_FAILED: "Some details are not valid. Please check your entries.",
       STATE_CONFLICT: "Registration is not open right now.",
+      EMAIL_ALREADY_REGISTERED: "This email has already been used to register. Each email can register only once; for help, contact nextgen@vnuis.edu.vn.",
       RATE_LIMITED: "Too many attempts. Please try again in a few minutes.",
       DEADLINE_PASSED: "Registration has closed.",
       NOT_FOUND: "Registration for this competition is not open in the system.",
@@ -282,8 +288,24 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     return true;
   }
 
-  function nextPage() {
-    if (validatePage(page)) goTo(page + 1);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  async function nextPage() {
+    if (!validatePage(page)) return;
+    // Bước 1: kiểm tra email đã đăng ký chưa trước khi sang bước tải ảnh, video
+    if (page === 0 && formRef.current) {
+      const email = String(new FormData(formRef.current).get("email") ?? "");
+      setCheckingEmail(true);
+      const available = await checkEmailAvailable(email);
+      setCheckingEmail(false);
+      if (!available) {
+        setErrors({ email: t.emailTaken });
+        const el = formRef.current.querySelector<HTMLElement>('[name="email"]');
+        el?.focus({ preventScroll: true });
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+    }
+    goTo(page + 1);
   }
 
   /** Gõ lại vào ô nào thì xoá lỗi của ô đó. */
@@ -295,7 +317,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     // Bấm Enter ở các bước đầu thì chuyển bước, không gửi
-    if (page < 2) return nextPage();
+    if (page < 2) return void nextPage();
     const form = e.currentTarget;
     if (!photo || !video) {
       goTo(1);
@@ -602,8 +624,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             </button>
           )}
           {page < 2 ? (
-            <button key="next" type="button" onClick={nextPage} className="btn-primary flex-1 py-3.5 disabled:translate-y-0 disabled:opacity-60">
-              {t.next}
+            <button key="next" type="button" onClick={() => void nextPage()} disabled={checkingEmail} className="btn-primary flex-1 py-3.5 disabled:translate-y-0 disabled:opacity-60">
+              {checkingEmail ? t.checkingEmail : t.next}
             </button>
           ) : (
             <button key="submit" type="submit" className="btn-primary flex-1 py-3.5 disabled:translate-y-0 disabled:opacity-60">

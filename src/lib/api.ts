@@ -122,3 +122,20 @@ export async function submitRegistration(input: {
     headers: { "Idempotency-Key": crypto.randomUUID() },
   });
 }
+
+/** Email đã dùng để đăng ký cuộc thi chưa (mỗi email chỉ đăng ký một lần). Lỗi mạng thì coi như còn dùng được, máy chủ vẫn chặn lúc nộp. */
+export async function checkEmailAvailable(email: string): Promise<boolean> {
+  if (!apiBase) return true;
+  try {
+    const res = await fetch(`${apiBase}/api/v1/competitions/${encodeURIComponent(competitionCode)}/email-availability`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim() }),
+    });
+    if (!res.ok) return true;
+    return ((await res.json()) as { available?: boolean }).available !== false;
+  } catch {
+    return true;
+  }
+}
+

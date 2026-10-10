@@ -4,8 +4,10 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
-// Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày
-const BANNER_VERSION = "v3";
+// Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
+// Ảnh là bản cao 820x520 (nội dung 820x360 ở giữa, nền kéo dài trên/dưới) để phủ kín màn hình mà không cắt chữ.
+// Tỉ lệ khung màn hình lớn luôn trong khoảng 1,58–2,28 (= 820/520 … 820/360) nên object-cover không bao giờ cắt vào nội dung.
+const BANNER_VERSION = "v4";
 
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
@@ -31,16 +33,17 @@ export default function Hero({ lang }: { lang: Lang }) {
   const { heroStats, site } = getContent(lang);
   const t = text[lang];
   return (
-    <section id="top" className="relative bg-linear-to-b from-[#eef4fd] to-white pt-16 lg:bg-none lg:bg-white">
+    <section id="top" className="relative bg-linear-to-b from-[#eef4fd] to-white pt-16 lg:bg-none lg:bg-white lg:pt-10">
       <h1 className="sr-only">
         {site.name} - {site.viName}
       </h1>
 
-      {/* Dải nền sau thanh menu (menu không rộng hết màn hình lớn) */}
-      <div aria-hidden className="absolute inset-x-0 top-0 h-16 bg-navy-deep" />
-
       {/* Banner chính (ghép từ nền sinh bằng Codex + logo + chữ thật, xem .cache/cover/compose.py); bản tiếng Anh riêng */}
-      <div data-tour="hero" className="relative aspect-[820/360] overflow-hidden bg-navy-deep">
+      {/* Màn hình lớn: banner bắt đầu ngang giữa thanh menu (khe trắng phía trên), chừa một dải trắng ở đáy màn hình */}
+      <div
+        data-tour="hero"
+        className="relative aspect-[820/360] overflow-hidden bg-navy-deep lg:aspect-auto lg:h-[clamp(calc(100vw/2.28),calc(100svh-4rem),calc(100vw/1.58))] lg:[container-type:size]"
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={asset(lang === "en" ? `/images/cover-${BANNER_VERSION}-en-1640.webp` : `/images/cover-${BANNER_VERSION}-1640.webp`)}
@@ -48,13 +51,14 @@ export default function Hero({ lang }: { lang: Lang }) {
           sizes="100vw"
           alt={t.bannerAlt}
           width={1640}
-          height={720}
+          height={1040}
           fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover"
         />
 
         {/* Nút đăng ký đặt ở khoảng trống dưới các mốc thời gian của banner */}
-        <div className="absolute top-[71%] left-[27.2%] hidden -translate-x-1/2 lg:block">
+        {/* Toạ độ trên ảnh (223; 335,6 trong khung 820x520) quy đổi theo cách object-cover thu phóng ảnh */}
+        <div className="absolute hidden -translate-x-1/2 lg:block" style={{ left: "calc(50% - 187 * max(100cqw / 820, 100cqh / 520))", top: "calc(50% + 75.6 * max(100cqw / 820, 100cqh / 520))" }}>
           <Ctas lang={lang} className="gap-2.5" compact />
         </div>
       </div>

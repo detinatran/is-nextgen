@@ -4,6 +4,9 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
+// Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày
+const BANNER_VERSION = "v3";
+
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
   en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management" },
@@ -40,8 +43,8 @@ export default function Hero({ lang }: { lang: Lang }) {
       <div data-tour="hero" className="relative aspect-[820/360] overflow-hidden bg-navy-deep">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={asset(lang === "en" ? "/images/cover-en-1640.webp" : "/images/cover-1640.webp")}
-          srcSet={`${asset(lang === "en" ? "/images/cover-en-1640.webp" : "/images/cover-1640.webp")} 1640w, ${asset(lang === "en" ? "/images/cover-en-2460.webp" : "/images/cover-2460.webp")} 2460w`}
+          src={asset(lang === "en" ? `/images/cover-${BANNER_VERSION}-en-1640.webp` : `/images/cover-${BANNER_VERSION}-1640.webp`)}
+          srcSet={`${asset(lang === "en" ? `/images/cover-${BANNER_VERSION}-en-1640.webp` : `/images/cover-${BANNER_VERSION}-1640.webp`)} 1640w, ${asset(lang === "en" ? `/images/cover-${BANNER_VERSION}-en-2460.webp` : `/images/cover-${BANNER_VERSION}-2460.webp`)} 2460w`}
           sizes="100vw"
           alt={t.bannerAlt}
           width={1640}

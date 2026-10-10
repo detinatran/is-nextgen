@@ -11,9 +11,9 @@ export const site = {
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
   hashtag: "#NextGenManager",
-  // TODO(BTC): thay bằng hạn đăng ký chính thức. Vòng 1 diễn ra tuần 2/11/2026.
-  registrationDeadline: "2026-11-01T23:59:00+07:00",
-  registrationDeadlineLabel: "23:59, 01/11/2026 (dự kiến)",
+  // Hạn đăng ký chính thức (Ban Tổ chức chốt 31/10/2026). Hạn thực tế lấy từ hệ thống: competitions.registration_closes_at.
+  registrationDeadline: "2026-10-31T23:59:00+07:00",
+  registrationDeadlineLabel: "23:59, 31/10/2026",
   // Mỗi phần tử là một cụm không bị ngắt dòng giữa chừng
   address: {
     unit: ["Khoa Kinh tế và Quản lý,", "Trường Quốc tế - ĐHQGHN"],
@@ -224,7 +224,7 @@ export const personas = [
 
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
 export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
-  { date: "10 - 01.11.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-11-01T23:59:00+07:00" },
+  { date: "10 - 31.10.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
   { date: "Tuần 4 · 11/2026", title: "Vòng Sơ loại", icon: "messages", tone: "blue", until: "2026-11-29T23:59:00+07:00" },
   { date: "Tuần 2 · 12/2026", title: "Vòng Bán kết", icon: "inbox", tone: "red", until: "2026-12-13T23:59:00+07:00" },
   { date: "Tuần 4 · 12/2026", title: "Vòng Chung kết", icon: "trophy", tone: "gold", until: "2026-12-27T23:59:00+07:00" },

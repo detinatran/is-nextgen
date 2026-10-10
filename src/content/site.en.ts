@@ -11,9 +11,9 @@ export const site = {
   slogan: ["New Mindset", "New Skills", "Real Value"],
   tagline: "Shaping the next generation of managers",
   hashtag: "#NextGenManager",
-  // TODO(BTC): replace with the official registration deadline. Round 1 takes place in week 2 of Nov 2026.
-  registrationDeadline: "2026-11-01T23:59:00+07:00",
-  registrationDeadlineLabel: "23:59 (GMT+7), Nov 1, 2026 (tentative)",
+  // Official registration deadline (set by the Organizing Committee: Oct 31, 2026). The live deadline comes from competitions.registration_closes_at.
+  registrationDeadline: "2026-10-31T23:59:00+07:00",
+  registrationDeadlineLabel: "23:59 (GMT+7), Oct 31, 2026",
   // Each item is a phrase kept on one line
   address: {
     unit: ["Faculty of Economics and Management,", "VNU International School (VNU-IS)"],
@@ -224,7 +224,7 @@ export const personas = [
 
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
 export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
-  { date: "Oct 10 – Nov 1, 2026", title: "Registration opens", icon: "fileText", tone: "orange", until: "2026-11-01T23:59:00+07:00" },
+  { date: "Oct 10 – Oct 31, 2026", title: "Registration opens", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
   { date: "Week 4 · Nov 2026", title: "Qualifying Round", icon: "messages", tone: "blue", until: "2026-11-29T23:59:00+07:00" },
   { date: "Week 2 · Dec 2026", title: "Semi-final", icon: "inbox", tone: "red", until: "2026-12-13T23:59:00+07:00" },
   { date: "Week 4 · Dec 2026", title: "Grand Final", icon: "trophy", tone: "gold", until: "2026-12-27T23:59:00+07:00" },

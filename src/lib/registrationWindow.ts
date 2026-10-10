@@ -27,7 +27,7 @@ export function useRegistrationWindow(): RegistrationWindow | null {
   return w;
 }
 
-/** "23:59, 01/11/2026" theo giờ Việt Nam */
+/** "23:59, 31/10/2026" theo giờ Việt Nam */
 export function formatDeadline(iso: string, lang: "vi" | "en" = "vi"): string {
   const d = new Date(iso);
   const time = d.toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-GB", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", hour12: false });

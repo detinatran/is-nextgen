@@ -181,7 +181,7 @@ export const values = {
 
 export const personas = [
   {
-    image: "/images/is/gv-dao-cong-tuan.webp",
+    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
     title: "Analytical thinking and decision-making",
     body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
   },
@@ -191,7 +191,7 @@ export const personas = [
     body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
   },
   {
-    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    image: "/images/is/gv-mai-thuy-hang.webp",
     title: "Leadership and influence",
     body: "Propose a direction, persuade others, handle disagreement and take responsibility for your decisions.",
   },
@@ -201,12 +201,12 @@ export const personas = [
     body: "Listen, build on others' ideas and contribute to the shared outcome instead of competing for airtime.",
   },
   {
-    image: "/images/is/gv-tran-cong-thanh.webp",
+    image: "/images/is/gv-tran-thi-thu-hai.webp",
     title: "Ethics and responsibility",
     body: "Weigh the interests of all stakeholders, act with integrity in your proposals and recognize ethical risks.",
   },
   {
-    image: "/images/is/gv-le-thi-mai.webp",
+    image: "/images/is/gv-dao-cong-tuan.webp",
     title: "Presentation and language",
     body: "Structure messages clearly, persuade with words and visuals, and present confidently in English.",
   },

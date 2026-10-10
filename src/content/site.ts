@@ -186,7 +186,7 @@ export const personas = [
     body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
   },
   {
-    image: "/images/is/gv-ta-huy-hung.webp",
+    image: "/images/is/gv-ta-huy-hung-v2.webp",
     title: "Tư duy hệ thống và sắp xếp ưu tiên",
     body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
   },

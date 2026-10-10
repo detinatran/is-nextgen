@@ -1,6 +1,7 @@
 // English version of all page copy, translated from site.ts (source: "IS NextGen Manager final" organizing plan).
 // Edit text, figures and dates here; no need to touch the components.
 import type { IconName } from "@/components/Icon";
+import type { TimelineItem } from "@/components/Timeline";
 
 export const site = {
   name: "NextGen Manager Challenge 2026",
@@ -213,25 +214,18 @@ export const personas = [
 ];
 
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
-export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
-  { date: "Oct 11 – Oct 31, 2026", title: "Registration opens", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
-  { date: "Nov 7, 2026", title: "Round 1 · Discover", icon: "fileChart", tone: "blue", until: "2026-11-11T23:59:00+07:00" },
-  { date: "Nov 21, 2026", title: "Round 2 · Decide", icon: "messages", tone: "red", until: "2026-11-25T23:59:00+07:00" },
-  { date: "Dec 5, 2026", title: "Final · Deliver", icon: "trophy", tone: "gold", until: "2026-12-05T23:59:00+07:00" },
-];
-
-// Full schedule (per the Organizing Committee's sponsorship deck), shown on the Rules page
-export const timeline = [
-  { date: "Oct 11, 2026", title: "Registration opens", body: "Online portal opens for profiles and videos" },
-  { date: "Oct 22, 2026", title: "Opening & Workshop", body: "18:30, competition launch, skills and knowledge workshop" },
-  { date: "Oct 31, 2026", title: "Registration closes", body: "Last day to submit profiles and videos (23:59)" },
-  { date: "Nov 7, 2026", title: "Round 1 · Discover", body: "8:00 – 23:59, online test, auto-scored" },
-  { date: "Nov 11, 2026", title: "Round 1 results", body: "Contestants advancing to Round 2 announced" },
-  { date: "Nov 14, 2026", title: "Field trip", body: "Company visit and talks with managers" },
-  { date: "Nov 21, 2026", title: "Round 2 · Decide", body: "9:00 – 16:30, team business case" },
-  { date: "Nov 25, 2026", title: "Round 2 results", body: "Finalists announced" },
-  { date: "Nov 28, 2026", title: "Gala networking dinner", body: "18:30 – 22:00, meet experts and companies" },
-  { date: "Dec 5, 2026", title: "Final · Deliver", body: "Team part and individual part" },
+// Full Season I schedule (from the Organizing Committee): shown on the home page and the rules page
+export const timeline: TimelineItem[] = [
+  { day: "2026-10-11", kind: "register", title: "Registration opens", body: "Online portal opens for profiles and videos" },
+  { day: "2026-10-22", kind: "event", time: "18:30", title: "Opening & Workshop", body: "Competition launch, skills and knowledge workshop" },
+  { day: "2026-10-31", kind: "register", time: "23:59", title: "Registration closes", body: "Last day to submit profiles and videos" },
+  { day: "2026-11-07", kind: "round", time: "8:00 – 23:59", title: "Round 1 · Discover", body: "Online test, auto-scored" },
+  { day: "2026-11-11", kind: "result", title: "Round 1 results", body: "Contestants advancing to Round 2 announced" },
+  { day: "2026-11-14", kind: "event", title: "Field trip", body: "Company visit and talks with managers" },
+  { day: "2026-11-21", kind: "round", time: "9:00 – 16:30", title: "Round 2 · Decide", body: "Team business case" },
+  { day: "2026-11-25", kind: "result", title: "Round 2 results", body: "Finalists announced" },
+  { day: "2026-11-28", kind: "event", time: "18:30 – 22:00", title: "Gala networking dinner", body: "Meet experts and companies" },
+  { day: "2026-12-05", kind: "round", title: "Final · Deliver", body: "Team part and individual part" },
 ];
 
 // Prize structure set by the Organizing Committee; cash amounts are not published on the website

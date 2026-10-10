@@ -163,7 +163,7 @@ export default function AdminLoginPage() {
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-6 sm:px-10 sm:py-8 lg:px-14">
         <header className="flex items-center justify-between gap-6">
-          <img src={adminAsset("/images/logo-white-2026.png")} alt="NextGen Manager Challenge 2026" className="h-10 w-auto sm:h-14" />
+          <img src={adminAsset("/images/logo-lockup-white.png")} alt="NextGen Manager Challenge 2026" className="h-11 w-auto sm:h-16" />
           <div className="flex items-center gap-6">
             <p className="hidden text-right text-xs font-semibold tracking-[0.2em] text-white/85 uppercase md:block">
               <span className="block">“{t("Tài năng hôm nay")}</span>

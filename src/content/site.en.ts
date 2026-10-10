@@ -186,7 +186,7 @@ export const personas = [
     body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
   },
   {
-    image: "/images/is/gv-ta-huy-hung.webp",
+    image: "/images/is/gv-ta-huy-hung-v2.webp",
     title: "Systems thinking and prioritization",
     body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
   },

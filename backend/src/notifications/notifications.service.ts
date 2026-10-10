@@ -108,7 +108,7 @@ export class NotificationsService {
     const candidateCode = typeof payload['candidateCode'] === 'string' ? payload['candidateCode'] : '';
     const site = process.env.PUBLIC_SITE_URL ?? 'https://nextgen.vnuis.edu.vn';
     const text = (key: string) => (typeof payload[key] === 'string' ? (payload[key] as string) : '');
-    const sign = '\n\nBan Tổ chức NextGen Manager Challenge 2026\nnextgen@vnuis.edu.vn · Hotline 0962 132 535';
+    const sign = '\n\nBan Tổ chức NextGen Manager Challenge 2026\nnextgen@vnuis.edu.vn · Hotline: Ms. Giang 0388 674 655 · Ms. Thu 0919 746 896';
     switch (templateCode) {
       case 'ACTIVATION':
         return {

@@ -7,28 +7,28 @@ import type { Lang } from "@/lib/i18n";
 const text = {
   vi: {
     eyebrow: "Giải thưởng",
-    total: "Tổng giá trị",
-    lead: "Giá trị nghề nghiệp là chính: suất thực tập, vé vào thẳng vòng phỏng vấn cuối và giấy chứng nhận được doanh nghiệp đồng hành công nhận.",
+    total: "Cơ cấu giải thưởng",
+    lead: "Giá trị nghề nghiệp là chính: cơ hội thực tập, vé vào thẳng vòng phỏng vấn cuối chương trình quản trị viên tập sự, cùng giấy chứng nhận và kỷ niệm chương.",
     everyone: "Cho mọi thí sinh vòng trong",
     forEveryone: [
-      "Giấy chứng nhận tham dự vòng trong, được doanh nghiệp đồng hành công nhận khi xét hồ sơ thực tập và tuyển dụng",
+      "Giấy chứng nhận tham dự vòng trong",
       "Báo cáo năng lực cá nhân bản điện tử: điểm mạnh, điểm cần cải thiện và gợi ý phát triển",
     ],
   },
   en: {
     eyebrow: "Prizes",
-    total: "Total prize pool",
-    lead: "The real value is your career: internships, a fast track to final interviews and certificates endorsed by our partner companies.",
+    total: "Prize structure",
+    lead: "The real value is your career: internship opportunities, a fast track to the final interview of a management trainee program, plus certificates and commemorative medals.",
     everyone: "For every contestant past round 1",
     forEveryone: [
-      "A participation certificate recognized by partner companies when reviewing internship and job applications",
+      "A certificate of participation in the advanced rounds",
       "A personal digital competency report: strengths, areas to improve and development suggestions",
     ],
   },
 };
 
 export default function Prizes({ lang }: { lang: Lang }) {
-  const { minorPrizes, prizeTotal, prizes } = getContent(lang);
+  const { minorPrizes, prizes } = getContent(lang);
   const t = text[lang];
   return (
     <section id="giai-thuong" className="bg-linear-to-b from-white via-cream to-white py-16 lg:py-24">
@@ -36,7 +36,7 @@ export default function Prizes({ lang }: { lang: Lang }) {
         <div className="reveal max-w-3xl">
           <Eyebrow>{t.eyebrow}</Eyebrow>
           <h2 className="h2-section mt-4">
-            {t.total} <span className="text-orange-ink">{prizeTotal}</span>
+            {t.total}
           </h2>
           <p className="lead mt-4">
             {t.lead}
@@ -60,8 +60,7 @@ export default function Prizes({ lang }: { lang: Lang }) {
                   {p.rank}
                   <span className="font-normal text-muted">· {p.qty}</span>
                 </p>
-                <p className="mt-3 text-[1.75rem] leading-none font-bold text-navy transition-all duration-300 group-hover:translate-x-1 group-hover:text-orange-ink">{p.amount}</p>
-                <ul className="mt-4 space-y-1">
+                <ul className="mt-3 space-y-1">
                   {p.perks.map((perk) => (
                     <li key={perk} className="text-[15px] leading-snug text-muted">
                       {perk}

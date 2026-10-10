@@ -11,7 +11,7 @@ export default function PageHero({ lang, eyebrow, title, lead, aside }: Props) {
     <section
       className="band-fallback relative overflow-hidden bg-cover bg-center pt-36 pb-20 text-white"
       style={{
-        backgroundImage: `linear-gradient(90deg, rgb(7 21 51 / 0.92), rgb(7 21 51 / 0.6)), url(${asset("/images/photos/timeline-bg.webp")})`,
+        backgroundImage: `linear-gradient(90deg, rgb(7 21 51 / 0.92), rgb(7 21 51 / 0.6)), url(${asset("/images/is/sv-giang-duong-2.webp")})`,
       }}
     >
       <div className="container-x relative">

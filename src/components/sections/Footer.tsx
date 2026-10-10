@@ -68,10 +68,10 @@ function CtaBand({ lang }: { lang: Lang }) {
               <path d="M2 44c30-2 52-10 74-22 18-10 34 2 22 14s-30-2-12-14c14-9 36-12 58-6" />
               <path d="M140 12l6 4-7 3" />
             </svg>
-            {/* Ảnh sinh viên nhô lên khỏi mép trên của dải */}
+            {/* Ảnh sinh viên Trường Quốc tế, mờ dần hai bên vào nền cam */}
             <Art
-              src="/images/generated/cta-students.webp"
-              className="pointer-events-none absolute inset-x-0 -top-14 bottom-0 h-[calc(100%+3.5rem)] w-full object-cover object-[50%_18%] [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]"
+              src="/images/is/sv-thao-luan.webp"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_30%] [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]"
             />
           </div>
           <Link href={localePath(lang, "/dang-ky/")} className="btn-white w-max px-8 py-3.5 text-base">
@@ -90,7 +90,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
   const { site } = getContent(lang);
   const t = text[lang];
   const href = (path: string) => localePath(lang, path);
-  const { email, phone, hotlineName, hotlineEmail } = site.contact;
+  const { email, hotlines } = site.contact;
   const contactHref = email ? `mailto:${email}` : href("/#hoi-dap");
   return (
     <>
@@ -99,7 +99,7 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
         <div className="container-x relative grid gap-10 pb-8 md:grid-cols-[1.4fr_0.6fr_0.8fr] lg:grid-cols-[1.3fr_0.5fr_0.7fr_1.2fr]">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-white-2026.png")} alt={site.name} className="h-16 w-auto" />
+            <img src={asset("/images/logo-nextgen.png")} alt={site.name} className="h-14 w-auto" />
             <p className="mt-3 text-base text-white/90">{site.tagline}</p>
             <ul className="mt-5 space-y-3 text-[15px] text-white/85">
               <li className="flex gap-2.5">
@@ -131,23 +131,19 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                   <span className="text-white/65">{t.emailSoon}</span>
                 )}
               </li>
-              {phone && (
+              {hotlines.length > 0 && (
                 <li className="flex gap-2.5">
                   <Icon name="phone" className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                   <span>
-                    {t.hotline}:{" "}
-                    <a href={`tel:${phone.replace(/\s/g, "")}`} className="font-semibold text-white hover:text-orange">
-                      {phone}
-                    </a>
-                    {hotlineName && <span className="text-white/70"> · {hotlineName}</span>}
-                    {hotlineEmail && (
-                      <>
-                        <br />
-                        <a href={`mailto:${hotlineEmail}`} className="text-white/70 hover:text-white">
-                          {hotlineEmail}
+                    {t.hotline}:
+                    {hotlines.map((h) => (
+                      <span key={h.phone} className="block">
+                        <span className="text-white/70">{h.name} – </span>
+                        <a href={`tel:${h.phone.replace(/\s/g, "")}`} className="font-semibold text-white hover:text-orange">
+                          {h.phone}
                         </a>
-                      </>
-                    )}
+                      </span>
+                    ))}
                   </span>
                 </li>
               )}

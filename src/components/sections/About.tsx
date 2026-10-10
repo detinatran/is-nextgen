@@ -6,8 +6,8 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 
 const text = {
-  vi: { eyebrow: "Điểm nhấn cuộc thi", rules: "Tìm hiểu thể lệ", register: "Đăng ký ngay", watch: "Xem video", alt: "Khu văn phòng hiện đại", round: "Vòng" },
-  en: { eyebrow: "Competition highlights", rules: "Read the rules", register: "Register now", watch: "Watch video", alt: "Modern office district", round: "Round" },
+  vi: { eyebrow: "Điểm nhấn cuộc thi", rules: "Tìm hiểu thể lệ", register: "Đăng ký ngay", watch: "Xem video", alt: "Sinh viên Trường Quốc tế trong giờ học" },
+  en: { eyebrow: "Competition highlights", rules: "Read the rules", register: "Register now", watch: "Watch video", alt: "VNU International School students in class" },
 };
 
 export default function About({ lang }: { lang: Lang }) {
@@ -41,12 +41,12 @@ export default function About({ lang }: { lang: Lang }) {
             </div>
           </div>
           <div className="reveal" style={{ "--delay": "120ms" } as React.CSSProperties}>
-            <Photo src="/images/photos/about-city.webp" alt={t.alt} className="aspect-[16/10] rounded-3xl shadow-2xl shadow-navy/15" />
+            <Photo src="/images/is/sv-lop-hoc.webp" alt={t.alt} className="aspect-[16/10] rounded-3xl shadow-2xl shadow-navy/15" />
           </div>
         </div>
 
-        {/* Tiến trình 04 vòng thi: số tròn cam nối bằng một đường */}
-        <ol className="tl reveal mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        {/* Tiến trình 03 vòng thi: số tròn cam nối bằng một đường */}
+        <ol className="tl reveal mt-14 grid gap-8 sm:grid-cols-3 lg:gap-6">
           {rounds.map((r, i) => (
             <li key={r.no} style={{ "--i": i } as React.CSSProperties}>
               <Link href={localePath(lang, `/the-le/#vong-${i + 1}`)} className="group block">
@@ -56,10 +56,7 @@ export default function About({ lang }: { lang: Lang }) {
                   </span>
                   <span className="tl-line h-0.5 flex-1 rounded-full bg-linear-to-r from-orange/70 to-line" />
                 </div>
-                <p className="mt-3 text-xs font-semibold tracking-wider text-orange uppercase">
-                  {t.round} {r.no}
-                </p>
-                <h3 className="mt-0.5 text-[17px] font-bold text-navy transition group-hover:text-orange-ink">{r.step}</h3>
+                <h3 className="mt-3 text-[17px] font-bold text-navy transition group-hover:text-orange-ink">{r.step}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{r.short}</p>
                 <p className="mt-1 text-[13px] font-medium text-navy/70">{r.funnel}</p>
               </Link>

@@ -16,7 +16,7 @@ export default function Theme({ lang }: { lang: Lang }) {
       />
       <div className="container-x relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <Photo
-          src="/images/unsplash/theme-team.webp"
+          src="/images/is/sv-man-hinh.webp"
           alt={en ? "A young team discussing a business plan in a modern office" : "Nhóm nhân sự trẻ thảo luận phương án kinh doanh trong văn phòng"}
           className="reveal aspect-[16/10] rounded-3xl shadow-2xl ring-8 shadow-navy/15 ring-white"
         />

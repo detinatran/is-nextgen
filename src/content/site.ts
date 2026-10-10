@@ -19,13 +19,13 @@ export const site = {
     unit: ["Khoa Kinh tế và Quản lý,", "Trường Quốc tế - ĐHQGHN"],
     street: ["Toà D2, ĐHQGHN,", "144 Xuân Thuỷ,", "Cầu Giấy, Hà Nội"],
   },
-  // TODO(BTC): điền thông tin liên hệ và mạng xã hội thật; để trống thì ẩn.
+  // Liên hệ Ban Tổ chức (hotline theo thông báo của Ban Tổ chức, không dùng số của thầy cô)
   contact: {
     email: "nextgen@vnuis.edu.vn",
-    phone: "0962 132 535",
-    // Người trực hotline
-    hotlineName: "Đào Công Tuấn",
-    hotlineEmail: "tuandc@vnu.edu.vn",
+    hotlines: [
+      { name: "Ms. Giang", phone: "0388 674 655" },
+      { name: "Ms. Thu", phone: "0919 746 896" },
+    ],
     fanpage: "https://www.facebook.com/profile.php?id=61595115537350",
     sponsorDeck: "",
   },
@@ -57,15 +57,15 @@ export const hero = {
 
 // Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số
 export const heroStats: { icon: IconName; value: string; label: string; tone?: "sky" | "gold" }[] = [
-  { icon: "briefcase", value: "Thực tập", label: "tại doanh nghiệp đồng hành" },
+  { icon: "briefcase", value: "Thực tập", label: "cơ hội tại doanh nghiệp đồng hành" },
   { icon: "handshake", value: "Kết nối", label: "với chuyên gia và lãnh đạo doanh nghiệp" },
-  { icon: "fileChart", value: "04 vòng", label: "thi thực chiến, chấm theo năng lực" },
+  { icon: "fileChart", value: "03 vòng", label: "Discover · Decide · Deliver, chấm theo năng lực" },
   { icon: "users", value: "GS · PGS · TS", label: "và đại diện doanh nghiệp đồng hành" },
 ];
 
 export const about = {
   title: ["Cuộc thi Quản trị Thực chiến Đầu tiên", "ứng dụng ", "Khung Năng lực Hành vi & Trí tuệ Nhân tạo (AI)"],
-  body: "NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật dành cho sinh viên toàn quốc. Thông qua hệ thống bốn vòng thi từ kiểm tra năng lực, thảo luận nhóm thực chiến cho đến giải bài toán quản trị trực tiếp từ doanh nghiệp đồng hành, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn nhận Báo cáo năng lực cá nhân, tham gia chuyến quan sát thực tế tại tập đoàn lớn và mở rộng cánh cửa nghề nghiệp tại các doanh nghiệp hàng đầu.",
+  body: "NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế (ĐHQGHN) tổ chức là sân chơi học thuật dành cho sinh viên toàn quốc. Thông qua ba vòng thi Discover – Decide – Deliver, từ hồ sơ, video và bài kiểm tra năng lực, thảo luận nhóm xử lý tình huống doanh nghiệp đến xử lý tình huống điều hành ở Chung kết, cuộc thi tạo môi trường để bạn rèn luyện tư duy hệ thống, năng lực ra quyết định trong điều kiện thiếu thông tin và bản lĩnh ứng dụng trí tuệ nhân tạo (AI) vào quản trị. Đây cũng là cơ hội để bạn tham quan doanh nghiệp, giao lưu với nhà quản lý tại Gala dinner networking và mở rộng cơ hội thực tập tại các doanh nghiệp đồng hành.",
   features: [
     {
       icon: "brain" as IconName,
@@ -88,7 +88,7 @@ export const about = {
     {
       icon: "trophy" as IconName,
       title: "Cơ hội nghề nghiệp rộng mở",
-      body: "Tiếp cận doanh nghiệp đồng hành, suất thực tập và vé vào thẳng vòng phỏng vấn cuối.",
+      body: "Tiếp cận doanh nghiệp đồng hành, cơ hội thực tập và vé vào thẳng vòng phỏng vấn cuối.",
       tone: "bg-amber-50 text-amber-600",
     },
   ],
@@ -101,7 +101,7 @@ export const perks = {
   lead: "Cuộc thi quản trị thực chiến giúp bạn phát triển năng lực toàn diện, kết nối sâu rộng và tạo giá trị thật cho sự nghiệp tương lai.",
   items: [
     { title: "Thi thực chiến", body: "Giải tình huống thật của doanh nghiệp, chấm theo Khung năng lực hành vi chuẩn hoá: 06 nhóm năng lực, 05 mức hành vi.", href: "/the-le/" },
-    { title: "Thực tập & cơ hội nghề nghiệp", body: "Suất thực tập và vé vào thẳng vòng phỏng vấn cuối chương trình Management Trainee.", href: "/#giai-thuong" },
+    { title: "Thực tập & cơ hội nghề nghiệp", body: "Cơ hội thực tập và vé vào thẳng vòng phỏng vấn cuối chương trình Management Trainee.", href: "/#giai-thuong" },
     { title: "Kết nối mạng lưới", body: "Gặp gỡ doanh nghiệp, giám khảo và cộng đồng sinh viên toàn quốc.", href: "/#trai-nghiem" },
     { title: "Phát triển toàn diện", body: "Nhận Báo cáo năng lực cá nhân, rèn tư duy hệ thống và bản lĩnh ứng dụng AI.", href: "/the-le/" },
   ],
@@ -112,10 +112,10 @@ export const journey = {
   title: "Hành trình trải nghiệm",
   more: "Xem toàn bộ thể lệ",
   items: [
-    { title: "Thảo luận nhóm không người dẫn", body: "Nhóm 06 người cùng giải một tình huống có lợi ích xung đột, không ai được chỉ định làm trưởng nhóm.", image: "/images/photos/hl-lgd.webp", href: "/the-le/#vong-2" },
-    { title: "Giải bài toán quản trị cùng AI", body: "Xử lý hộp thư của nhà quản lý: được dùng AI nhưng phải giải trình từng quyết định.", image: "/images/photos/round-case.webp", href: "/the-le/#vong-3" },
-    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Quan sát môi trường làm việc thực tế và học hỏi trực tiếp từ nhà quản lý.", image: "/images/photos/hl-trip.webp", href: "/the-le/#ben-le" },
-    { title: "Kết nối cộng đồng nhân tài", body: "Tiệc tối Networking cùng doanh nghiệp, giám khảo và cựu sinh viên.", image: "/images/photos/hl-dinner.webp", href: "/the-le/#ben-le" },
+    { title: "Thảo luận nhóm không người dẫn", body: "Vòng 2 – Decide: các đội xếp ngẫu nhiên cùng xử lý tình huống thực tiễn của doanh nghiệp, không có người điều phối.", image: "/images/is/sv-thao-luan.webp", href: "/the-le/#vong-2" },
+    { title: "Xử lý tình huống điều hành", body: "Chung kết – Deliver: phần thi nhóm và phần thi cá nhân giải bài toán thực tiễn do doanh nghiệp đề xuất.", image: "/images/is/sv-man-hinh.webp", href: "/the-le/#vong-3" },
+    { title: "Tham quan doanh nghiệp & toạ đàm", body: "Field trip 14/11: thí sinh Vòng 2 tham quan mô hình doanh nghiệp và toạ đàm với nhà quản lý.", image: "/images/is/sv-giang-duong.webp", href: "/the-le/#ben-le" },
+    { title: "Gala dinner networking", body: "Tối 28/11: giao lưu, kết nối thí sinh với chuyên gia và doanh nghiệp đồng hành.", image: "/images/is/sv-ban-tron.webp", href: "/the-le/#ben-le" },
   ],
 };
 
@@ -125,54 +125,44 @@ export const themeSection = {
   quote: "Không chỉ là một cuộc thi, mà còn là hành trình khám phá và khẳng định bản thân.",
 };
 
+// Ba vòng thi theo Hồ sơ tài trợ của Ban Tổ chức (Discover – Decide – Deliver)
 export const rounds = [
   {
     no: "01",
-    step: "Vòng Đơn",
+    step: "Vòng 1 · Discover",
     short: "Hồ sơ, video & bài test",
     name: "Hồ sơ và kiểm tra năng lực",
     format: "Cá nhân · Trực tuyến",
-    duration: "60 phút",
-    body: "Nộp hồ sơ trực tuyến kèm video giới thiệu tối đa 02 phút trả lời một câu hỏi tình huống quản trị do Ban Tổ chức công bố và 01 ảnh cá nhân. Làm bài kiểm tra trực tuyến gồm tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng; thí sinh ngoài Trường dự thi từ xa có giám sát.",
-    funnel: "250-300 → 40 thí sinh",
+    duration: "07/11/2026 · 8h00 – 23h59",
+    body: "Nộp hồ sơ trực tuyến kèm 01 video cá nhân tối đa 02 phút (chủ đề tự chọn) và 01 ảnh cá nhân. Làm bài kiểm tra trắc nghiệm khách quan về chân dung nhà quản trị trong kỷ nguyên AI, thi trực tuyến trên website cuộc thi, kết quả chấm tự động.",
+    funnel: "Hồ sơ → 40 thí sinh",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
   {
     no: "02",
-    step: "Vòng Sơ loại",
+    step: "Vòng 2 · Decide",
     short: "Thảo luận nhóm",
-    name: "Thảo luận nhóm không có người dẫn",
-    format: "Nhóm 06 người",
-    duration: "40 phút/nhóm",
-    body: "Nhóm sáu thí sinh nhận một tình huống có xung đột lợi ích, không ai được chỉ định làm nhóm trưởng, và phải đi đến quyết định chung. Giám khảo quan sát và chấm theo khung hành vi.",
+    name: "Thảo luận nhóm xử lý tình huống doanh nghiệp",
+    format: "Theo đội · Trực tiếp",
+    duration: "21/11/2026 · 9h00 – 16h30",
+    body: "Thí sinh vượt qua Vòng 1 được xếp ngẫu nhiên thành các đội, xử lý tình huống thực tiễn theo đề bài của doanh nghiệp, làm việc nhóm không có người điều phối, thuyết trình và trả lời câu hỏi của Ban Giám khảo. Giám khảo đánh giá theo khung năng lực hành vi.",
     funnel: "40 → 16 thí sinh",
     gradient: "from-[#1d3f9a] to-[#2a5bd6]",
   },
   {
     no: "03",
-    step: "Vòng Bán kết",
+    step: "Chung kết · Deliver",
     short: "Xử lý tình huống điều hành",
     name: "Xử lý tình huống điều hành",
-    format: "Cá nhân · Được dùng AI",
-    duration: "90 phút làm bài + 15 phút bảo vệ",
-    body: "Mô phỏng hộp thư công việc của nhà quản lý: nhiều vấn đề đến cùng lúc, nguồn lực hạn chế. Thí sinh sắp thứ tự ưu tiên, ra quyết định và giải trình bằng văn bản, sau đó bảo vệ trước giám khảo.",
-    funnel: "16 → 12 thí sinh",
-    gradient: "from-[#0e7c8c] to-[#1f63ae]",
-  },
-  {
-    no: "04",
-    step: "Vòng Chung kết",
-    short: "Thuyết trình & Tranh biện",
-    name: "Chung kết",
-    format: "03 đội × 04 người · Được dùng AI",
-    duration: "20 phút/đội",
-    body: "Ghép 12 thí sinh thành 03 đội, giải bài toán quản trị thật của doanh nghiệp đồng hành trong 05 ngày; trình bày và phản biện trước hội đồng, có phần trình bày bằng tiếng Anh.",
-    funnel: "12 thí sinh · 03 đội",
+    format: "Thi nhóm & thi cá nhân",
+    duration: "05/12/2026",
+    body: "Vòng Chung kết gồm hai phần: phần thi nhóm (chấm điểm cá nhân) và phần thi cá nhân xử lý tình huống, giải quyết bài toán thực tiễn do doanh nghiệp đề xuất.",
+    funnel: "16 thí sinh",
     gradient: "from-[#f2711c] to-[#e0313e]",
   },
 ];
 
-export const roundIcons: IconName[] = ["fileText", "messages", "inbox", "presentation"];
+export const roundIcons: IconName[] = ["fileText", "messages", "presentation"];
 
 export const roundsIntro: string =
   "Mỗi vòng thi là một thử thách khác nhau, giúp bạn phát triển từ tư duy đến kỹ năng thực chiến dưới sự đánh giá của giảng viên và doanh nghiệp.";
@@ -180,7 +170,7 @@ export const roundsIntro: string =
 export const values = {
   eyebrow: "Đầu tư cho tương lai",
   title: ["Sẵn sàng năng lực –", "Dẫn lối sự nghiệp"],
-  body: "Tổng giá trị giải thưởng 14.500.000 đồng, cùng suất thực tập, vé vào thẳng vòng phỏng vấn cuối và Báo cáo năng lực cá nhân cho thí sinh vòng trong.",
+  body: "Cơ hội thực tập, vé vào thẳng vòng phỏng vấn cuối chương trình quản trị viên tập sự, cùng chuyến tham quan doanh nghiệp và Gala dinner networking cho thí sinh vòng trong.",
   items: [
     { icon: "fileChart" as IconName, title: "Kiến thức thực tiễn", body: "Từ chuyên gia và doanh nghiệp" },
     { icon: "briefcase" as IconName, title: "Thực tập & dự án thật", body: "Trải nghiệm môi trường thực tế" },
@@ -191,32 +181,32 @@ export const values = {
 
 export const personas = [
   {
-    image: "/images/photos/persona-1.webp",
+    image: "/images/is/chan-dung-1.webp",
     title: "Tư duy phân tích và ra quyết định",
     body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
   },
   {
-    image: "/images/photos/persona-2.webp",
+    image: "/images/is/chan-dung-2.webp",
     title: "Tư duy hệ thống và sắp xếp ưu tiên",
     body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
   },
   {
-    image: "/images/photos/persona-3.webp",
+    image: "/images/is/chan-dung-3.webp",
     title: "Lãnh đạo và tạo ảnh hưởng",
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
-    image: "/images/photos/persona-4.webp",
+    image: "/images/is/chan-dung-4.webp",
     title: "Hợp tác và giao tiếp",
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
-    image: "/images/photos/persona-5.webp",
+    image: "/images/is/chan-dung-5.webp",
     title: "Đạo đức và trách nhiệm",
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
-    image: "/images/photos/persona-6.webp",
+    image: "/images/is/chan-dung-6.webp",
     title: "Trình bày và ngôn ngữ",
     body: "Cấu trúc thông điệp rõ ràng, thuyết phục bằng lời và hình ảnh, trình bày được bằng tiếng Anh.",
   },
@@ -224,43 +214,44 @@ export const personas = [
 
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
 export const milestones: { date: string; title: string; icon: IconName; tone: "orange" | "blue" | "red" | "gold"; until: string }[] = [
-  { date: "10 - 31.10.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
-  { date: "Tuần 4 · 11/2026", title: "Vòng Sơ loại", icon: "messages", tone: "blue", until: "2026-11-29T23:59:00+07:00" },
-  { date: "Tuần 2 · 12/2026", title: "Vòng Bán kết", icon: "inbox", tone: "red", until: "2026-12-13T23:59:00+07:00" },
-  { date: "Tuần 4 · 12/2026", title: "Vòng Chung kết", icon: "trophy", tone: "gold", until: "2026-12-27T23:59:00+07:00" },
+  { date: "11 - 31.10.2026", title: "Mở đơn đăng ký", icon: "fileText", tone: "orange", until: "2026-10-31T23:59:00+07:00" },
+  { date: "07.11.2026", title: "Vòng 1 · Discover", icon: "fileChart", tone: "blue", until: "2026-11-11T23:59:00+07:00" },
+  { date: "21.11.2026", title: "Vòng 2 · Decide", icon: "messages", tone: "red", until: "2026-11-25T23:59:00+07:00" },
+  { date: "05.12.2026", title: "Chung kết · Deliver", icon: "trophy", tone: "gold", until: "2026-12-05T23:59:00+07:00" },
 ];
 
-// Lộ trình đầy đủ, hiển thị ở trang Thể lệ
+// Lộ trình đầy đủ (theo Hồ sơ tài trợ của Ban Tổ chức), hiển thị ở trang Thể lệ
 export const timeline = [
-  { date: "Tuần 2 · 10/2026", title: "Lễ phát động", body: "Mở cổng đăng ký trực tuyến" },
-  { date: "Tuần 4 · 10/2026", title: "Ngày hội thông tin", body: "Giới thiệu thể thức, giải đáp thắc mắc, chia sẻ từ doanh nghiệp" },
-  { date: "Tuần 2 · 11/2026", title: "Vòng Đơn", body: "Thi trực tuyến, công bố kết quả trong 05 ngày" },
-  { date: "Tuần 4 · 11/2026", title: "Vòng Sơ loại", body: "Thảo luận nhóm theo ca, mỗi ca 06 thí sinh" },
-  { date: "Tuần 1 · 12/2026", title: "Business Trip", body: "16 thí sinh tham quan một tập đoàn hàng đầu" },
-  { date: "Tuần 2 · 12/2026", title: "Vòng Bán kết", body: "Làm bài, bảo vệ; công bố 12 thí sinh và ghép đội" },
-  { date: "Tuần 3 · 12/2026", title: "Kết nối & bình chọn", body: "Tiệc tối kết nối, giao đề chung kết, bình chọn đội yêu thích" },
-  { date: "Tuần 4 · 12/2026", title: "Vòng Chung kết", body: "Trình bày, phản biện, công bố kết quả và trao giải" },
-  { date: "01/2027", title: "Báo cáo năng lực", body: "Gửi báo cáo cá nhân tới thí sinh từ Vòng Sơ loại" },
+  { date: "11/10/2026", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến, tiếp nhận hồ sơ và video" },
+  { date: "21/10/2026", title: "Lễ khai mạc & Workshop", body: "Giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
+  { date: "31/10/2026", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ và video (23:59)" },
+  { date: "07/11/2026", title: "Vòng 1 · Discover", body: "8h00 – 23h59, thi trực tuyến, chấm tự động" },
+  { date: "11/11/2026", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
+  { date: "14/11/2026", title: "Field trip", body: "Tham quan mô hình doanh nghiệp, toạ đàm với nhà quản lý" },
+  { date: "21/11/2026", title: "Vòng 2 · Decide", body: "9h00 – 16h30, giải bài toán doanh nghiệp theo đội" },
+  { date: "25/11/2026", title: "Kết quả Vòng 2", body: "Công bố danh sách thí sinh vào Chung kết" },
+  { date: "28/11/2026", title: "Gala dinner networking", body: "18h30 – 22h00, kết nối với chuyên gia và doanh nghiệp" },
+  { date: "05/12/2026", title: "Chung kết · Deliver", body: "Phần thi nhóm và phần thi cá nhân" },
 ];
 
-export const prizeTotal: string = "14.500.000 đồng";
-
-export const prizes: { rank: string; qty: string; amount: string; perks: string[]; icon: IconName; featured?: boolean }[] = [
+// Cơ cấu giải theo Ban Tổ chức; không công bố số tiền thưởng trên website
+export const prizes: { rank: string; qty: string; perks: string[]; icon: IconName; featured?: boolean }[] = [
   {
-    rank: "Quán quân",
-    qty: "Giải Nhất · 01 đội",
-    amount: "5.000.000đ",
-    perks: ["Vé vào thẳng vòng phỏng vấn cuối", "Chứng nhận", "Xác nhận của doanh nghiệp"],
+    rank: "Giải Nhất",
+    qty: "01 thí sinh",
+    perks: ["Thí sinh xuất sắc nhất vòng pitching Chung kết", "Vé vào thẳng vòng phỏng vấn cuối chương trình quản trị viên tập sự", "Cơ hội thực tập tại nhà tài trợ", "Giấy chứng nhận và kỷ niệm chương"],
     icon: "crown",
     featured: true,
   },
-  { rank: "Á quân", qty: "Giải Nhì · 01 đội", amount: "3.000.000đ", perks: ["Chứng nhận", "Xác nhận của doanh nghiệp"], icon: "medal" },
-  { rank: "Top 3", qty: "Giải Ba · 01 đội", amount: "2.000.000đ", perks: ["Chứng nhận", "Xác nhận của doanh nghiệp"], icon: "award" },
-  { rank: "Cá nhân xuất sắc", qty: "01 thí sinh", amount: "1.500.000đ", perks: ["01 suất thực tập", "Kỷ niệm chương"], icon: "star" },
+  { rank: "Giải Nhì", qty: "01 thí sinh", perks: ["Thí sinh xuất sắc nhì vòng pitching Chung kết", "Giấy chứng nhận và kỷ niệm chương"], icon: "medal" },
+  { rank: "Giải Ba", qty: "01 thí sinh", perks: ["Thí sinh xuất sắc ba vòng pitching Chung kết", "Giấy chứng nhận và kỷ niệm chương"], icon: "award" },
+  { rank: "Giải Khuyến khích", qty: "03 thí sinh", perks: ["Các thí sinh còn lại của vòng pitching Chung kết", "Giấy chứng nhận và kỷ niệm chương"], icon: "star" },
+  { rank: "Nhóm xuất sắc nhất", qty: "01 nhóm", perks: ["Nhóm thi xuất sắc nhất", "Giấy chứng nhận"], icon: "usersGroup" },
+  { rank: "Cá nhân được yêu thích nhất", qty: "01 thí sinh", perks: ["Bình chọn từ video của 40 thí sinh đăng trên fanpage", "Giấy chứng nhận"], icon: "sparkles" },
 ];
 
 export const minorPrizes: string =
-  "Ngoài ra có hai giải phụ (Tinh thần hợp tác, Trình bày tiếng Anh xuất sắc) và giải Đội thi được yêu thích nhất, mỗi giải 1.000.000 đồng.";
+  "Thí sinh vòng trong còn được tham gia Field trip tham quan doanh nghiệp và Gala dinner networking cùng chuyên gia, doanh nghiệp đồng hành.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
@@ -295,24 +286,24 @@ export const judgingRules = [
 export const sideEvents = [
   {
     tag: "NextGen Business Trip",
-    title: "Tham quan doanh nghiệp hàng đầu",
-    when: "Tuần 1 tháng 12/2026 · khoảng 04 giờ",
-    who: "16 thí sinh vượt qua Vòng Sơ loại",
-    body: "Tham quan không gian làm việc, nghe doanh nghiệp giới thiệu mô hình tổ chức và văn hoá, toạ đàm với nhà quản lý cấp trung về cách ra quyết định. Sau chuyến đi, mỗi thí sinh viết một bản ghi nhận ngắn (không quá 300 từ) làm tư liệu cho phần bảo vệ Vòng Bán kết.",
+    title: "Tham quan và trải nghiệm doanh nghiệp",
+    when: "14/11/2026",
+    who: "Thí sinh vượt qua Vòng 1 (dự kiến 40 thí sinh), giảng viên cố vấn, Ban Tổ chức",
+    body: "Tham quan không gian làm việc, tìm hiểu mô hình tổ chức, chiến lược, văn hoá và quy trình vận hành; trao đổi với đội ngũ quản lý về ra quyết định, sắp xếp ưu tiên, điều hành đội nhóm và các cơ hội thực tập, chương trình quản trị viên tập sự. Sau chuyến đi, mỗi thí sinh viết bản ghi nhận ngắn về một quyết định quản trị quan sát được (không tính điểm), làm tư liệu tham khảo cho phần thi cá nhân tại Chung kết.",
   },
   {
     tag: "NextGen Networking Dinner",
-    title: "Tiệc tối kết nối doanh nghiệp",
-    when: "Sau Vòng Bán kết, trước Chung kết · khoảng 120 phút",
-    who: "Thí sinh vòng trong, doanh nghiệp, giám khảo, cựu sinh viên",
-    body: "Mỗi thí sinh có 01 phút tự giới thiệu, sau đó kết nối tự do theo các bàn chủ đề: nhân sự, marketing, tài chính, vận hành, công nghệ.",
+    title: "Gala dinner kết nối doanh nghiệp",
+    when: "18h30 – 22h00, 28/11/2026",
+    who: "Thí sinh Vòng Chung kết, doanh nghiệp đồng hành, Ban Giám khảo, cố vấn chuyên môn, đại diện Nhà trường (khoảng 40 khách mời)",
+    body: "Phát biểu của đại diện Nhà trường và doanh nghiệp, phần giới thiệu bản thân ngắn của thí sinh và networking theo các nhóm lĩnh vực: nhân sự, marketing, tài chính, vận hành, công nghệ.",
   },
 ];
 
 export const votingRules = [
-  "03 đội chung kết, mỗi đội nộp 01 video giới thiệu tối đa 90 giây sau buổi giao đề.",
-  "Video của 03 đội được đăng cùng lúc trên fanpage chính thức; bình chọn trong 03 ngày.",
+  "Video cá nhân của 40 thí sinh vào Vòng 2 được đăng trên fanpage chính thức của cuộc thi.",
   "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #NextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
+  "Thí sinh có tổng điểm tương tác cao nhất nhận giải Cá nhân được yêu thích nhất.",
   "Nghiêm cấm tài khoản ảo, công cụ tăng tương tác hoặc mua bán lượt tương tác. Giải độc lập, không tính vào điểm thi.",
 ];
 
@@ -325,22 +316,22 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "Hình thức đăng ký như thế nào?",
-    a: "Điền form đăng ký trực tuyến và nộp video giới thiệu tối đa 02 phút trả lời câu hỏi tình huống do Ban Tổ chức công bố, kèm 01 ảnh cá nhân. Cuộc thi không thu lệ phí.",
+    a: "Điền form đăng ký trực tuyến, nộp 01 video cá nhân tối đa 02 phút (chủ đề tự chọn) và 01 ảnh cá nhân. Cuộc thi không thu lệ phí; mỗi email chỉ đăng ký một lần.",
   },
   {
     icon: "usersGroup",
     q: "Có thể đăng ký theo nhóm không?",
-    a: "Không, bạn đăng ký cá nhân. Vòng Sơ loại thi theo nhóm 06 người và Vòng Chung kết theo đội 04 người do Ban Tổ chức ghép, trộn sinh viên các trường và các ngành.",
+    a: "Không, bạn đăng ký cá nhân. Ở Vòng 2, Ban Tổ chức xếp thí sinh ngẫu nhiên thành các đội; Vòng Chung kết gồm phần thi nhóm và phần thi cá nhân.",
   },
   {
     icon: "calendar",
     q: "Lịch trình chi tiết của cuộc thi?",
-    a: "Phát động và mở đăng ký tuần 2 tháng 10/2026, Vòng Đơn tuần 2 tháng 11, Vòng Sơ loại tuần 4 tháng 11, Business Trip và Vòng Bán kết đầu tháng 12, Vòng Chung kết tuần 4 tháng 12/2026. Lịch đầy đủ có ở trang Thể lệ.",
+    a: "Mở đăng ký 11/10/2026 (hạn chót 23:59 ngày 31/10), Lễ khai mạc 21/10, Vòng 1 thi trực tuyến ngày 07/11, Field trip 14/11, Vòng 2 ngày 21/11, Gala dinner networking 28/11 và Chung kết ngày 05/12/2026. Lịch đầy đủ có ở trang Thể lệ.",
   },
   {
     icon: "briefcase",
     q: "Giải thưởng có bao gồm cơ hội thực tập không?",
-    a: "Có. Quán quân nhận vé vào thẳng vòng phỏng vấn cuối chương trình quản trị viên tập sự; giải Cá nhân xuất sắc nhận 01 suất thực tập. Thí sinh từ Vòng Sơ loại nhận giấy chứng nhận được doanh nghiệp đồng hành công nhận khi xét hồ sơ.",
+    a: "Có. Giải Nhất nhận vé vào thẳng vòng phỏng vấn cuối chương trình quản trị viên tập sự và cơ hội thực tập tại nhà tài trợ. Thí sinh vòng trong còn được tham quan doanh nghiệp và giao lưu với nhà quản lý tại Field trip và Gala dinner networking.",
   },
 ];
 
@@ -348,14 +339,14 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
 export const moreFaqs: { q: string; a: string }[] = [
   {
     q: "Tôi ở ngoài Hà Nội có thi được không?",
-    a: "Vòng Đơn thi trực tuyến, thí sinh ngoài Trường thi từ xa có giám sát. Từ Vòng Sơ loại trở đi thi trực tiếp tại cơ sở của Trường Quốc tế.",
+    a: "Vòng 1 thi trực tuyến trên website cuộc thi. Vòng 2 và Vòng Chung kết thi trực tiếp tại Trường Quốc tế - ĐHQGHN (số 1 Phan Tây Nhạc, Xuân Phương, Nam Từ Liêm, Hà Nội).",
   },
   {
     q: "Có được dùng ChatGPT hay công cụ AI khác không?",
-    a: "Có, ở Vòng Bán kết và Vòng Chung kết. Bạn phải khai báo đã dùng như thế nào, phần nào là của công cụ, phần nào là phán đoán của mình, và giải trình vì sao giữ hay bác bỏ gợi ý. Điểm tập trung vào phần giải trình.",
+    a: "Có. Cuộc thi cho phép thí sinh kết hợp công nghệ thông minh để tra cứu, đồng thời đánh giá khả năng suy luận và sáng tạo của chính bạn, nhất là trong vòng thảo luận nhóm không có người hướng dẫn.",
   },
   {
     q: "Báo cáo năng lực cá nhân là gì?",
-    a: "Bản phản hồi điện tử về điểm mạnh, điểm cần cải thiện và gợi ý phát triển, dựa trên dữ liệu chấm thực tế, gửi tới thí sinh từ Vòng Sơ loại trở lên vào tháng 01/2027.",
+    a: "Bản phản hồi điện tử về điểm mạnh, điểm cần cải thiện và gợi ý phát triển, dựa trên dữ liệu chấm thực tế, gửi tới thí sinh vòng trong sau khi cuộc thi kết thúc.",
   },
 ];

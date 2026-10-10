@@ -103,7 +103,7 @@ export const perks = {
     { title: "Thi thực chiến", body: "Giải tình huống thật của doanh nghiệp, chấm theo Khung năng lực hành vi chuẩn hoá: 06 nhóm năng lực, 05 mức hành vi.", href: "/the-le/" },
     { title: "Thực tập & cơ hội nghề nghiệp", body: "Cơ hội thực tập và vé vào thẳng vòng phỏng vấn cuối chương trình Management Trainee.", href: "/#giai-thuong" },
     { title: "Kết nối mạng lưới", body: "Gặp gỡ doanh nghiệp, giám khảo và cộng đồng sinh viên toàn quốc.", href: "/#trai-nghiem" },
-    { title: "Phát triển toàn diện", body: "Nhận Báo cáo năng lực cá nhân, rèn tư duy hệ thống và bản lĩnh ứng dụng AI.", href: "/the-le/" },
+    { title: "Phát triển toàn diện", body: "Rèn tư duy hệ thống, năng lực ra quyết định và bản lĩnh ứng dụng AI qua từng vòng thi.", href: "/the-le/" },
   ],
 };
 
@@ -251,7 +251,7 @@ export const prizes: { rank: string; qty: string; perks: string[]; icon: IconNam
 ];
 
 export const minorPrizes: string =
-  "Thí sinh vòng trong còn được tham gia Field trip tham quan doanh nghiệp và Gala dinner networking cùng chuyên gia, doanh nghiệp đồng hành.";
+  "Cơ cấu giải chi tiết theo Thể lệ chính thức của Ban Tổ chức.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "Trường Quốc tế - ĐHQGHN", logo: "/images/org/truong-crest.png" },
@@ -344,9 +344,5 @@ export const moreFaqs: { q: string; a: string }[] = [
   {
     q: "Có được dùng ChatGPT hay công cụ AI khác không?",
     a: "Có. Cuộc thi cho phép thí sinh kết hợp công nghệ thông minh để tra cứu, đồng thời đánh giá khả năng suy luận và sáng tạo của chính bạn, nhất là trong vòng thảo luận nhóm không có người hướng dẫn.",
-  },
-  {
-    q: "Báo cáo năng lực cá nhân là gì?",
-    a: "Bản phản hồi điện tử về điểm mạnh, điểm cần cải thiện và gợi ý phát triển, dựa trên dữ liệu chấm thực tế, gửi tới thí sinh vòng trong sau khi cuộc thi kết thúc.",
   },
 ];

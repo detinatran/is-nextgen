@@ -103,7 +103,7 @@ export const perks = {
     { title: "Real-world challenges", body: "Solve real company cases, scored on a standardized behavioral framework: 06 competency areas, 05 behaviour levels.", href: "/the-le/" },
     { title: "Internships & careers", body: "Internship opportunities and a fast track to the Management Trainee final interview.", href: "/#giai-thuong" },
     { title: "A strong network", body: "Meet companies, judges and students from across the country.", href: "/#trai-nghiem" },
-    { title: "Well-rounded growth", body: "Get a Personal Competency Report and build systems thinking and confidence with AI.", href: "/the-le/" },
+    { title: "Well-rounded growth", body: "Build systems thinking, decision-making and confidence with AI in every round.", href: "/the-le/" },
   ],
 };
 
@@ -251,7 +251,7 @@ export const prizes: { rank: string; qty: string; perks: string[]; icon: IconNam
 ];
 
 export const minorPrizes =
-  "Advanced-round contestants also join the company field trip and the Gala networking dinner with experts and partner companies.";
+  "Full prize details follow the official rules of the Organizing Committee.";
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "VNU International School (VNU-IS)", logo: "/images/org/truong-crest.png" },
@@ -344,9 +344,5 @@ export const moreFaqs: { q: string; a: string }[] = [
   {
     q: "Can I use ChatGPT or other AI tools?",
     a: "Yes. Contestants may use smart tools to look things up, while the judges assess your own reasoning and creativity, especially in the leaderless group discussion.",
-  },
-  {
-    q: "What is the personal competency report?",
-    a: "A digital feedback report on your strengths, areas for improvement and development suggestions, based on actual scoring data. It is sent to advanced-round contestants after the competition ends.",
   },
 ];

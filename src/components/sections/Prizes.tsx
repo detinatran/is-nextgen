@@ -12,7 +12,8 @@ const text = {
     everyone: "Cho mọi thí sinh vòng trong",
     forEveryone: [
       "Giấy chứng nhận tham dự vòng trong",
-      "Báo cáo năng lực cá nhân bản điện tử: điểm mạnh, điểm cần cải thiện và gợi ý phát triển",
+      "Field trip tham quan doanh nghiệp và toạ đàm với nhà quản lý (thí sinh Vòng 2)",
+      "Gala dinner networking cùng chuyên gia và doanh nghiệp (thí sinh Chung kết)",
     ],
   },
   en: {
@@ -22,7 +23,8 @@ const text = {
     everyone: "For every contestant past round 1",
     forEveryone: [
       "A certificate of participation in the advanced rounds",
-      "A personal digital competency report: strengths, areas to improve and development suggestions",
+      "A company field trip and talks with managers (Round 2 contestants)",
+      "A Gala networking dinner with experts and companies (finalists)",
     ],
   },
 };

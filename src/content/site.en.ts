@@ -256,7 +256,9 @@ export const partners: { name: string; logo?: string; ink?: boolean }[] = [
 ];
 
 // TODO(BTC): add sponsors once agreements are signed, e.g. { name: "Company name", logo: "/images/sponsors/company-name.png" }
-export const sponsors: { name: string; logo?: string }[] = [];
+export const sponsors: { name: string; logo?: string }[] = [
+  { name: "MCG & Partners Co., Ltd.", logo: "/images/sponsors/mcg-partners.svg" },
+];
 
 export const eligibility = [
   "Students currently enrolled at VNU International School (VNU-IS).",

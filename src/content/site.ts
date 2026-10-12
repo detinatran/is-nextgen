@@ -255,8 +255,9 @@ export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "CLB Marketing (IMC)", logo: "/images/org/imc.png" },
 ];
 
-// TODO(BTC): thêm nhà tài trợ khi ký thoả thuận, ví dụ { name: "Tên DN", logo: "/images/sponsors/ten-dn.png" }
-export const sponsors: { name: string; logo?: string }[] = [];
+export const sponsors: { name: string; logo?: string }[] = [
+  { name: "Công ty TNHH MCG và Cộng sự (MCG&Partners)", logo: "/images/sponsors/mcg-partners.svg" },
+];
 
 export const eligibility = [
   "Sinh viên đang theo học tại Trường Quốc tế - ĐHQGHN.",

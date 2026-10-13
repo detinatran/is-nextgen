@@ -4,11 +4,12 @@ import type { IconName } from "@/components/Icon";
 import type { TimelineItem } from "@/components/Timeline";
 
 export const site = {
-  name: "NextGen Manager Challenge 2026",
-  viName: "Managers for a New Era",
-  theme: "Portrait of a Manager in the AI Era",
-  themeEn: "The Manager in the AI Era",
-  heroTitle: "Managers in the AI Era",
+  // Competition name: NextGen Manager - the Next-Generation Manager Competition; Season 1 theme
+  name: "NextGen Manager 2026",
+  viName: "The Next-Generation Manager Competition",
+  theme: "Shaping the AI-era Leader",
+  themeEn: "Shaping the AI-era Leader",
+  heroTitle: "Shaping the AI-era Leader",
   slogan: ["New Mindset", "New Skills", "Real Value"],
   tagline: "Shaping the next generation of managers",
   hashtag: "#NextGenManager",
@@ -52,7 +53,7 @@ export const nav = [
 export const hero = {
   eyebrow: "Hands-on management competition · Season 1",
   title: ["NEXTGEN", "MANAGER 2026"],
-  theme: "The Manager in the AI Era",
+  theme: "Shaping the AI-era Leader",
   tagline: "Shaping the next generation of managers",
 };
 

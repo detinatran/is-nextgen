@@ -4,11 +4,12 @@ import type { IconName } from "@/components/Icon";
 import type { TimelineItem } from "@/components/Timeline";
 
 export const site = {
-  name: "NextGen Manager Challenge 2026",
-  viName: "Nhà Quản trị trong Kỷ nguyên mới",
-  theme: "Chân dung Nhà quản trị trong kỷ nguyên AI",
-  themeEn: "The Manager in the AI Era",
-  heroTitle: "Nhà quản trị trong kỷ nguyên AI",
+  // Tên cuộc thi: NextGen Manager - Cuộc thi nhà quản trị thế hệ mới; chủ đề mùa 1 (Ban Tổ chức chốt)
+  name: "NextGen Manager 2026",
+  viName: "Cuộc thi nhà quản trị thế hệ mới",
+  theme: "Chân dung nhà quản trị trong kỷ nguyên AI",
+  themeEn: "Shaping the AI-era Leader",
+  heroTitle: "Chân dung nhà quản trị trong kỷ nguyên AI",
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
   hashtag: "#NextGenManager",
@@ -52,8 +53,8 @@ export const nav = [
 export const hero = {
   eyebrow: "Cuộc thi quản trị thực chiến · Mùa 1",
   title: ["NEXTGEN", "MANAGER 2026"],
-  theme: "The Manager in the AI Era",
-  tagline: "Nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
+  theme: "Shaping the AI-era Leader",
+  tagline: "Chân dung nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
 };
 
 // Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số

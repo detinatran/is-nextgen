@@ -36,22 +36,11 @@ export default function Theme({ lang }: { lang: Lang }) {
             <path d="M84 22l30-14-10 30-8-10z" />
             <path d="M96 28l18-20" />
           </svg>
-          <p className="text-[13px] font-bold tracking-[0.16em] text-orange uppercase">{en ? "AI in management" : "AI trong quản trị"}</p>
+          <p className="text-[13px] font-bold tracking-[0.16em] text-orange uppercase">{en ? "Season 1 theme" : "Chủ đề mùa 1"}</p>
           <h2 className="h2-section mt-3">
-            {en ? (
-              <>
-                Managers
-                <br />
-                in the <span className="text-orange">AI era</span>
-              </>
-            ) : (
-              <>
-                Nhà quản trị
-                <br />
-                trong kỷ <span className="text-orange">nguyên AI</span>
-              </>
-            )}
+            Shaping the <span className="text-orange">AI-era</span> Leader
           </h2>
+          {!en && <p className="mt-2 text-lg font-semibold text-navy/80">Chân dung nhà quản trị trong kỷ nguyên AI</p>}
           <p className="lead mt-4">{themeSection.body}</p>
           <ul className="mt-6 space-y-3">
             {themeSection.points.map((p) => (

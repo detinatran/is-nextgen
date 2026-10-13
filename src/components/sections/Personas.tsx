@@ -3,6 +3,7 @@ import Art from "@/components/Art";
 import Carousel from "@/components/Carousel";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
+import PhotoSlideshow from "@/components/PhotoSlideshow";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
@@ -117,10 +118,14 @@ export default function Personas({ lang }: { lang: Lang }) {
 
         <div className="reveal mt-6 -mx-2">
           <Carousel lang={lang} label={t.label} slideClassName="w-full px-2 py-2 md:w-1/2 lg:w-1/3" dots>
-            {personas.map((p, i) => (
-              <article key={p.title} className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
+            {personas.map((p) => (
+              <article key={p.name} className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
                 <div className="flex gap-4">
-                  <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 rounded-2xl" imgClassName="object-[50%_20%]" />
+                  {p.images && p.images.length > 1 ? (
+                    <PhotoSlideshow images={p.images} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                  ) : (
+                    <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                  )}
                   <div>
                     <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
                       ❝
@@ -135,7 +140,7 @@ export default function Personas({ lang }: { lang: Lang }) {
                 </p>
                 <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
                 <p className="mt-0.5 text-[13px] text-muted">
-                  {t.group} {String(i + 1).padStart(2, "0")} · {t.every}
+                  {t.group} {String(p.no).padStart(2, "0")} · {t.every}
                 </p>
               </article>
             ))}

@@ -180,22 +180,11 @@ export const values = {
   ],
 };
 
-export const personas = [
+// Doanh nghiệp đứng trước, rồi đến giảng viên; no là số nhóm năng lực cố định (không theo vị trí thẻ)
+// extra: thêm góc nhìn cho một nhóm năng lực đã có, không tính vào khung 6 nhóm ở trang Thể lệ
+export const personas: { no: number; extra?: boolean; image: string; images?: string[]; name: string; role: string; title: string; body: string }[] = [
   {
-    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
-    name: "PGS.TS. Lưu Thị Minh Ngọc",
-    role: "Trưởng Khoa Kinh tế và Quản lý",
-    title: "Tư duy phân tích và ra quyết định",
-    body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
-  },
-  {
-    image: "/images/is/gv-ta-huy-hung-v2.webp",
-    name: "TS. Tạ Huy Hùng",
-    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
-    title: "Tư duy hệ thống và sắp xếp ưu tiên",
-    body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
-  },
-  {
+    no: 3,
     image: "/images/is/gv-mai-thuy-hang.webp",
     name: "ThS. Mai Thúy Hằng",
     role: "Chủ tịch HĐTV / Tổng Giám đốc MCG&Partners",
@@ -203,6 +192,33 @@ export const personas = [
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
+    no: 4,
+    extra: true,
+    image: "/images/is/dn-tran-thi-thuy-linh-1.webp",
+    images: ["/images/is/dn-tran-thi-thuy-linh-1.webp", "/images/is/dn-tran-thi-thuy-linh-2.webp", "/images/is/dn-tran-thi-thuy-linh-3.webp"],
+    name: "Trần Thị Thùy Linh",
+    role: "Partnerships Manager, Phòng Phát triển Kinh doanh, VietinBank Global Money Transfer",
+    title: "Hợp tác và giao tiếp",
+    body: "Làm việc với đối tác, điều quý nhất là biết lắng nghe, tìm ra lợi ích chung và giữ đúng cam kết cho đến khi việc hoàn thành.",
+  },
+  {
+    no: 1,
+    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    name: "PGS.TS. Lưu Thị Minh Ngọc",
+    role: "Trưởng Khoa Kinh tế và Quản lý",
+    title: "Tư duy phân tích và ra quyết định",
+    body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
+  },
+  {
+    no: 2,
+    image: "/images/is/gv-ta-huy-hung-v2.webp",
+    name: "TS. Tạ Huy Hùng",
+    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
+    title: "Tư duy hệ thống và sắp xếp ưu tiên",
+    body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
+  },
+  {
+    no: 4,
     image: "/images/is/gv-nguyen-phuong-mai.webp",
     name: "PGS.TS. Nguyễn Phương Mai",
     role: "Phó Trưởng Khoa Kinh tế và Quản lý",
@@ -210,6 +226,7 @@ export const personas = [
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
+    no: 5,
     image: "/images/is/gv-tran-thi-thu-hai.webp",
     name: "TS. Trần Thị Thu Hải",
     role: "Giảng viên Khoa Kinh tế và Quản lý",
@@ -217,6 +234,7 @@ export const personas = [
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
+    no: 6,
     image: "/images/is/gv-dao-cong-tuan.webp",
     name: "TS. Đào Công Tuấn",
     role: "Giảng viên Khoa Kinh tế và Quản lý",
@@ -284,7 +302,10 @@ export const eligibility = [
 export const eligibilityNote: string =
   "Là sinh viên hệ đại học chính quy, còn trong thời gian đào tạo tại thời điểm đăng ký; xuất trình thẻ sinh viên hoặc giấy xác nhận của trường khi dự các vòng thi trực tiếp.";
 
-export const competencies = personas.map((p) => ({ name: p.title, body: p.body }));
+export const competencies = personas
+  .filter((p) => !p.extra)
+  .sort((a, b) => a.no - b.no)
+  .map((p) => ({ name: p.title, body: p.body }));
 
 export const judgingRules = [
   "Mỗi vòng có ít nhất 02 giám khảo chấm độc lập; chênh lệch trên 20% tổng điểm phải hội ý và ghi biên bản.",

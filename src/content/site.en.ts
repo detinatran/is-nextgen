@@ -180,22 +180,11 @@ export const values = {
   ],
 };
 
-export const personas = [
+// Doanh nghiệp đứng trước, rồi đến giảng viên; no là số nhóm năng lực cố định (không theo vị trí thẻ)
+// extra: thêm góc nhìn cho một nhóm năng lực đã có, không tính vào khung 6 nhóm ở trang Thể lệ
+export const personas: { no: number; extra?: boolean; image: string; images?: string[]; name: string; role: string; title: string; body: string }[] = [
   {
-    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
-    name: "Assoc. Prof. Dr. Lưu Thị Minh Ngọc",
-    role: "Dean, Faculty of Economics and Management",
-    title: "Analytical thinking and decision-making",
-    body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
-  },
-  {
-    image: "/images/is/gv-ta-huy-hung-v2.webp",
-    name: "Dr. Tạ Huy Hùng",
-    role: "Vice Dean, Faculty of Economics and Management",
-    title: "Systems thinking and prioritization",
-    body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
-  },
-  {
+    no: 3,
     image: "/images/is/gv-mai-thuy-hang.webp",
     name: "Mai Thúy Hằng, MSc.",
     role: "Chairwoman & CEO, MCG&Partners",
@@ -203,6 +192,33 @@ export const personas = [
     body: "Propose a direction, persuade others, handle disagreement and take responsibility for your decisions.",
   },
   {
+    no: 4,
+    extra: true,
+    image: "/images/is/dn-tran-thi-thuy-linh-1.webp",
+    images: ["/images/is/dn-tran-thi-thuy-linh-1.webp", "/images/is/dn-tran-thi-thuy-linh-2.webp", "/images/is/dn-tran-thi-thuy-linh-3.webp"],
+    name: "Trần Thị Thùy Linh",
+    role: "Partnerships Manager, Business Development Dept., VietinBank Global Money Transfer",
+    title: "Collaboration and communication",
+    body: "With partners, what matters most is listening well, finding shared value and keeping your commitments until the job is done.",
+  },
+  {
+    no: 1,
+    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    name: "Assoc. Prof. Dr. Lưu Thị Minh Ngọc",
+    role: "Dean, Faculty of Economics and Management",
+    title: "Analytical thinking and decision-making",
+    body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
+  },
+  {
+    no: 2,
+    image: "/images/is/gv-ta-huy-hung-v2.webp",
+    name: "Dr. Tạ Huy Hùng",
+    role: "Vice Dean, Faculty of Economics and Management",
+    title: "Systems thinking and prioritization",
+    body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
+  },
+  {
+    no: 4,
     image: "/images/is/gv-nguyen-phuong-mai.webp",
     name: "Assoc. Prof. Dr. Nguyễn Phương Mai",
     role: "Vice Dean, Faculty of Economics and Management",
@@ -210,6 +226,7 @@ export const personas = [
     body: "Listen, build on others' ideas and contribute to the shared outcome instead of competing for airtime.",
   },
   {
+    no: 5,
     image: "/images/is/gv-tran-thi-thu-hai.webp",
     name: "Dr. Trần Thị Thu Hải",
     role: "Lecturer, Faculty of Economics and Management",
@@ -217,6 +234,7 @@ export const personas = [
     body: "Weigh the interests of all stakeholders, act with integrity in your proposals and recognize ethical risks.",
   },
   {
+    no: 6,
     image: "/images/is/gv-dao-cong-tuan.webp",
     name: "Dr. Đào Công Tuấn",
     role: "Lecturer, Faculty of Economics and Management",
@@ -284,7 +302,10 @@ export const eligibility = [
 export const eligibilityNote =
   "Applicants must be full-time undergraduate students still enrolled at the time of registration, and must present a student ID card or a certificate of enrollment from their university at all in-person rounds.";
 
-export const competencies = personas.map((p) => ({ name: p.title, body: p.body }));
+export const competencies = personas
+  .filter((p) => !p.extra)
+  .sort((a, b) => a.no - b.no)
+  .map((p) => ({ name: p.title, body: p.body }));
 
 export const judgingRules = [
   "Each round has at least 02 judges scoring independently; any gap over 20% of the total score must be discussed and recorded in the minutes.",

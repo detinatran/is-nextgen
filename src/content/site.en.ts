@@ -260,6 +260,8 @@ export const sponsors: { name: string; logo?: string }[] = [
   { name: "MCG & Partners Co., Ltd.", logo: "/images/sponsors/mcg-partners.svg" },
 ];
 
+export const mediaPartners: { name: string; logo?: string }[] = [{ name: "VTC News", logo: "/images/sponsors/vtcnews.png" }];
+
 export const eligibility = [
   "Students currently enrolled at VNU International School (VNU-IS).",
   "Students of other member schools and units of Vietnam National University, Hanoi (VNU).",

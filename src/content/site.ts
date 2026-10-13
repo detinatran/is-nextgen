@@ -260,6 +260,8 @@ export const sponsors: { name: string; logo?: string }[] = [
   { name: "Công ty TNHH MCG và Cộng sự (MCG&Partners)", logo: "/images/sponsors/mcg-partners.svg" },
 ];
 
+export const mediaPartners: { name: string; logo?: string }[] = [{ name: "Báo điện tử VTC News", logo: "/images/sponsors/vtcnews.png" }];
+
 export const eligibility = [
   "Sinh viên đang theo học tại Trường Quốc tế - ĐHQGHN.",
   "Sinh viên các đơn vị đào tạo thành viên, trực thuộc ĐHQGHN.",

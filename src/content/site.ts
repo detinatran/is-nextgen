@@ -183,31 +183,43 @@ export const values = {
 export const personas = [
   {
     image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    name: "PGS.TS. Lưu Thị Minh Ngọc",
+    role: "Trưởng Khoa Kinh tế và Quản lý",
     title: "Tư duy phân tích và ra quyết định",
     body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
   },
   {
     image: "/images/is/gv-ta-huy-hung-v2.webp",
+    name: "TS. Tạ Huy Hùng",
+    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
     title: "Tư duy hệ thống và sắp xếp ưu tiên",
     body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
   },
   {
     image: "/images/is/gv-mai-thuy-hang.webp",
+    name: "ThS. Mai Thúy Hằng",
+    role: "Chủ tịch HĐTV / Tổng Giám đốc MCG&Partners",
     title: "Lãnh đạo và tạo ảnh hưởng",
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
     image: "/images/is/gv-nguyen-phuong-mai.webp",
+    name: "PGS.TS. Nguyễn Phương Mai",
+    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
     title: "Hợp tác và giao tiếp",
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
     image: "/images/is/gv-tran-thi-thu-hai.webp",
+    name: "TS. Trần Thị Thu Hải",
+    role: "Giảng viên Khoa Kinh tế và Quản lý",
     title: "Đạo đức và trách nhiệm",
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
     image: "/images/is/gv-dao-cong-tuan.webp",
+    name: "TS. Đào Công Tuấn",
+    role: "Giảng viên Khoa Kinh tế và Quản lý",
     title: "Trình bày và ngôn ngữ",
     body: "Cấu trúc thông điệp rõ ràng, thuyết phục bằng lời và hình ảnh, trình bày được bằng tiếng Anh.",
   },

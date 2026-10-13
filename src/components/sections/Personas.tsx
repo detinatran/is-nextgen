@@ -120,7 +120,7 @@ export default function Personas({ lang }: { lang: Lang }) {
             {personas.map((p, i) => (
               <article key={p.title} className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
                 <div className="flex gap-4">
-                  <Photo src={p.image} alt="" className="aspect-square w-24 shrink-0 rounded-2xl" imgClassName="object-[50%_20%]" />
+                  <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 rounded-2xl" imgClassName="object-[50%_20%]" />
                   <div>
                     <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
                       ❝
@@ -128,6 +128,11 @@ export default function Personas({ lang }: { lang: Lang }) {
                     <p className="mt-1 text-[15px] leading-relaxed text-navy">{p.body}</p>
                   </div>
                 </div>
+                {/* Người nói câu trên */}
+                <p className="mt-3 border-l-2 border-orange pl-3 text-[13px] leading-snug">
+                  <span className="block font-semibold text-navy">{p.name}</span>
+                  <span className="text-muted">{p.role}</span>
+                </p>
                 <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
                 <p className="mt-0.5 text-[13px] text-muted">
                   {t.group} {String(i + 1).padStart(2, "0")} · {t.every}

@@ -183,31 +183,43 @@ export const values = {
 export const personas = [
   {
     image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    name: "Assoc. Prof. Dr. Lưu Thị Minh Ngọc",
+    role: "Dean, Faculty of Economics and Management",
     title: "Analytical thinking and decision-making",
     body: "Pinpoint the core problem, use data, reason with evidence and dare to decide when information is incomplete.",
   },
   {
     image: "/images/is/gv-ta-huy-hung-v2.webp",
+    name: "Dr. Tạ Huy Hùng",
+    role: "Vice Dean, Faculty of Economics and Management",
     title: "Systems thinking and prioritization",
     body: "See cause and effect, allocate limited resources, know what comes first and be able to explain why.",
   },
   {
     image: "/images/is/gv-mai-thuy-hang.webp",
+    name: "Mai Thúy Hằng, MSc.",
+    role: "Chairwoman & CEO, MCG&Partners",
     title: "Leadership and influence",
     body: "Propose a direction, persuade others, handle disagreement and take responsibility for your decisions.",
   },
   {
     image: "/images/is/gv-nguyen-phuong-mai.webp",
+    name: "Assoc. Prof. Dr. Nguyễn Phương Mai",
+    role: "Vice Dean, Faculty of Economics and Management",
     title: "Collaboration and communication",
     body: "Listen, build on others' ideas and contribute to the shared outcome instead of competing for airtime.",
   },
   {
     image: "/images/is/gv-tran-thi-thu-hai.webp",
+    name: "Dr. Trần Thị Thu Hải",
+    role: "Lecturer, Faculty of Economics and Management",
     title: "Ethics and responsibility",
     body: "Weigh the interests of all stakeholders, act with integrity in your proposals and recognize ethical risks.",
   },
   {
     image: "/images/is/gv-dao-cong-tuan.webp",
+    name: "Dr. Đào Công Tuấn",
+    role: "Lecturer, Faculty of Economics and Management",
     title: "Presentation and language",
     body: "Structure messages clearly, persuade with words and visuals, and present confidently in English.",
   },

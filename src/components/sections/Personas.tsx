@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Art from "@/components/Art";
-import Carousel from "@/components/Carousel";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
 import PhotoSlideshow from "@/components/PhotoSlideshow";
@@ -116,35 +115,47 @@ export default function Personas({ lang }: { lang: Lang }) {
           );
         })()}
 
-        <div className="reveal mt-6 -mx-2">
-          <Carousel lang={lang} label={t.label} slideClassName="w-full px-2 py-2 md:w-1/2 lg:w-1/3" dots>
-            {personas.map((p) => (
-              <article key={p.name} className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
-                <div className="flex gap-4">
-                  {p.images && p.images.length > 1 ? (
-                    <PhotoSlideshow images={p.images} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
-                  ) : (
-                    <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
-                  )}
-                  <div>
-                    <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
-                      ❝
-                    </span>
-                    <p className="mt-1 text-[15px] leading-relaxed text-navy">{p.body}</p>
-                  </div>
-                </div>
-                {/* Người nói câu trên */}
-                <p className="mt-3 border-l-2 border-orange pl-3 text-[13px] leading-snug">
-                  <span className="block font-semibold text-navy">{p.name}</span>
-                  <span className="text-muted">{p.role}</span>
-                </p>
-                <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
-                <p className="mt-0.5 text-[13px] text-muted">
-                  {t.group} {String(p.no).padStart(2, "0")} · {t.every}
-                </p>
-              </article>
+        {/* Băng chuyền thẻ quote: danh sách lặp 2 lần, chạy chậm sang trái, dừng khi rê chuột */}
+        <div
+          className="marquee reveal mt-6 -mx-4 py-3 sm:-mx-6 lg:-mx-8"
+          style={{ "--marquee-duration": `${personas.length * 13}s` } as React.CSSProperties}
+          role="region"
+          aria-label={t.label}
+        >
+          <div className="marquee-track">
+            {[0, 1].map((copy) => (
+              <ul key={copy} className="flex shrink-0 items-stretch gap-4 pr-4" aria-hidden={copy === 1 || undefined} inert={copy === 1 || undefined}>
+                {personas.map((p) => (
+                  <li key={p.name} className="w-[19rem] shrink-0 sm:w-[23rem]">
+                    <article className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
+                      <div className="flex gap-4">
+                        {p.images && p.images.length > 1 ? (
+                          <PhotoSlideshow images={p.images} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                        ) : (
+                          <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                        )}
+                        <div>
+                          <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
+                            ❝
+                          </span>
+                          <p className="mt-1 text-[15px] leading-relaxed text-navy">{p.body}</p>
+                        </div>
+                      </div>
+                      {/* Người nói câu trên */}
+                      <p className="mt-3 border-l-2 border-orange pl-3 text-[13px] leading-snug">
+                        <span className="block font-semibold text-navy">{p.name}</span>
+                        <span className="text-muted">{p.role}</span>
+                      </p>
+                      <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
+                      <p className="mt-0.5 text-[13px] text-muted">
+                        {t.group} {String(p.no).padStart(2, "0")} · {t.every}
+                      </p>
+                    </article>
+                  </li>
+                ))}
+              </ul>
             ))}
-          </Carousel>
+          </div>
         </div>
       </div>
     </section>

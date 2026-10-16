@@ -4,11 +4,12 @@ import type { IconName } from "@/components/Icon";
 import type { TimelineItem } from "@/components/Timeline";
 
 export const site = {
-  name: "NextGen Manager Challenge 2026",
-  viName: "Nhà Quản trị trong Kỷ nguyên mới",
-  theme: "Chân dung Nhà quản trị trong kỷ nguyên AI",
-  themeEn: "The Manager in the AI Era",
-  heroTitle: "Nhà quản trị trong kỷ nguyên AI",
+  // Tên cuộc thi: NextGen Manager - Cuộc thi nhà quản trị thế hệ mới; chủ đề mùa 1 (Ban Tổ chức chốt)
+  name: "NextGen Manager 2026",
+  viName: "Cuộc thi nhà quản trị thế hệ mới",
+  theme: "Chân dung nhà quản trị trong kỷ nguyên AI",
+  themeEn: "Shaping the AI-era Leader",
+  heroTitle: "Chân dung nhà quản trị trong kỷ nguyên AI",
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
   hashtag: "#NextGenManager",
@@ -52,8 +53,8 @@ export const nav = [
 export const hero = {
   eyebrow: "Cuộc thi quản trị thực chiến · Mùa 1",
   title: ["NEXTGEN", "MANAGER 2026"],
-  theme: "The Manager in the AI Era",
-  tagline: "Nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
+  theme: "Shaping the AI-era Leader",
+  tagline: "Chân dung nhà quản trị trong kỷ nguyên AI · Kiến tạo thế hệ quản trị tiếp theo",
 };
 
 // Mùa 1 chưa có số liệu các mùa trước, nên nêu quyền lợi nổi bật thay cho con số
@@ -180,34 +181,64 @@ export const values = {
   ],
 };
 
-export const personas = [
+// Doanh nghiệp đứng trước, rồi đến giảng viên; no là số nhóm năng lực cố định (không theo vị trí thẻ)
+// extra: thêm góc nhìn cho một nhóm năng lực đã có, không tính vào khung 6 nhóm ở trang Thể lệ
+export const personas: { no: number; extra?: boolean; image: string; images?: string[]; name: string; role: string; title: string; body: string }[] = [
   {
-    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
-    title: "Tư duy phân tích và ra quyết định",
-    body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
-  },
-  {
-    image: "/images/is/gv-ta-huy-hung-v2.webp",
-    title: "Tư duy hệ thống và sắp xếp ưu tiên",
-    body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
-  },
-  {
+    no: 3,
     image: "/images/is/gv-mai-thuy-hang.webp",
+    name: "ThS. Mai Thúy Hằng",
+    role: "Chủ tịch HĐTV / Tổng Giám đốc MCG&Partners",
     title: "Lãnh đạo và tạo ảnh hưởng",
     body: "Đề xuất hướng đi, thuyết phục người khác, xử lý bất đồng và chịu trách nhiệm về quyết định của mình.",
   },
   {
+    no: 4,
+    extra: true,
+    image: "/images/is/dn-tran-thi-thuy-linh-1.webp",
+    images: ["/images/is/dn-tran-thi-thuy-linh-1.webp", "/images/is/dn-tran-thi-thuy-linh-2.webp", "/images/is/dn-tran-thi-thuy-linh-3.webp"],
+    name: "Trần Thị Thùy Linh",
+    role: "Partnerships Manager, Phòng Phát triển Kinh doanh, VietinBank Global Money Transfer",
+    title: "Hợp tác và giao tiếp",
+    body: "Làm việc với đối tác, điều quý nhất là biết lắng nghe, tìm ra lợi ích chung và giữ đúng cam kết cho đến khi việc hoàn thành.",
+  },
+  {
+    no: 1,
+    image: "/images/is/gv-luu-thi-minh-ngoc.webp",
+    name: "PGS.TS. Lưu Thị Minh Ngọc",
+    role: "Trưởng Khoa Kinh tế và Quản lý",
+    title: "Tư duy phân tích và ra quyết định",
+    body: "Xác định đúng vấn đề cốt lõi, dùng dữ liệu, lập luận có căn cứ và dám quyết định khi thông tin chưa đầy đủ.",
+  },
+  {
+    no: 2,
+    image: "/images/is/gv-ta-huy-hung-v2.webp",
+    name: "TS. Tạ Huy Hùng",
+    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
+    title: "Tư duy hệ thống và sắp xếp ưu tiên",
+    body: "Nhìn ra quan hệ nhân quả, phân bổ nguồn lực hạn chế, biết việc gì làm trước và giải thích được vì sao.",
+  },
+  {
+    no: 4,
     image: "/images/is/gv-nguyen-phuong-mai.webp",
+    name: "PGS.TS. Nguyễn Phương Mai",
+    role: "Phó Trưởng Khoa Kinh tế và Quản lý",
     title: "Hợp tác và giao tiếp",
     body: "Lắng nghe, xây dựng trên ý kiến người khác, đóng góp vào kết quả chung thay vì tranh phần nói.",
   },
   {
+    no: 5,
     image: "/images/is/gv-tran-thi-thu-hai.webp",
+    name: "TS. Trần Thị Thu Hải",
+    role: "Giảng viên Khoa Kinh tế và Quản lý",
     title: "Đạo đức và trách nhiệm",
     body: "Cân nhắc lợi ích các bên liên quan, chính trực trong đề xuất, nhận diện được rủi ro đạo đức.",
   },
   {
+    no: 6,
     image: "/images/is/gv-dao-cong-tuan.webp",
+    name: "TS. Đào Công Tuấn",
+    role: "Giảng viên Khoa Kinh tế và Quản lý",
     title: "Trình bày và ngôn ngữ",
     body: "Cấu trúc thông điệp rõ ràng, thuyết phục bằng lời và hình ảnh, trình bày được bằng tiếng Anh.",
   },
@@ -260,6 +291,8 @@ export const sponsors: { name: string; logo?: string }[] = [
   { name: "Công ty TNHH MCG và Cộng sự (MCG&Partners)", logo: "/images/sponsors/mcg-partners.svg" },
 ];
 
+export const mediaPartners: { name: string; logo?: string }[] = [{ name: "Báo điện tử VTC News", logo: "/images/sponsors/vtcnews.png" }];
+
 export const eligibility = [
   "Sinh viên đang theo học tại Trường Quốc tế - ĐHQGHN.",
   "Sinh viên các đơn vị đào tạo thành viên, trực thuộc ĐHQGHN.",
@@ -270,7 +303,10 @@ export const eligibility = [
 export const eligibilityNote: string =
   "Là sinh viên hệ đại học chính quy, còn trong thời gian đào tạo tại thời điểm đăng ký; xuất trình thẻ sinh viên hoặc giấy xác nhận của trường khi dự các vòng thi trực tiếp.";
 
-export const competencies = personas.map((p) => ({ name: p.title, body: p.body }));
+export const competencies = personas
+  .filter((p) => !p.extra)
+  .sort((a, b) => a.no - b.no)
+  .map((p) => ({ name: p.title, body: p.body }));
 
 export const judgingRules = [
   "Mỗi vòng có ít nhất 02 giám khảo chấm độc lập; chênh lệch trên 20% tổng điểm phải hội ý và ghi biên bản.",

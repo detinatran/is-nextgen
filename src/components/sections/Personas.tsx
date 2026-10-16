@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Art from "@/components/Art";
-import Carousel from "@/components/Carousel";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
+import PhotoSlideshow from "@/components/PhotoSlideshow";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
@@ -14,6 +14,7 @@ const text = {
     more: "Xem khung năng lực",
     partners: "Đơn vị tổ chức & đồng hành",
     sponsors: "Bảo trợ chuyên môn",
+    media: "Bảo trợ truyền thông",
     sponsor: "Trở thành nhà tài trợ",
     group: "Nhóm năng lực",
     every: "chấm ở cả ba vòng",
@@ -25,6 +26,7 @@ const text = {
     more: "See the framework",
     partners: "Organizers & partners",
     sponsors: "Professional sponsor",
+    media: "Media partner",
     sponsor: "Become a sponsor",
     group: "Competency",
     every: "assessed in all three rounds",
@@ -33,7 +35,7 @@ const text = {
 };
 
 export default function Personas({ lang }: { lang: Lang }) {
-  const { personas, partners, site, sponsors } = getContent(lang);
+  const { personas, partners, site, sponsors, mediaPartners } = getContent(lang);
   const t = text[lang];
   const sponsorHref = site.contact.sponsorDeck || (site.contact.email ? `mailto:${site.contact.email}` : "");
   return (
@@ -84,44 +86,76 @@ export default function Personas({ lang }: { lang: Lang }) {
           </ul>
         </div>
 
-        {/* Doanh nghiệp bảo trợ chuyên môn */}
-        {sponsors.length > 0 && (
-          <div className="reveal mt-4 rounded-3xl bg-white/90 px-5 py-4 shadow-card ring-1 ring-line backdrop-blur-sm sm:px-8">
-            <p className="text-center text-xs font-semibold tracking-wider text-muted uppercase">{t.sponsors}</p>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
-              {sponsors.map((sp) => (
-                <div key={sp.name} className="flex max-w-md flex-col items-center gap-2 text-center">
-                  {sp.logo && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={asset(sp.logo)} alt={`Logo ${sp.name}`} className="h-10 w-auto max-w-full object-contain sm:h-12 md:h-14" />
-                  )}
-                  <span className="text-[13px] leading-snug font-medium text-navy sm:text-sm">{sp.name}</span>
+        {/* Bảo trợ chuyên môn và bảo trợ truyền thông, đặt cạnh nhau */}
+        {(() => {
+          const groups = [
+            { label: t.sponsors, items: sponsors },
+            { label: t.media, items: mediaPartners },
+          ].filter((g) => g.items.length > 0);
+          if (!groups.length) return null;
+          return (
+            <div className={`mt-4 grid gap-4 ${groups.length > 1 ? "sm:grid-cols-2" : ""}`}>
+              {groups.map((g) => (
+                <div key={g.label} className="reveal rounded-3xl bg-white/90 px-5 py-4 shadow-card ring-1 ring-line backdrop-blur-sm sm:px-8">
+                  <p className="text-center text-xs font-semibold tracking-wider text-muted uppercase">{g.label}</p>
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
+                    {g.items.map((sp) => (
+                      <div key={sp.name} className="flex max-w-md flex-col items-center gap-2 text-center">
+                        {sp.logo && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={asset(sp.logo)} alt={`Logo ${sp.name}`} className="h-10 w-auto max-w-full object-contain sm:h-12 md:h-14" />
+                        )}
+                        <span className="text-[13px] leading-snug font-medium text-navy sm:text-sm">{sp.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          );
+        })()}
 
-        <div className="reveal mt-6 -mx-2">
-          <Carousel lang={lang} label={t.label} slideClassName="w-full px-2 py-2 md:w-1/2 lg:w-1/3" dots>
-            {personas.map((p, i) => (
-              <article key={p.title} className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
-                <div className="flex gap-4">
-                  <Photo src={p.image} alt="" className="aspect-square w-24 shrink-0 rounded-2xl" imgClassName="object-[50%_20%]" />
-                  <div>
-                    <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
-                      ❝
-                    </span>
-                    <p className="mt-1 text-[15px] leading-relaxed text-navy">{p.body}</p>
-                  </div>
-                </div>
-                <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
-                <p className="mt-0.5 text-[13px] text-muted">
-                  {t.group} {String(i + 1).padStart(2, "0")} · {t.every}
-                </p>
-              </article>
+        {/* Băng chuyền thẻ quote: danh sách lặp 2 lần, chạy chậm sang trái, dừng khi rê chuột */}
+        <div
+          className="marquee reveal mt-6 -mx-4 py-3 sm:-mx-6 lg:-mx-8"
+          style={{ "--marquee-duration": `${personas.length * 13}s` } as React.CSSProperties}
+          role="region"
+          aria-label={t.label}
+        >
+          <div className="marquee-track">
+            {[0, 1].map((copy) => (
+              <ul key={copy} className="flex shrink-0 items-stretch gap-4 pr-4" aria-hidden={copy === 1 || undefined} inert={copy === 1 || undefined}>
+                {personas.map((p) => (
+                  <li key={p.name} className="w-[19rem] shrink-0 sm:w-[23rem]">
+                    <article className="flex h-full flex-col rounded-3xl bg-white p-5 shadow-card ring-1 ring-line">
+                      <div className="flex gap-4">
+                        {p.images && p.images.length > 1 ? (
+                          <PhotoSlideshow images={p.images} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                        ) : (
+                          <Photo src={p.image} alt={p.name} className="aspect-square w-24 shrink-0 self-start rounded-2xl" imgClassName="object-[50%_20%]" />
+                        )}
+                        <div>
+                          <span aria-hidden className="block font-serif text-3xl leading-none font-bold text-orange">
+                            ❝
+                          </span>
+                          <p className="mt-1 text-[15px] leading-relaxed text-navy">{p.body}</p>
+                        </div>
+                      </div>
+                      {/* Người nói câu trên */}
+                      <p className="mt-3 border-l-2 border-orange pl-3 text-[13px] leading-snug">
+                        <span className="block font-semibold text-navy">{p.name}</span>
+                        <span className="text-muted">{p.role}</span>
+                      </p>
+                      <h3 className="mt-4 text-base font-bold text-navy">{p.title}</h3>
+                      <p className="mt-0.5 text-[13px] text-muted">
+                        {t.group} {String(p.no).padStart(2, "0")} · {t.every}
+                      </p>
+                    </article>
+                  </li>
+                ))}
+              </ul>
             ))}
-          </Carousel>
+          </div>
         </div>
       </div>
     </section>

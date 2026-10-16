@@ -293,6 +293,11 @@ export const sponsors: { name: string; logo?: string }[] = [
 
 export const mediaPartners: { name: string; logo?: string }[] = [{ name: "Báo điện tử VTC News", logo: "/images/sponsors/vtcnews.png" }];
 
+export const partnerCompanies: { name: string; logo: string }[] = [
+  { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
+  { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
+];
+
 export const eligibility = [
   "Sinh viên đang theo học tại Trường Quốc tế - ĐHQGHN.",
   "Sinh viên các đơn vị đào tạo thành viên, trực thuộc ĐHQGHN.",

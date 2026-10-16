@@ -293,6 +293,11 @@ export const sponsors: { name: string; logo?: string }[] = [
 
 export const mediaPartners: { name: string; logo?: string }[] = [{ name: "VTC News", logo: "/images/sponsors/vtcnews.png" }];
 
+export const partnerCompanies: { name: string; logo: string }[] = [
+  { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
+  { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
+];
+
 export const eligibility = [
   "Students currently enrolled at VNU International School (VNU-IS).",
   "Students of other member schools and units of Vietnam National University, Hanoi (VNU).",

@@ -20,40 +20,42 @@ export default function Sponsors({ lang }: { lang: Lang }) {
   if (!partnerCompanies || partnerCompanies.length === 0) return null;
 
   return (
-    <section id={t.id} className="relative bg-linear-to-b from-mist/70 to-white py-12 lg:py-16">
-      <div className="container-x">
-        <div className="reveal mx-auto max-w-4xl rounded-3xl bg-white px-6 py-8 shadow-card ring-1 ring-line sm:px-10 sm:py-10">
-          <h2 className="text-center text-xl font-bold text-navy sm:text-2xl">{t.title}</h2>
-          <div className="mt-7 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
-            {partnerCompanies.map((item) => {
-              const isHorizontal = item.logo.includes("talentnet");
-              return (
-                <div
-                  key={item.name}
-                  className="flex flex-col items-center justify-between rounded-2xl bg-mist/40 px-6 py-6 text-center ring-1 ring-line/80"
-                >
-                  <div className="flex h-24 w-full items-center justify-center sm:h-28">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={asset(item.logo)}
-                      alt={`Logo ${item.name}`}
-                      width={isHorizontal ? 240 : 180}
-                      height={112}
-                      className={
-                        isHorizontal
-                          ? "max-h-14 w-auto max-w-[220px] object-contain sm:max-h-16 sm:max-w-[240px]"
-                          : "max-h-24 w-auto max-w-[180px] object-contain sm:max-h-28 sm:max-w-[200px]"
-                      }
-                    />
-                  </div>
-                  <p className="mt-4 text-[15px] leading-snug font-semibold text-navy sm:text-base">
-                    {item.name}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    <section
+      id={t.id}
+      aria-label={t.title}
+      className="reveal mt-4 rounded-3xl bg-white/90 px-5 py-5 shadow-card ring-1 ring-line backdrop-blur-sm sm:px-8 sm:py-6"
+    >
+      <h3 className="text-center text-xs font-semibold tracking-wider text-muted uppercase">
+        {t.title}
+      </h3>
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+        {partnerCompanies.map((item) => {
+          const isHorizontal = item.logo.includes("talentnet");
+          return (
+            <div
+              key={item.name}
+              className="flex flex-col items-center justify-between rounded-2xl bg-white px-5 py-4 text-center ring-1 ring-line/80 sm:px-6 sm:py-5"
+            >
+              <div className="flex h-22 w-full items-center justify-center sm:h-24">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={asset(item.logo)}
+                  alt={`Logo ${item.name}`}
+                  width={isHorizontal ? 220 : 168}
+                  height={96}
+                  className={
+                    isHorizontal
+                      ? "max-h-12 w-auto max-w-[200px] object-contain sm:max-h-14 sm:max-w-[220px]"
+                      : "max-h-20 w-auto max-w-[160px] object-contain sm:max-h-24 sm:max-w-[180px]"
+                  }
+                />
+              </div>
+              <p className="mt-3 text-sm leading-snug font-medium text-navy sm:text-[15px]">
+                {item.name}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -8,7 +8,6 @@ import Milestones from "@/components/sections/Milestones";
 import Perks from "@/components/sections/Perks";
 import Personas from "@/components/sections/Personas";
 import Prizes from "@/components/sections/Prizes";
-import Sponsors from "@/components/sections/Sponsors";
 import Theme from "@/components/sections/Theme";
 import Values from "@/components/sections/Values";
 import type { Lang } from "@/lib/i18n";
@@ -24,7 +23,6 @@ export default function HomePage({ lang }: { lang: Lang }) {
       <Theme lang={lang} />
       <Milestones lang={lang} />
       <Personas lang={lang} />
-      <Sponsors lang={lang} />
       <Values lang={lang} />
       <Prizes lang={lang} />
       <Faq lang={lang} />

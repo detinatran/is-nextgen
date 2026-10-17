@@ -14,7 +14,25 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export function registrationConfirmed(input: { fullName: string; candidateCode: string; site: string }): {
+/** "23:59 ngày 07/11/2026" theo giờ Việt Nam */
+function vnDeadline(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const time = d.toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', hour12: false });
+  const date = d.toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric' });
+  return `${time} ngày ${date}`;
+}
+
+export function registrationConfirmed(input: {
+  fullName: string;
+  candidateCode: string;
+  site: string;
+  /** Email đăng nhập; có khi tài khoản đã được cấp lúc nộp hồ sơ */
+  email?: string;
+  account?: boolean;
+  hasVideo?: boolean;
+  videoDeadline?: string;
+}): {
   subject: string;
   text: string;
   html: string;
@@ -23,6 +41,25 @@ export function registrationConfirmed(input: { fullName: string; candidateCode: 
   const code = input.candidateCode;
   const site = input.site.replace(/\/$/, '');
   const subject = 'NextGen Manager 2026: Xác nhận đăng ký thành công';
+  const host = site.replace(/^https?:\/\//, '');
+  const deadline = input.videoDeadline ? vnDeadline(input.videoDeadline) : '';
+  const needVideo = input.account && input.hasVideo === false;
+  // Phần tài khoản: cấp ngay khi đăng ký (bản mới) hoặc báo sẽ gửi sau (hồ sơ trùng email cần BTC xử lý)
+  const accountText = input.account
+    ? `TÀI KHOẢN THÍ SINH
+` +
+      `Tên đăng nhập: ${input.email ?? 'email bạn đã đăng ký'} (hoặc mã thí sinh)
+` +
+      `Bước 1: Kích hoạt tài khoản tại ${site}/thi/kich-hoat/ : nhập email này, nhận mã xác thực qua email và đặt mật khẩu.
+` +
+      `Bước 2: Đăng nhập tại ${site}/thi/ để xem hồ sơ` +
+      (needVideo ? `, nộp bổ sung video giới thiệu (hạn chót ${deadline})` : '') +
+      ` và theo dõi lịch thi Vòng 1 khi Ban Tổ chức xếp ca.
+
+`
+    : `Tài khoản thi và lịch thi Vòng 1 sẽ được gửi qua email này trước ngày thi; bạn làm theo hướng dẫn trong email để kích hoạt tài khoản tại ${site}/thi/kich-hoat/.
+
+`;
 
   const text =
     `Thân gửi ${name},\n\n` +
@@ -31,7 +68,7 @@ export function registrationConfirmed(input: { fullName: string; candidateCode: 
     `Và Ban Tổ chức rất vui mừng thông báo với bạn:\n\n` +
     `CHÚC MỪNG BẠN ĐÃ ĐĂNG KÝ THAM GIA THÀNH CÔNG CUỘC THI NEXTGEN MANAGER 2026\n\n` +
     (code ? `Mã thí sinh của bạn: ${code}\n` : '') +
-    `Tài khoản thi và lịch thi Vòng 1 sẽ được gửi qua email này trước ngày thi; bạn làm theo hướng dẫn trong email để kích hoạt tài khoản tại ${site}/thi/kich-hoat/.\n\n` +
+    accountText +
     `Để đồng hành cùng bạn trong suốt cuộc thi, Ban Tổ chức đã lập nhóm Zalo hỗ trợ thí sinh. Bạn vui lòng tham gia nhóm để cập nhật thông tin mới nhất của cuộc thi tại đây:\n` +
     `NHÓM HỖ TRỢ THÍ SINH NEXTGEN MANAGER 2026: ${ZALO_GROUP}\n\n` +
     `Ban Tổ chức xin chúc bạn sẽ luôn giữ vững tinh thần chủ động, bản lĩnh và tự tin trong suốt hành trình sắp tới. Đồng thời, để hỗ trợ thí sinh trang bị kiến thức và kỹ năng cần thiết trước khi bước vào vòng thi, Ban Tổ chức trân trọng thông báo về buổi Lễ phát động Cuộc thi với sự tham gia của các quý diễn giả giàu kinh nghiệm.\n\n` +
@@ -66,7 +103,19 @@ export function registrationConfirmed(input: { fullName: string; candidateCode: 
     ${p(`${b('“NextGen Manager 2026”')} là cuộc thi học thuật dành cho sinh viên đam mê lĩnh vực quản trị và điều hành tổ chức. Không chỉ mang đến một sân chơi học thuật thực chiến, chương trình còn mở ra cơ hội kết nối mạng lưới doanh nghiệp uy tín, phát triển kỹ năng nghiệp vụ chuyên môn và nhận được những suất thực tập giá trị. ${b('“NextGen Manager 2026”')} hứa hẹn sẽ mang đến một bệ phóng toàn diện, giúp thế hệ trẻ tương lai rèn luyện bản lĩnh và tư duy nhạy bén để bứt phá trong kỷ nguyên mới.`, 'text-indent:20px;')}
     ${p('Và Ban Tổ chức rất vui mừng thông báo với bạn:')}
     <p style="margin:0 0 22px;font-family:${SERIF};font-size:20px;line-height:1.5;font-weight:bold;color:#274482;text-align:center;">CHÚC MỪNG BẠN ĐÃ ĐĂNG KÝ THAM GIA THÀNH CÔNG CUỘC THI NEXTGEN MANAGER 2026</p>
-    ${code ? `<p style="margin:0 0 22px;font-family:${SERIF};font-size:17px;line-height:1.6;color:#000000;text-align:center;">Mã thí sinh của bạn: <strong style="font-size:19px;color:#274482;letter-spacing:1px;">${esc(code)}</strong><br><em>Tài khoản thi và lịch thi Vòng 1 sẽ được gửi qua email này trước ngày thi. Bạn làm theo hướng dẫn trong email đó để kích hoạt tài khoản tại <a href="${site}/thi/kich-hoat/" style="color:#2854c4;">${site.replace(/^https?:\/\//, '')}/thi</a>.</em></p>` : ''}
+    ${code ? `<p style="margin:0 0 22px;font-family:${SERIF};font-size:17px;line-height:1.6;color:#000000;text-align:center;">Mã thí sinh của bạn: <strong style="font-size:19px;color:#274482;letter-spacing:1px;">${esc(code)}</strong></p>` : ''}
+    ${
+      input.account
+        ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px;background:#ffffff;border:2px solid #274482;"><tr><td style="padding:16px 18px;font-family:${SERIF};font-size:17px;line-height:1.55;color:#000000;">
+      <p style="margin:0 0 8px;font-size:18px;font-weight:bold;color:#274482;">TÀI KHOẢN THÍ SINH</p>
+      <p style="margin:0 0 8px;">Tên đăng nhập: <strong>${esc(input.email ?? '')}</strong> (hoặc mã thí sinh)</p>
+      <p style="margin:0 0 6px;"><strong>Bước 1:</strong> Kích hoạt tài khoản tại <a href="${site}/thi/kich-hoat/" style="color:#2854c4;">${host}/thi/kich-hoat</a>: nhập email này, nhận mã xác thực qua email và đặt mật khẩu.</p>
+      <p style="margin:0;"><strong>Bước 2:</strong> Đăng nhập tại <a href="${site}/thi/" style="color:#2854c4;">${host}/thi</a> để xem hồ sơ${needVideo ? `, <strong>nộp bổ sung video giới thiệu (hạn chót ${esc(deadline)})</strong>` : ''} và theo dõi lịch thi Vòng 1 khi Ban Tổ chức xếp ca.</p>
+    </td></tr></table>`
+        : code
+          ? `<p style="margin:0 0 22px;font-family:${SERIF};font-size:17px;line-height:1.6;color:#000000;text-align:center;"><em>Tài khoản thi và lịch thi Vòng 1 sẽ được gửi qua email này trước ngày thi. Bạn làm theo hướng dẫn trong email đó để kích hoạt tài khoản tại <a href="${site}/thi/kich-hoat/" style="color:#2854c4;">${host}/thi</a>.</em></p>`
+          : ''
+    }
     ${p(`Để đồng hành cùng bạn trong suốt cuộc thi, Ban Tổ chức đã lập nhóm Zalo hỗ trợ thí sinh. ${b('Bạn vui lòng tham gia nhóm để cập nhật thông tin mới nhất của cuộc thi')} tại đây:`)}
     <p style="margin:0 0 22px;font-family:${SERIF};font-size:19px;line-height:1.5;text-align:center;"><a href="${ZALO_GROUP}" style="color:#2854c4;font-weight:bold;text-decoration:underline;">NHÓM HỖ TRỢ THÍ SINH NEXTGEN MANAGER 2026</a></p>
     ${p(`Ban Tổ chức xin chúc bạn sẽ luôn giữ vững tinh thần chủ động, bản lĩnh và tự tin trong suốt hành trình sắp tới. Đồng thời, để hỗ trợ thí sinh trang bị kiến thức và kỹ năng cần thiết trước khi bước vào vòng thi, Ban Tổ chức trân trọng thông báo về ${b('buổi Lễ phát động Cuộc thi')} với sự tham gia của các quý diễn giả giàu kinh nghiệm.`)}

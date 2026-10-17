@@ -126,7 +126,15 @@ export class NotificationsService {
           text: `Mã đặt lại mật khẩu của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/quen-mat-khau/.${sign}`,
         };
       case 'REGISTRATION_CONFIRMED':
-        return registrationConfirmed({ fullName: text('fullName'), candidateCode, site });
+        return registrationConfirmed({
+          fullName: text('fullName'),
+          candidateCode,
+          site,
+          email: text('email') || undefined,
+          account: payload['account'] === true,
+          hasVideo: typeof payload['hasVideo'] === 'boolean' ? (payload['hasVideo'] as boolean) : undefined,
+          videoDeadline: text('videoDeadline') || undefined,
+        });
       case 'EXAM_INVITATION':
         return {
           subject: 'NextGen Manager: Tài khoản và lịch thi Vòng 1',

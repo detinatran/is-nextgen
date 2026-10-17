@@ -69,15 +69,17 @@ const text = {
     sendError: "Video đã tải lên nhưng chưa gửi được thông tin. Kiểm tra kết nối mạng và bấm gửi lại.",
     received: "Đã nhận đăng ký",
     thanks: "Cảm ơn bạn!",
-    doneBody: "Ban Tổ chức sẽ gửi email xác nhận tới địa chỉ bạn đã đăng ký. Trước ngày thi Vòng 1, bạn sẽ nhận email mời thi gồm mã thí sinh, ca thi và đường link kích hoạt tài khoản để vào thi.",
+    doneBody: "Ban Tổ chức sẽ gửi email xác nhận kèm tài khoản thí sinh tới địa chỉ bạn đã đăng ký.",
     another: "Đăng ký cho người khác",
     mailTitle: "Hãy kiểm tra email để nhận tài khoản",
-    mailBody: "Ban Tổ chức vừa gửi email xác nhận kèm mã thí sinh (kiểm tra cả mục Spam). Tài khoản thi và lịch thi sẽ được gửi qua email này trước ngày thi; làm theo hướng dẫn trong email để kích hoạt tài khoản.",
+    mailBody: "Ban Tổ chức vừa gửi email xác nhận kèm mã thí sinh và tài khoản thí sinh (kiểm tra cả mục Spam). Kích hoạt tài khoản bằng email đã đăng ký, rồi đăng nhập để theo dõi hồ sơ và lịch thi.",
+    videoLater: "Bạn chưa nộp video giới thiệu. Sau khi kích hoạt tài khoản, hãy đăng nhập để nộp bổ sung trước hạn.",
+    activate: "Kích hoạt tài khoản",
     login: "Đăng nhập",
     loginHint: "Đã có tài khoản thi?",
     legend: "Thông tin đăng ký",
     fullName: "Họ và tên *",
-    phone: "Số điện thoại *",
+    phone: "Số điện thoại (có dùng Zalo) *",
     phoneHint: "9-15 chữ số",
     school: "Trường đang theo học *",
     schoolPh: "Chọn hoặc gõ tên trường",
@@ -160,15 +162,17 @@ const text = {
     sendError: "Your video was uploaded but the form was not sent. Check your connection and submit again.",
     received: "Registration received",
     thanks: "Thank you!",
-    doneBody: "The Organizing Committee will email you a confirmation. Before Round 1, you will receive an exam invitation with your candidate code, exam slot and a link to activate your exam account.",
+    doneBody: "The Organizing Committee will email you a confirmation with your candidate account.",
     another: "Register someone else",
     mailTitle: "Check your email for your account",
-    mailBody: "We just emailed you a confirmation with your candidate code (check Spam too). Your exam account and slot will be sent to the same address before the exam; follow the email to activate your account.",
+    mailBody: "We just emailed you a confirmation with your candidate code and candidate account (check Spam too). Activate the account with your registered email, then log in to track your application and exam schedule.",
+    videoLater: "You have not submitted your intro video yet. After activating your account, log in to upload it before the deadline.",
+    activate: "Activate account",
     login: "Log in",
     loginHint: "Already have an exam account?",
     legend: "Registration details",
     fullName: "Full name *",
-    phone: "Phone number *",
+    phone: "Phone number (with Zalo) *",
     phoneHint: "9-15 digits",
     school: "University *",
     schoolPh: "Choose or type your university",
@@ -230,6 +234,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const [photo, setPhoto] = useState<File | null>(null);
   const [step, setStep] = useState<SubmitStep>("video");
   const [candidateCode, setCandidateCode] = useState("");
+  // Đăng ký xong mà chưa kèm video: nhắc nộp bổ sung sau khi đăng nhập
+  const [videoPending, setVideoPending] = useState(false);
   // Trang hiện tại của form: 0 thông tin, 1 ảnh và video, 2 cam kết
   const [page, setPage] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
@@ -271,8 +277,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
       found = Object.fromEntries(Object.entries(codes).map(([k, c]) => [k, t.fieldErrors[c]]));
     } else if (p === 1) {
       if (!photo) found.photo = t.needPhoto;
+      // Video không bắt buộc; chỉ chờ nếu đang kiểm tra file đã chọn
       if (videoChecking) found.video = t.waitVideo;
-      else if (!video) found.video = t.needVideo;
     } else {
       if (!get("mediaConsent")) found.mediaConsent = t.needConsent;
       if (!get("confirm")) found.confirm = t.needConfirm;
@@ -319,7 +325,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     // Bấm Enter ở các bước đầu thì chuyển bước, không gửi
     if (page < 2) return void nextPage();
     const form = e.currentTarget;
-    if (!photo || !video) {
+    if (!photo) {
       goTo(1);
       validatePage(1);
       return;
@@ -342,9 +348,11 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
       const owner = `${data.get("fullName")} - ${data.get("studentId")}`;
       setStep("photo");
       data.set("photoUrl", await uploadFile(endpoint, photo, `${owner} - Ảnh - ${photo.name}`, setProgress));
-      setStep("video");
-      setProgress(0);
-      data.set("videoUrl", await uploadFile(endpoint, video, `${owner} - Video - ${video.name}`, setProgress));
+      if (video) {
+        setStep("video");
+        setProgress(0);
+        data.set("videoUrl", await uploadFile(endpoint, video, `${owner} - Video - ${video.name}`, setProgress));
+      }
     } catch {
       setState("error");
       setProgress(null);
@@ -392,11 +400,12 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         dataProcessing: !!data.get("confirm"),
         mediaUsage: data.get("mediaConsent") === "Đồng ý",
         photo: photo!,
-        video: video!,
+        video,
         onStep: setStep,
         onProgress: setProgress,
       });
       setCandidateCode(result.candidateCode);
+      setVideoPending(!video);
       setState("done");
       setVideo(null);
       setPhoto(null);
@@ -428,12 +437,15 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             <Icon name="mail" className="h-5 w-5 text-orange" /> {t.mailTitle}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-muted">{t.mailBody}</p>
+          {videoPending && apiBase && <p className="mt-2 text-sm leading-relaxed font-semibold text-orange-ink">{t.videoLater}</p>}
         </div>
         {apiBase && (
-          <div className="mt-6">
-            <p className="mb-2 text-[13px] text-muted">{t.loginHint}</p>
-            <Link href="/thi/" className="btn-primary px-8 py-3">
-              {t.login} <Icon name="arrowRight" className="h-4 w-4" />
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link href={lang === "en" ? "/en/thi/kich-hoat/" : "/thi/kich-hoat/"} className="btn-primary px-7 py-3">
+              {t.activate} <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+            <Link href={lang === "en" ? "/en/thi/" : "/thi/"} className="btn-outline px-7 py-3">
+              {t.login}
             </Link>
           </div>
         )}
@@ -563,7 +575,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         {/* Bước 2: ảnh và video */}
         <div ref={(el) => { pages.current[1] = el; }} className={pageCls(1)}>
           <PhotoUpload lang={lang} formError={errors.photo} file={photo} onChange={(f) => { setPhoto(f); if (f) setErrors(({ photo: _p, ...rest }) => rest); }} progress={state === "uploading" && step === "photo" ? progress : null} />
-          <VideoUpload lang={lang} mp4Only={!!apiBase} formError={errors.video} onCheckingChange={setVideoChecking} file={video} onChange={(f) => { setVideo(f); if (f) setErrors(({ video: _v, ...rest }) => rest); }} progress={state === "uploading" && step === "video" ? progress : null} />
+          <VideoUpload lang={lang} optional mp4Only={!!apiBase} formError={errors.video} onCheckingChange={setVideoChecking} file={video} onChange={(f) => { setVideo(f); if (f) setErrors(({ video: _v, ...rest }) => rest); }} progress={state === "uploading" && step === "video" ? progress : null} />
         </div>
 
         {/* Bước 3: cam kết, đồng ý rồi mới nộp */}

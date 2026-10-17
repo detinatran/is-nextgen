@@ -65,6 +65,35 @@ function upload<T>(path: string, file: File, token: string, onProgress: (ratio: 
   });
 }
 
+/** Tải video, chờ backend kiểm tra (định dạng, độ dài) rồi gắn vào hồ sơ. Dùng cả lúc đăng ký và khi nộp bổ sung. */
+export async function uploadVideo(
+  registrationId: string,
+  token: string,
+  video: File,
+  onStep: (step: SubmitStep) => void,
+  onProgress: (ratio: number) => void,
+): Promise<void> {
+  onStep("video");
+  onProgress(0);
+  const started = await upload<UploadStatus>(`/registrations/${registrationId}/uploads`, video, token, onProgress);
+
+  // Backend kiểm tra định dạng và độ dài video; chờ tới khi READY hoặc bị từ chối
+  onStep("checking");
+  let status = await call<UploadStatus>(`/uploads/${started.uploadId}/finalization`, { method: "POST", token });
+  for (let i = 0; i < 60 && status.state !== "READY" && status.state !== "REJECTED"; i++) {
+    await new Promise((r) => setTimeout(r, 2000));
+    status = await call<UploadStatus>(`/uploads/${started.uploadId}`, { token });
+  }
+  if (status.state !== "READY" || !status.mediaObjectId) {
+    throw new ApiError(status.rejectionReason ?? "VIDEO_VALIDATION_FAILED", "Video was rejected");
+  }
+  await call(`/registrations/${registrationId}/video-binding`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify({ mediaObjectId: status.mediaObjectId }),
+  });
+}
+
 type UploadStatus = { uploadId: string; state: string; rejectionReason?: string; mediaObjectId?: string };
 
 export async function submitRegistration(input: {
@@ -72,7 +101,8 @@ export async function submitRegistration(input: {
   dataProcessing: boolean;
   mediaUsage: boolean;
   photo: File;
-  video: File;
+  /** Không bắt buộc: thí sinh có thể nộp bổ sung sau khi đăng nhập */
+  video?: File | null;
   onStep: (step: SubmitStep) => void;
   onProgress: (ratio: number) => void;
 }): Promise<SubmitResult> {
@@ -95,25 +125,7 @@ export async function submitRegistration(input: {
   onProgress(0);
   await upload(`/registrations/${id}/photos`, photo, token, onProgress);
 
-  onStep("video");
-  onProgress(0);
-  const started = await upload<UploadStatus>(`/registrations/${id}/uploads`, video, token, onProgress);
-
-  // Backend kiểm tra định dạng và độ dài video; chờ tới khi READY hoặc bị từ chối
-  onStep("checking");
-  let status = await call<UploadStatus>(`/uploads/${started.uploadId}/finalization`, { method: "POST", token });
-  for (let i = 0; i < 60 && status.state !== "READY" && status.state !== "REJECTED"; i++) {
-    await new Promise((r) => setTimeout(r, 2000));
-    status = await call<UploadStatus>(`/uploads/${started.uploadId}`, { token });
-  }
-  if (status.state !== "READY" || !status.mediaObjectId) {
-    throw new ApiError(status.rejectionReason ?? "VIDEO_VALIDATION_FAILED", "Video was rejected");
-  }
-  await call(`/registrations/${id}/video-binding`, {
-    method: "PUT",
-    token,
-    body: JSON.stringify({ mediaObjectId: status.mediaObjectId }),
-  });
+  if (video) await uploadVideo(id, token, video, onStep, onProgress);
 
   onStep("submit");
   return call<SubmitResult>(`/registrations/${id}/submission`, {

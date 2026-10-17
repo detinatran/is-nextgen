@@ -66,9 +66,7 @@ export class MediaService {
     }
     const registration = await this.prisma.registrations.findUnique({ where: { id: registrationId } });
     if (!registration) throw AppException.notFound('Registration not found');
-    if (registration.state !== 'DRAFT') {
-      throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration video is sealed');
-    }
+    if (registration.state !== 'DRAFT') await this.assertLateVideoAllowed(registration.id, registration.competition_id);
 
     const objectKey = `v/${randomUUID()}`;
     const upload = await this.prisma.media_uploads.create({
@@ -261,9 +259,8 @@ export class MediaService {
     this.assertGrant(grant, registrationId, 'DRAFT_UPLOAD');
     const registration = await this.prisma.registrations.findUnique({ where: { id: registrationId } });
     if (!registration) throw AppException.notFound('Registration not found');
-    if (registration.state !== 'DRAFT') {
-      throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration video is sealed');
-    }
+    const late = registration.state !== 'DRAFT';
+    if (late) await this.assertLateVideoAllowed(registration.id, registration.competition_id);
     const mediaObject = await this.prisma.media_objects.findUnique({
       where: { id: mediaObjectId },
     });
@@ -277,19 +274,38 @@ export class MediaService {
       throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Media object is not READY');
     }
 
-    await this.prisma.registration_videos.upsert({
-      where: { registration_id: registrationId },
-      create: { registration_id: registrationId, media_object_id: mediaObjectId },
-      update: { media_object_id: mediaObjectId, bound_at: new Date() },
-    });
+    if (late) {
+      // Hồ sơ đã nộp: chỉ được gắn video một lần (trigger video_guard chặn sửa/xoá sau đó)
+      await this.prisma.registration_videos.create({ data: { registration_id: registrationId, media_object_id: mediaObjectId } });
+    } else {
+      await this.prisma.registration_videos.upsert({
+        where: { registration_id: registrationId },
+        create: { registration_id: registrationId, media_object_id: mediaObjectId },
+        update: { media_object_id: mediaObjectId, bound_at: new Date() },
+      });
+    }
     await this.audit.record(this.prisma, {
-      action: 'media.video_bound',
+      action: late ? 'media.video_bound_after_submission' : 'media.video_bound',
       target_type: 'registration',
       target_id: registrationId,
       correlation_id: correlationId,
       metadata: { mediaObjectId },
     });
     return { videoBound: true, mediaObjectId };
+  }
+
+  /**
+   * Hồ sơ đã nộp mà chưa có video: được nộp bổ sung một lần, trước hạn nộp video của cuộc thi
+   * (competitions.video_closes_at, để trống thì theo hạn đăng ký).
+   */
+  private async assertLateVideoAllowed(registrationId: string, competitionId: string): Promise<void> {
+    const bound = await this.prisma.registration_videos.findUnique({ where: { registration_id: registrationId } });
+    if (bound) throw AppException.conflict(ErrorCodes.STATE_CONFLICT, 'Submitted registration video is sealed');
+    const competition = await this.prisma.competitions.findUniqueOrThrow({ where: { id: competitionId } });
+    const deadline = competition.video_closes_at ?? competition.registration_closes_at;
+    if (Date.now() > deadline.getTime()) {
+      throw AppException.conflict(ErrorCodes.DEADLINE_PASSED, 'Video submission deadline has passed');
+    }
   }
 
   private async statusFor(uploadId: string, client: Tx | PrismaService = this.prisma): Promise<UploadStatus> {

@@ -18,6 +18,10 @@ type Props = {
   onChange: (file: File | null) => void;
   /** 0..1 khi đang tải lên, null khi chưa tải */
   progress: number | null;
+  /** Không bắt buộc: bỏ dấu *, cho phép để trống, hiện ghi chú nộp bổ sung sau */
+  optional?: boolean;
+  /** Ghi chú riêng thay cho gợi ý mặc định (ví dụ hạn nộp bổ sung) */
+  note?: string;
 };
 
 const formatSize = (bytes: number) =>
@@ -33,6 +37,8 @@ const text = {
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
     tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
     label: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) *`,
+    labelOptional: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) · không bắt buộc`,
+    later: "Chưa có video? Bạn vẫn nộp đăng ký được, rồi đăng nhập tài khoản thí sinh để nộp bổ sung trước hạn của vòng thi.",
     hint: "Video cá nhân tối đa 02 phút, chủ đề tự chọn.",
     remove: "Bỏ video đã chọn",
     drop: "Kéo thả video vào đây hoặc bấm để chọn",
@@ -50,6 +56,8 @@ const text = {
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
     tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
     label: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) *`,
+    labelOptional: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) · optional`,
+    later: "No video yet? You can still register now, then log in to your candidate account to upload it before the round deadline.",
     hint: "A personal video of up to 02 minutes on a topic of your choice.",
     remove: "Remove selected video",
     drop: "Drag and drop your video here, or click to choose",
@@ -61,7 +69,7 @@ const text = {
   },
 };
 
-export default function VideoUpload({ lang, file, onChange, progress, mp4Only = false, onCheckingChange, formError }: Props) {
+export default function VideoUpload({ lang, file, onChange, progress, mp4Only = false, onCheckingChange, formError, optional = false, note }: Props) {
   const t = text[lang];
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
@@ -114,8 +122,9 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
 
   return (
     <div className="sm:col-span-2">
-      <span className="block text-[15px] font-semibold text-navy">{t.label}</span>
+      <span className="block text-[15px] font-semibold text-navy">{optional ? t.labelOptional : t.label}</span>
       <p className="mt-1 text-sm text-muted">{t.hint}</p>
+      {(note || optional) && <p className="mt-1 text-sm font-medium text-orange-ink">{note ?? t.later}</p>}
 
       {/* Ô input thật nằm phủ lên vùng kéo thả để giữ được validation "required" của trình duyệt */}
       <div
@@ -175,7 +184,7 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
           ref={input}
           type="file"
           accept={mp4Only ? "video/mp4" : "video/*"}
-          required={!file}
+          required={!optional && !file}
           onChange={(e) => pick(e.target.files?.[0])}
           className={`absolute inset-0 cursor-pointer opacity-0 ${file || checking ? "pointer-events-none" : ""}`}
           aria-label={t.pick}

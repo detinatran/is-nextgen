@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RegistrationsController } from './registrations.controller';
+import { MeRegistrationController } from './me-registration.controller';
 import { RegistrationsService } from './registrations.service';
 import { RegistrationFormService } from './registration-form.service';
 import { RegistrationCapabilityGuard } from './registration-capability.guard';
@@ -8,7 +9,7 @@ import { IdentityAccessModule } from '../identity-access/identity-access.module'
 
 @Module({
   imports: [MediaModule, IdentityAccessModule],
-  controllers: [RegistrationsController],
+  controllers: [RegistrationsController, MeRegistrationController],
   providers: [RegistrationsService, RegistrationFormService, RegistrationCapabilityGuard],
   exports: [RegistrationsService, RegistrationCapabilityGuard],
 })

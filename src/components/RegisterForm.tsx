@@ -12,6 +12,7 @@ import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/v
 import Icon from "./Icon";
 import PhotoUpload from "./PhotoUpload";
 import VideoUpload from "./VideoUpload";
+import DobSelect from "./DobSelect";
 
 const endpoint = process.env.NEXT_PUBLIC_REGISTER_ENDPOINT || "";
 
@@ -286,7 +287,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     setErrors(found);
     const first = Object.keys(found)[0];
     if (first) {
-      const el = form.querySelector<HTMLElement>(`[name="${first}"]`);
+      const el = form.querySelector<HTMLElement>(`[data-field="${first}"], [name="${first}"]:not([type=hidden])`);
       el?.focus({ preventScroll: true });
       (el?.closest("label, fieldset, .sm\\:col-span-2") ?? el)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return false;
@@ -523,11 +524,17 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             <FieldError msg={errors.school} />
           </label>
 
-          <label>
+          <div>
             <span className={labelCls}>{t.dob}</span>
-            <input name="dateOfBirth" type="date" required min="1970-01-01" max="2012-12-31" {...inputProps("dateOfBirth")} />
+            <DobSelect
+              key={candidateCode}
+              lang={lang}
+              {...inputProps("dateOfBirth")}
+              invalid={!!errors.dateOfBirth}
+              onChange={() => errors.dateOfBirth && setErrors(({ dateOfBirth: _d, ...rest }) => rest)}
+            />
             <FieldError msg={errors.dateOfBirth} />
-          </label>
+          </div>
           <label>
             <span className={labelCls}>{t.department}</span>
             <input name="department" required {...inputProps("department")} />

@@ -4,18 +4,18 @@
  * HTML dùng bảng + style inline để hiển thị đúng trên Gmail, Outlook, ứng dụng điện thoại.
  */
 
-const ZALO_GROUP = 'https://zalo.me/g/cnqpuuocmir8cd1xzxpv';
-const FACEBOOK = 'https://www.facebook.com/profile.php?id=61595115537350';
+export const ZALO_GROUP = 'https://zalo.me/g/cnqpuuocmir8cd1xzxpv';
+export const FACEBOOK = 'https://www.facebook.com/profile.php?id=61595115537350';
 const LAUNCH_TIME = '18h30 ngày 22/10/2026';
 const LAUNCH_PLACE = 'Phòng 512 - 514 số 1 Phan Tây Nhạc, Nam Từ Liêm';
 
 
-function esc(s: string): string {
+export function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 /** "23:59 ngày 07/11/2026" theo giờ Việt Nam */
-function vnDeadline(iso: string): string {
+export function vnDeadline(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
   const time = d.toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', hour12: false });

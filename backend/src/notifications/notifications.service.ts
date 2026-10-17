@@ -4,6 +4,7 @@ import { PrismaService } from '../database/prisma.service';
 import { MAILER } from './mailer/mailer.tokens';
 import type { Mailer } from './mailer/mailer.interface';
 import type { Tx } from '../common/idempotency/idempotency.service';
+import { accountReady } from './templates/account-ready';
 import { registrationConfirmed } from './templates/registration-confirmed';
 
 export interface EnqueueInput {
@@ -13,7 +14,8 @@ export interface EnqueueInput {
     | 'PASSWORD_RESET'
     | 'REGISTRATION_CONFIRMED'
     | 'EXAM_INVITATION'
-    | 'ACCOUNT_ALREADY_ACTIVE';
+    | 'ACCOUNT_ALREADY_ACTIVE'
+    | 'ACCOUNT_READY';
   destinationEmail: string;
   payload: Record<string, unknown>;
   deduplicationKey: string;
@@ -143,6 +145,15 @@ export class NotificationsService {
           email: text('email') || undefined,
           account: payload['account'] === true,
           hasVideo: typeof payload['hasVideo'] === 'boolean' ? (payload['hasVideo'] as boolean) : undefined,
+          videoDeadline: text('videoDeadline') || undefined,
+        });
+      case 'ACCOUNT_READY':
+        return accountReady({
+          fullName: text('fullName'),
+          candidateCode,
+          email: text('email'),
+          site,
+          hasVideo: payload['hasVideo'] === true,
           videoDeadline: text('videoDeadline') || undefined,
         });
       case 'EXAM_INVITATION':

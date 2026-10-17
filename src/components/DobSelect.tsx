@@ -8,10 +8,12 @@ type Props = { lang: Lang; className: string; invalid?: boolean; onChange?: () =
 const YEARS = Array.from({ length: 2012 - 1970 + 1 }, (_, i) => 2012 - i);
 const daysIn = (m: number, y: number) => new Date(y || 2000, m || 1, 0).getDate();
 const pad = (n: number) => String(n).padStart(2, "0");
+const CHEVRON =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475266' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
 
 const text = {
-  vi: { day: "Ngày", month: "Tháng", year: "Năm", monthName: (m: number) => `Tháng ${m}` },
-  en: { day: "Day", month: "Month", year: "Year", monthName: (m: number) => new Date(2000, m - 1, 1).toLocaleString("en-GB", { month: "long" }) },
+  vi: { day: "Ngày", month: "Tháng", year: "Năm" },
+  en: { day: "Day", month: "Month", year: "Year" },
 };
 
 /**
@@ -31,10 +33,12 @@ export default function DobSelect({ lang, className, invalid, onChange }: Props)
     onChange?.();
   };
   // Bỏ khoảng cách trên và thu lề ngang của kiểu ô chung để 3 ô vừa một hàng
-  const cls = className.replace("mt-1.5", "").replace("px-4", "px-3");
+  // Mũi tên tự vẽ, lề trong gọn để chữ "Ngày", "Tháng 12" không bị cắt khi khung hẹp
+  const cls = `${className.replace("mt-1.5", "").replace("px-4", "")} min-w-0 appearance-none bg-[length:14px] bg-[right_0.5rem_center] bg-no-repeat pr-7 pl-3`;
+  const arrow = { backgroundImage: CHEVRON };
   return (
-    <div role="group" className="mt-1.5 grid grid-cols-[1fr_1.4fr_1.2fr] gap-2" aria-invalid={invalid || undefined}>
-      <select aria-label={t.day} data-field="dateOfBirth" value={day || ""} onChange={(e) => update(() => setD(Number(e.target.value)))} className={cls}>
+    <div role="group" className="mt-1.5 grid grid-cols-3 gap-2" aria-invalid={invalid || undefined}>
+      <select aria-label={t.day} data-field="dateOfBirth" value={day || ""} onChange={(e) => update(() => setD(Number(e.target.value)))} className={cls} style={arrow}>
         <option value="" disabled>
           {t.day}
         </option>
@@ -44,17 +48,17 @@ export default function DobSelect({ lang, className, invalid, onChange }: Props)
           </option>
         ))}
       </select>
-      <select aria-label={t.month} value={m || ""} onChange={(e) => update(() => setM(Number(e.target.value)))} className={cls}>
+      <select aria-label={t.month} value={m || ""} onChange={(e) => update(() => setM(Number(e.target.value)))} className={cls} style={arrow}>
         <option value="" disabled>
           {t.month}
         </option>
         {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
           <option key={n} value={n}>
-            {t.monthName(n)}
+            {pad(n)}
           </option>
         ))}
       </select>
-      <select aria-label={t.year} value={y || ""} onChange={(e) => update(() => setY(Number(e.target.value)))} className={cls}>
+      <select aria-label={t.year} value={y || ""} onChange={(e) => update(() => setY(Number(e.target.value)))} className={cls} style={arrow}>
         <option value="" disabled>
           {t.year}
         </option>

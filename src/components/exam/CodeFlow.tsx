@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ApiCallError, apiCall } from "@/lib/examApi";
 import { langFromPath, localePath } from "@/lib/i18n";
 
@@ -49,6 +49,12 @@ const copy = {
     repeat: "Nhập lại mật khẩu",
     processing: "Đang xử lý...",
     resend: "Gửi lại mã",
+    resent: "Đã gửi lại mã mới. Mã cũ không còn dùng được, hãy dùng mã trong email mới nhất.",
+    resendIn: (s: number) => `Gửi lại mã sau ${s} giây`,
+    noCode: "Không nhận được mã? Kiểm tra mục Spam/Quảng cáo. Nếu bạn đã kích hoạt tài khoản trước đó, hệ thống sẽ không gửi mã kích hoạt nữa: hãy",
+    signInLink: "đăng nhập",
+    or: "hoặc",
+    forgotLink: "đặt lại mật khẩu",
     signIn: "Đăng nhập",
   },
   en: {
@@ -84,6 +90,12 @@ const copy = {
     repeat: "Repeat password",
     processing: "Processing...",
     resend: "Resend code",
+    resent: "A new code has been sent. The old code no longer works, so use the code in the latest email.",
+    resendIn: (s: number) => `Resend code in ${s}s`,
+    noCode: "Didn't get a code? Check your Spam folder. If you have already activated your account, no activation code is sent: please",
+    signInLink: "sign in",
+    or: "or",
+    forgotLink: "reset your password",
     signIn: "Sign in",
   },
 };
@@ -100,15 +112,27 @@ export default function CodeFlow({ mode }: { mode: "activate" | "reset" }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // Gửi lại mã: báo đã gửi và chờ 30 giây giữa hai lần
+  const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = window.setTimeout(() => setCooldown((s) => s - 1), 1000);
+    return () => window.clearTimeout(id);
+  }, [cooldown]);
 
   async function request(e?: React.FormEvent) {
     e?.preventDefault();
+    const again = step === "code";
     setBusy(true);
     setError("");
+    setResent(false);
     try {
       const res = await apiCall<{ challengeId: string }>(t.request, { method: "POST", body: JSON.stringify({ email: email.trim() }) });
       setChallengeId(res.challengeId);
       setStep("code");
+      setResent(again);
+      setCooldown(30);
     } catch (err) {
       setError(err instanceof ApiCallError && err.status === 429 ? c.tooFast : c.requestError);
     } finally {
@@ -177,9 +201,32 @@ export default function CodeFlow({ mode }: { mode: "activate" | "reset" }) {
           <button disabled={busy} className="btn-primary w-full py-3.5 disabled:opacity-60">
             {busy ? c.processing : t.submit}
           </button>
-          <button type="button" onClick={() => request()} disabled={busy} className="w-full text-sm font-semibold text-brand hover:underline">
-            {c.resend}
+          <button
+            type="button"
+            onClick={() => request()}
+            disabled={busy || cooldown > 0}
+            className="w-full text-sm font-semibold text-brand hover:underline disabled:text-muted disabled:no-underline"
+          >
+            {cooldown > 0 ? c.resendIn(cooldown) : c.resend}
           </button>
+          {resent && (
+            <p className="rounded-xl bg-[#ecfdf3] px-4 py-2.5 text-sm font-medium text-[#15803d]" role="status">
+              {c.resent}
+            </p>
+          )}
+          {mode === "activate" && (
+            <p className="text-[13px] leading-relaxed text-muted">
+              {c.noCode}{" "}
+              <Link href={localePath(lang, "/thi/")} className="font-semibold text-brand hover:underline">
+                {c.signInLink}
+              </Link>{" "}
+              {c.or}{" "}
+              <Link href={localePath(lang, "/thi/quen-mat-khau/")} className="font-semibold text-brand hover:underline">
+                {c.forgotLink}
+              </Link>
+              .
+            </p>
+          )}
         </form>
       )}
       {step === "done" && (

@@ -12,7 +12,8 @@ export interface EnqueueInput {
     | 'EMAIL_VERIFY'
     | 'PASSWORD_RESET'
     | 'REGISTRATION_CONFIRMED'
-    | 'EXAM_INVITATION';
+    | 'EXAM_INVITATION'
+    | 'ACCOUNT_ALREADY_ACTIVE';
   destinationEmail: string;
   payload: Record<string, unknown>;
   deduplicationKey: string;
@@ -114,6 +115,15 @@ export class NotificationsService {
         return {
           subject: 'NextGen Manager: Mã kích hoạt tài khoản thi',
           text: `Mã kích hoạt tài khoản của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/kich-hoat/ để đặt mật khẩu.${sign}`,
+        };
+      case 'ACCOUNT_ALREADY_ACTIVE':
+        return {
+          subject: 'NextGen Manager: Tài khoản của bạn đã được kích hoạt',
+          text:
+            `Tài khoản thí sinh gắn với email này đã được kích hoạt trước đó, nên không cần mã kích hoạt nữa.\n\n` +
+            `Đăng nhập tại ${site}/thi/ bằng email (hoặc mã thí sinh) và mật khẩu bạn đã đặt.\n` +
+            `Quên mật khẩu? Đặt lại tại ${site}/thi/quen-mat-khau/ (mã đặt lại sẽ được gửi về email này).\n\n` +
+            `Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email.${sign}`,
         };
       case 'EMAIL_VERIFY':
         return {

@@ -7,7 +7,7 @@ import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
 import { ApiError, apiBase, checkEmailAvailable, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
-import { useRegistrationWindow } from "@/lib/registrationWindow";
+import { serverNow, useRegistrationWindow } from "@/lib/registrationWindow";
 import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
 import Icon from "./Icon";
 import PhotoUpload from "./PhotoUpload";
@@ -245,7 +245,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const [notYetOpen, setNotYetOpen] = useState(false);
   useEffect(() => {
     const check = () => {
-      const now = Date.now();
+      const now = serverNow(live);
       setClosed(now > new Date(live?.closesAt ?? deadline).getTime());
       setNotYetOpen(!!live && now < new Date(live.opensAt).getTime());
     };

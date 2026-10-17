@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { Lang } from "@/lib/i18n";
-import { useRegistrationWindow } from "@/lib/registrationWindow";
+import { serverNow, useRegistrationWindow } from "@/lib/registrationWindow";
 
 type Parts = { d: number; h: number; m: number; s: number };
 
-function diff(target: number): Parts | null {
-  const ms = target - Date.now();
+function diff(target: number, now: number): Parts | null {
+  const ms = target - now;
   if (ms <= 0) return null;
   const s = Math.floor(ms / 1000);
   return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
@@ -30,10 +30,10 @@ export default function Countdown({ lang, deadline, large = false }: { lang: Lan
   const [parts, setParts] = useState<Parts | null | undefined>(undefined);
 
   useEffect(() => {
-    setParts(diff(target));
-    const id = window.setInterval(() => setParts(diff(target)), 1000);
+    setParts(diff(target, serverNow(live)));
+    const id = window.setInterval(() => setParts(diff(target, serverNow(live))), 1000);
     return () => window.clearInterval(id);
-  }, [target]);
+  }, [target, live]);
 
   if (parts === null) {
     return (

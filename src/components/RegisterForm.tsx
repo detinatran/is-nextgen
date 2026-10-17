@@ -467,7 +467,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
   const pageCls = (i: number) => (page === i ? "grid gap-4 sm:grid-cols-2" : "hidden");
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} onInput={clearError} onChange={clearError} noValidate className="card scroll-mt-24 p-6 sm:p-8">
+    <form ref={formRef} onSubmit={onSubmit} onInput={clearError} onChange={clearError} noValidate className="card scroll-mt-24 p-4 min-[400px]:p-6 sm:p-8">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <span className="mb-6 inline-flex rounded-2xl bg-navy px-5 py-3.5"><img src={asset("/images/logo-lockup-white.png")} alt="NextGen Manager" className="h-12 w-auto" /></span>
 
@@ -524,7 +524,8 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             <FieldError msg={errors.school} />
           </label>
 
-          <div>
+          {/* Chiếm trọn hàng khi form 2 cột để 3 ô chọn đủ rộng */}
+          <div className="sm:col-span-2">
             <span className={labelCls}>{t.dob}</span>
             <DobSelect
               key={candidateCode}

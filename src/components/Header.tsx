@@ -56,11 +56,11 @@ export default function Header() {
       <div className="mx-auto max-w-[77rem] lg:px-8">
         <div
           // Luôn có nền; màn hình lớn: thanh menu nổi, cách mép trên một khoảng trắng
-          className="flex h-16 items-center justify-between gap-4 border border-t-0 border-white/10 bg-navy/95 px-4 shadow-xl shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-2xl lg:border-t"
+          className="flex h-16 items-center justify-between gap-2 border border-t-0 border-white/10 bg-navy/95 px-3 shadow-xl min-[360px]:px-4 sm:gap-4 shadow-navy-deep/20 backdrop-blur-md sm:px-6 lg:rounded-2xl lg:border-t"
         >
           <Link href={href("/#top")} className="flex min-w-0 items-center" onClick={() => setOpen(false)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset("/images/logo-nextgen.png")} alt={site.name} className="h-9 w-auto sm:h-11" />
+            <img src={asset("/images/logo-nextgen.png")} alt={site.name} className="h-8 w-auto min-[360px]:h-9 sm:h-11" />
           </Link>
 
           <nav data-tour="nav" className="hidden items-center gap-1 xl:flex" aria-label={t.main}>
@@ -78,7 +78,7 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 min-[360px]:gap-2">
             <LangSwitch />
             <Link href={href("/dang-ky/")} className="btn-primary hidden px-5 py-2 whitespace-nowrap sm:inline-flex">
               {t.register} <Icon name="arrowRight" className="h-4 w-4" />

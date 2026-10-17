@@ -77,9 +77,9 @@ export default function Hero({ lang }: { lang: Lang }) {
       <div className="container-x relative z-10 pt-6 pb-4 lg:pt-8">
         <ul className="grid grid-cols-2 gap-y-2 rounded-3xl bg-white p-3 shadow-2xl shadow-navy/15 ring-1 ring-line sm:p-4 lg:grid-cols-4">
           {heroStats.map((s, i) => (
-            <li key={s.value} className={`flex items-center gap-3 px-2 py-2 sm:px-4 ${i > 0 ? "lg:border-l lg:border-line" : ""}`}>
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange sm:h-14 sm:w-14">
-                <Icon name={s.icon} className="h-6 w-6" strokeWidth={1.9} />
+            <li key={s.value} className={`flex items-center gap-2 px-1.5 py-2 min-[360px]:gap-3 min-[360px]:px-2 sm:px-4 ${i > 0 ? "lg:border-l lg:border-line" : ""}`}>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange min-[360px]:h-12 min-[360px]:w-12 sm:h-14 sm:w-14">
+                <Icon name={s.icon} className="h-5 w-5 min-[360px]:h-6 min-[360px]:w-6" strokeWidth={1.9} />
               </span>
               <div className="min-w-0">
                 <p className="text-[0.95rem] leading-tight font-bold whitespace-nowrap text-navy sm:text-lg">{s.value}</p>

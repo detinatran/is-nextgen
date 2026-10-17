@@ -34,10 +34,10 @@ export default function DobSelect({ lang, className, invalid, onChange }: Props)
   };
   // Bỏ khoảng cách trên và thu lề ngang của kiểu ô chung để 3 ô vừa một hàng
   // Mũi tên tự vẽ, lề trong gọn để chữ "Ngày", "Tháng 12" không bị cắt khi khung hẹp
-  const cls = `${className.replace("mt-1.5", "").replace("px-4", "")} min-w-0 appearance-none bg-[length:14px] bg-[right_0.5rem_center] bg-no-repeat pr-7 pl-3`;
+  const cls = `${className.replace("mt-1.5", "").replace("px-4", "")} min-w-0 appearance-none bg-[length:12px] bg-[right_0.4rem_center] bg-no-repeat pr-6 pl-2.5 sm:bg-[length:14px] sm:bg-[right_0.6rem_center] sm:pr-8 sm:pl-3.5`;
   const arrow = { backgroundImage: CHEVRON };
   return (
-    <div role="group" className="mt-1.5 grid grid-cols-3 gap-2" aria-invalid={invalid || undefined}>
+    <div role="group" className="mt-1.5 grid grid-cols-[1fr_1.15fr_1fr] gap-1.5 sm:max-w-md sm:grid-cols-3 sm:gap-2" aria-invalid={invalid || undefined}>
       <select aria-label={t.day} data-field="dateOfBirth" value={day || ""} onChange={(e) => update(() => setD(Number(e.target.value)))} className={cls} style={arrow}>
         <option value="" disabled>
           {t.day}

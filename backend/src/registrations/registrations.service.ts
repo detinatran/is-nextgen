@@ -27,8 +27,8 @@ const GRANT_TTL_MS = 14 * 24 * 3_600_000;
 export const DRAFT_CAPABILITY_AUDIT_ACTION = 'registration.draft_capability_issued';
 export const DRAFT_CAPABILITY_TTL_MS = GRANT_TTL_MS;
 const NEXT_STEPS = [
-  'Kiểm tra hộp thư email để nhận thư xác nhận đăng ký.',
-  'Chờ Ban Tổ chức cấp tài khoản thí sinh (thông tin sẽ được gửi qua email).',
+  'Kiểm tra hộp thư email để nhận thư xác nhận đăng ký và hướng dẫn tài khoản.',
+  'Kích hoạt tài khoản thí sinh bằng email đã đăng ký, rồi đăng nhập để theo dõi hồ sơ và nộp bổ sung video (nếu chưa nộp) trước hạn.',
   'Đăng nhập và vào bài thi đúng theo lịch thi được phân.',
 ];
 
@@ -511,18 +511,10 @@ export class RegistrationsService {
       if (!dataProcessing.granted) throw AppException.validation('Data processing consent must be granted');
       if (!mediaUsage) throw AppException.validation('Media usage consent answer is required');
 
-      const readyVideoCount = await tx.media_uploads.count({
-        where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'v/' } },
-      });
+      // Video không bắt buộc khi nộp hồ sơ: thí sinh có thể nộp bổ sung sau khi đăng nhập, trước hạn nộp video.
       const binding = await tx.registration_videos.findUnique({
         where: { registration_id: registration.id },
       });
-      if (readyVideoCount !== 1 || !binding) {
-        throw AppException.conflict(
-          ErrorCodes.STATE_CONFLICT,
-          'Submission requires exactly one READY private video',
-        );
-      }
       const readyPhotoCount = await tx.media_uploads.count({
         where: { registration_id: registration.id, state: 'READY', object_key: { startsWith: 'p/' } },
       });
@@ -571,11 +563,21 @@ export class RegistrationsService {
           updated_at: submittedAt,
         },
       });
+      // Cấp tài khoản thí sinh ngay khi nộp hồ sơ (chờ kích hoạt), không đợi xếp ca thi
+      const accountReady = await this.ensureCandidateAccount(tx, candidate.id, profile.email, profile.email_normalized);
+      const videoDeadline = competition.video_closes_at ?? competition.registration_closes_at;
       await tx.notification_intents.create({
         data: {
           template_code: 'REGISTRATION_CONFIRMED',
           destination_email: profile.email,
-          payload: { candidateCode, fullName: profile.full_name },
+          payload: {
+            candidateCode,
+            fullName: profile.full_name,
+            email: profile.email,
+            account: accountReady,
+            hasVideo: !!binding,
+            videoDeadline: videoDeadline.toISOString(),
+          },
           deduplication_key: `reg-confirmed:${registration.id}`,
           candidate_id: candidate.id,
         },
@@ -600,6 +602,72 @@ export class RegistrationsService {
 
     this.logger.log(`registration submitted correlationId=${correlationId}`);
     return outcome;
+  }
+
+  /**
+   * Tài khoản STUDENT cho thí sinh (trạng thái chờ kích hoạt, chưa có mật khẩu), gắn vào candidates.user_id.
+   * Email đã thuộc một thí sinh khác (hồ sơ trùng) thì bỏ qua để Ban Tổ chức xử lý tay; không làm hỏng lượt nộp.
+   */
+  private async ensureCandidateAccount(tx: Tx, candidateId: string, email: string, emailNormalized: string): Promise<boolean> {
+    const candidate = await tx.candidates.findUniqueOrThrow({ where: { id: candidateId } });
+    if (candidate.user_id) return true;
+    const existing = await tx.users.findUnique({ where: { email_normalized: emailNormalized } });
+    if (existing) {
+      const owner = await tx.candidates.findUnique({ where: { user_id: existing.id } });
+      if (owner && owner.id !== candidateId) return false;
+    }
+    const user = existing ?? (await tx.users.create({ data: { email, email_normalized: emailNormalized, status: 'PROVISIONED' } }));
+    const student = await tx.roles.findUniqueOrThrow({ where: { code: 'STUDENT' } });
+    await tx.user_roles.upsert({
+      where: { user_id_role_id: { user_id: user.id, role_id: student.id } },
+      create: { user_id: user.id, role_id: student.id },
+      update: {},
+    });
+    await tx.candidates.update({ where: { id: candidateId }, data: { user_id: user.id } });
+    return true;
+  }
+
+  /** Hồ sơ của thí sinh đang đăng nhập: mã thí sinh, tình trạng video và hạn nộp video. */
+  async myRegistration(userId: string) {
+    const candidate = await this.prisma.candidates.findUnique({ where: { user_id: userId } });
+    if (!candidate) throw AppException.notFound('No candidate profile for this account');
+    const registration = await this.prisma.registrations.findFirst({
+      where: { candidate_id: candidate.id, state: 'SUBMITTED' },
+      orderBy: { submitted_at: 'desc' },
+    });
+    if (!registration) throw AppException.notFound('No submitted registration for this account');
+    const [profile, competition, binding] = await Promise.all([
+      this.prisma.candidate_profiles.findUniqueOrThrow({ where: { candidate_id: candidate.id } }),
+      this.prisma.competitions.findUniqueOrThrow({ where: { id: registration.competition_id } }),
+      this.prisma.registration_videos.findUnique({ where: { registration_id: registration.id } }),
+    ]);
+    const media = binding ? await this.prisma.media_objects.findUnique({ where: { id: binding.media_object_id } }) : null;
+    const videoDeadline = competition.video_closes_at ?? competition.registration_closes_at;
+    return {
+      registrationId: registration.id,
+      candidateCode: candidate.candidate_code,
+      fullName: profile.full_name,
+      email: profile.email,
+      submittedAt: registration.submitted_at?.toISOString() ?? null,
+      video: media
+        ? { submittedAt: binding!.bound_at.toISOString(), durationSeconds: Number(media.duration_seconds), sizeBytes: Number(media.size_bytes) }
+        : null,
+      videoDeadline: videoDeadline.toISOString(),
+      canUploadVideo: !binding && Date.now() <= videoDeadline.getTime(),
+    };
+  }
+
+  /** Cấp quyền tải video tạm thời (giống quyền lúc đăng ký) cho thí sinh đã đăng nhập mà chưa nộp video. */
+  async issueLateVideoCapability(userId: string, correlationId: string): Promise<{ registrationId: string; uploadToken: string; expiresAt: string }> {
+    const mine = await this.myRegistration(userId);
+    if (!mine.canUploadVideo) {
+      throw AppException.conflict(
+        mine.video ? ErrorCodes.STATE_CONFLICT : ErrorCodes.DEADLINE_PASSED,
+        mine.video ? 'Video already submitted' : 'Video submission deadline has passed',
+      );
+    }
+    const { token, expiresAt } = await this.prisma.$transaction((tx) => this.issueDraftCapability(tx, mine.registrationId, correlationId));
+    return { registrationId: mine.registrationId, uploadToken: token, expiresAt: expiresAt.toISOString() };
   }
 
   private buildSubmissionResponse(

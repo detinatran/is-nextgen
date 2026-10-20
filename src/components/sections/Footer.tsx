@@ -108,14 +108,14 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
                   <span className="block">
                     {site.address.unit.map((part) => (
                       <Fragment key={part}>
-                        <span className="whitespace-nowrap">{part}</span>{" "}
+                        <span className="min-[360px]:whitespace-nowrap">{part}</span>{" "}
                       </Fragment>
                     ))}
                   </span>
                   <span className="block text-white/70">
                     {site.address.street.map((part) => (
                       <Fragment key={part}>
-                        <span className="whitespace-nowrap">{part}</span>{" "}
+                        <span className="min-[360px]:whitespace-nowrap">{part}</span>{" "}
                       </Fragment>
                     ))}
                   </span>
@@ -216,10 +216,10 @@ export default function Footer({ lang, cta = true }: { lang: Lang; cta?: boolean
           </nav>
 
           <div className="flex flex-col gap-8 md:col-span-3 lg:col-span-1 lg:items-end">
-            <div className="flex w-max items-center gap-4 rounded-2xl bg-white/10 p-3 pr-5 ring-1 ring-white/15 backdrop-blur-sm">
+            <div className="flex max-w-full items-center gap-3 rounded-2xl bg-white/10 p-3 pr-4 ring-1 min-[360px]:w-max min-[360px]:gap-4 min-[360px]:pr-5 ring-white/15 backdrop-blur-sm">
               {/* Nền trắng và lề quanh mã để máy ảnh điện thoại quét được */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={asset("/images/qr-nextgen.png")} alt={t.qrAlt} width={112} height={112} className="h-28 w-28 rounded-lg bg-white p-1.5" />
+              <img src={asset("/images/qr-nextgen.png")} alt={t.qrAlt} width={112} height={112} className="h-24 w-24 shrink-0 rounded-lg bg-white p-1.5 min-[360px]:h-28 min-[360px]:w-28" />
               <div>
                 <p className="text-[15px] font-semibold text-white">{t.qrTitle}</p>
                 <p className="mt-0.5 text-[13px] text-white/70">nextgen.vnuis.edu.vn</p>

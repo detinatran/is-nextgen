@@ -4,6 +4,7 @@ import { PrismaService } from '../database/prisma.service';
 import { MAILER } from './mailer/mailer.tokens';
 import type { Mailer } from './mailer/mailer.interface';
 import type { Tx } from '../common/idempotency/idempotency.service';
+import { accountReady } from './templates/account-ready';
 import { registrationConfirmed } from './templates/registration-confirmed';
 
 export interface EnqueueInput {
@@ -12,7 +13,9 @@ export interface EnqueueInput {
     | 'EMAIL_VERIFY'
     | 'PASSWORD_RESET'
     | 'REGISTRATION_CONFIRMED'
-    | 'EXAM_INVITATION';
+    | 'EXAM_INVITATION'
+    | 'ACCOUNT_ALREADY_ACTIVE'
+    | 'ACCOUNT_READY';
   destinationEmail: string;
   payload: Record<string, unknown>;
   deduplicationKey: string;
@@ -115,6 +118,15 @@ export class NotificationsService {
           subject: 'NextGen Manager: Mã kích hoạt tài khoản thi',
           text: `Mã kích hoạt tài khoản của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/kich-hoat/ để đặt mật khẩu.${sign}`,
         };
+      case 'ACCOUNT_ALREADY_ACTIVE':
+        return {
+          subject: 'NextGen Manager: Tài khoản của bạn đã được kích hoạt',
+          text:
+            `Tài khoản thí sinh gắn với email này đã được kích hoạt trước đó, nên không cần mã kích hoạt nữa.\n\n` +
+            `Đăng nhập tại ${site}/thi/ bằng email (hoặc mã thí sinh) và mật khẩu bạn đã đặt.\n` +
+            `Quên mật khẩu? Đặt lại tại ${site}/thi/quen-mat-khau/ (mã đặt lại sẽ được gửi về email này).\n\n` +
+            `Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email.${sign}`,
+        };
       case 'EMAIL_VERIFY':
         return {
           subject: 'NextGen Manager: Mã xác thực',
@@ -126,7 +138,24 @@ export class NotificationsService {
           text: `Mã đặt lại mật khẩu của bạn là: ${code}\nMã có hiệu lực trong 15 phút. Nhập mã tại ${site}/thi/quen-mat-khau/.${sign}`,
         };
       case 'REGISTRATION_CONFIRMED':
-        return registrationConfirmed({ fullName: text('fullName'), candidateCode, site });
+        return registrationConfirmed({
+          fullName: text('fullName'),
+          candidateCode,
+          site,
+          email: text('email') || undefined,
+          account: payload['account'] === true,
+          hasVideo: typeof payload['hasVideo'] === 'boolean' ? (payload['hasVideo'] as boolean) : undefined,
+          videoDeadline: text('videoDeadline') || undefined,
+        });
+      case 'ACCOUNT_READY':
+        return accountReady({
+          fullName: text('fullName'),
+          candidateCode,
+          email: text('email'),
+          site,
+          hasVideo: payload['hasVideo'] === true,
+          videoDeadline: text('videoDeadline') || undefined,
+        });
       case 'EXAM_INVITATION':
         return {
           subject: 'NextGen Manager: Tài khoản và lịch thi Vòng 1',

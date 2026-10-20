@@ -274,6 +274,9 @@ export class AuthService {
       );
       return { challengeId };
     }
+    if (user && user.status === 'ACTIVE') {
+      await this.prisma.$transaction((tx) => this.challenges.notifyAlreadyActive(tx, normalized, user.id));
+    }
     return { challengeId: randomUUID() };
   }
 

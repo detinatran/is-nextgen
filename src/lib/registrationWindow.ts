@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { apiBase, competitionCode } from "./api";
 
-export type RegistrationWindow = { name: string; opensAt: string; closesAt: string; serverTime: string };
+// skewMs: giờ máy chủ trừ giờ máy người dùng, để không phụ thuộc đồng hồ máy bị đặt sai
+export type RegistrationWindow = { name: string; opensAt: string; closesAt: string; serverTime: string; skewMs: number };
 
 let cached: Promise<RegistrationWindow | null> | null = null;
 
@@ -10,9 +11,15 @@ let cached: Promise<RegistrationWindow | null> | null = null;
 export function fetchRegistrationWindow(): Promise<RegistrationWindow | null> {
   if (!apiBase) return Promise.resolve(null);
   cached ??= fetch(`${apiBase}/api/v1/competitions/${encodeURIComponent(competitionCode)}/registration-window`)
-    .then((r) => (r.ok ? (r.json() as Promise<RegistrationWindow>) : null))
+    .then((r) => (r.ok ? (r.json() as Promise<Omit<RegistrationWindow, "skewMs">>) : null))
+    .then((w) => (w ? { ...w, skewMs: new Date(w.serverTime).getTime() - Date.now() } : null))
     .catch(() => null);
   return cached;
+}
+
+/** Giờ hiện tại theo máy chủ (nếu đã tải được khung giờ), ngược lại theo máy người dùng. */
+export function serverNow(w: RegistrationWindow | null): number {
+  return Date.now() + (w?.skewMs ?? 0);
 }
 
 export function useRegistrationWindow(): RegistrationWindow | null {

@@ -136,7 +136,7 @@ export const rounds = [
     name: "Hồ sơ và kiểm tra năng lực",
     format: "Cá nhân · Trực tuyến",
     duration: "07/11/2026 · 8h00 – 23h59",
-    body: "Nộp hồ sơ trực tuyến kèm 01 video cá nhân tối đa 02 phút (chủ đề tự chọn) và 01 ảnh cá nhân. Làm bài kiểm tra trắc nghiệm khách quan về chân dung nhà quản trị trong kỷ nguyên AI, thi trực tuyến trên website cuộc thi, kết quả chấm tự động.",
+    body: "Nộp hồ sơ trực tuyến kèm 01 ảnh cá nhân và 01 video cá nhân tối đa 02 phút (chủ đề tự chọn; có thể nộp bổ sung sau khi đăng ký, trước 23h59 ngày 06/11). Làm bài kiểm tra trắc nghiệm khách quan về chân dung nhà quản trị trong kỷ nguyên AI, thi trực tuyến trên website cuộc thi, kết quả chấm tự động.",
     funnel: "Hồ sơ → 40 thí sinh",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -247,9 +247,9 @@ export const personas: { no: number; extra?: boolean; image: string; images?: st
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
 // Lộ trình đầy đủ mùa I (theo Ban Tổ chức): hiển thị ở trang chủ và trang Thể lệ
 export const timeline: TimelineItem[] = [
-  { day: "2026-10-11", kind: "register", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến, tiếp nhận hồ sơ và video" },
+  { day: "2026-10-11", kind: "register", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến; tài khoản thí sinh gửi qua email ngay khi đăng ký" },
   { day: "2026-10-22", kind: "event", time: "18h30", title: "Lễ khai mạc & Workshop", body: "Giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
-  { day: "2026-10-31", kind: "register", time: "23h59", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ và video" },
+  { day: "2026-10-31", kind: "register", time: "23h59", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ; video nộp bổ sung đến 23h59 ngày 06/11" },
   { day: "2026-11-07", kind: "round", time: "8h00 – 23h59", title: "Vòng 1 · Discover", body: "Thi trực tuyến, chấm tự động" },
   { day: "2026-11-11", kind: "result", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
   { day: "2026-11-14", kind: "event", title: "Field trip", body: "Tham quan mô hình doanh nghiệp, toạ đàm với nhà quản lý" },
@@ -355,7 +355,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "Hình thức đăng ký như thế nào?",
-    a: "Điền form đăng ký trực tuyến, nộp 01 video cá nhân tối đa 02 phút (chủ đề tự chọn) và 01 ảnh cá nhân. Cuộc thi không thu lệ phí; mỗi email chỉ đăng ký một lần.",
+    a: "Điền form đăng ký trực tuyến kèm 01 ảnh cá nhân. Video cá nhân tối đa 02 phút (chủ đề tự chọn) có thể nộp cùng form, hoặc nộp bổ sung sau khi đăng nhập tài khoản thí sinh, trước 23h59 ngày 06/11. Cuộc thi không thu lệ phí; mỗi email chỉ đăng ký một lần.",
   },
   {
     icon: "usersGroup",

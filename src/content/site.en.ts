@@ -136,7 +136,7 @@ export const rounds = [
     name: "Profile and aptitude test",
     format: "Individual · Online",
     duration: "Nov 7, 2026 · 8:00 – 23:59",
-    body: "Submit your profile online with 01 personal video of up to 02 minutes (topic of your choice) and 01 photo. Take an objective multiple-choice test on the profile of a manager in the AI era, online on the competition website, scored automatically.",
+    body: "Submit your profile online with 01 photo and 01 personal video of up to 02 minutes (topic of your choice; you may upload it after registering, by 23:59 on Nov 6). Take an objective multiple-choice test on the profile of a manager in the AI era, online on the competition website, scored automatically.",
     funnel: "Profiles → 40 contestants",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
@@ -247,9 +247,9 @@ export const personas: { no: number; extra?: boolean; image: string; images?: st
 // until: hết ngày của mốc, dùng để đánh dấu giai đoạn đang diễn ra
 // Full Season I schedule (from the Organizing Committee): shown on the home page and the rules page
 export const timeline: TimelineItem[] = [
-  { day: "2026-10-11", kind: "register", title: "Registration opens", body: "Online portal opens for profiles and videos" },
+  { day: "2026-10-11", kind: "register", title: "Registration opens", body: "Online registration opens; your candidate account is emailed as soon as you register" },
   { day: "2026-10-22", kind: "event", time: "18:30", title: "Opening & Workshop", body: "Competition launch, skills and knowledge workshop" },
-  { day: "2026-10-31", kind: "register", time: "23:59", title: "Registration closes", body: "Last day to submit profiles and videos" },
+  { day: "2026-10-31", kind: "register", time: "23:59", title: "Registration closes", body: "Last day to submit profiles; videos can be added until 23:59 on Nov 6" },
   { day: "2026-11-07", kind: "round", time: "8:00 – 23:59", title: "Round 1 · Discover", body: "Online test, auto-scored" },
   { day: "2026-11-11", kind: "result", title: "Round 1 results", body: "Contestants advancing to Round 2 announced" },
   { day: "2026-11-14", kind: "event", title: "Field trip", body: "Company visit and talks with managers" },
@@ -355,7 +355,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "fileText",
     q: "How do I register?",
-    a: "Fill in the online registration form and submit 01 personal video of up to 02 minutes (topic of your choice) and 01 photo. Participation is free of charge, and each email can register only once.",
+    a: "Fill in the online registration form with 01 photo. Your personal video of up to 02 minutes (topic of your choice) can be uploaded in the form, or later from your candidate account, by 23:59 on Nov 6. Participation is free of charge, and each email can register only once.",
   },
   {
     icon: "usersGroup",

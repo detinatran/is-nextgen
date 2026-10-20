@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiCallError, apiCall, fmtTime, idempotencyKey, type Assignment, type Availability } from "@/lib/examApi";
 import { langFromPath, localePath } from "@/lib/i18n";
 import Icon from "../Icon";
+import MyRegistration from "./MyRegistration";
 
 const field =
   "mt-1.5 w-full rounded-xl border border-line bg-mist/50 px-4 py-3 text-base text-ink outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/10";
@@ -32,18 +33,18 @@ const copy = {
     badLogin: "Mã thí sinh/email hoặc mật khẩu không đúng, hoặc tài khoản chưa kích hoạt.",
     startError: "Không vào được bài thi, vui lòng thử lại.",
     loading: "Đang tải...",
-    loginTitle: "Đăng nhập thi Vòng 1",
+    loginTitle: "Đăng nhập tài khoản thí sinh",
     identifier: "Mã thí sinh hoặc email",
     password: "Mật khẩu",
     signingIn: "Đang đăng nhập...",
     signIn: "Đăng nhập",
     activate: "Kích hoạt tài khoản",
     forgot: "Quên mật khẩu?",
-    firstTime: "Lần đầu vào thi?",
-    first1: "1. Kiểm tra email mời thi của Ban Tổ chức (mã thí sinh và ca thi).",
+    firstTime: "Lần đầu đăng nhập?",
+    first1: "1. Kiểm tra email xác nhận đăng ký của Ban Tổ chức (mã thí sinh và tài khoản).",
     first2a: "2. Vào",
-    first2b: "để đặt mật khẩu.",
-    first3: "3. Đến giờ thi, đăng nhập và bấm Vào thi.",
+    first2b: "bằng email đã đăng ký để đặt mật khẩu.",
+    first3: "3. Đăng nhập để xem hồ sơ, nộp bổ sung video (nếu chưa nộp) và vào thi đúng ca được xếp.",
     rulesTitle: "Quy định làm bài",
     schedules: "Lịch thi của bạn",
     signOut: "Đăng xuất",
@@ -82,18 +83,18 @@ const copy = {
     badLogin: "Incorrect candidate code/email or password, or the account has not been activated.",
     startError: "Could not open the exam, please try again.",
     loading: "Loading...",
-    loginTitle: "Round 1 exam sign-in",
+    loginTitle: "Candidate sign-in",
     identifier: "Candidate code or email",
     password: "Password",
     signingIn: "Signing in...",
     signIn: "Sign in",
     activate: "Activate account",
     forgot: "Forgot password?",
-    firstTime: "First time taking the exam?",
-    first1: "1. Check the exam invitation email from the Organizing Committee (candidate code and session).",
+    firstTime: "First time signing in?",
+    first1: "1. Check the registration confirmation email from the Organizing Committee (candidate code and account).",
     first2a: "2. Go to",
-    first2b: "to set your password.",
-    first3: "3. At exam time, sign in and press Start exam.",
+    first2b: "with your registered email to set your password.",
+    first3: "3. Sign in to see your application, upload your video if you have not yet, and take the exam in your assigned session.",
     rulesTitle: "Exam rules",
     schedules: "Your exam schedule",
     signOut: "Sign out",
@@ -274,6 +275,7 @@ export default function ExamPortal() {
 
   return (
     <div>
+      <MyRegistration lang={lang} />
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-bold text-navy">{t.schedules}</h2>
         <button onClick={logout} className="btn-outline px-4 py-2 text-sm">

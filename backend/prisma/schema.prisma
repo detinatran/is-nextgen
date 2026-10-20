@@ -241,6 +241,8 @@ model competitions {
   name                      String
   registration_opens_at     DateTime                  @db.Timestamptz(6)
   registration_closes_at    DateTime                  @db.Timestamptz(6)
+  /// Hạn nộp video bổ sung sau đăng ký; null thì dùng registration_closes_at
+  video_closes_at           DateTime?                 @db.Timestamptz(6)
   official_completed_at     DateTime?                 @db.Timestamptz(6)
   final_result_published_at DateTime?                 @db.Timestamptz(6)
   revision                  BigInt                    @default(1)

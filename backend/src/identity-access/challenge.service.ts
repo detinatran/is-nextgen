@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createHash, randomInt, timingSafeEqual } from 'node:crypto';
+import { createHash, randomInt, timingSafeEqual, randomUUID } from 'node:crypto';
 import type { auth_challenges } from '@prisma/client';
 import { AppException } from '../common/errors/app-error';
 import { PrismaService } from '../database/prisma.service';
@@ -81,6 +81,20 @@ export class ChallengeService {
       userId,
     });
     return { challengeId: challenge.id, expiresAt };
+  }
+
+  /**
+   * Tài khoản đã kích hoạt mà vẫn xin mã kích hoạt: không phát mã, chỉ gửi email nhắc đăng nhập
+   * hoặc đặt lại mật khẩu. Phản hồi API giữ nguyên như mọi trường hợp nên không lộ email đã có tài khoản.
+   */
+  async notifyAlreadyActive(tx: Tx, emailNormalized: string, userId: string): Promise<void> {
+    await this.notifications.enqueue(tx, {
+      templateCode: 'ACCOUNT_ALREADY_ACTIVE',
+      destinationEmail: emailNormalized,
+      payload: {},
+      deduplicationKey: `already-active:${userId}:${randomUUID()}`,
+      userId,
+    });
   }
 
   /**

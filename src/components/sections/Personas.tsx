@@ -3,7 +3,6 @@ import Art from "@/components/Art";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
 import PhotoSlideshow from "@/components/PhotoSlideshow";
-import Sponsors from "@/components/sections/Sponsors";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
@@ -115,8 +114,6 @@ export default function Personas({ lang }: { lang: Lang }) {
             </div>
           );
         })()}
-
-        <Sponsors lang={lang} />
 
         {/* Băng chuyền thẻ quote: danh sách lặp 2 lần, chạy chậm sang trái, dừng khi rê chuột */}
         <div

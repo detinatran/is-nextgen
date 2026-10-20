@@ -296,6 +296,7 @@ export const mediaPartners: { name: string; logo?: string }[] = [{ name: "Báo �
 export const partnerCompanies: { name: string; logo: string }[] = [
   { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
   { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
+  { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
 ];
 
 export const eligibility = [

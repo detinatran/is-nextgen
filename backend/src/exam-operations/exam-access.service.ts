@@ -6,7 +6,7 @@ import { ErrorCodes } from '../common/errors/error-codes';
 import { AuditService } from '../common/audit/audit.service';
 import { IdempotencyService } from '../common/idempotency/idempotency.service';
 import { PrismaService } from '../database/prisma.service';
-import { parseSelectionPolicy, selectFrozenVersions } from './domain/selection-policy';
+import { parseSelectionPolicy, selectFrozenVersions, shouldShuffle } from './domain/selection-policy';
 import type { AssignmentSummary, AttemptStartedResponse, AvailabilityResponse } from './dto/exam-access.dto';
 
 // FR-19: làm xong (đã nộp/hết giờ) thì không vào lại; BTC muốn cho thi lại thì nâng EXAM_ATTEMPT_QUOTA
@@ -203,9 +203,10 @@ export class ExamAccessService {
 
         // Full delivered form materialized from frozen relations.
         const items = parseSelectionPolicy(blueprint.selection_policy);
+        const shuffle = shouldShuffle(blueprint.selection_policy);
         const selected: { versionId: string; points: number }[] = [];
         for (const item of items) {
-          const versionIds = await selectFrozenVersions(tx, item.poolId, item.count);
+          const versionIds = await selectFrozenVersions(tx, item.poolId, item.count, shuffle);
           for (const versionId of versionIds) selected.push({ versionId, points: item.points });
         }
 
@@ -247,9 +248,9 @@ export class ExamAccessService {
             where: { question_version_id: questionVersionId },
             orderBy: { position: 'asc' },
           });
-          // FR-3.2: thứ tự đáp án xáo trộn riêng cho từng lượt thi (Fisher-Yates, CSPRNG)
+          // FR-3.2: thứ tự đáp án xáo trộn riêng cho từng lượt thi (Fisher-Yates, CSPRNG); tắt trộn thì giữ A-D gốc
           const positions = options.map((_, k) => k + 1);
-          for (let k = positions.length - 1; k > 0; k--) {
+          for (let k = positions.length - 1; shuffle && k > 0; k--) {
             const j = randomInt(0, k + 1);
             [positions[k], positions[j]] = [positions[j], positions[k]];
           }

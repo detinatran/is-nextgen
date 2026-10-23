@@ -1,5 +1,6 @@
 import { AppException } from '../../common/errors/app-error';
 import { ErrorCodes } from '../../common/errors/error-codes';
+import { Prisma } from '@prisma/client';
 import type { Tx } from '../../common/idempotency/idempotency.service';
 
 export interface SelectionItem {
@@ -11,7 +12,8 @@ export interface SelectionItem {
 /**
  * blueprint_versions.selection_policy is an owned versioned VO. The exact
  * shape used by this implementation (Round 1, single choice):
- * { "items": [ { "poolId": "<uuid>", "count": 30, "points": 1 } ] }
+ * { "items": [ { "poolId": "<uuid>", "count": 30, "points": 1 } ], "shuffle": false }
+ * shuffle (mặc định true): false thì giữ thứ tự câu theo lúc nhập đề và thứ tự đáp án A-D như bản gốc.
  * Feasibility is validated inside the Start transaction; DB relations
  * (question pools/options) remain authoritative.
  */
@@ -41,18 +43,25 @@ export function parseSelectionPolicy(policy: unknown): SelectionItem[] {
   });
 }
 
-/** Picks N frozen versions from a pool. Pool relations stay authoritative. */
+/** Có trộn câu và đáp án hay không (mặc định có). */
+export function shouldShuffle(policy: unknown): boolean {
+  return (policy as { shuffle?: unknown } | null)?.shuffle !== false;
+}
+
+/** Picks N frozen versions from a pool (random, or in import order when shuffle is off). Pool relations stay authoritative. */
 export async function selectFrozenVersions(
   tx: Tx,
   poolId: string,
   count: number,
+  shuffle = true,
 ): Promise<string[]> {
   const rows = await tx.$queryRaw<{ id: string }[]>`
     SELECT qv.id
     FROM question_pool_memberships m
     JOIN question_versions qv ON qv.id = m.question_version_id
-    WHERE m.pool_id = ${poolId}::uuid AND qv.state = 'FROZEN'
-    ORDER BY random()
+    JOIN questions q ON q.id = qv.question_id
+    WHERE m.pool_id = ${poolId}::uuid AND qv.state = 'FROZEN' AND q.archived_at IS NULL
+    ORDER BY ${shuffle ? Prisma.sql`random()` : Prisma.sql`qv.frozen_at, qv.id`}
     LIMIT ${count}`;
   if (rows.length < count) {
     throw AppException.conflict(

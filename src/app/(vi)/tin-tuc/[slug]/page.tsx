@@ -3,6 +3,8 @@ import { newsArticlesVi } from "@/content/news";
 import { pageMetadata } from "@/lib/meta";
 import NewsDetailPage from "@/views/NewsDetailPage";
 
+export const dynamicParams = false;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -19,7 +21,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = newsArticlesVi.find((a) => a.slug === slug);
   if (!article) return pageMetadata("vi", "/tin-tuc/", "Tin tức");
-  return pageMetadata("vi", `/tin-tuc/${slug}/`, article.originalTitle);
+  return pageMetadata("vi", `/tin-tuc/${slug}/`, article.title);
 }
 
 export default async function Page({ params }: PageProps) {

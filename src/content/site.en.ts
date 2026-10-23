@@ -1,3 +1,4 @@
+import { newsArticlesEn } from "./news";
 // English version of all page copy, translated from site.ts (source: "IS NextGen Manager final" organizing plan).
 // Edit text, figures and dates here; no need to touch the components.
 import type { IconName } from "@/components/Icon";
@@ -47,6 +48,7 @@ export const nav = [
   { href: "/#trai-nghiem", label: "Experience", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Timeline", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Prizes", id: "giai-thuong" },
+  { href: "/#tin-tuc", label: "News", id: "tin-tuc" },
   { href: "/the-le/", label: "Rules", id: "the-le" },
 ];
 
@@ -297,6 +299,8 @@ export const partnerCompanies: { name: string; logo: string }[] = [
   { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
   { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
   { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
+  { name: "The Mentor", logo: "/images/sponsors/the-mentor.png" },
+  { name: "Customized Learning Culture", logo: "/images/sponsors/customized-learning-culture.png" },
 ];
 
 export const eligibility = [
@@ -386,3 +390,5 @@ export const moreFaqs: { q: string; a: string }[] = [
     a: "Yes. Contestants may use smart tools to look things up, while the judges assess your own reasoning and creativity, especially in the leaderless group discussion.",
   },
 ];
+
+export const newsArticles = newsArticlesEn;

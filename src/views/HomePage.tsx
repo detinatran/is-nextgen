@@ -5,6 +5,7 @@ import Faq from "@/components/sections/Faq";
 import Hero from "@/components/sections/Hero";
 import Journey from "@/components/sections/Journey";
 import Milestones from "@/components/sections/Milestones";
+import News from "@/components/sections/News";
 import Perks from "@/components/sections/Perks";
 import Personas from "@/components/sections/Personas";
 import Prizes from "@/components/sections/Prizes";
@@ -23,10 +24,11 @@ export default function HomePage({ lang }: { lang: Lang }) {
       <About lang={lang} />
       <Theme lang={lang} />
       <Milestones lang={lang} />
-      <Personas lang={lang} />
       <Sponsors lang={lang} />
+      <Personas lang={lang} />
       <Values lang={lang} />
       <Prizes lang={lang} />
+      <News lang={lang} />
       <Faq lang={lang} />
     </SiteShell>
   );

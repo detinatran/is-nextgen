@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   basePath,
   // Deploy chung tên miền với trang chính: file JS/CSS của admin nằm dưới /admin/_next (xem deploy/admin)
   assetPrefix: process.env.ADMIN_ASSET_PREFIX || undefined,
-  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
+  output:
+    process.env.NEXT_OUTPUT === "standalone"
+      ? "standalone"
+      : process.env.NEXT_OUTPUT === "export"
+        ? "export"
+        : undefined,
   trailingSlash: true,
   images: { unoptimized: true },
   poweredByHeader: false,

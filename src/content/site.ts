@@ -1,3 +1,4 @@
+import { newsArticlesVi } from "./news";
 // Toàn bộ nội dung chữ của trang, lấy từ "Kế hoạch tổ chức cuộc thi IS NextGen Manager final".
 // Sửa chữ, số liệu, mốc thời gian tại đây; không cần đụng tới component.
 import type { IconName } from "@/components/Icon";
@@ -47,6 +48,7 @@ export const nav = [
   { href: "/#trai-nghiem", label: "Trải nghiệm", id: "trai-nghiem" },
   { href: "/#lo-trinh", label: "Lộ trình", id: "lo-trinh" },
   { href: "/#giai-thuong", label: "Giải thưởng", id: "giai-thuong" },
+  { href: "/#tin-tuc", label: "Tin tức", id: "tin-tuc" },
   { href: "/the-le/", label: "Thể lệ", id: "the-le" },
 ];
 
@@ -297,6 +299,8 @@ export const partnerCompanies: { name: string; logo: string }[] = [
   { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
   { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
   { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
+  { name: "The Mentor", logo: "/images/sponsors/the-mentor.png" },
+  { name: "Customized Learning Culture", logo: "/images/sponsors/customized-learning-culture.png" },
 ];
 
 export const eligibility = [
@@ -386,3 +390,5 @@ export const moreFaqs: { q: string; a: string }[] = [
     a: "Có. Cuộc thi cho phép thí sinh kết hợp công nghệ thông minh để tra cứu, đồng thời đánh giá khả năng suy luận và sáng tạo của chính bạn, nhất là trong vòng thảo luận nhóm không có người hướng dẫn.",
   },
 ];
+
+export const newsArticles = newsArticlesVi;

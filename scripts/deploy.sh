@@ -11,6 +11,7 @@ DEST="${DEPLOY_DEST:-/var/www/nextgen/}"
 unset NEXT_PUBLIC_BASE_PATH
 # Form đăng ký gửi tới backend trên cùng tên miền (nginx chuyển /api/ vào Docker).
 # Biến môi trường thắng file .env.local, nên bản build không dính địa chỉ localhost.
+export NEXT_OUTPUT="${NEXT_OUTPUT:-export}"
 export NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL:-https://nextgen.vnuis.edu.vn}"
 npm run build
 

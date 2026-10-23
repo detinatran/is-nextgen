@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import { getContent } from "@/content";
-import { ApiError, apiBase, checkEmailAvailable, submitRegistration, type SubmitStep } from "@/lib/api";
+import { ApiError, checkEmailAvailable, submitRegistration, type SubmitStep } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { serverNow, useRegistrationWindow } from "@/lib/registrationWindow";
 import { type FieldErrorCode, normalizeFacebook, validateProfile } from "@/lib/validate";
@@ -15,6 +15,7 @@ import VideoUpload from "./VideoUpload";
 import DobSelect from "./DobSelect";
 
 const endpoint = process.env.NEXT_PUBLIC_REGISTER_ENDPOINT || "";
+const useBackend = !endpoint;
 
 type State = "idle" | "uploading" | "sending" | "done" | "error";
 
@@ -342,7 +343,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     data.set("shareProfile", data.get("shareProfile") ? "Có" : "Không");
 
     setErrorText("");
-    if (apiBase) return submitToBackend(form, data);
+    if (useBackend) return submitToBackend(form, data);
     try {
       setState("uploading");
       setProgress(0);
@@ -438,9 +439,9 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
             <Icon name="mail" className="h-5 w-5 text-orange" /> {t.mailTitle}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-muted">{t.mailBody}</p>
-          {videoPending && apiBase && <p className="mt-2 text-sm leading-relaxed font-semibold text-orange-ink">{t.videoLater}</p>}
+          {videoPending && useBackend && <p className="mt-2 text-sm leading-relaxed font-semibold text-orange-ink">{t.videoLater}</p>}
         </div>
-        {apiBase && (
+        {useBackend && (
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href={lang === "en" ? "/en/thi/kich-hoat/" : "/thi/kich-hoat/"} className="btn-primary px-7 py-3">
               {t.activate} <Icon name="arrowRight" className="h-4 w-4" />
@@ -457,7 +458,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
     );
   }
 
-  const unavailable = closed || notYetOpen || (!endpoint && !apiBase);
+  const unavailable = closed || notYetOpen;
 
   const busy = state === "uploading" || state === "sending";
   const inputProps = (name: string) => ({
@@ -583,7 +584,7 @@ export default function RegisterForm({ lang, deadline }: { lang: Lang; deadline:
         {/* Bước 2: ảnh và video */}
         <div ref={(el) => { pages.current[1] = el; }} className={pageCls(1)}>
           <PhotoUpload lang={lang} formError={errors.photo} file={photo} onChange={(f) => { setPhoto(f); if (f) setErrors(({ photo: _p, ...rest }) => rest); }} progress={state === "uploading" && step === "photo" ? progress : null} />
-          <VideoUpload lang={lang} optional mp4Only={!!apiBase} formError={errors.video} onCheckingChange={setVideoChecking} file={video} onChange={(f) => { setVideo(f); if (f) setErrors(({ video: _v, ...rest }) => rest); }} progress={state === "uploading" && step === "video" ? progress : null} />
+          <VideoUpload lang={lang} optional mp4Only={useBackend} formError={errors.video} onCheckingChange={setVideoChecking} file={video} onChange={(f) => { setVideo(f); if (f) setErrors(({ video: _v, ...rest }) => rest); }} progress={state === "uploading" && step === "video" ? progress : null} />
         </div>
 
         {/* Bước 3: cam kết, đồng ý rồi mới nộp */}

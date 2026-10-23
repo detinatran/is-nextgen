@@ -9,11 +9,20 @@ let cached: Promise<RegistrationWindow | null> | null = null;
 
 /** Khung giờ đăng ký lấy từ hệ thống (BTC đổi hạn trong cơ sở dữ liệu là site tự theo); lỗi mạng thì trả null để dùng giá trị mặc định. */
 export function fetchRegistrationWindow(): Promise<RegistrationWindow | null> {
-  if (!apiBase) return Promise.resolve(null);
+  // Luôn truy vấn khung giờ từ hệ thống (cùng tên miền /api/v1 hoặc NEXT_PUBLIC_API_URL)
   cached ??= fetch(`${apiBase}/api/v1/competitions/${encodeURIComponent(competitionCode)}/registration-window`)
     .then((r) => (r.ok ? (r.json() as Promise<Omit<RegistrationWindow, "skewMs">>) : null))
-    .then((w) => (w ? { ...w, skewMs: new Date(w.serverTime).getTime() - Date.now() } : null))
-    .catch(() => null);
+    .then((w) => {
+      if (!w) {
+        cached = null;
+        return null;
+      }
+      return { ...w, skewMs: new Date(w.serverTime).getTime() - Date.now() };
+    })
+    .catch(() => {
+      cached = null;
+      return null;
+    });
   return cached;
 }
 

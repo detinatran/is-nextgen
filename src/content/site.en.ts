@@ -137,7 +137,6 @@ export const rounds = [
     format: "Individual · Online",
     duration: "Nov 7, 2026 · 8:00 – 23:59",
     body: "Submit your profile online with 01 photo and 01 personal video of up to 02 minutes (topic of your choice; you may upload it after registering, by 23:59 on Nov 6). Take an objective multiple-choice test on the profile of a manager in the AI era, online on the competition website, scored automatically.",
-    funnel: "Profiles → 40 contestants",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
   {
@@ -148,7 +147,6 @@ export const rounds = [
     format: "Teams · In person",
     duration: "Nov 21, 2026 · 9:00 – 16:30",
     body: "Contestants who pass Round 1 are randomly grouped into teams, solve a real case set by a company with no facilitator, present and answer the judges' questions. Judges assess against the behavioral competency framework.",
-    funnel: "40 → 16 contestants",
     gradient: "from-[#1d3f9a] to-[#2a5bd6]",
   },
   {
@@ -159,7 +157,6 @@ export const rounds = [
     format: "Team part & individual part",
     duration: "Dec 5, 2026",
     body: "The Final has two parts: a team part (scored individually) and an individual part, solving a real business problem proposed by a company.",
-    funnel: "16 contestants",
     gradient: "from-[#f2711c] to-[#e0313e]",
   },
 ];
@@ -272,7 +269,7 @@ export const prizes: { rank: string; qty: string; perks: string[]; icon: IconNam
   { rank: "Third Prize", qty: "01 contestant", perks: ["Third-best contestant of the Final pitching round", "Certificate and commemorative medal"], icon: "award" },
   { rank: "Honorable Mention", qty: "03 contestants", perks: ["The remaining contestants of the Final pitching round", "Certificate and commemorative medal"], icon: "star" },
   { rank: "Best Team", qty: "01 team", perks: ["The most outstanding team", "Certificate"], icon: "usersGroup" },
-  { rank: "Fan Favorite", qty: "01 contestant", perks: ["Voted from the videos of the 40 Round 2 contestants on the fanpage", "Certificate"], icon: "sparkles" },
+  { rank: "Fan Favorite", qty: "01 contestant", perks: ["Voted from the videos of the Round 2 contestants on the fanpage", "Certificate"], icon: "sparkles" },
 ];
 
 export const minorPrizes =
@@ -321,7 +318,7 @@ export const sideEvents = [
     tag: "NextGen Business Trip",
     title: "Company visit and experience",
     when: "Nov 14, 2026",
-    who: "Contestants who pass Round 1 (about 40), faculty advisors and the Organizing Committee",
+    who: "Contestants who pass Round 1, faculty advisors and the Organizing Committee",
     body: "Tour the workplace and learn about the company's structure, strategy, culture and operations; talk with managers about decision-making, prioritization, leading teams, internships and management trainee programs. Afterwards, each contestant writes a short note on one management decision they observed (not scored), used as reference for the individual part of the Final.",
   },
   {
@@ -335,7 +332,7 @@ export const sideEvents = [
 ];
 
 export const votingRules = [
-  "The personal videos of the 40 Round 2 contestants are posted on the official fanpage.",
+  "The personal videos of the Round 2 contestants are posted on the official fanpage.",
   "01 reaction = 01 point; 01 public share with the hashtag #NextGenManager = 02 points. Only accounts following the fanpage count, and each account can share each video once.",
   "The contestant with the highest total wins the Fan Favorite award.",
   "Fake accounts, engagement tools and buying or selling interactions are prohibited. This award is separate and does not count toward the competition score.",

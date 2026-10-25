@@ -5,8 +5,10 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-// Banner Ban Tổ chức gửi (16:9, 1920x1080, có dải logo đơn vị ở trên): hiện nguyên tỉ lệ, không cắt.
-const BANNER_VERSION = "v5";
+// Banner Ban Tổ chức gửi (1920x1080) được tách làm hai: phần ảnh (1920x917, bỏ dải logo phía trên)
+// và dải logo đơn vị (partners-strip) hiển thị thành băng riêng dưới ảnh. Điện thoại dùng bản cắt
+// tiêu đề + ba vòng thi (bỏ mã QR vì không quét được trên chính điện thoại).
+const BANNER_VERSION = "v6";
 
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
@@ -32,37 +34,58 @@ export default function Hero({ lang }: { lang: Lang }) {
   const { heroStats, site } = getContent(lang);
   const t = text[lang];
   return (
-    <section id="top" className="relative bg-linear-to-b from-[#eef4fd] to-white pt-16 lg:bg-none lg:bg-white lg:pt-[5.5rem]">
+    <section id="top" className="relative bg-linear-to-b from-[#eef4fd] to-white pt-16 lg:bg-none lg:bg-white lg:pt-0">
       <h1 className="sr-only">
         {site.name} - {site.viName}
       </h1>
 
-      {/* Banner chính: hiện nguyên khung 16:9 để không mất dải logo hai mép; dùng chung cho tiếng Việt và tiếng Anh */}
-      <div data-tour="hero" className="relative aspect-[16/9] overflow-hidden bg-navy-deep">
+      {/* Banner chính. Máy tính: thanh menu nổi phía trên phần ảnh, khung không cao quá một màn hình. */}
+      <div data-tour="hero" className="relative overflow-hidden bg-[#0d0f0c]">
+        {/* Điện thoại: bản cắt tiêu đề + ba vòng thi để chữ đủ lớn */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={asset(`/images/cover-${BANNER_VERSION}-1280.webp`)}
-          srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w`}
-          sizes="100vw"
+          src={asset(`/images/hero-${BANNER_VERSION}-m.webp`)}
           alt={t.bannerAlt}
-          width={1920}
-          height={1080}
+          width={900}
+          height={603}
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="block aspect-[900/603] w-full object-cover lg:hidden"
         />
+        <div className="relative hidden lg:block lg:h-[min(calc(100vw*917/1920),100svh)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={asset(`/images/hero-${BANNER_VERSION}-1280.webp`)}
+            srcSet={`${asset(`/images/hero-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/hero-${BANNER_VERSION}-1920.webp`)} 1920w`}
+            sizes="100vw"
+            alt={t.bannerAlt}
+            width={1920}
+            height={917}
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Mã QR và chữ "ĐĂNG KÝ NGAY!" trên ảnh bấm được, mở trang đăng ký (x 1180–1430, y 250–530 trên ảnh 1920x917) */}
+          <Link
+            href={localePath(lang, "/dang-ky/")}
+            aria-label={t.register}
+            className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
+            style={{ left: "61.5%", top: "27.3%", width: "13%", height: "30.5%" }}
+          />
+        </div>
+      </div>
 
-        {/* Mã QR trên banner bấm được, mở trang đăng ký (vùng QR: x 1198–1410, y 417–628 trên ảnh 1920x1080) */}
-        <Link
-          href={localePath(lang, "/dang-ky/")}
-          aria-label={t.register}
-          className="absolute rounded-md focus-visible:outline-2 focus-visible:outline-white"
-          style={{ left: "62.4%", top: "38.6%", width: "11%", height: "19.6%" }}
-        />
-        {/* Nút đăng ký ở khoảng trống ngay dưới chữ "ĐĂNG KÝ NGAY!" của banner (tâm x = 1303/1920) */}
-        <div className="absolute hidden -translate-x-1/2 lg:block" style={{ left: "67.9%", top: "67%" }}>
-          <Link href={localePath(lang, "/dang-ky/")} className="btn-primary cta-pulse px-5 py-2.5 text-sm whitespace-nowrap shadow-lg shadow-navy-deep/30 xl:px-7 xl:py-3 xl:text-base">
-            {t.register} <Icon name="arrowRight" className="h-4 w-4" />
-          </Link>
+      {/* Dải logo đơn vị (lấy từ banner): máy tính hiện cả dải; điện thoại chạy chậm thành băng chuyền để logo đủ lớn */}
+      <div className="border-b border-line bg-white">
+        <div className="container-x hidden py-3 lg:block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt={lang === "en" ? "Organizers, implementing units, media and professional sponsors, sponsors and partner companies" : "Đơn vị tổ chức, thực hiện, bảo trợ chuyên môn, bảo trợ truyền thông, nhà tài trợ và doanh nghiệp đồng hành"} width={1876} height={140} className="mx-auto block h-auto w-full max-w-[1400px]" />
+        </div>
+        <div className="marquee py-2 lg:hidden" aria-hidden>
+          <div className="marquee-track" style={{ ["--marquee-duration" as string]: "40s" }}>
+            {[0, 1].map((k) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={k} src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt="" width={1876} height={140} className="block h-16 w-auto max-w-none pr-8" />
+            ))}
+          </div>
         </div>
       </div>
 

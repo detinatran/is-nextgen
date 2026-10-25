@@ -8,7 +8,7 @@ import { asset } from "@/lib/paths";
 // Banner Ban Tổ chức gửi (1920x1080) được tách làm hai: phần ảnh (1920x917, bỏ dải logo phía trên)
 // và dải logo đơn vị (partners-strip) hiển thị thành băng riêng dưới ảnh. Điện thoại dùng bản cắt
 // tiêu đề + ba vòng thi (bỏ mã QR vì không quét được trên chính điện thoại).
-const BANNER_VERSION = "v6";
+const BANNER_VERSION = "v7";
 
 const text = {
   vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
@@ -55,7 +55,7 @@ export default function Hero({ lang }: { lang: Lang }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={asset(`/images/hero-${BANNER_VERSION}-1280.webp`)}
-            srcSet={`${asset(`/images/hero-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/hero-${BANNER_VERSION}-1920.webp`)} 1920w`}
+            srcSet={`${asset(`/images/hero-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/hero-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/hero-${BANNER_VERSION}-2560.webp`)} 2560w`}
             sizes="100vw"
             alt={t.bannerAlt}
             width={1920}
@@ -77,13 +77,13 @@ export default function Hero({ lang }: { lang: Lang }) {
       <div className="border-b border-line bg-white">
         <div className="container-x hidden py-3 lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt={lang === "en" ? "Organizers, implementing units, media and professional sponsors, sponsors and partner companies" : "Đơn vị tổ chức, thực hiện, bảo trợ chuyên môn, bảo trợ truyền thông, nhà tài trợ và doanh nghiệp đồng hành"} width={1876} height={140} className="mx-auto block h-auto w-full max-w-[1400px]" />
+          <img src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt={lang === "en" ? "Organizers, implementing units, media and professional sponsors, sponsors and partner companies" : "Đơn vị tổ chức, thực hiện, bảo trợ chuyên môn, bảo trợ truyền thông, nhà tài trợ và doanh nghiệp đồng hành"} width={1920} height={163} className="mx-auto block h-auto w-full max-w-[1400px]" />
         </div>
         <div className="marquee py-2 lg:hidden" aria-hidden>
           <div className="marquee-track" style={{ ["--marquee-duration" as string]: "40s" }}>
             {[0, 1].map((k) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={k} src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt="" width={1876} height={140} className="block h-16 w-auto max-w-none pr-8" />
+              <img key={k} src={asset(`/images/partners-strip-${BANNER_VERSION}.webp`)} alt="" width={1920} height={163} className="block h-16 w-auto max-w-none pr-8" />
             ))}
           </div>
         </div>

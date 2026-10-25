@@ -155,7 +155,6 @@ export default function RulesPage({ lang }: { lang: Lang }) {
                       <div className="mt-3 flex flex-wrap justify-center gap-1.5 text-[12px] font-semibold">
                         <span className="rounded-full border border-current/30 bg-white/70 px-2.5 py-0.5 text-navy">{r.format}</span>
                         <span className="rounded-full border border-current/30 bg-white/70 px-2.5 py-0.5 text-navy">{r.duration}</span>
-                        <span className={`rounded-full bg-white/70 px-2.5 py-0.5 ${tone.ink}`}>{r.funnel}</span>
                       </div>
                     </div>
                     <p className="mt-4 text-[14px] leading-relaxed text-muted">{r.body}</p>

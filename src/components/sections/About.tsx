@@ -58,7 +58,7 @@ export default function About({ lang }: { lang: Lang }) {
                 </div>
                 <h3 className="mt-3 text-[17px] font-bold text-navy transition group-hover:text-orange-ink">{r.step}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{r.short}</p>
-                <p className="mt-1 text-[13px] font-medium text-navy/70">{r.funnel}</p>
+                <p className="mt-1 text-[13px] font-medium text-navy/70">{r.format}</p>
               </Link>
             </li>
           ))}

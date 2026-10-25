@@ -139,7 +139,6 @@ export const rounds = [
     format: "Cá nhân · Trực tuyến",
     duration: "07/11/2026 · 8h00 – 23h59",
     body: "Nộp hồ sơ trực tuyến kèm 01 ảnh cá nhân và 01 video cá nhân tối đa 02 phút (chủ đề tự chọn; có thể nộp bổ sung sau khi đăng ký, trước 23h59 ngày 06/11). Làm bài kiểm tra trắc nghiệm khách quan về chân dung nhà quản trị trong kỷ nguyên AI, thi trực tuyến trên website cuộc thi, kết quả chấm tự động.",
-    funnel: "Hồ sơ → 40 thí sinh",
     gradient: "from-[#2f6bf0] to-[#1d47c8]",
   },
   {
@@ -150,7 +149,6 @@ export const rounds = [
     format: "Theo đội · Trực tiếp",
     duration: "21/11/2026 · 9h00 – 16h30",
     body: "Thí sinh vượt qua Vòng 1 được xếp ngẫu nhiên thành các đội, xử lý tình huống thực tiễn theo đề bài của doanh nghiệp, làm việc nhóm không có người điều phối, thuyết trình và trả lời câu hỏi của Ban Giám khảo. Giám khảo đánh giá theo khung năng lực hành vi.",
-    funnel: "40 → 16 thí sinh",
     gradient: "from-[#1d3f9a] to-[#2a5bd6]",
   },
   {
@@ -161,7 +159,6 @@ export const rounds = [
     format: "Thi nhóm & thi cá nhân",
     duration: "05/12/2026",
     body: "Vòng Chung kết gồm hai phần: phần thi nhóm (chấm điểm cá nhân) và phần thi cá nhân xử lý tình huống, giải quyết bài toán thực tiễn do doanh nghiệp đề xuất.",
-    funnel: "16 thí sinh",
     gradient: "from-[#f2711c] to-[#e0313e]",
   },
 ];
@@ -274,7 +271,7 @@ export const prizes: { rank: string; qty: string; perks: string[]; icon: IconNam
   { rank: "Giải Ba", qty: "01 thí sinh", perks: ["Thí sinh xuất sắc ba vòng pitching Chung kết", "Giấy chứng nhận và kỷ niệm chương"], icon: "award" },
   { rank: "Giải Khuyến khích", qty: "03 thí sinh", perks: ["Các thí sinh còn lại của vòng pitching Chung kết", "Giấy chứng nhận và kỷ niệm chương"], icon: "star" },
   { rank: "Nhóm xuất sắc nhất", qty: "01 nhóm", perks: ["Nhóm thi xuất sắc nhất", "Giấy chứng nhận"], icon: "usersGroup" },
-  { rank: "Cá nhân được yêu thích nhất", qty: "01 thí sinh", perks: ["Bình chọn từ video của 40 thí sinh đăng trên fanpage", "Giấy chứng nhận"], icon: "sparkles" },
+  { rank: "Cá nhân được yêu thích nhất", qty: "01 thí sinh", perks: ["Bình chọn từ video của các thí sinh vào Vòng 2 đăng trên fanpage", "Giấy chứng nhận"], icon: "sparkles" },
 ];
 
 export const minorPrizes: string =
@@ -334,7 +331,7 @@ export const sideEvents = [
     tag: "NextGen Business Trip",
     title: "Tham quan và trải nghiệm doanh nghiệp",
     when: "14/11/2026",
-    who: "Thí sinh vượt qua Vòng 1 (dự kiến 40 thí sinh), giảng viên cố vấn, Ban Tổ chức",
+    who: "Thí sinh vượt qua Vòng 1, giảng viên cố vấn, Ban Tổ chức",
     body: "Tham quan không gian làm việc, tìm hiểu mô hình tổ chức, chiến lược, văn hoá và quy trình vận hành; trao đổi với đội ngũ quản lý về ra quyết định, sắp xếp ưu tiên, điều hành đội nhóm và các cơ hội thực tập, chương trình quản trị viên tập sự. Sau chuyến đi, mỗi thí sinh viết bản ghi nhận ngắn về một quyết định quản trị quan sát được (không tính điểm), làm tư liệu tham khảo cho phần thi cá nhân tại Chung kết.",
   },
   {
@@ -348,7 +345,7 @@ export const sideEvents = [
 ];
 
 export const votingRules = [
-  "Video cá nhân của 40 thí sinh vào Vòng 2 được đăng trên fanpage chính thức của cuộc thi.",
+  "Video cá nhân của các thí sinh vào Vòng 2 được đăng trên fanpage chính thức của cuộc thi.",
   "01 reaction = 01 điểm; 01 lượt chia sẻ công khai kèm hashtag #NextGenManager = 02 điểm. Chỉ tính tài khoản đã theo dõi fanpage, mỗi tài khoản chia sẻ một lần cho mỗi video.",
   "Thí sinh có tổng điểm tương tác cao nhất nhận giải Cá nhân được yêu thích nhất.",
   "Nghiêm cấm tài khoản ảo, công cụ tăng tương tác hoặc mua bán lượt tương tác. Giải độc lập, không tính vào điểm thi.",

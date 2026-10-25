@@ -301,6 +301,9 @@ export const partnerCompanies: { name: string; logo: string }[] = [
   { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
   { name: "The Mentor", logo: "/images/sponsors/the-mentor.png" },
   { name: "Customized Learning Culture", logo: "/images/sponsors/customized-learning-culture.png" },
+  { name: "Vạn Tam", logo: "/images/sponsors/van-tam.png" },
+  { name: "TopCV", logo: "/images/sponsors/topcv.png" },
+  { name: "Nhà hàng Hương Việt", logo: "/images/sponsors/huong-viet.png" },
 ];
 
 export const eligibility = [

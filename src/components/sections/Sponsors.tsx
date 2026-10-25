@@ -40,6 +40,15 @@ function getLogoClass(logo: string) {
   if (logo.includes("customized-learning-culture")) {
     return "h-14 w-auto max-w-[155px] object-contain sm:h-[68px] sm:max-w-[175px]";
   }
+  if (logo.includes("topcv")) {
+    return "h-11 w-auto max-w-[170px] object-contain sm:h-12 sm:max-w-[190px]";
+  }
+  if (logo.includes("van-tam")) {
+    return "h-16 w-auto max-w-[125px] object-contain sm:h-20 sm:max-w-[145px]";
+  }
+  if (logo.includes("huong-viet")) {
+    return "h-16 w-auto max-w-[125px] object-contain sm:h-20 sm:max-w-[145px]";
+  }
   return "h-14 w-auto max-w-[165px] object-contain";
 }
 
@@ -50,7 +59,7 @@ export default function Sponsors({ lang }: { lang: Lang }) {
 
   const fallbackDuration = Number(
     (
-      ((partnerCompanies?.length || 5) * DEFAULT_SLOT_WIDTH_PX) /
+      ((partnerCompanies?.length || 8) * DEFAULT_SLOT_WIDTH_PX) /
       MARQUEE_SPEED_PX_PER_SEC
     ).toFixed(2),
   );

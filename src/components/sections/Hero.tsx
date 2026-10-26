@@ -5,8 +5,8 @@ import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-// Banner chính (16:9) duy nhất, thể hiện trọn vẹn poster gồm dải logo đơn vị gốc và đồ hoạ cuộc thi.
-const BANNER_VERSION = "v9";
+// Banner chính (16:9) duy nhất thay từ poster.jpg nguyên gốc không chỉnh sửa.
+const BANNER_VERSION = "v10";
 
 const text = {
   vi: {

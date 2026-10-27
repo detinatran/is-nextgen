@@ -181,6 +181,19 @@ export default function NewsDetailPage({ slug, lang }: Props) {
                       </h2>
                     );
                   }
+                  if (
+                    sec.type === "question" ||
+                    (sec.content && sec.content.startsWith("- "))
+                  ) {
+                    return (
+                      <p
+                        key={idx}
+                        className="pt-2 font-bold italic text-navy leading-relaxed sm:text-[17.5px]"
+                      >
+                        {sec.content}
+                      </p>
+                    );
+                  }
                   if (sec.type === "quote") {
                     return (
                       <blockquote

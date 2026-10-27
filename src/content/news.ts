@@ -1,5 +1,5 @@
 export interface NewsSectionContent {
-  type: "paragraph" | "heading" | "image" | "quote";
+  type: "paragraph" | "heading" | "image" | "quote" | "question";
   content?: string;
   caption?: string;
   src?: string;
@@ -84,9 +84,199 @@ const sharedMeta: Record<string, SharedArticleMeta> = {
     thumbnail: "/images/news/ttxvn.jpg",
     author: "Việt Hà",
   },
+  vtcnewsInterview: {
+    id: "vtcnews-interview",
+    slug: "vtcnews-hieu-truong-dai-hoc-ly-giai-vi-sao-sinh-vien-hoc-gioi-van-lung-tung-khi-di-lam",
+    originalTitle:
+      "Hiệu trưởng đại học lý giải vì sao sinh viên học giỏi vẫn lúng túng khi đi làm",
+    originalUrl:
+      "https://vtcnews.vn/hieu-truong-dai-hoc-ly-giai-vi-sao-sinh-vien-hoc-gioi-van-lung-tung-khi-di-lam-ar1046727.html",
+    publishedAt: "2026-10-27T09:37:15+07:00",
+    publishedDateLabel: "27/10/2026 · 09:37",
+    thumbnail: "/images/news/vtc-interview.webp",
+    author: "Lệ Thu",
+  },
 };
 
 export const newsArticlesVi: NewsArticleItem[] = [
+  {
+    ...sharedMeta.vtcnewsInterview,
+    title: sharedMeta.vtcnewsInterview.originalTitle,
+    source: "Báo điện tử VTC News",
+    sourceRole: "Bảo trợ truyền thông",
+    summary:
+      "PGS.TS Nguyễn Anh Tuấn - Hiệu trưởng Trường Quốc tế (ĐHQGHN) lý giải khoảng trống giữa kiến thức giảng đường và thực tế doanh nghiệp, đồng thời chia sẻ về kỳ vọng dài hạn của cuộc thi NextGen Manager 2026.",
+    thumbnailAlt:
+      "PGS.TS Nguyễn Anh Tuấn, Hiệu trưởng Trường Quốc tế, Đại học Quốc gia Hà Nội phát biểu tại lễ phát động cuộc thi NextGen Manager 2026.",
+    hasFullText: true,
+    sapo:
+      "Sinh viên học giỏi vẫn có thể lúng túng khi đi làm, bởi kiến thức trên giảng đường chưa đủ giúp họ giải quyết những tình huống phức tạp trong thực tế.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Trao đổi với PV Báo điện tử VTC News dịp Trường Quốc tế phát động cuộc thi Nhà Quản trị thế hệ mới (NextGen Manager 2026) mới đây, PGS.TS Nguyễn Anh Tuấn - Hiệu trưởng Trường Quốc tế, Đại học Quốc gia Hà Nội cho rằng, khoảng trống đáng chú ý trong đào tạo đại học hiện nay là việc đánh giá khả năng ra quyết định của sinh viên trong những tình huống thực tế.",
+      },
+      {
+        type: "question",
+        content:
+          "- Tình trạng “lạm phát” bằng giỏi, xuất sắc ở nhiều trường đại học đang là vấn đề khiến nhiều người lo ngại. Theo ông, làm thế nào để giải quyết thực trạng này?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ở Trường Quốc tế, tỷ lệ tốt nghiệp bằng giỏi và xuất sắc không cao. Tỷ lệ tốt nghiệp của cử nhân liên quan đến công tác đánh giá của trường đại học.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-1.webp",
+        caption:
+          "Sinh viên dự Lễ trao bằng tại Trường Quốc tế - Đại học Quốc gia Hà Nội năm 2023. (Ảnh minh họa: VNUIS)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tôi cho rằng chúng ta cần nhìn nhận lại phương pháp đánh giá năng lực học tập của sinh viên. Những phương pháp đánh giá truyền thống (qua các bài thi, thuyết trình) có thể chưa phản ánh đầy đủ năng lực thực sự của người học. Vì vậy, các trường cần xây dựng những công cụ đánh giá mới chú trọng đánh giá toàn diện quá trình học tập và các kỹ năng của sinh viên.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Các cơ sở giáo dục đại học đều mong muốn đánh giá sinh viên một cách tốt nhất. Bộ Giáo dục và Đào tạo cũng đang thúc đẩy quá trình đổi mới này. Tôi kỳ vọng việc đổi mới phương pháp đánh giá tại các trường đại học sẽ được triển khai sâu rộng và toàn diện hơn năng lực sinh viên, từ đó đáp ứng tốt hơn yêu cầu của xã hội.",
+      },
+      {
+        type: "question",
+        content:
+          "- Đánh giá của nhà trường là một chuyện, trong khi thị trường lao động, doanh nghiệp và nhà tuyển dụng lại có những tiêu chí, yêu cầu riêng đối với sinh viên tốt nghiệp. Theo ông, làm thế nào để kết quả đánh giá của các trường đại học tiệm cận với đánh giá thực tế của doanh nghiệp?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Hiện một số cơ sở giáo dục có “độ trễ” trong việc điều tra khảo sát các kỹ năng mà thị trường cần.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tôi cho rằng, việc xây dựng và đổi mới chương trình đào tạo phải dựa trên quá trình điều tra, khảo sát thực tế về nhu cầu của thị trường.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bên cạnh đó, mỗi doanh nghiệp có thể có những yêu cầu cụ thể khác nhau. Vì vậy, nhà trường không thể chỉ đào tạo để đáp ứng nhu cầu riêng của từng doanh nghiệp, mà cần hướng tới những năng lực và kỹ năng có tính nền tảng, phù hợp với yêu cầu chung của thị trường lao động.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Trường Quốc tế cũng như các cơ sở đào tạo khác đang đẩy mạnh việc điều tra, khảo sát nhu cầu thực sự của thị trường. Quá trình khảo sát càng khách quan, phạm vi càng rộng thì càng giúp nhà trường xây dựng chương trình đào tạo phù hợp. Khi đó, khoảng cách giữa nhà trường và thị trường lao động sẽ từng bước được thu hẹp.",
+      },
+      {
+        type: "question",
+        content:
+          "- Nhiều sinh viên tốt nghiệp với kết quả học tập tốt nhưng gặp khó khăn khi bước vào môi trường doanh nghiệp. Theo ông, đâu là khoảng cách lớn nhất giữa kiến thức giảng đường và yêu cầu thị trường cần?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Sinh viên giỏi có thể giải nhanh một đề bài rõ ràng. Nhưng để giải quyết tốt các bài toán công việc thực tế ở doanh nghiệp phải tự xác định đâu là vấn đề cốt lõi giữa nhiều sự việc chưa được sắp xếp. Từ đó xuất hiện ba khó khăn cụ thể.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-2.webp",
+        caption:
+          "PGS.TS Nguyễn Anh Tuấn - Hiệu trưởng Trường Quốc tế, Đại học Quốc gia Hà Nội.",
+      },
+      {
+        type: "quote",
+        content:
+          "Sinh viên giỏi có thể giải nhanh một đề bài rõ ràng. Còn để giải quyết tốt các bài toán công việc thực tế ở doanh nghiệp phải tự xác định đâu là vấn đề cốt lõi giữa nhiều sự việc chưa được sắp xếp.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thứ nhất, ra quyết định khi thông tin chưa đầy đủ. Bài tập trên lớp thường cung cấp tương đối đầy đủ dữ kiện, trong khi công việc thực tế hiếm khi như vậy.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thứ hai, sắp xếp thứ tự ưu tiên khi nhiều việc quan trọng và cấp bách xảy ra cùng lúc. Người quản lý phải biết phân bổ nguồn lực, xác định việc cần làm trước và chấp nhận rằng không phải nhiệm vụ nào cũng có thể được giải quyết đồng thời.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thứ ba, thuyết phục người khác khi chưa có quyền hạn chính thức. Làm việc với bạn cùng lớp khác với việc tạo ảnh hưởng đối với những người không có nghĩa vụ phải nghe theo mình.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Những năng lực này không thể chỉ hình thành qua việc tiếp thu kiến thức. Sinh viên cần được đặt vào tình huống phải lựa chọn, phối hợp, giải quyết bất đồng và chịu trách nhiệm với phương án đã đưa ra.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "“NextGen Manager” 2026 tạo cơ hội để sinh viên trong nước và quốc tế cùng trao đổi, vận dụng kiến thức vào thực tiễn, qua đó chuẩn bị tốt hơn cho môi trường làm việc sau khi tốt nghiệp.",
+      },
+      {
+        type: "question",
+        content:
+          "- Cuộc thi NextGen Manager 2026, chủ đề “Chân dung nhà quản trị trong kỷ nguyên AI” hướng tới giải quyết khoảng trống nào trong đào tạo đại học hiện nay?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Chúng tôi tổ chức cuộc thi không phải vì AI đang là phổ biến và thịnh hành hiện nay, mà vì AI làm lộ rõ một khoảng trống vốn đã tồn tại.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Khoảng trống trong đào tạo nằm ở chỗ trường đại học có thể đo lường kiến thức tương đối tốt, nhưng đánh giá năng lực ra quyết định trong những tình huống thực tế phức tạp khó khăn hơn nhiều.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-3.webp",
+        caption:
+          "Sinh viên Trường Quốc tế tham dự lễ khai mạc cuộc thi “NextGen Manager” 2026.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Trường Quốc tế có hơn 20.000 sinh viên đã tốt nghiệp (sau hơn 24 năm), tỷ lệ việc làm đúng chuyên ngành sau một năm trên 93%. Đây là kết quả đáng ghi nhận, nhưng tỷ lệ có việc làm chưa phản ánh đầy đủ sinh viên phát triển sự nghiệp đến đâu trong những năm tiếp theo.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Cuộc thi là cách để chúng tôi giúp sinh viên không chỉ tìm được công việc phù hợp mà còn nhận diện những năng lực cần phát triển để tiến xa hơn trong tương lai.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thí sinh được đánh giá theo 6 năng lực: tư duy phân tích và ra quyết định; tư duy hệ thống và sắp xếp ưu tiên; lãnh đạo và tạo ảnh hưởng; hợp tác và giao tiếp; đạo đức và trách nhiệm; trình bày và ngôn ngữ. Mỗi nhóm được mô tả qua năm mức hành vi có thể quan sát.",
+      },
+      {
+        type: "question",
+        content:
+          "- Trường Quốc tế xác định NextGen Manager là cuộc thi thường niên. Nhà trường sẽ đo lường hiệu quả dài hạn của cuộc thi ra sao?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Để đo lường hiệu quả dài hạn, chúng tôi dự kiến theo dõi bốn chỉ số: số trường đại học, học viện có sinh viên tham gia mỗi mùa; tỷ lệ thí sinh nhận được cơ hội thực tập hoặc việc làm từ doanh nghiệp đồng hành trong vòng 12 tháng; mức thay đổi điểm ở từng nhóm năng lực giữa các mùa trên cùng một thang đánh giá; và số chuẩn đầu ra hoặc học phần của Khoa được điều chỉnh có dẫn chiếu dữ liệu cuộc thi.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Trong đó, chỉ số cuối cùng là chỉ số khó nhất, nhưng cũng phản ánh rõ nhất liệu cuộc thi có tạo ra tác động thực chất đối với hoạt động đào tạo hay không.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Chúng tôi không kỳ vọng một cuộc thi có thể giải quyết mọi vấn đề của giáo dục đại học. Điều quan trọng là duy trì được hoạt động đánh giá có căn cứ, giúp sinh viên hiểu mình đang ở đâu, doanh nghiệp nhận diện được năng lực cần thiết và nhà trường có thêm dữ liệu để cải thiện chương trình đào tạo.",
+      },
+      {
+        type: "quote",
+        content:
+          "Cuộc thi NextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế - Đại học Quốc gia Hà Nội tổ chức, dành cho sinh viên các trường đại học, học viện trên toàn quốc. Thời hạn đăng ký đến 23h59 ngày 31/10/2026 tại nextgen.vnuis.edu.vn. Cuộc thi gồm 3 vòng: Discover (7/11), Decide (21/11) và Deliver (5/12/2026).",
+      },
+    ],
+  },
   {
     ...sharedMeta.giaoduc,
     title: sharedMeta.giaoduc.originalTitle,
@@ -649,6 +839,185 @@ export const newsArticlesVi: NewsArticleItem[] = [
 ];
 
 export const newsArticlesEn: NewsArticleItem[] = [
+  {
+    ...sharedMeta.vtcnewsInterview,
+    title:
+      "University Rector explains why top students struggle in the workplace",
+    source: "VTC News Electronic Newspaper",
+    sourceRole: "Media Sponsor",
+    summary:
+      "Assoc. Prof. Dr. Nguyễn Anh Tuấn – Rector of VNU International School analyzes the gap between classroom excellence and workplace realities, highlighting the long-term impact of NextGen Manager 2026.",
+    thumbnailAlt:
+      "Assoc. Prof. Dr. Nguyễn Anh Tuấn – Rector of VNU International School, Vietnam National University, Hanoi.",
+    hasFullText: true,
+    sapo:
+      "Top-performing university graduates may still stumble in the workplace because classroom knowledge alone is insufficient to navigate complex real-world situations.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Speaking with reporters from VTC News Electronic Newspaper on the occasion of the recent launch of the NextGen Manager 2026 competition at VNU International School, Assoc. Prof. Dr. Nguyễn Anh Tuấn – Rector of VNU International School, Vietnam National University, Hanoi noted that a notable gap in contemporary higher education is evaluating students' decision-making capabilities in practical scenarios.",
+      },
+      {
+        type: "question",
+        content:
+          "- The “inflation” of excellent and high-distinction degrees at many universities is causing widespread public concern. In your opinion, how should this issue be addressed?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "At VNU International School, the proportion of graduates earning distinction or high-distinction honors is not high. Graduation honor rates are directly tied to an institution's evaluation standards and methods.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-1.webp",
+        caption:
+          "Students attending the Graduation Ceremony at VNU International School – Vietnam National University, Hanoi in 2023. (Illustration photo: VNUIS)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "I believe we need to rethink how student learning competency is assessed. Traditional assessment methods (through exams and presentations) may not fully capture learners' genuine capabilities. Therefore, universities must develop new evaluation tools that assess the learning process and students' skills holistically.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Higher education institutions all aspire to assess students in the best possible way, and the Ministry of Education and Training is actively driving this innovation. I expect that modernizing evaluation methods across universities will be implemented more comprehensively and thoroughly, thereby better satisfying societal demands.",
+      },
+      {
+        type: "question",
+        content:
+          "- University assessments are one matter, whereas the labor market, enterprises, and recruiters have their own distinct criteria for graduates. How can university assessments converge with real-world corporate expectations?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Currently, some higher education institutions experience a “time lag” in surveying and identifying the skills that the market truly demands.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In my view, designing and reforming curriculum must be grounded in rigorous, empirical surveys of market needs.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Furthermore, each enterprise may have distinct, specialized requirements. Therefore, universities cannot train solely to satisfy the bespoke needs of individual businesses, but must cultivate foundational competencies and skills aligned with general labor market standards.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "VNU International School, like other institutions, is actively expanding surveys of actual market needs. The more objective and extensive the surveying process, the better universities can design appropriate training programs. Consequently, the gap between universities and the labor market will gradually narrow.",
+      },
+      {
+        type: "question",
+        content:
+          "- Many graduates with stellar academic records face obstacles upon entering corporate environments. What do you consider the largest divide between lecture hall knowledge and market demands?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A top student can swiftly solve a clearly defined assignment. However, solving real-world business challenges requires independently identifying the core problem amidst disorganized circumstances. From this, three specific challenges emerge.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-2.webp",
+        caption:
+          "Assoc. Prof. Dr. Nguyễn Anh Tuấn – Rector of VNU International School, Vietnam National University, Hanoi.",
+      },
+      {
+        type: "quote",
+        content:
+          "A top student can swiftly solve a clearly defined assignment. However, solving real-world business challenges requires independently identifying the core problem amidst disorganized circumstances.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "First, making decisions with incomplete information. Classroom exercises generally provide comprehensive data points, whereas real-world work rarely does.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Second, prioritizing when multiple urgent and crucial matters arise simultaneously. A manager must allocate resources, identify what must be tackled first, and accept that not every task can be solved concurrently.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Third, persuading others without holding official formal authority. Collaborating with classmates is fundamentally different from influencing individuals who have no contractual obligation to follow you.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These capabilities cannot be cultivated merely by absorbing theoretical knowledge. Students must be immersed in scenarios where they must make choices, collaborate, resolve disagreements, and take responsibility for their chosen solutions.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "“NextGen Manager” 2026 provides an avenue for domestic and international students to exchange perspectives, apply knowledge to practice, and thereby prepare thoroughly for the post-graduation professional environment.",
+      },
+      {
+        type: "question",
+        content:
+          "- Which specific gap in current higher education does the NextGen Manager 2026 competition, themed “Portrait of a Manager in the AI Era”, aim to address?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "We organize this competition not simply because AI is popular and trending today, but because AI exposes a gap that has long existed.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The educational gap lies in the fact that universities can measure theoretical knowledge relatively well, but assessing decision-making competencies in intricate real-world situations is far more challenging.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vtc-interview-3.webp",
+        caption:
+          "VNU International School students attending the opening ceremony of the NextGen Manager 2026 competition.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "VNU International School has over 20,000 alumni across more than 24 years, with a relevant employment rate exceeding 93% within one year of graduation. While this is a commendable achievement, employment rates alone do not fully reflect how far graduates advance in their careers over subsequent years.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The competition is our vehicle to help students not only find suitable jobs but also recognize the competencies they must cultivate to progress further in the future.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Contestants are evaluated across six core competency groups: Analytical Thinking & Decision-Making; Systems Thinking & Prioritization; Leadership & Influence; Collaboration & Communication; Ethics & Responsibility; and Presentation & Language. Each group is described across five observable behavioral levels.",
+      },
+      {
+        type: "question",
+        content:
+          "- VNU International School positions NextGen Manager as an annual competition. How will the School measure its long-term impact?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "To evaluate long-term effectiveness, we plan to monitor four key metrics: the number of universities and academies with participating students each season; the proportion of finalists securing internship or employment offers from partner enterprises within 12 months; score progression in each competency group across seasons on the same assessment scale; and the number of Faculty learning outcomes or courses updated using competition assessment data.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Among these, the final metric is the most challenging, yet it most authentically demonstrates whether the competition generates tangible educational impact on academic curriculum.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "We do not expect a single competition to resolve all challenges facing higher education. What matters most is maintaining evidence-based assessment that helps students understand where they stand, helps businesses recognize necessary competencies, and provides universities with data to continuously enhance training programs.",
+      },
+      {
+        type: "quote",
+        content:
+          "The NextGen Manager 2026 competition is organized by the Faculty of Economics and Management at VNU International School – Vietnam National University, Hanoi, open to university and academy students nationwide. Registration closes at 23:59 on October 31, 2026 at nextgen.vnuis.edu.vn. The competition comprises three rounds: Discover (Nov 7), Decide (Nov 21), and Deliver (Dec 5, 2026).",
+      },
+    ],
+  },
   {
     ...sharedMeta.giaoduc,
     title:

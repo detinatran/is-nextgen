@@ -15,8 +15,18 @@ type Props = {
   formError?: string;
 };
 
-// Backend chỉ nhận 3 định dạng này (kiểm tra bằng magic bytes)
-const PHOTO_TYPES = ["image/jpeg", "image/png"];
+// Backend kiểm tra ảnh bằng magic bytes (JPEG: FF D8 FF, PNG: 89 50 4E 47 0D 0A 1A 0A)
+const PHOTO_ACCEPT = "image/jpeg,image/png,.jpg,.jpeg,.png";
+
+async function isJpegOrPng(file: Blob): Promise<boolean> {
+  if (file.size < 8) return false;
+  const b = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+  const isJpeg = b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+  const isPng =
+    b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
+    b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a;
+  return isJpeg || isPng;
+}
 
 const text = {
   vi: {
@@ -45,6 +55,7 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
   const t = text[lang];
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
+  const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,11 +65,11 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  function pick(f: File | undefined) {
+  async function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    if (!PHOTO_TYPES.includes(f.type)) return reject(t.notImage);
-    if (f.size > MAX_PHOTO_MB * 1024 * 1024) return reject(t.tooBig);
+    if (f.size > MAX_PHOTO_MB * 1_000_000) return reject(t.tooBig);
+    if (!(await isJpegOrPng(f).catch(() => false))) return reject(t.notImage);
     onChange(f);
   }
 
@@ -69,6 +80,7 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
   }
 
   function clear() {
+    setError("");
     onChange(null);
     if (input.current) input.current.value = "";
   }
@@ -76,17 +88,37 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
   const uploading = progress !== null;
 
   return (
-    <div className="sm:col-span-2">
+    <div className="sm:col-span-2" data-field="photo">
       <span className="block text-[15px] font-semibold text-navy">{t.label}</span>
       <p className="mt-1 text-sm text-muted">{t.hint}</p>
-      {/* Ô input thật phủ lên vùng chọn để giữ validation "required" của trình duyệt */}
       <div
-        onDragOver={(e) => e.preventDefault()}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!uploading) setDragging(true);
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = uploading ? "none" : "copy";
+          if (!uploading) setDragging(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
+        }}
         onDrop={(e) => {
           e.preventDefault();
-          pick(e.dataTransfer.files[0]);
+          e.stopPropagation();
+          setDragging(false);
+          if (uploading) return;
+          const dropped = e.dataTransfer?.files?.[0];
+          if (dropped) void pick(dropped);
         }}
-        className={`relative mt-2 rounded-xl border-2 border-dashed transition ${file ? "border-line bg-white" : "border-line bg-mist/50 hover:border-orange/50"}`}
+        className={`relative mt-2 rounded-xl border-2 border-dashed transition ${
+          dragging ? "border-orange bg-cream" : file ? "border-line bg-white" : "border-line bg-mist/50 hover:border-orange/50"
+        }`}
       >
         {file ? (
           <div className="flex items-center gap-4 p-4">
@@ -108,20 +140,29 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
             )}
           </div>
         ) : (
-          <div className="pointer-events-none flex flex-col items-center px-4 py-6 text-center">
+          <button
+            type="button"
+            onClick={() => input.current?.click()}
+            className="flex w-full cursor-pointer flex-col items-center rounded-xl px-4 py-6 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+            aria-label={t.pick}
+          >
             <Icon name="users" className="h-6 w-6 text-orange-ink" strokeWidth={2} />
             <p className="mt-2 text-[15px] font-semibold text-navy">{t.drop}</p>
             <p className="mt-1 text-sm text-muted">{t.formats}</p>
-          </div>
+          </button>
         )}
         <input
           ref={input}
           type="file"
-          accept={PHOTO_TYPES.join(",")}
-          required={!file}
-          onChange={(e) => pick(e.target.files?.[0])}
-          className={`absolute inset-0 cursor-pointer opacity-0 ${file ? "pointer-events-none" : ""}`}
-          aria-label={t.pick}
+          accept={PHOTO_ACCEPT}
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={(e) => {
+            const picked = e.target.files?.[0];
+            e.target.value = "";
+            void pick(picked);
+          }}
+          className="sr-only"
         />
       </div>
       {(error || formError) && (

@@ -16,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { diskStorage } from 'multer';
+import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
@@ -29,6 +30,14 @@ import { RegistrationCapabilityGuard, RequireRegistrationScope } from '../regist
 
 // Multer hard cap; the configured limit is enforced precisely after receipt.
 const MULTER_HARD_CAP_BYTES = 600_000_000;
+
+function ensureUploadTmp(_req: unknown, _file: unknown, cb: (error: Error | null, destination: string) => void) {
+  const dir = join(tmpdir(), 'isng-uploads');
+  mkdir(dir, { recursive: true }).then(
+    () => cb(null, dir),
+    (err: unknown) => cb(err instanceof Error ? err : new Error(String(err)), dir),
+  );
+}
 
 @ApiTags('media')
 @Controller()
@@ -55,7 +64,7 @@ export class MediaController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: (_req, _file, cb) => cb(null, join(tmpdir(), 'isng-uploads')),
+        destination: ensureUploadTmp,
         filename: (_req, _file, cb) => cb(null, `${randomUUID()}.upload`),
       }),
       limits: { files: 1, fileSize: MULTER_HARD_CAP_BYTES },
@@ -97,7 +106,7 @@ export class MediaController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: (_req, _file, cb) => cb(null, join(tmpdir(), 'isng-uploads')),
+        destination: ensureUploadTmp,
         filename: (_req, _file, cb) => cb(null, `${randomUUID()}.upload`),
       }),
       limits: { files: 1, fileSize: MULTER_HARD_CAP_BYTES },

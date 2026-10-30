@@ -8,6 +8,24 @@ import { AppException } from '../common/errors/app-error';
 
 const execFileAsync = promisify(execFile);
 
+const LEADING_PADDING_BOXES = new Set(['free', 'skip', 'wide', 'pdin']);
+const MP4_COMPAT_BRANDS = new Set([
+  'isom',
+  'iso2',
+  'iso3',
+  'iso4',
+  'iso5',
+  'iso6',
+  'mp41',
+  'mp42',
+  'avc1',
+  'M4V ',
+  'dash',
+  'f4v ',
+  'mmp4',
+  'MSNV',
+]);
+
 export type MediaRejectionReason =
   | 'VIDEO_TOO_LARGE'
   | 'VIDEO_TOO_LONG'
@@ -52,7 +70,7 @@ const PHOTO_MAGICS: PhotoMagic[] = [
       b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
       b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a,
   },
-  ];
+];
 
 interface FfprobeFormat {
   format_name?: string;
@@ -102,16 +120,14 @@ export class MediaValidationService {
     }
 
     const formatName = probe.format?.format_name ?? '';
-    // ffprobe shares its MOV/MP4/3GP demuxer name. Inspect the actual ftyp brand
+    // ffprobe shares its MOV/MP4/3GP demuxer name. Inspect the actual ftyp box
+    // (allowing small leading ISO padding boxes and hybrid qt+mp4 compatible brands)
     // and require a video stream; MIME/extension and the demuxer name are insufficient.
-    const handle = await open(filePath, 'r');
-    const brandHeader = Buffer.alloc(12);
-    try { await handle.read(brandHeader, 0, 12, 0); } finally { await handle.close(); }
-    const brand = brandHeader.subarray(8, 12).toString('latin1');
-    if (!formatName.split(',').includes('mp4') ||
-        brandHeader.subarray(4, 8).toString('latin1') !== 'ftyp' ||
-        brand === 'qt  ' || /^3g[p2]/.test(brand) ||
-        !probe.streams?.some((s) => s.codec_type === 'video')) {
+    if (
+      !formatName.split(',').includes('mp4') ||
+      !(await this.hasValidMp4Ftyp(filePath, sizeBytes)) ||
+      !probe.streams?.some((s) => s.codec_type === 'video')
+    ) {
       return { status: 'REJECTED', reason: 'VIDEO_INVALID_FORMAT' };
     }
     const duration = Number(probe.format?.duration);
@@ -123,6 +139,54 @@ export class MediaValidationService {
     }
     const checksumSha256 = await this.sha256File(filePath);
     return { status: 'READY', sizeBytes, durationSeconds: Math.round(duration * 1000) / 1000, checksumSha256 };
+  }
+
+  private async hasValidMp4Ftyp(filePath: string, sizeBytes: number): Promise<boolean> {
+    const handle = await open(filePath, 'r');
+    try {
+      let offset = 0;
+      const head = Buffer.alloc(16);
+      for (let i = 0; i < 5 && offset + 8 <= sizeBytes; i++) {
+        const { bytesRead } = await handle.read(head, 0, Math.min(16, sizeBytes - offset), offset);
+        if (bytesRead < 8) return false;
+        let size = head.readUInt32BE(0);
+        const type = head.subarray(4, 8).toString('latin1');
+        let header = 8;
+        if (size === 1) {
+          if (bytesRead < 16) return false;
+          size = Number(head.readBigUInt64BE(8));
+          header = 16;
+        } else if (size === 0) {
+          size = sizeBytes - offset;
+        }
+        if (size < header || offset + size > sizeBytes) return false;
+        if (type === 'ftyp') {
+          if (size < header + 8 || size > 4096) return false;
+          const payloadLen = size - header;
+          const payload = Buffer.alloc(payloadLen);
+          const r = await handle.read(payload, 0, payloadLen, offset + header);
+          if (r.bytesRead < 8) return false;
+          const major = payload.subarray(0, 4).toString('latin1');
+          if (/^3g[p2]/.test(major)) return false;
+          if (major === 'qt  ') {
+            for (let at = 8; at + 4 <= payload.length; at += 4) {
+              if (MP4_COMPAT_BRANDS.has(payload.subarray(at, at + 4).toString('latin1'))) {
+                return true;
+              }
+            }
+            return false;
+          }
+          return true;
+        }
+        if (!LEADING_PADDING_BOXES.has(type) || size > 65_536) return false;
+        offset += size;
+      }
+      return false;
+    } catch {
+      return false;
+    } finally {
+      await handle.close();
+    }
   }
 
   /**
@@ -184,4 +248,3 @@ export class MediaValidationService {
     });
   }
 }
-

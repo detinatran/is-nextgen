@@ -26,45 +26,48 @@ type Props = {
 
 const formatSize = (bytes: number) =>
   bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+const formatTime = (s: number) => {
+  const total = Math.floor(s);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+};
 
 const text = {
   vi: {
     notVideo: "Vui lòng chọn file video (mp4, mov...).",
-    notMp4: "Vui lòng chọn video định dạng MP4.",
+    notMp4: "Vui lòng chọn video định dạng MP4 (nếu quay bằng iPhone/MOV, hãy xuất sang MP4 rồi chọn lại).",
     corrupt: "File video bị lỗi hoặc chưa tải về đầy đủ. Hãy kiểm tra video phát được trên máy rồi chọn lại.",
     noVideo: "File này không có hình video. Hãy chọn đúng video giới thiệu.",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
-    tooLong: (d: string) => `Video dài ${d}, vượt quá ${MAX_VIDEO_SECONDS / 60} phút.`,
+    tooLong: (d: string) => `Video dài ${d}, cần ngắn hơn ${MAX_VIDEO_SECONDS / 60} phút (tối đa 01:59).`,
     label: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) *`,
     labelOptional: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) · không bắt buộc`,
     later: "Chưa có video? Bạn vẫn nộp đăng ký được, rồi đăng nhập tài khoản thí sinh để nộp bổ sung trước hạn của vòng thi.",
-    hint: "Video cá nhân tối đa 02 phút, chủ đề tự chọn.",
+    hint: "Video cá nhân dưới 02 phút, chủ đề tự chọn.",
     remove: "Bỏ video đã chọn",
     drop: "Kéo thả video vào đây hoặc bấm để chọn",
     formats: `MP4, MOV, WebM · tối đa ${MAX_VIDEO_MB} MB`,
     formatsMp4: `MP4 · tối đa ${MAX_VIDEO_MB} MB`,
     checking: "Đang kiểm tra video...",
-    unknownDuration: `Trình duyệt chưa đọc được độ dài video. Hệ thống sẽ kiểm tra khi nộp (tối đa ${MAX_VIDEO_SECONDS / 60} phút).`,
+    unknownDuration: `Trình duyệt chưa đọc được độ dài video. Hệ thống sẽ kiểm tra khi nộp (dưới ${MAX_VIDEO_SECONDS / 60} phút).`,
     pick: "Chọn video giới thiệu",
   },
   en: {
     notVideo: "Please choose a video file (mp4, mov...).",
-    notMp4: "Please choose an MP4 video.",
+    notMp4: "Please choose an MP4 video (if recorded as MOV on iPhone/Mac, export it as MP4 first).",
     corrupt: "This video file is damaged or incomplete. Make sure it plays on your device, then choose it again.",
     noVideo: "This file has no video track. Please choose your intro video.",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
-    tooLong: (d: string) => `The video is ${d} long, over the ${MAX_VIDEO_SECONDS / 60}-minute limit.`,
+    tooLong: (d: string) => `The video is ${d} long; it must be under ${MAX_VIDEO_SECONDS / 60} minutes (max 01:59).`,
     label: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) *`,
     labelOptional: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) · optional`,
     later: "No video yet? You can still register now, then log in to your candidate account to upload it before the round deadline.",
-    hint: "A personal video of up to 02 minutes on a topic of your choice.",
+    hint: "A personal video under 02 minutes on a topic of your choice.",
     remove: "Remove selected video",
     drop: "Drag and drop your video here, or click to choose",
     formats: `MP4, MOV, WebM · up to ${MAX_VIDEO_MB} MB`,
     formatsMp4: `MP4 · up to ${MAX_VIDEO_MB} MB`,
     checking: "Checking your video...",
-    unknownDuration: `Your browser could not read the video length. It will be checked on submission (max ${MAX_VIDEO_SECONDS / 60} minutes).`,
+    unknownDuration: `Your browser could not read the video length. It will be checked on submission (under ${MAX_VIDEO_SECONDS / 60} minutes).`,
     pick: "Choose intro video",
   },
 };
@@ -80,15 +83,16 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
   async function pick(f: File | undefined) {
     setError("");
     if (!f) return;
-    const looksMp4 = f.type === "video/mp4" || (!f.type && /\.mp4$/i.test(f.name));
-    if (mp4Only ? !looksMp4 : !f.type.startsWith("video/")) return reject(mp4Only ? t.notMp4 : t.notVideo);
+    if (!mp4Only && !f.type.startsWith("video/") && !/\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(f.name)) {
+      return reject(t.notVideo);
+    }
     if (f.size > MAX_VIDEO_MB * 1024 * 1024) return reject(t.tooBig);
     onChange(null);
     setChecking(true);
     onCheckingChange?.(true);
     let d: number | null = null;
     if (mp4Only) {
-      // Đọc thẳng cấu trúc MP4: không phụ thuộc codec trình duyệt, bắt được file hỏng/tải dở
+      // Đọc thẳng cấu trúc nhị phân MP4: không phụ thuộc MIME của hệ điều hành hay codec trình duyệt
       const info = await checkMp4(f).catch(() => ({ ok: false as const, reason: "CORRUPT" as const }));
       if (!info.ok) {
         setChecking(false);
@@ -113,6 +117,7 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
   }
 
   function clear() {
+    setError("");
     onChange(null);
     setDuration(null);
     if (input.current) input.current.value = "";
@@ -121,22 +126,35 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
   const uploading = progress !== null;
 
   return (
-    <div className="sm:col-span-2">
+    <div className="sm:col-span-2" data-field="video">
       <span className="block text-[15px] font-semibold text-navy">{optional ? t.labelOptional : t.label}</span>
       <p className="mt-1 text-sm text-muted">{t.hint}</p>
       {(note || optional) && <p className="mt-1 text-sm font-medium text-orange-ink">{note ?? t.later}</p>}
 
-      {/* Ô input thật nằm phủ lên vùng kéo thả để giữ được validation "required" của trình duyệt */}
       <div
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!uploading && !checking) setDragging(true);
+        }}
         onDragOver={(e) => {
           e.preventDefault();
-          setDragging(true);
+          e.stopPropagation();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = uploading || checking ? "none" : "copy";
+          if (!uploading && !checking) setDragging(true);
         }}
-        onDragLeave={() => setDragging(false)}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
+        }}
         onDrop={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           setDragging(false);
-          pick(e.dataTransfer.files[0]);
+          if (uploading || checking) return;
+          const dropped = e.dataTransfer?.files?.[0];
+          if (dropped) void pick(dropped);
         }}
         className={`relative mt-2 rounded-xl border-2 border-dashed transition ${
           dragging ? "border-orange bg-cream" : file ? "border-line bg-white" : "border-line bg-mist/50 hover:border-orange/50"
@@ -174,20 +192,29 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
             )}
           </div>
         ) : (
-          <div className="pointer-events-none flex flex-col items-center px-4 py-8 text-center">
+          <button
+            type="button"
+            onClick={() => input.current?.click()}
+            className="flex w-full cursor-pointer flex-col items-center rounded-xl px-4 py-8 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+            aria-label={t.pick}
+          >
             <Icon name="arrowUp" className="h-6 w-6 text-orange-ink" strokeWidth={2} />
             <p className="mt-2 text-[15px] font-semibold text-navy">{t.drop}</p>
             <p className="mt-1 text-sm text-muted">{mp4Only ? t.formatsMp4 : t.formats}</p>
-          </div>
+          </button>
         )}
         <input
           ref={input}
           type="file"
-          accept={mp4Only ? "video/mp4" : "video/*"}
-          required={!optional && !file}
-          onChange={(e) => pick(e.target.files?.[0])}
-          className={`absolute inset-0 cursor-pointer opacity-0 ${file || checking ? "pointer-events-none" : ""}`}
-          aria-label={t.pick}
+          accept={mp4Only ? "video/mp4,.mp4,video/x-m4v" : "video/*,.mp4,.mov,.webm"}
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={(e) => {
+            const picked = e.target.files?.[0];
+            e.target.value = "";
+            void pick(picked);
+          }}
+          className="sr-only"
         />
       </div>
       {(error || formError) && (

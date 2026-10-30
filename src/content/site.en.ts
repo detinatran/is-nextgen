@@ -14,9 +14,9 @@ export const site = {
   slogan: ["New Mindset", "New Skills", "Real Value"],
   tagline: "Shaping the next generation of managers",
   hashtag: "#NextGenManager",
-  // Official registration deadline (set by the Organizing Committee: Oct 31, 2026). The live deadline comes from competitions.registration_closes_at.
-  registrationDeadline: "2026-10-31T23:59:00+07:00",
-  registrationDeadlineLabel: "23:59 (GMT+7), Oct 31, 2026",
+  // Official registration deadline (set by the Organizing Committee: Nov 06, 2026). The live deadline comes from competitions.registration_closes_at.
+  registrationDeadline: "2026-11-06T23:59:00+07:00",
+  registrationDeadlineLabel: "23:59 (GMT+7), Nov 06, 2026",
   // Each item is a phrase kept on one line
   address: {
     unit: ["Faculty of Economics and Management,", "VNU International School (VNU-IS)"],
@@ -248,7 +248,7 @@ export const personas: { no: number; extra?: boolean; image: string; images?: st
 export const timeline: TimelineItem[] = [
   { day: "2026-10-11", kind: "register", title: "Registration opens", body: "Online registration opens; your candidate account is emailed as soon as you register" },
   { day: "2026-10-22", kind: "event", time: "18:30", title: "Opening & Workshop", body: "Competition launch, skills and knowledge workshop" },
-  { day: "2026-10-31", kind: "register", time: "23:59", title: "Registration closes", body: "Last day to submit profiles; videos can be added until 23:59 on Nov 6" },
+  { day: "2026-11-06", kind: "register", time: "23:59", title: "Registration closes", body: "Last day to submit profiles and videos until 23:59 on Nov 6" },
   { day: "2026-11-07", kind: "round", time: "8:00 – 23:59", title: "Round 1 · Discover", body: "Online test, auto-scored" },
   { day: "2026-11-11", kind: "result", title: "Round 1 results", body: "Contestants advancing to Round 2 announced" },
   { day: "2026-11-14", kind: "event", title: "Field trip", body: "Company visit and talks with managers" },
@@ -370,7 +370,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "calendar",
     q: "What is the detailed schedule?",
-    a: "Registration opens on Oct 11, 2026 (deadline 23:59, Oct 31), the opening ceremony is at 18:30 on Oct 22, Round 1 is online on Nov 7, the field trip on Nov 14, Round 2 on Nov 21, the Gala networking dinner on Nov 28 and the Final on Dec 5, 2026. The full schedule is on the Rules page.",
+    a: "Registration opens on Oct 11, 2026 (deadline 23:59, Nov 6), the opening ceremony is at 18:30 on Oct 22, Round 1 is online on Nov 7, the field trip on Nov 14, Round 2 on Nov 21, the Gala networking dinner on Nov 28 and the Final on Dec 5, 2026. The full schedule is on the Rules page.",
   },
   {
     icon: "briefcase",

@@ -14,9 +14,9 @@ export const site = {
   slogan: ["Tư duy mới", "Kỹ năng mới", "Tạo giá trị thật"],
   tagline: "Kiến tạo thế hệ quản trị tiếp theo",
   hashtag: "#NextGenManager",
-  // Hạn đăng ký chính thức (Ban Tổ chức chốt 31/10/2026). Hạn thực tế lấy từ hệ thống: competitions.registration_closes_at.
-  registrationDeadline: "2026-10-31T23:59:00+07:00",
-  registrationDeadlineLabel: "23:59, 31/10/2026",
+  // Hạn đăng ký chính thức (Ban Tổ chức chốt 06/11/2026). Hạn thực tế lấy từ hệ thống: competitions.registration_closes_at.
+  registrationDeadline: "2026-11-06T23:59:00+07:00",
+  registrationDeadlineLabel: "23:59, 06/11/2026",
   // Mỗi phần tử là một cụm không bị ngắt dòng giữa chừng
   address: {
     unit: ["Khoa Kinh tế và Quản lý,", "Trường Quốc tế - ĐHQGHN"],
@@ -248,7 +248,7 @@ export const personas: { no: number; extra?: boolean; image: string; images?: st
 export const timeline: TimelineItem[] = [
   { day: "2026-10-11", kind: "register", title: "Mở đơn đăng ký", body: "Mở cổng đăng ký trực tuyến; tài khoản thí sinh gửi qua email ngay khi đăng ký" },
   { day: "2026-10-22", kind: "event", time: "18h30", title: "Lễ khai mạc & Workshop", body: "Giới thiệu cuộc thi, hội thảo kỹ năng và kiến thức" },
-  { day: "2026-10-31", kind: "register", time: "23h59", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ; video nộp bổ sung đến 23h59 ngày 06/11" },
+  { day: "2026-11-06", kind: "register", time: "23h59", title: "Đóng đơn đăng ký", body: "Hạn cuối nộp hồ sơ đăng ký và video đến 23h59 ngày 06/11" },
   { day: "2026-11-07", kind: "round", time: "8h00 – 23h59", title: "Vòng 1 · Discover", body: "Thi trực tuyến, chấm tự động" },
   { day: "2026-11-11", kind: "result", title: "Kết quả Vòng 1", body: "Công bố danh sách thí sinh vào Vòng 2" },
   { day: "2026-11-14", kind: "event", title: "Field trip", body: "Tham quan mô hình doanh nghiệp, toạ đàm với nhà quản lý" },
@@ -370,7 +370,7 @@ export const faqs: { q: string; a: string; icon: IconName }[] = [
   {
     icon: "calendar",
     q: "Lịch trình chi tiết của cuộc thi?",
-    a: "Mở đăng ký 11/10/2026 (hạn chót 23:59 ngày 31/10), Lễ khai mạc 18h30 ngày 22/10, Vòng 1 thi trực tuyến ngày 07/11, Field trip 14/11, Vòng 2 ngày 21/11, Gala dinner networking 28/11 và Chung kết ngày 05/12/2026. Lịch đầy đủ có ở trang Thể lệ.",
+    a: "Mở đăng ký 11/10/2026 (hạn chót 23:59 ngày 06/11), Lễ khai mạc 18h30 ngày 22/10, Vòng 1 thi trực tuyến ngày 07/11, Field trip 14/11, Vòng 2 ngày 21/11, Gala dinner networking 28/11 và Chung kết ngày 05/12/2026. Lịch đầy đủ có ở trang Thể lệ.",
   },
   {
     icon: "briefcase",

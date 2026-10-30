@@ -3,6 +3,7 @@ import Icon from "@/components/Icon";
 import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
+import HeroSlider, { type NewsSlide } from "./HeroSlider";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
 // Banner chính (16:9) duy nhất kết xuất từ NEXTGEN_MANAGER_MASTERDES.pdf nguyên gốc chất lượng cao.
@@ -53,8 +54,32 @@ function Ctas({
   );
 }
 
+// Ảnh lớn hơn ảnh đại diện cho slide trang bìa (ảnh đại diện vài bài nhỏ hoặc quá dẹt)
+const SLIDE_IMAGE: Record<string, string> = {
+  giaoduc: "/images/news/giaoduc-1.webp",
+  ttxvn: "/images/news/ttxvn-1.jpg",
+  vtcnewsInterview: "/images/news/vtc-interview-1.webp",
+};
+const MAX_NEWS_SLIDES = 5;
+
 export default function Hero({ lang }: { lang: Lang }) {
-  const { heroStats, site } = getContent(lang);
+  const { heroStats, site, newsArticles } = getContent(lang);
+  // Bài mới nhất trước; bài có toàn văn mở trong site, bài chỉ có tóm tắt mở bản gốc
+  const news: NewsSlide[] = [...(newsArticles ?? [])]
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    .slice(0, MAX_NEWS_SLIDES)
+    .map((a) => ({
+      id: a.id,
+      href: a.hasFullText ? localePath(lang, `/tin-tuc/${a.slug}/`) : a.originalUrl,
+      external: !a.hasFullText,
+      image: SLIDE_IMAGE[a.id] ?? a.thumbnail,
+      imageAlt: a.thumbnailAlt,
+      source: a.source,
+      sourceRole: a.sourceRole,
+      date: a.publishedDateLabel,
+      title: a.title,
+      summary: a.summary,
+    }));
   const t = text[lang];
   return (
     <section
@@ -65,28 +90,34 @@ export default function Hero({ lang }: { lang: Lang }) {
         {site.name} - {site.viName}
       </h1>
 
-      {/* Banner chính duy nhất: tỉ lệ 16:9 trọn vẹn, không chèn hai poster lên nhau */}
-      <div data-tour="hero" className="relative aspect-[16/9] overflow-hidden bg-[#0d0f0c]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={asset(`/images/cover-${BANNER_VERSION}-1280.webp`)}
-          srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.webp`)} 2560w`}
-          sizes="100vw"
-          alt={t.bannerAlt}
-          width={1920}
-          height={1080}
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+      {/* Trang bìa dạng slideshow: banner cuộc thi + các bài báo truyền thông */}
+      <HeroSlider
+        lang={lang}
+        news={news}
+        banner={
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset(`/images/cover-${BANNER_VERSION}-1280.webp`)}
+              srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.webp`)} 2560w`}
+              sizes="100vw"
+              alt={t.bannerAlt}
+              width={1920}
+              height={1080}
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
 
-        {/* Vùng thẻ QR và chữ ĐĂNG KÝ NGAY trên poster bấm được, mở trang đăng ký */}
-        <Link
-          href={localePath(lang, "/dang-ky/")}
-          aria-label={t.register}
-          className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
-          style={{ left: "61.5%", top: "38.5%", width: "13%", height: "29%" }}
-        />
-      </div>
+            {/* Vùng thẻ QR và chữ ĐĂNG KÝ NGAY trên poster bấm được, mở trang đăng ký */}
+            <Link
+              href={localePath(lang, "/dang-ky/")}
+              aria-label={t.register}
+              className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
+              style={{ left: "61.5%", top: "38.5%", width: "13%", height: "29%" }}
+            />
+          </>
+        }
+      />
 
       {/* Bản di động: chữ đặt dưới ảnh */}
       <div className="container-x py-8 text-center lg:hidden">

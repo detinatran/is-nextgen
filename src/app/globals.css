@@ -167,6 +167,29 @@
 .cd-tick {
   animation: cd-tick 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+/* Trang bìa slideshow: ảnh bài báo phóng chậm, thanh tiến trình trên chấm đang xem */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.hero-zoom {
+  animation: hero-zoom 9s ease-out forwards;
+}
+@keyframes hero-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.hero-progress {
+  animation: hero-progress linear forwards;
+}
 @keyframes kenburns {
   from {
     transform: scale(1.04);
@@ -249,6 +272,7 @@
   }
   .tl-pulse,
   .cd-tick,
+  .hero-zoom,
   .kenburns,
   .cta-pulse {
     animation: none;

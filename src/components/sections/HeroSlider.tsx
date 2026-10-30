@@ -90,34 +90,50 @@ export default function HeroSlider({ lang, banner, news }: { lang: Lang; banner:
         const linkProps = n.external ? { href: n.href, target: "_blank", rel: "noopener noreferrer" } : { href: n.href };
         return (
           <Slide key={n.id} active={active} label={`${i + 2} / ${count}`}>
+            {/* Nền: navy + ảnh bài làm mờ để hoà màu (máy tính); điện thoại dùng ảnh tràn khung */}
+            <div aria-hidden className="absolute inset-0 bg-navy-deep" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={asset(n.image)} alt="" aria-hidden loading="lazy" className="absolute inset-0 hidden h-full w-full scale-110 object-cover opacity-30 blur-2xl lg:block" />
+            <div aria-hidden className="absolute inset-0 hidden bg-[radial-gradient(ellipse_at_12%_25%,rgb(245_184_61/0.16),transparent_55%),radial-gradient(ellipse_at_90%_85%,rgb(31_91_224/0.35),transparent_60%)] lg:block" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={asset(n.image)}
               alt={n.imageAlt}
               loading="lazy"
-              className={`absolute inset-0 h-full w-full object-cover ${active && !reduced ? "hero-zoom" : ""}`}
+              className={`absolute inset-0 h-full w-full object-cover lg:hidden ${active && !reduced ? "hero-zoom" : ""}`}
             />
-            <div aria-hidden className="absolute inset-0 bg-linear-to-t from-navy-deep via-navy-deep/55 to-navy-deep/5" />
-            <div aria-hidden className="absolute inset-0 bg-linear-to-r from-navy-deep/70 via-navy-deep/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 pb-9 sm:pb-12 lg:pb-16">
-              <div className="container-x">
-                <div className={`max-w-3xl transition duration-700 ${active ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
-                  <p className="hidden text-[13px] font-semibold tracking-[0.16em] text-gold uppercase sm:block">{t.press}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] sm:mt-3 sm:text-xs">
+            <div aria-hidden className="absolute inset-0 bg-linear-to-t from-navy-deep via-navy-deep/60 to-navy-deep/10 lg:hidden" />
+
+            <div className="absolute inset-0 flex items-end lg:items-center">
+              <div className="container-x grid w-full items-center gap-12 pb-9 sm:pb-12 lg:grid-cols-[1fr_1.15fr] lg:pb-0 xl:gap-16">
+                <div className={`transition duration-700 ${active ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+                  <p className="hidden items-center gap-3 text-[13px] font-semibold tracking-[0.16em] text-gold uppercase sm:flex">
+                    <span aria-hidden className="h-px w-8 bg-current" />
+                    {t.press}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] sm:mt-4 sm:text-xs">
                     <span className="rounded-full bg-white/15 px-2.5 py-0.5 font-semibold text-white ring-1 ring-white/25 backdrop-blur sm:px-3 sm:py-1">{n.source}</span>
-                    {n.sourceRole && <span className="hidden rounded-full bg-orange/90 px-2.5 py-0.5 font-semibold text-white sm:inline">{n.sourceRole}</span>}
-                    <span className="text-white/75">{n.date}</span>
+                    {n.sourceRole && <span className="hidden rounded-full bg-orange px-2.5 py-0.5 font-semibold text-white sm:inline">{n.sourceRole}</span>}
+                    <span className="text-white/70">{n.date}</span>
                   </div>
-                  <h2 className="mt-2 line-clamp-2 text-[15px] leading-snug font-bold text-white sm:mt-3 sm:line-clamp-3 sm:text-2xl lg:text-[2.1rem] lg:leading-tight">
+                  <h2 className="mt-2 line-clamp-2 text-[15px] leading-snug font-bold text-balance text-white sm:mt-4 sm:line-clamp-3 sm:text-2xl lg:line-clamp-4 lg:text-[2rem] lg:leading-[1.2] xl:text-[2.4rem]">
                     {/* Cả slide bấm được nhờ lớp phủ của link tiêu đề */}
                     <LinkTag {...linkProps} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none" tabIndex={active ? 0 : -1}>
                       {n.title}
                     </LinkTag>
                   </h2>
-                  <p className="mt-3 hidden line-clamp-2 max-w-2xl text-[15px] leading-relaxed text-white/85 md:block lg:text-base">{n.summary}</p>
-                  <span className="relative mt-5 hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy shadow-lg transition group-hover/slider:gap-3 md:inline-flex">
+                  <p className="mt-4 hidden line-clamp-3 text-base leading-relaxed text-white/80 lg:block">{n.summary}</p>
+                  <span className="relative mt-7 hidden items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-navy shadow-lg transition group-hover/slider:gap-3 group-hover/slider:bg-gold lg:inline-flex">
                     {t.read} <Icon name="arrowRight" className="h-4 w-4" />
                   </span>
+                </div>
+                {/* Ảnh bài trong khung bo góc, viền vàng lệch phía sau */}
+                <div className={`relative hidden transition duration-700 lg:block ${active ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"}`}>
+                  <div aria-hidden className="absolute -right-4 -bottom-4 h-full w-full rounded-[2rem] border-2 border-gold/40" />
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl shadow-black/50 ring-1 ring-white/15">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={asset(n.image)} alt={n.imageAlt} loading="lazy" className={`h-full w-full object-cover ${active && !reduced ? "hero-zoom" : ""}`} />
+                  </div>
                 </div>
               </div>
             </div>

@@ -127,7 +127,7 @@ export default function MyRegistration({ lang }: { lang: Lang }) {
   const expired = !mine.video && !mine.canUploadVideo;
 
   return (
-    <section className="card mb-6 p-6 sm:p-8">
+    <section className="card mb-6 p-6 sm:p-8" onDragOver={(e) => e.preventDefault()} onDrop={(e) => e.preventDefault()}>
       <h2 className="text-xl font-bold text-navy">{t.title}</h2>
       <dl className="mt-4 grid gap-3 text-[15px] sm:grid-cols-2">
         <div className="rounded-2xl bg-mist p-4">

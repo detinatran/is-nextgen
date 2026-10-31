@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
-import { MAX_PHOTO_MB } from "@/lib/upload";
+import { extractDroppedFile, MAX_PHOTO_MB } from "@/lib/upload";
 import Icon from "./Icon";
 
 type Props = {
@@ -53,6 +53,7 @@ const text = {
 
 export default function PhotoUpload({ lang, file, onChange, progress, formError }: Props) {
   const t = text[lang];
+  const inputId = useId();
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -88,38 +89,54 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
   const uploading = progress !== null;
 
   return (
-    <div className="sm:col-span-2" data-field="photo">
+    <div
+      className="sm:col-span-2"
+      data-field="photo"
+      onDragEnter={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!uploading) setDragging(true);
+      }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = uploading ? "none" : "copy";
+        if (!uploading) setDragging(true);
+      }}
+      onDragLeave={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragging(false);
+        if (uploading) return;
+        const dropped = extractDroppedFile(e.dataTransfer);
+        if (dropped) void pick(dropped);
+      }}
+    >
       <span className="block text-[15px] font-semibold text-navy">{t.label}</span>
       <p className="mt-1 text-sm text-muted">{t.hint}</p>
       <div
-        onDragEnter={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!uploading) setDragging(true);
-        }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (e.dataTransfer) e.dataTransfer.dropEffect = uploading ? "none" : "copy";
-          if (!uploading) setDragging(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDragging(false);
-          if (uploading) return;
-          const dropped = e.dataTransfer?.files?.[0];
-          if (dropped) void pick(dropped);
-        }}
         className={`relative mt-2 rounded-xl border-2 border-dashed transition ${
           dragging ? "border-orange bg-cream" : file ? "border-line bg-white" : "border-line bg-mist/50 hover:border-orange/50"
         }`}
       >
+        <input
+          id={inputId}
+          ref={input}
+          type="file"
+          accept={PHOTO_ACCEPT}
+          disabled={uploading}
+          onChange={(e) => {
+            const picked = e.target.files?.[0];
+            e.target.value = "";
+            void pick(picked);
+          }}
+          className="peer sr-only"
+        />
         {file ? (
           <div className="flex items-center gap-4 p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -140,30 +157,16 @@ export default function PhotoUpload({ lang, file, onChange, progress, formError 
             )}
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => input.current?.click()}
-            className="flex w-full cursor-pointer flex-col items-center rounded-xl px-4 py-6 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+          <label
+            htmlFor={inputId}
+            className="flex w-full cursor-pointer flex-col items-center rounded-xl px-4 py-6 text-center peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-orange"
             aria-label={t.pick}
           >
             <Icon name="users" className="h-6 w-6 text-orange-ink" strokeWidth={2} />
             <p className="mt-2 text-[15px] font-semibold text-navy">{t.drop}</p>
             <p className="mt-1 text-sm text-muted">{t.formats}</p>
-          </button>
+          </label>
         )}
-        <input
-          ref={input}
-          type="file"
-          accept={PHOTO_ACCEPT}
-          tabIndex={-1}
-          aria-hidden="true"
-          onChange={(e) => {
-            const picked = e.target.files?.[0];
-            e.target.value = "";
-            void pick(picked);
-          }}
-          className="sr-only"
-        />
       </div>
       {(error || formError) && (
         <p className="mt-2 text-sm font-medium text-orange-ink" role="alert">

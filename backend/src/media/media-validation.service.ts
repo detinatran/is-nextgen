@@ -8,7 +8,9 @@ import { AppException } from '../common/errors/app-error';
 
 const execFileAsync = promisify(execFile);
 
-const LEADING_PADDING_BOXES = new Set(['free', 'skip', 'wide', 'pdin']);
+const MAX_LEADING_BOX_BYTES = 32 * 1024 * 1024;
+const LEADING_PADDING_BOXES = new Set(['free', 'skip', 'wide', 'pdin', 'uuid', 'styp']);
+const KNOWN_EOF_BOXES = new Set(['mdat', 'imda', 'moov', 'free', 'skip', 'wide', 'udta', 'meta']);
 const MP4_COMPAT_BRANDS = new Set([
   'isom',
   'iso2',
@@ -16,9 +18,16 @@ const MP4_COMPAT_BRANDS = new Set([
   'iso4',
   'iso5',
   'iso6',
+  'iso7',
+  'iso8',
+  'iso9',
   'mp41',
   'mp42',
+  'mp4v',
   'avc1',
+  'hvc1',
+  'hev1',
+  'av01',
   'M4V ',
   'dash',
   'f4v ',
@@ -121,7 +130,7 @@ export class MediaValidationService {
 
     const formatName = probe.format?.format_name ?? '';
     // ffprobe shares its MOV/MP4/3GP demuxer name. Inspect the actual ftyp box
-    // (allowing small leading ISO padding boxes and hybrid qt+mp4 compatible brands)
+    // (allowing leading ISO padding boxes and hybrid qt/3gp+mp4 compatible brands)
     // and require a video stream; MIME/extension and the demuxer name are insufficient.
     if (
       !formatName.split(',').includes('mp4') ||
@@ -146,11 +155,15 @@ export class MediaValidationService {
     try {
       let offset = 0;
       const head = Buffer.alloc(16);
-      for (let i = 0; i < 5 && offset + 8 <= sizeBytes; i++) {
+      for (let i = 0; i < 16 && offset + 8 <= sizeBytes; i++) {
         const { bytesRead } = await handle.read(head, 0, Math.min(16, sizeBytes - offset), offset);
         if (bytesRead < 8) return false;
         let size = head.readUInt32BE(0);
         const type = head.subarray(4, 8).toString('latin1');
+        if (size === 0 && !KNOWN_EOF_BOXES.has(type)) {
+          offset += 4;
+          continue;
+        }
         let header = 8;
         if (size === 1) {
           if (bytesRead < 16) return false;
@@ -167,8 +180,7 @@ export class MediaValidationService {
           const r = await handle.read(payload, 0, payloadLen, offset + header);
           if (r.bytesRead < 8) return false;
           const major = payload.subarray(0, 4).toString('latin1');
-          if (/^3g[p2]/.test(major)) return false;
-          if (major === 'qt  ') {
+          if (major === 'qt  ' || /^3g[p2]/.test(major)) {
             for (let at = 8; at + 4 <= payload.length; at += 4) {
               if (MP4_COMPAT_BRANDS.has(payload.subarray(at, at + 4).toString('latin1'))) {
                 return true;
@@ -178,7 +190,7 @@ export class MediaValidationService {
           }
           return true;
         }
-        if (!LEADING_PADDING_BOXES.has(type) || size > 65_536) return false;
+        if (!LEADING_PADDING_BOXES.has(type) || size > MAX_LEADING_BOX_BYTES) return false;
         offset += size;
       }
       return false;

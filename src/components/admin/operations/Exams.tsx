@@ -25,7 +25,7 @@ function SearchBox({ value, onChange, placeholder, className = "min-w-56 flex-1"
 
 /* ───────── Lịch thi & ca thi ───────── */
 
-const blankSchedule = { competitionId: "", name: "", opensAt: "", closesAt: "", durationMinutes: "60", capacity: "100", poolId: "", questionCount: "30" };
+const blankSchedule = { competitionId: "", name: "", opensAt: "", closesAt: "", durationMinutes: "60", capacity: "100", poolId: "ALL", questionCount: "25" };
 type ScheduleForm = typeof blankSchedule;
 const vnDate = (local: string) => (local ? new Date(`${local}:00+07:00`) : null);
 
@@ -43,7 +43,7 @@ function validateSchedule(f: ScheduleForm) {
   else if (o && c && c > o && c.getTime() - o.getTime() < dur * 60_000) e.durationMinutes = tr("Khung giờ ca ngắn hơn thời lượng làm bài");
   const cap = Number(f.capacity);
   if (!Number.isInteger(cap) || cap < 1 || cap > 100000) e.capacity = tr("Từ 1 đến 100.000");
-  if (!f.poolId) e.poolId = tr("Chọn nhóm câu hỏi");
+  if (f.poolId !== "ALL" && !f.poolId) e.poolId = tr("Chọn nhóm câu hỏi");
   const q = Number(f.questionCount);
   if (!Number.isInteger(q) || q < 1 || q > 500) e.questionCount = tr("Từ 1 đến 500 câu");
   return e;
@@ -52,7 +52,25 @@ function validateSchedule(f: ScheduleForm) {
 export function Schedules() {
   const list = useResource<ScheduleItem[]>("admin/schedules", []),
     config = useResource<Configuration>("admin/configuration", emptyConfig),
-    op = useOperations();
+    op = useOperations(),
+    confirm = useConfirm();
+
+  async function deleteSchedule(s: ScheduleItem) {
+    const r = await confirm({
+      title: tr("Xoá ca thi"),
+      description: tr(
+        "Bạn có chắc chắn muốn xoá ca thi '{0}'? Toàn bộ phân ca thử nghiệm trong ca này sẽ được dọn dẹp.",
+        s.name,
+      ),
+      confirmText: tr("Xoá ca thi"),
+      danger: true,
+    });
+    if (!r.ok) return;
+    await op.run(async () => {
+      await adminApi(`admin/schedules/${s.id}`, { method: "DELETE" });
+      await list.reload();
+    }, tr("Đã xoá ca thi."));
+  }
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [formOpen, setFormOpen] = useState(false);
@@ -162,17 +180,36 @@ export function Schedules() {
               <fieldset className="grid gap-4 border-t border-adm-border pt-5 md:grid-cols-2">
                 <legend className="mb-3 pt-5 text-[13px] font-semibold text-adm-sub">{tr("Đề thi & sức chứa")}</legend>
                 <Field label={tr("Nhóm câu hỏi")} required error={err("poolId")}>
-                  <select {...bind("poolId")}>
-                    <option value="">{tr("Chọn nhóm")}</option>
-                    {config.data.pools.map((p) => (
-                      <option value={p.id} key={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
+                  <select
+                    {...bind("poolId")}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setForm((f) => ({
+                        ...f,
+                        poolId: val,
+                        questionCount: val === "ALL" ? "25" : f.questionCount,
+                      }));
+                    }}
+                  >
+                    <option value="ALL">{tr("Toàn bộ 25 câu hỏi (5 nhóm năng lực × 5 câu - Chuẩn đề thi)")}</option>
+                    <optgroup label={tr("Hoặc chọn 1 nhóm câu hỏi riêng lẻ")}>
+                      {config.data.pools.map((p) => (
+                        <option value={p.id} key={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                 </Field>
-                <Field label={tr("Số câu trong đề")} required error={err("questionCount")} hint={tr("1–500 câu")}>
-                  <input type="number" inputMode="numeric" min={1} max={500} {...bind("questionCount")} />
+                <Field label={tr("Số câu trong đề")} required error={err("questionCount")} hint={form.poolId === "ALL" ? tr("Đã cố định 25 câu theo cấu trúc chuẩn") : tr("1–500 câu")}>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={500}
+                    disabled={form.poolId === "ALL"}
+                    {...bind("questionCount")}
+                  />
                 </Field>
                 <Field label={tr("Số thí sinh tối đa")} required error={err("capacity")} hint="1–100.000">
                   <input type="number" inputMode="numeric" min={1} max={100000} {...bind("capacity")} />
@@ -202,7 +239,7 @@ export function Schedules() {
           <Table
             loading={list.loading}
             numeric={[4, 5]}
-            headers={[tr("Ca thi"), tr("Mở ca"), tr("Đóng ca"), tr("Trạng thái"), tr("Thời lượng"), tr("Đã xếp / Sức chứa"), tr("Đề thi")]}
+            headers={[tr("Ca thi"), tr("Mở ca"), tr("Đóng ca"), tr("Trạng thái"), tr("Thời lượng"), tr("Đã xếp / Sức chứa"), tr("Đề thi"), ""]}
             empty={
               search
                 ? { icon: "search", title: tr("Không có ca phù hợp") }
@@ -227,11 +264,29 @@ export function Schedules() {
                   {s.assigned}/{s.capacity}
                 </span>,
                 s.blueprintId ? <Pill key="b" tone="green">{tr("Đã chốt đề")}</Pill> : <Pill key="b" tone="red">{tr("Chưa có đề")}</Pill>,
+                <div key="act" className="text-right whitespace-nowrap">
+                  {s.id === "1d7134cb-d5ab-4f47-80ee-f6ff50a41e40" || s.name.includes("07/11") ? (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+                      {tr("Ca chính thức")}
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      danger
+                      icon="trash"
+                      onClick={() => void deleteSchedule(s)}
+                      disabled={op.busy}
+                    >
+                      {tr("Xoá ca")}
+                    </Button>
+                  )}
+                </div>,
               ];
             })}
           />
         )}
-        <p className="text-xs text-adm-muted">{tr("Ca thi chưa hỗ trợ sửa hoặc xoá. Cần thay đổi, hãy tạo ca mới và đổi ca cho thí sinh ở trang Phân ca.")}</p>
+        <p className="text-xs text-adm-muted">{tr("Ca thi Vòng 1 chính thức được bảo vệ không thể xoá. Các ca thi thử nghiệm có thể xoá khi hoàn tất kiểm tra.")}</p>
       </section>
     </div>
   );
@@ -257,6 +312,39 @@ export function Assignments() {
   const [manualSubmitted, setManualSubmitted] = useState(false);
   const [historyFor, setHistoryFor] = useState<AssignmentItem | null>(null);
   const [history, setHistory] = useState<{ loading: boolean; error: string; rows: HistoryRow[] }>({ loading: false, error: "", rows: [] });
+  const [movingAssignment, setMovingAssignment] = useState<AssignmentItem | null>(null);
+  const [targetScheduleId, setTargetScheduleId] = useState("");
+  const [moveReason, setMoveReason] = useState("");
+  const [resetAttemptsConfirmed, setResetAttemptsConfirmed] = useState(false);
+
+  function openMoveModal(a: AssignmentItem) {
+    setMovingAssignment(a);
+    setTargetScheduleId("");
+    setMoveReason("");
+    setResetAttemptsConfirmed(false);
+  }
+
+  async function submitMoveCandidate(e: FormEvent) {
+    e.preventDefault();
+    if (!movingAssignment || !targetScheduleId || !moveReason.trim()) return;
+    const to = schedules.data.find((s) => s.id === targetScheduleId);
+    void op.run(async () => {
+      await adminApi("admin/assignments", {
+        method: "POST",
+        body: JSON.stringify({
+          candidateId: movingAssignment.candidateId,
+          scheduleId: targetScheduleId,
+          reason: moveReason.trim(),
+          resetAttempts: resetAttemptsConfirmed,
+        }),
+      });
+      setMovingAssignment(null);
+      setTargetScheduleId("");
+      setMoveReason("");
+      setResetAttemptsConfirmed(false);
+      await reload();
+    }, tr("Đã đổi ca cho {0} sang {1}.", movingAssignment.fullName, to?.name));
+  }
   const [page, setPage] = useState(1),
     [pageSize, setPageSize] = useState(20);
 
@@ -344,11 +432,33 @@ export function Assignments() {
     const reg = regById.get(manual.candidateId);
     const to = schedules.data.find((s) => s.id === manual.scheduleId);
     if (mode === "move") {
-      const r = await confirm({ title: tr("Đổi ca thi"), description: tr("{0}: {1} → {2}. Lý do được lưu vào lịch sử đổi ca.", reg?.fullName, current?.scheduleName, to?.name), confirmText: tr("Đổi ca") });
+      const hasAttempts = current?.status !== "NOT_STARTED" || !!current?.attemptId;
+      const r = await confirm({
+        title: tr("Đổi ca thi"),
+        description: (
+          <div>
+            <p>{tr("{0}: {1} → {2}. Lý do được lưu vào lịch sử đổi ca.", reg?.fullName, current?.scheduleName, to?.name)}</p>
+            {hasAttempts && (
+              <p className="mt-2 text-adm-warning">
+                {tr("Thí sinh đã có lượt làm bài ở ca cũ. Chuyển ca sẽ đặt lại lượt thi cho ca mới.")}
+              </p>
+            )}
+          </div>
+        ),
+        confirmText: tr("Đổi ca"),
+      });
       if (!r.ok) return;
     }
     void op.run(async () => {
-      await adminApi("admin/assignments", { method: "POST", body: JSON.stringify({ candidateId: manual.candidateId, scheduleId: manual.scheduleId, reason: manual.reason.trim() || undefined }) });
+      await adminApi("admin/assignments", {
+        method: "POST",
+        body: JSON.stringify({
+          candidateId: manual.candidateId,
+          scheduleId: manual.scheduleId,
+          reason: manual.reason.trim() || undefined,
+          resetAttempts: mode === "move",
+        }),
+      });
       setManual({ candidateId: "", scheduleId: "", reason: "" });
       setManualSubmitted(false);
       await reload();
@@ -370,7 +480,7 @@ export function Assignments() {
     return list.data.filter((a) => (!scheduleFilter || a.scheduleId === scheduleFilter) && (!needle || a.candidateCode.toLowerCase().includes(needle) || a.fullName.toLowerCase().includes(needle)));
   }, [list.data, debouncedSearch, scheduleFilter]);
   const scheduleName = (id: string) => schedules.data.find((s) => s.id === id)?.name ?? id;
-  const movable = list.data.filter((a) => a.status === "NOT_STARTED" && !a.attemptId);
+  const movable = list.data;
   const loadingAll = list.loading || schedules.loading || candidates.loading;
 
   return (
@@ -533,9 +643,13 @@ export function Assignments() {
               </span>,
               regById.get(a.candidateId)?.accountStatus === "ACTIVE" ? status.active : status.pendingActivation,
               statusPill(a.status),
-              <div key="h" className="text-right">
+              <div key="act" className="flex items-center justify-end gap-1.5 text-right whitespace-nowrap">
+                <Button size="sm" variant="secondary" onClick={() => openMoveModal(a)}>
+                  {tr("Đổi ca")}
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => void openHistory(a)}>
-                  {tr("Lịch sử")}</Button>
+                  {tr("Lịch sử")}
+                </Button>
               </div>,
             ])}
             footer={filtered.length > 0 && <Pagination page={page} pageSize={pageSize} total={filtered.length} label={tr("thí sinh")} onPage={setPage} onPageSize={(n) => { setPageSize(n); setPage(1); }} />}
@@ -562,6 +676,79 @@ export function Assignments() {
           </ol>
         ) : (
           <p className="text-sm text-adm-sub">{tr("Thí sinh chưa đổi ca lần nào. Ca hiện tại:")}{" "}{historyFor?.scheduleName}.</p>
+        )}
+      </Drawer>
+
+      <Drawer
+        open={!!movingAssignment}
+        onClose={() => setMovingAssignment(null)}
+        title={tr("Đổi ca thi cho thí sinh")}
+        subtitle={movingAssignment ? `${movingAssignment.candidateCode} · ${movingAssignment.fullName}` : undefined}
+      >
+        {movingAssignment && (
+          <form onSubmit={submitMoveCandidate} className="space-y-4">
+            <div>
+              <p className="text-xs text-adm-sub">{tr("Ca thi hiện tại:")}</p>
+              <p className="text-sm font-semibold text-adm-text">{movingAssignment.scheduleName}</p>
+            </div>
+            <Field label={tr("Chuyển sang ca thi")} required>
+              <select
+                className={inputClass}
+                value={targetScheduleId}
+                onChange={(e) => setTargetScheduleId(e.target.value)}
+              >
+                <option value="">{tr("Chọn ca thi mới")}</option>
+                {schedules.data
+                  .filter((s) => s.id !== movingAssignment.scheduleId)
+                  .map((s) => (
+                    <option
+                      key={s.id}
+                      value={s.id}
+                      disabled={Number(s.assigned) >= s.capacity || !s.blueprintId}
+                    >
+                      {s.name} · {viTime(s.opensAt)} ({s.assigned}/{s.capacity})
+                      {!s.blueprintId ? tr(" · chưa có đề") : Number(s.assigned) >= s.capacity ? tr(" · đã đầy") : ""}
+                    </option>
+                  ))}
+              </select>
+            </Field>
+            <Field label={tr("Lý do đổi ca")} required>
+              <input
+                className={inputClass}
+                value={moveReason}
+                onChange={(e) => setMoveReason(e.target.value)}
+                placeholder={tr("VD: Trùng lịch học, xin đổi ca...")}
+                maxLength={500}
+              />
+            </Field>
+            {(movingAssignment.status !== "NOT_STARTED" || !!movingAssignment.attemptId) && (
+              <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+                <p className="font-semibold">{tr("Lưu ý: Thí sinh đã có lượt làm bài ở ca cũ")}</p>
+                <p className="mt-1">{tr("Để chuyển sang ca mới, cần đặt lại lượt làm bài cũ của thí sinh.")}</p>
+                <label className="mt-2 flex items-center gap-2 font-medium cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={resetAttemptsConfirmed}
+                    onChange={(e) => setResetAttemptsConfirmed(e.target.checked)}
+                    className="rounded border-amber-400 text-adm-primary"
+                  />
+                  <span>{tr("Xác nhận đặt lại lượt thi cho thí sinh ở ca mới")}</span>
+                </label>
+              </div>
+            )}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="ghost" type="button" onClick={() => setMovingAssignment(null)}>
+                {tr("Huỷ")}
+              </Button>
+              <Button
+                type="submit"
+                loading={op.busy}
+                disabled={!targetScheduleId || !moveReason.trim() || ((movingAssignment.status !== "NOT_STARTED" || !!movingAssignment.attemptId) && !resetAttemptsConfirmed)}
+              >
+                {tr("Xác nhận đổi ca")}
+              </Button>
+            </div>
+          </form>
         )}
       </Drawer>
     </div>

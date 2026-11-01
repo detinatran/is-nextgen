@@ -272,6 +272,12 @@ export class AdminOperationsController {
   ) {
     return this.admin.createSchedule(dto, req);
   }
+  @Delete("schedules/:id") deleteSchedule(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.admin.deleteSchedule(id, req);
+  }
   @Get("assignments") assignments(
     @Query("competitionId") competitionId?: string,
   ) {

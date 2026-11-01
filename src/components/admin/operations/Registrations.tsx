@@ -64,7 +64,7 @@ export default function Registrations() {
       ENABLE: { title: tr("Mở khoá tài khoản"), description: tr("{0} sẽ đăng nhập lại được.", row.fullName), confirmText: tr("Mở khoá") },
       DISABLE: { title: tr("Khoá tài khoản"), description: tr("{0} sẽ không đăng nhập được cho tới khi mở khoá. Phiên đang đăng nhập bị huỷ.", row.fullName), confirmText: tr("Khoá tài khoản"), danger: true },
       RESET: { title: tr("Cấp lại mật khẩu"), description: tr("Tạo mật khẩu mới cho {0} và huỷ mọi phiên đăng nhập cũ.", row.fullName), confirmText: tr("Cấp lại mật khẩu") },
-      DELETE: { title: tr("Xoá tài khoản"), description: tr("Tài khoản của {0} sẽ bị vô hiệu vĩnh viễn. Hồ sơ đăng ký vẫn được giữ.", row.fullName), confirmText: tr("Xoá tài khoản"), danger: true, reason: { label: tr("Lý do xoá"), required: true } },
+      DELETE: { title: tr("Xoá tài khoản & hồ sơ"), description: tr("Toàn bộ thông tin tài khoản và hồ sơ đăng ký của {0} sẽ được xoá vĩnh viễn khỏi hệ thống. Thí sinh sẽ có thể đăng ký lại từ đầu.", row.fullName), confirmText: tr("Xoá hoàn toàn"), danger: true, reason: { label: tr("Lý do xoá"), required: true } },
     }[action];
     const r = await confirm(copy);
     if (!r.ok) return;
@@ -107,12 +107,26 @@ export default function Registrations() {
     setPage(1);
   };
   const menuFor = (r: RegistrationItem) => {
-    if (r.deleted) return [];
-    if (!r.userId) return [{ label: tr("Cấp tài khoản"), onClick: () => void account(r, "PROVISION"), disabled: op.busy }];
+    if (r.deleted) {
+      return [
+        {
+          label: tr("Xoá hoàn toàn dữ liệu"),
+          onClick: () => void account(r, "DELETE"),
+          danger: true,
+          disabled: op.busy,
+        },
+      ];
+    }
+    if (!r.userId) {
+      return [
+        { label: tr("Cấp tài khoản"), onClick: () => void account(r, "PROVISION"), disabled: op.busy },
+        { label: tr("Xoá hồ sơ thí sinh"), onClick: () => void account(r, "DELETE"), danger: true, disabled: op.busy },
+      ];
+    }
     return [
       { label: r.accountStatus === "DISABLED" ? tr("Mở khoá tài khoản") : tr("Khoá tài khoản"), onClick: () => void account(r, r.accountStatus === "DISABLED" ? "ENABLE" : "DISABLE"), disabled: op.busy },
       { label: tr("Cấp lại mật khẩu"), onClick: () => void account(r, "RESET"), disabled: op.busy },
-      { label: tr("Xoá tài khoản"), onClick: () => void account(r, "DELETE"), danger: true, disabled: op.busy },
+      { label: tr("Xoá tài khoản & hồ sơ"), onClick: () => void account(r, "DELETE"), danger: true, disabled: op.busy },
     ];
   };
   const dupHref = `/admin/candidates/duplicate-reviews?${new URLSearchParams({ search: debouncedSearch, school: debouncedSchool })}`;

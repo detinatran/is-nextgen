@@ -3,6 +3,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsEmail,
   IsIn,
   IsInt,
@@ -49,12 +50,13 @@ export class ScheduleDto {
   @IsInt() @Min(60) @Max(14400) durationSeconds!: number;
   @IsInt() @Min(1) @Max(100000) capacity!: number;
   @IsInt() @Min(1) @Max(500) questionCount!: number;
-  @IsUUID() poolId!: string;
+  @IsOptional() @IsString() poolId?: string;
 }
 export class AssignmentDto {
   @IsUUID() candidateId!: string;
   @IsUUID() scheduleId!: string;
   @IsOptional() @IsString() @MaxLength(500) reason?: string;
+  @IsOptional() @IsBoolean() resetAttempts?: boolean;
 }
 class CriterionDto {
   @IsString() @MaxLength(40) code!: string;

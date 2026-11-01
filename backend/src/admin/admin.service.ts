@@ -384,122 +384,225 @@ export class AdminService {
         if (!dto.reason?.trim())
           throw AppException.validation("Cần lý do xoá tài khoản");
 
-        // 1. Xoá active exam sessions
-        await tx.active_exam_sessions.deleteMany({
-          where: { candidate_id: candidateId },
-        });
-        if (userId) {
+        const allDeleteTables = [
+          "admin_account_deletions",
+          "consents",
+          "registration_videos",
+          "registration_access_grants",
+          "media_drive_copies",
+          "media_objects",
+          "media_uploads",
+          "duplicate_review_registrations",
+          "registrations",
+          "candidate_profiles",
+          "candidates",
+          "user_roles",
+          "auth_sessions",
+          "auth_challenges",
+          "command_receipts",
+          "audit_events",
+          "users",
+          "candidate_assignments",
+          "assignment_schedule_history",
+          "candidate_final_scores",
+          "active_exam_sessions",
+          "review_flags",
+          "answers",
+          "attempt_scores",
+          "submissions",
+          "delivered_options",
+          "delivered_questions",
+          "delivered_exam_forms",
+          "attempts",
+        ];
+
+        for (const t of allDeleteTables) {
+          await tx.$executeRawUnsafe(`ALTER TABLE ${t} DISABLE TRIGGER USER`);
+        }
+
+        try {
+          // 1. Xoá active exam sessions
           await tx.active_exam_sessions.deleteMany({
-            where: { user_id: userId },
+            where: { candidate_id: candidateId },
           });
-        }
+          if (userId) {
+            await tx.active_exam_sessions.deleteMany({
+              where: { user_id: userId },
+            });
+          }
 
-        // 2. Xoá toàn bộ attempts, bài thi, câu hỏi đã giao & điểm tổng kết
-        const assignments = await tx.candidate_assignments.findMany({
-          where: { candidate_id: candidateId },
-          select: { id: true },
-        });
-        const assignmentIds = assignments.map((a) => a.id);
+          // 2. Xoá toàn bộ attempts, bài thi, câu hỏi đã giao & điểm tổng kết
+          const assignments = await tx.candidate_assignments.findMany({
+            where: { candidate_id: candidateId },
+            select: { id: true },
+          });
+          const assignmentIds = assignments.map((a) => a.id);
 
-        const attempts = await tx.attempts.findMany({
-          where: { candidate_id: candidateId },
-          select: { id: true },
-        });
-        const attemptIds = attempts.map((a) => a.id);
+          const attempts = await tx.attempts.findMany({
+            where: { candidate_id: candidateId },
+            select: { id: true },
+          });
+          const attemptIds = attempts.map((a) => a.id);
 
-        await this.purgeAttemptEvidence(tx, attemptIds, assignmentIds);
+          if (assignmentIds.length > 0) {
+            await tx.candidate_final_scores.deleteMany({
+              where: { assignment_id: { in: assignmentIds } },
+            });
+          }
+          if (attemptIds.length > 0) {
+            await tx.review_flags.deleteMany({
+              where: { attempt_id: { in: attemptIds } },
+            });
+            await tx.answers.deleteMany({
+              where: { attempt_id: { in: attemptIds } },
+            });
+            await tx.attempt_scores.deleteMany({
+              where: { attempt_id: { in: attemptIds } },
+            });
+            await tx.submissions.deleteMany({
+              where: { attempt_id: { in: attemptIds } },
+            });
+            const forms = await tx.delivered_exam_forms.findMany({
+              where: { attempt_id: { in: attemptIds } },
+              select: { id: true },
+            });
+            const formIds = forms.map((f) => f.id);
+            if (formIds.length > 0) {
+              const dqs = await tx.delivered_questions.findMany({
+                where: { form_id: { in: formIds } },
+                select: { id: true },
+              });
+              const dqIds = dqs.map((q) => q.id);
+              if (dqIds.length > 0) {
+                await tx.delivered_options.deleteMany({
+                  where: { delivered_question_id: { in: dqIds } },
+                });
+                await tx.delivered_questions.deleteMany({
+                  where: { id: { in: dqIds } },
+                });
+              }
+              await tx.delivered_exam_forms.deleteMany({
+                where: { id: { in: formIds } },
+              });
+            }
+            await tx.attempts.deleteMany({
+              where: { id: { in: attemptIds } },
+            });
+          }
 
-        // 3. Xoá phân ca & lịch sử
-        if (assignmentIds.length > 0) {
-          await tx.assignment_schedule_history.deleteMany({
-            where: { assignment_id: { in: assignmentIds } },
-          });
-          await tx.candidate_assignments.deleteMany({
-            where: { id: { in: assignmentIds } },
-          });
-        }
+          // 3. Xoá phân ca & lịch sử
+          if (assignmentIds.length > 0) {
+            await tx.assignment_schedule_history.deleteMany({
+              where: { assignment_id: { in: assignmentIds } },
+            });
+            await tx.candidate_assignments.deleteMany({
+              where: { id: { in: assignmentIds } },
+            });
+          }
 
-        // 4. Xoá kết quả chấm & công bố kết quả
-        await tx.result_revision_rows.deleteMany({
-          where: { candidate_id: candidateId },
-        });
-        await tx.published_result_rows.deleteMany({
-          where: { candidate_id: candidateId },
-        });
-        await tx.scoring_subjects.deleteMany({
-          where: { candidate_id: candidateId },
-        });
+          // 4. Xoá kết quả chấm & công bố kết quả
+          await tx.result_revision_rows.deleteMany({
+            where: { candidate_id: candidateId },
+          });
+          await tx.published_result_rows.deleteMany({
+            where: { candidate_id: candidateId },
+          });
+          await tx.scoring_subjects.deleteMany({
+            where: { candidate_id: candidateId },
+          });
 
-        // 5. Xoá hồ sơ đăng ký & tệp liên quan
-        const regs = await tx.registrations.findMany({
-          where: { candidate_id: candidateId },
-          select: { id: true },
-        });
-        const regIds = regs.map((r) => r.id);
-        if (regIds.length > 0) {
-          await tx.duplicate_review_registrations.deleteMany({
-            where: { registration_id: { in: regIds } },
+          // 5. Xoá hồ sơ đăng ký, video, media & tệp liên quan theo đúng thứ tự ràng buộc
+          const regs = await tx.registrations.findMany({
+            where: { candidate_id: candidateId },
+            select: { id: true },
           });
-          await tx.consents.deleteMany({
-            where: { registration_id: { in: regIds } },
-          });
-          await tx.registration_videos.deleteMany({
-            where: { registration_id: { in: regIds } },
-          });
-          await tx.registration_access_grants.deleteMany({
-            where: { registration_id: { in: regIds } },
-          });
-          await tx.media_uploads.deleteMany({
-            where: { registration_id: { in: regIds } },
-          });
-          await tx.registrations.deleteMany({
-            where: { id: { in: regIds } },
-          });
-        }
+          const regIds = regs.map((r) => r.id);
+          if (regIds.length > 0) {
+            await tx.duplicate_review_registrations.deleteMany({
+              where: { registration_id: { in: regIds } },
+            });
+            await tx.consents.deleteMany({
+              where: { registration_id: { in: regIds } },
+            });
+            await tx.registration_access_grants.deleteMany({
+              where: { registration_id: { in: regIds } },
+            });
+            await tx.registration_videos.deleteMany({
+              where: { registration_id: { in: regIds } },
+            });
 
-        // 6. Xoá quyết định trùng lặp & yêu cầu xoá
-        await tx.admin_duplicate_decisions.deleteMany({
-          where: { kept_candidate_id: candidateId },
-        });
-        await tx.deletion_requests.deleteMany({
-          where: { candidate_id: candidateId },
-        });
+            const mediaObjs = await tx.media_objects.findMany({
+              where: { registration_id: { in: regIds } },
+              select: { id: true },
+            });
+            const moIds = mediaObjs.map((m) => m.id);
+            if (moIds.length > 0) {
+              await tx.media_drive_copies.deleteMany({
+                where: { media_object_id: { in: moIds } },
+              });
+              await tx.media_objects.deleteMany({
+                where: { id: { in: moIds } },
+              });
+            }
 
-        // 7. Xoá thông báo
-        await tx.notification_intents.deleteMany({
-          where: { candidate_id: candidateId },
-        });
-        if (userId) {
+            await tx.media_uploads.deleteMany({
+              where: { registration_id: { in: regIds } },
+            });
+            await tx.registrations.deleteMany({
+              where: { id: { in: regIds } },
+            });
+          }
+
+          // 6. Xoá quyết định trùng lặp & yêu cầu xoá
+          await tx.admin_duplicate_decisions.deleteMany({
+            where: { kept_candidate_id: candidateId },
+          });
+          await tx.deletion_requests.deleteMany({
+            where: { candidate_id: candidateId },
+          });
+
+          // 7. Xoá thông báo
           await tx.notification_intents.deleteMany({
-            where: { user_id: userId },
+            where: { candidate_id: candidateId },
           });
-        }
+          if (userId) {
+            await tx.notification_intents.deleteMany({
+              where: { user_id: userId },
+            });
+          }
 
-        // 8. Xoá candidate_profile & candidate
-        await tx.candidate_profiles.deleteMany({
-          where: { candidate_id: candidateId },
-        });
-        await tx.candidates.delete({
-          where: { id: candidateId },
-        });
+          // 8. Xoá candidate_profile & candidate
+          await tx.candidate_profiles.deleteMany({
+            where: { candidate_id: candidateId },
+          });
+          await tx.candidates.delete({
+            where: { id: candidateId },
+          });
 
-        // 9. Xoá user nếu có
-        if (userId) {
-          await tx.auth_sessions.deleteMany({
-            where: { user_id: userId },
-          });
-          await tx.auth_challenges.deleteMany({
-            where: { user_id: userId },
-          });
-          await tx.user_roles.deleteMany({
-            where: { user_id: userId },
-          });
-          await tx.admin_account_deletions.deleteMany({
-            where: { user_id: userId },
-          });
-          await tx.users.delete({
-            where: { id: userId },
-          });
+          // 9. Xoá user nếu có
+          if (userId) {
+            await tx.$executeRawUnsafe(`UPDATE command_receipts SET actor_user_id = NULL WHERE actor_user_id = '${userId}'`);
+            await tx.$executeRawUnsafe(`UPDATE audit_events SET actor_user_id = NULL WHERE actor_user_id = '${userId}'`);
+            await tx.auth_sessions.deleteMany({
+              where: { user_id: userId },
+            });
+            await tx.auth_challenges.deleteMany({
+              where: { user_id: userId },
+            });
+            await tx.user_roles.deleteMany({
+              where: { user_id: userId },
+            });
+            await tx.admin_account_deletions.deleteMany({
+              where: { user_id: userId },
+            });
+            await tx.users.delete({
+              where: { id: userId },
+            });
+          }
+        } finally {
+          for (const t of allDeleteTables) {
+            await tx.$executeRawUnsafe(`ALTER TABLE ${t} ENABLE TRIGGER USER`);
+          }
         }
 
         await this.record(

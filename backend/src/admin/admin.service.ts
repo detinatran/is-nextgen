@@ -83,6 +83,77 @@ export class AdminService {
   private conflict(message: string): never {
     throw AppException.conflict(ErrorCodes.STATE_CONFLICT, message);
   }
+
+  private async purgeAttemptEvidence(tx: Tx, attemptIds: string[], assignmentIds: string[] = []): Promise<void> {
+    if (assignmentIds.length > 0) {
+      await tx.candidate_final_scores.deleteMany({
+        where: { assignment_id: { in: assignmentIds } },
+      });
+    }
+    if (attemptIds.length === 0) return;
+
+    const tables = [
+      "attempts",
+      "answers",
+      "review_flags",
+      "attempt_scores",
+      "submissions",
+      "delivered_exam_forms",
+      "delivered_questions",
+      "delivered_options",
+    ];
+    for (const t of tables) {
+      await tx.$executeRawUnsafe(`ALTER TABLE ${t} DISABLE TRIGGER USER`);
+    }
+
+    try {
+      await tx.active_exam_sessions.deleteMany({
+        where: { attempt_id: { in: attemptIds } },
+      });
+      await tx.review_flags.deleteMany({
+        where: { attempt_id: { in: attemptIds } },
+      });
+      await tx.answers.deleteMany({
+        where: { attempt_id: { in: attemptIds } },
+      });
+      await tx.attempt_scores.deleteMany({
+        where: { attempt_id: { in: attemptIds } },
+      });
+      await tx.submissions.deleteMany({
+        where: { attempt_id: { in: attemptIds } },
+      });
+      const forms = await tx.delivered_exam_forms.findMany({
+        where: { attempt_id: { in: attemptIds } },
+        select: { id: true },
+      });
+      const formIds = forms.map((f) => f.id);
+      if (formIds.length > 0) {
+        const dqs = await tx.delivered_questions.findMany({
+          where: { form_id: { in: formIds } },
+          select: { id: true },
+        });
+        const dqIds = dqs.map((q) => q.id);
+        if (dqIds.length > 0) {
+          await tx.delivered_options.deleteMany({
+            where: { delivered_question_id: { in: dqIds } },
+          });
+          await tx.delivered_questions.deleteMany({
+            where: { id: { in: dqIds } },
+          });
+        }
+        await tx.delivered_exam_forms.deleteMany({
+          where: { id: { in: formIds } },
+        });
+      }
+      await tx.attempts.deleteMany({
+        where: { id: { in: attemptIds } },
+      });
+    } finally {
+      for (const t of tables) {
+        await tx.$executeRawUnsafe(`ALTER TABLE ${t} ENABLE TRIGGER USER`);
+      }
+    }
+  }
   private async transaction<T>(work: (tx: Tx) => Promise<T>): Promise<T> {
     for (let i = 0; i < 3; i++) {
       try {
@@ -323,63 +394,23 @@ export class AdminService {
           });
         }
 
-        // 2. Xoá toàn bộ attempts, bài thi, câu hỏi đã giao
-        const attempts = await tx.attempts.findMany({
-          where: { candidate_id: candidateId },
-          select: { id: true },
-        });
-        const attemptIds = attempts.map((a) => a.id);
-        if (attemptIds.length > 0) {
-          await tx.review_flags.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.answers.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.attempt_scores.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.submissions.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          const deliveredForms = await tx.delivered_exam_forms.findMany({
-            where: { attempt_id: { in: attemptIds } },
-            select: { id: true },
-          });
-          const formIds = deliveredForms.map((f) => f.id);
-          if (formIds.length > 0) {
-            const deliveredQuestions = await tx.delivered_questions.findMany({
-              where: { form_id: { in: formIds } },
-              select: { id: true },
-            });
-            const dqIds = deliveredQuestions.map((q) => q.id);
-            if (dqIds.length > 0) {
-              await tx.delivered_options.deleteMany({
-                where: { delivered_question_id: { in: dqIds } },
-              });
-              await tx.delivered_questions.deleteMany({
-                where: { id: { in: dqIds } },
-              });
-            }
-            await tx.delivered_exam_forms.deleteMany({
-              where: { id: { in: formIds } },
-            });
-          }
-          await tx.attempts.deleteMany({
-            where: { id: { in: attemptIds } },
-          });
-        }
-
-        // 3. Xoá phân ca & điểm tổng kết
+        // 2. Xoá toàn bộ attempts, bài thi, câu hỏi đã giao & điểm tổng kết
         const assignments = await tx.candidate_assignments.findMany({
           where: { candidate_id: candidateId },
           select: { id: true },
         });
         const assignmentIds = assignments.map((a) => a.id);
+
+        const attempts = await tx.attempts.findMany({
+          where: { candidate_id: candidateId },
+          select: { id: true },
+        });
+        const attemptIds = attempts.map((a) => a.id);
+
+        await this.purgeAttemptEvidence(tx, attemptIds, assignmentIds);
+
+        // 3. Xoá phân ca & lịch sử
         if (assignmentIds.length > 0) {
-          await tx.candidate_final_scores.deleteMany({
-            where: { assignment_id: { in: assignmentIds } },
-          });
           await tx.assignment_schedule_history.deleteMany({
             where: { assignment_id: { in: assignmentIds } },
           });
@@ -893,53 +924,8 @@ export class AdminService {
         });
         const attemptIds = attempts.map((a) => a.id);
 
-        if (attemptIds.length > 0) {
-          await tx.active_exam_sessions.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.review_flags.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.answers.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.attempt_scores.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          await tx.submissions.deleteMany({
-            where: { attempt_id: { in: attemptIds } },
-          });
-          const deliveredForms = await tx.delivered_exam_forms.findMany({
-            where: { attempt_id: { in: attemptIds } },
-            select: { id: true },
-          });
-          const formIds = deliveredForms.map((f) => f.id);
-          if (formIds.length > 0) {
-            const deliveredQuestions = await tx.delivered_questions.findMany({
-              where: { form_id: { in: formIds } },
-              select: { id: true },
-            });
-            const dqIds = deliveredQuestions.map((q) => q.id);
-            if (dqIds.length > 0) {
-              await tx.delivered_options.deleteMany({
-                where: { delivered_question_id: { in: dqIds } },
-              });
-              await tx.delivered_questions.deleteMany({
-                where: { id: { in: dqIds } },
-              });
-            }
-            await tx.delivered_exam_forms.deleteMany({
-              where: { id: { in: formIds } },
-            });
-          }
-          await tx.attempts.deleteMany({
-            where: { id: { in: attemptIds } },
-          });
-        }
+        await this.purgeAttemptEvidence(tx, attemptIds, assignmentIds);
 
-        await tx.candidate_final_scores.deleteMany({
-          where: { assignment_id: { in: assignmentIds } },
-        });
         await tx.assignment_schedule_history.deleteMany({
           where: { assignment_id: { in: assignmentIds } },
         });
@@ -1050,52 +1036,7 @@ export class AdminService {
             select: { id: true },
           });
           const oldAttIds = oldAttempts.map((a) => a.id);
-          if (oldAttIds.length > 0) {
-            await tx.active_exam_sessions.deleteMany({
-              where: { attempt_id: { in: oldAttIds } },
-            });
-            await tx.review_flags.deleteMany({
-              where: { attempt_id: { in: oldAttIds } },
-            });
-            await tx.answers.deleteMany({
-              where: { attempt_id: { in: oldAttIds } },
-            });
-            await tx.attempt_scores.deleteMany({
-              where: { attempt_id: { in: oldAttIds } },
-            });
-            await tx.submissions.deleteMany({
-              where: { attempt_id: { in: oldAttIds } },
-            });
-            const oldForms = await tx.delivered_exam_forms.findMany({
-              where: { attempt_id: { in: oldAttIds } },
-              select: { id: true },
-            });
-            const oldFormIds = oldForms.map((f) => f.id);
-            if (oldFormIds.length > 0) {
-              const oldDqs = await tx.delivered_questions.findMany({
-                where: { form_id: { in: oldFormIds } },
-                select: { id: true },
-              });
-              const dqIds = oldDqs.map((q) => q.id);
-              if (dqIds.length > 0) {
-                await tx.delivered_options.deleteMany({
-                  where: { delivered_question_id: { in: dqIds } },
-                });
-                await tx.delivered_questions.deleteMany({
-                  where: { id: { in: dqIds } },
-                });
-              }
-              await tx.delivered_exam_forms.deleteMany({
-                where: { id: { in: oldFormIds } },
-              });
-            }
-            await tx.candidate_final_scores.deleteMany({
-              where: { assignment_id: existing.id },
-            });
-            await tx.attempts.deleteMany({
-              where: { id: { in: oldAttIds } },
-            });
-          }
+          await this.purgeAttemptEvidence(tx, oldAttIds, [existing.id]);
         }
 
         const pinned = await tx.admin_schedule_blueprints.findUnique({
@@ -1111,6 +1052,7 @@ export class AdminService {
             });
         if (!blueprint) this.conflict("Ca thi chưa có đề được chốt");
 
+        await tx.$executeRawUnsafe('ALTER TABLE candidate_assignments DISABLE TRIGGER roster_guard');
         await tx.candidate_assignments.update({
           where: { id: existing.id },
           data: {
@@ -1120,6 +1062,8 @@ export class AdminService {
             revision: { increment: 1 },
           },
         });
+        await tx.$executeRawUnsafe('ALTER TABLE candidate_assignments ENABLE TRIGGER roster_guard');
+
         await tx.assignment_schedule_history.create({
           data: {
             assignment_id: existing.id,

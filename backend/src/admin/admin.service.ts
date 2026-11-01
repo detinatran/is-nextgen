@@ -1041,8 +1041,7 @@ export class AdminService {
         const attemptCount = await tx.attempts.count({ where: { assignment_id: existing.id } });
         if (attemptCount > 0) {
           if (!dto.resetAttempts) {
-            throw AppException.conflict(
-              "ATTEMPTS_EXIST",
+            this.conflict(
               "Thí sinh đã có bài thi ở ca cũ. Cần chọn đặt lại lượt thi để chuyển sang ca mới.",
             );
           }

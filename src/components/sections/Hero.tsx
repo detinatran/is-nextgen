@@ -59,6 +59,9 @@ const SLIDE_IMAGE: Record<string, string> = {
   giaoduc: "/images/news/giaoduc-1.webp",
   ttxvn: "/images/news/ttxvn-1.jpg",
   vtcnewsInterview: "/images/news/vtc-interview-1.webp",
+  tcdn: "/images/news/tcdn.jpg",
+  gtvhKt: "/images/news/gtvh-kt-1.jpg",
+  gtvhCst: "/images/news/gtvh-cst.png",
 };
 const MAX_NEWS_SLIDES = 5;
 

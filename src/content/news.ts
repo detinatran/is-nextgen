@@ -36,6 +36,41 @@ interface SharedArticleMeta {
 }
 
 const sharedMeta: Record<string, SharedArticleMeta> = {
+  tcdn: {
+    id: "tcdn",
+    slug: "tcdn-mo-don-dang-ky-cuoc-thi-nextgen-manager-2026",
+    originalTitle: "Mở đơn đăng ký cuộc thi NextGen Manager 2026",
+    originalUrl:
+      "https://taichinhdoanhnghiep.net.vn/mo-don-dang-ky-cuoc-thi-nextgen-manager-2026-d71017.html",
+    publishedAt: "2026-11-03T10:01:00+07:00",
+    publishedDateLabel: "03/11/2026 · 10:01",
+    thumbnail: "/images/news/tcdn.jpg",
+    author: "PV",
+  },
+  gtvhKt: {
+    id: "gtvh-kt",
+    slug: "giaitrivanhoa-nextgen-manager-2026-kien-tao-he-nha-quan-tri-voi-ky-nguyen-ai",
+    originalTitle:
+      "NextGen Manager 2026 - Kiến tạo thế hệ nhà quản trị với kỷ nguyên AI",
+    originalUrl:
+      "https://www.giaitrivanhoa.vn/2026/11/nextgen-manager-2026-kien-tao-he-nha.html",
+    publishedAt: "2026-11-03T10:00:00+07:00",
+    publishedDateLabel: "03/11/2026",
+    thumbnail: "/images/news/gtvh-kt-1.jpg",
+    author: "Phương Nhi",
+  },
+  gtvhCst: {
+    id: "gtvh-cst",
+    slug: "giaitrivanhoa-nextgen-manager-2026-co-hoi-thu-suc-voi-nang-luc-quan-tri",
+    originalTitle:
+      "NextGen Manager 2026 - Cơ hội thử sức với năng lực quản trị",
+    originalUrl:
+      "https://www.giaitrivanhoa.vn/2026/11/nextgen-manager-2026-co-hoi-thu-suc-voi.html",
+    publishedAt: "2026-11-02T10:00:00+07:00",
+    publishedDateLabel: "02/11/2026",
+    thumbnail: "/images/news/gtvh-cst.png",
+    author: "Ban Biên tập",
+  },
   giaoduc: {
     id: "giaoduc",
     slug: "giaoduc-sinh-vien-truong-quoc-te-dhqghn-thu-suc-voi-bai-toan-quan-tri-doanh-nghiep-trong-ky-nguyen-ai",
@@ -99,6 +134,235 @@ const sharedMeta: Record<string, SharedArticleMeta> = {
 };
 
 export const newsArticlesVi: NewsArticleItem[] = [
+  {
+    ...sharedMeta.tcdn,
+    title: sharedMeta.tcdn.originalTitle,
+    source: "Tạp chí Tài chính Doanh nghiệp",
+    summary:
+      "Cuộc thi NextGen Manager 2026 với chủ đề “Shaping the AI-Era Leader 2026” chính thức mở đơn, mang đến sân chơi chuyên nghiệp để bạn thử thách tư duy, chinh phục tri thức và định hình tương lai trong kỷ nguyên số.",
+    thumbnailAlt:
+      "Cuộc thi NextGen Manager 2026 với chủ đề Shaping the AI-Era Leader 2026 chính thức mở đơn đăng ký.",
+    hasFullText: true,
+    sapo:
+      "TCDN - Cuộc thi NextGen Manager 2026 với chủ đề “Shaping the AI-Era Leader 2026” chính thức mở đơn, mang đến sân chơi chuyên nghiệp để bạn thử thách tư duy, chinh phục tri thức và định hình tương lai trong kỷ nguyên số.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Trí tuệ nhân tạo đang thay đổi cách chúng ta làm việc, từ tư duy đến ra quyết định. Khi công nghệ ngày càng xử lý tốt những bài toán phức tạp, điều gì sẽ làm nên sự khác biệt của một nhà quản trị?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "✨ Với chủ đề mùa 1 “𝐒𝐡𝐚𝐩𝐢𝐧𝐠 𝐭𝐡𝐞 𝐀𝐈-𝐄𝐫𝐚 𝐋𝐞𝐚𝐝𝐞𝐫 𝟐𝟎𝟐𝟔”, NextGen Manager 2026 là sân chơi dành cho những bạn trẻ đam mê quản trị, dám tư duy độc lập và sẵn sàng dẫn dắt trong kỷ nguyên AI. Được tổ chức bởi Khoa Kinh tế và Quản lý Trường Quốc tế - ĐHQGHN phối hợp cùng Câu lạc bộ iSupport, Câu lạc bộ Marketing Trường Quốc tế - IMC và Câu lạc bộ Kỹ Năng & Sự Kiện - IMRES, cuộc thi đưa thí sinh đến gần hơn với thực tế quản trị doanh nghiệp thông qua ba vòng thi:",
+      },
+      {
+        type: "image",
+        src: "/images/news/tcdn.jpg",
+        caption:
+          "Cuộc thi NextGen Manager 2026 với chủ đề “Shaping the AI-Era Leader 2026” chính thức mở đơn.",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Vòng 1: Khám phá (08h00 - 12h00 07/11/2026)",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Vòng 2: Quyết định (21/11/2026)",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Vòng 3: Chinh phục (05/12/2026)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "👥 Đối tượng tham gia: Sinh viên Trường Quốc tế – ĐHQGHN và sinh viên các trường đại học, học viện trên toàn quốc.",
+      },
+      {
+        type: "paragraph",
+        content: "🗣️ Ngôn ngữ cuộc thi: Song ngữ (Tiếng Anh/ Tiếng Việt)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tại mỗi vòng thi, NextGen Manager 2026 mang đến chuỗi thử thách mô phỏng sát với thực tế doanh nghiệp, nơi bạn không chỉ phân tích vấn đề và tìm kiếm giải pháp, mà còn phải cân nhắc các lựa chọn, đưa ra quyết định và chịu trách nhiệm với phương án của mình. Đây là cơ hội để bạn khám phá giới hạn của bản thân và từng bước hoàn thiện bản lĩnh của một nhà quản trị.",
+      },
+      {
+        type: "quote",
+        content:
+          "📍 Đăng ký tham gia cuộc thi NextGen Manager 2026 ngay tại: https://nextgen.vnuis.edu.vn\n📌 Thời hạn đóng cổng đăng ký: 23h59’ 06/11/2026\n📎 Thông tin chi tiết: https://bit.ly/3TTJery\n🔗 Kênh hỗ trợ thí sinh và cập nhật thông tin cuộc thi: https://bit.ly/4ztSWje",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.gtvhKt,
+    title: sharedMeta.gtvhKt.originalTitle,
+    source: "Chuyên trang Giải trí & Văn hóa",
+    summary:
+      "Cuộc thi NextGen Manager 2026 với chủ đề “Chân dung Nhà quản trị trong kỷ nguyên AI” chú trọng đánh giá năng lực hành vi và khả năng ra quyết định thực chiến, khẳng định vai trò cầu nối chiến lược giữa Nhà trường và Doanh nghiệp.",
+    thumbnailAlt:
+      "Thí sinh NextGen Manager được cọ xát cùng những bài toán thực chiến, biến lý thuyết quản trị thành giải pháp đột phá cho doanh nghiệp.",
+    hasFullText: true,
+    sapo:
+      "Trong bối cảnh trí tuệ nhân tạo (AI) và tự động hóa phát triển mạnh mẽ, phương thức vận hành doanh nghiệp không ngừng thay đổi, đặt ra yêu cầu ngày càng cao về năng lực quản trị. Đây cũng là những năng lực sinh viên cần sớm rèn luyện để chuẩn bị cho môi trường làm việc trong tương lai.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Xuất phát từ yêu cầu đó, cuộc thi “Nhà Quản trị trong Kỷ nguyên mới” (NextGen Manager 2026 - Shaping the AI-Era Leader) do Khoa Kinh tế và Quản lý Trường Quốc tế phối hợp dưới sự thực hiện của Liên chi đoàn Khoa Kinh tế và Quản lý, Câu lạc bộ Hỗ trợ Học tập và Phát triển Kỹ năng mềm iSupport, Câu lạc bộ Marketing Trường Quốc Tế - IMC và Câu lạc bộ Kỹ năng và Sự kiện - IMRES tổ chức, nhằm tạo cơ hội để sinh viên thử sức với các tình huống mô phỏng và bài toán thực tiễn. Thay vì chỉ tập trung vào kiến thức chuyên môn, cuộc thi chú trọng đánh giá khả năng vận dụng, giải quyết vấn đề và ra quyết định của thí sinh.",
+      },
+      {
+        type: "heading",
+        content: "Đưa năng lực quản trị từ lý thuyết đến thực tiễn",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Quản trị không chỉ đòi hỏi kiến thức chuyên môn mà còn yêu cầu khả năng ra quyết định khi thông tin chưa đầy đủ, nguồn lực hạn chế và lợi ích giữa các bên không đồng nhất. Vì vậy, người học cần tiếp cận các tình huống thực tiễn để vận dụng kiến thức và chịu trách nhiệm với lựa chọn của mình.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-1.jpg",
+        caption:
+          "Thí sinh NextGen Manager được cọ xát cùng những bài toán thực chiến, biến lý thuyết quản trị thành giải pháp đột phá cho doanh nghiệp.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đây cũng là định hướng xuyên suốt của NextGen Manager 2026. Qua các thử thách cá nhân và thảo luận nhóm, thí sinh rèn luyện tư duy phân tích, tư duy hệ thống và khả năng giải quyết vấn đề. Đặc biệt, phần thi nhóm không có “người điều phối” được chỉ định trước, yêu cầu các thành viên chủ động tổ chức, trao đổi và thống nhất phương án. Qua đó, năng lực lãnh đạo được thể hiện qua khả năng dẫn dắt, lắng nghe và phối hợp.",
+      },
+      {
+        type: "heading",
+        content: "Định hình năng lực nhà quản trị trong kỷ nguyên AI",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Điểm nổi bật của cuộc thi là đánh giá thí sinh dựa trên Khung Năng lực Hành vi, thay vì chỉ chú trọng kiến thức chuyên môn hay kết quả thử thách. Các năng lực như tư duy phân tích, lãnh đạo, giao tiếp, phối hợp nhóm, đạo đức và trách nhiệm được đánh giá qua các tình huống cụ thể, qua đó làm rõ cách thí sinh xử lý công việc và tương tác với tập thể.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-2.jpg",
+        caption:
+          "Phát triển năng lực quản trị gắn với thực tiễn doanh nghiệp, mở ra cơ hội nghề nghiệp cho thế hệ nhà quản trị trẻ trong kỷ nguyên AI.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Với chủ đề “Chân dung Nhà quản trị trong kỷ nguyên AI”, cuộc thi đề cao tư duy độc lập và khả năng làm chủ công nghệ. Dù AI có thể hỗ trợ xử lý thông tin, đề xuất phương án, nhà quản trị vẫn cần tự đánh giá, lựa chọn và chịu trách nhiệm với quyết định cuối cùng. Qua đó, sinh viên được khuyến khích ứng dụng AI gắn với tư duy phản biện và khả năng kiểm chứng thông tin.",
+      },
+      {
+        type: "heading",
+        content: "Tăng cường kết nối giữa Nhà trường và Doanh nghiệp",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bên cạnh phát triển năng lực cá nhân, cuộc thi còn hướng đến gắn kết đào tạo với nhu cầu thực tiễn của doanh nghiệp. Việc đưa các bài toán quản trị của doanh nghiệp vào vòng Chung kết giúp sinh viên tiếp cận những vấn đề trong vận hành tổ chức, vận dụng kiến thức và nhận phản hồi chuyên môn từ đại diện doanh nghiệp. Qua đó, thí sinh có cơ hội hiểu rõ hơn yêu cầu của môi trường làm việc và những năng lực cần hoàn thiện.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bên cạnh các phần thi, hoạt động tham quan doanh nghiệp và đêm giao lưu (Networking Gala Dinner) tạo cơ hội để sinh viên gặp gỡ, trao đổi với nhà quản lý, chuyên gia và cựu sinh viên. Qua đó, người học có thể tiếp cận kinh nghiệm quản lý thực tiễn, tìm hiểu mô hình doanh nghiệp và mở rộng kết nối nghề nghiệp.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-3.jpg",
+        caption:
+          "NextGen Manager khẳng định vai trò cầu nối chiến lược giữa nhà trường và doanh nghiệp, mang đến cơ hội trải nghiệm và kết nối cho thế hệ quản trị trẻ.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Với quy mô dự kiến 400-500 thí sinh, IS-NextGen Manager 2026 hướng đến sinh viên Trường Quốc tế, các đơn vị thành viên và trực thuộc ĐHQGHN cùng nhiều trường đại học khác. Qua ba vòng thi, thí sinh có cơ hội giao lưu, học hỏi và thử sức qua các thử thách quản trị, từ thể hiện năng lực cá nhân đến phối hợp, giải quyết vấn đề trong tập thể.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Không chỉ là sân chơi thử sức với năng lực quản trị, IS-NextGen Manager 2026 còn góp phần phát triển tiềm năng lãnh đạo và tăng cường kết nối giữa Nhà trường với doanh nghiệp. Qua đó, cuộc thi giúp sinh viên hiểu rõ hơn yêu cầu của môi trường kinh doanh hiện đại, từng bước hoàn thiện năng lực và chuẩn bị cho con đường nghề nghiệp tương lai.",
+      },
+      {
+        type: "quote",
+        content:
+          "Box Thông Tin: NextGen Manager 2026 - Cơ hội thử sức với năng lực quản trị\n\nNextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế - ĐHQGHN tổ chức, dành cho sinh viên hệ đại học chính quy tại các trường đại học, học viện trên toàn quốc. Cuộc thi hoàn toàn miễn phí.\n\nThời hạn đăng ký: Đến hết ngày 06/11/2026 tại website: nextgen.vnuis.edu.vn.\n\nVòng 1 - DISCOVER (07/11): Video nói về chủ đề bất kỳ bằng Tiếng Anh hoặc Tiếng Việt, kết hợp bài kiểm tra trực tuyến về tư duy quản trị, lựa chọn 40 thí sinh.\n\nVòng 2 - DECIDE (21/11): Thảo luận nhóm không có nhóm trưởng được chỉ định, lựa chọn 16 thí sinh chia thành 4 đội.\n\nVòng 3 - DELIVER (05/12): Giải quyết bài toán kinh doanh thực tế từ doanh nghiệp đối tác; 6 thí sinh xuất sắc nhất tiếp tục bước vào phần thi cá nhân.\n\nBên cạnh các vòng thi, chương trình còn có NextGen Business Field Trip (14/11) và NextGen Gala Dinner Networking (28/11).\n\nCuộc thi có 8 giải thưởng với tổng giá trị hơn 100 triệu đồng, cùng các cơ hội học bổng, thực tập và làm việc tại doanh nghiệp. Thí sinh tham gia vòng 2 được cấp giấy chứng nhận.",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.gtvhCst,
+    title: sharedMeta.gtvhCst.originalTitle,
+    source: "Chuyên trang Giải trí & Văn hóa",
+    summary:
+      "Lần đầu tiên, Cuộc thi “Nhà Quản trị trong Kỷ nguyên mới” (IS-NextGen Manager Challenge 2026) được tổ chức với chủ đề “Chân dung Nhà quản trị trong kỷ nguyên AI”, hướng đến việc đánh giá năng lực quản lý và điều hành của sinh viên thông qua những tình huống mô phỏng thực tiễn.",
+    thumbnailAlt:
+      "Hành trình tìm kiếm những nhà quản trị thế hệ mới chính thức bắt đầu với IS-NextGen Manager Challenge 2026.",
+    hasFullText: true,
+    sapo:
+      "Lần đầu tiên, Cuộc thi “Nhà Quản trị trong Kỷ nguyên mới” (IS-NextGen Manager Challenge 2026) được tổ chức với chủ đề “Chân dung Nhà quản trị trong kỷ nguyên AI”. Cuộc thi hướng đến việc đánh giá năng lực quản lý và điều hành của sinh viên thông qua những tình huống mô phỏng thực tiễn, đặt trọng tâm vào khả năng phân tích, ra quyết định và thích ứng với những thay đổi trong môi trường doanh nghiệp.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "IS-NextGen Manager Challenge 2026 là cuộc thi do Khoa Kinh tế và Quản lý, Trường Quốc tế - Đại học Quốc gia Hà Nội tổ chức. Cuộc thi hướng đến những sinh viên quan tâm đến lĩnh vực quản trị, mong muốn vận dụng kiến thức chuyên môn và phát triển năng lực quản lý, điều hành thông qua quá trình trải nghiệm và giải quyết các tình huống thực tiễn.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Không chỉ là sân chơi giúp sinh viên kiểm chứng kiến thức về quản trị, cuộc thi còn mang đến cơ hội tiếp cận những tình huống mô phỏng gần với hoạt động doanh nghiệp, qua đó rèn luyện khả năng xử lý vấn đề, phối hợp và đưa ra quyết định trong điều kiện thông tin không đầy đủ, nguồn lực có hạn.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Mùa thi đầu tiên tập trung khai thác chủ đề “Chân dung Nhà quản trị trong kỷ nguyên AI”, trong bối cảnh trí tuệ nhân tạo đang từng bước thay đổi cách thức vận hành và quản lý của doanh nghiệp. Khi công nghệ có thể hỗ trợ xử lý thông tin và đề xuất phương án, yêu cầu đặt ra đối với nhà quản trị không chỉ là khả năng sử dụng công cụ mà còn nằm ở việc đánh giá thông tin, cân nhắc các lựa chọn và chịu trách nhiệm với quyết định của mình.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Với trọng tâm là phát triển năng lực quản trị trong bối cảnh trí tuệ nhân tạo ngày càng được ứng dụng rộng rãi, cuộc thi hướng tới việc giúp thí sinh rèn luyện tư duy phản biện, khả năng đánh giá thông tin và đưa ra quyết định có trách nhiệm khi làm việc cùng công nghệ.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-cst.png",
+        caption:
+          "Hành trình tìm kiếm những nhà quản trị thế hệ mới chính thức bắt đầu với IS-NextGen Manager Challenge 2026. (Ảnh: BTC)",
+      },
+      {
+        type: "heading",
+        content: "Cấu trúc các vòng thi thực chiến",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Cuộc thi gồm 3 vòng, được thiết kế nhằm giúp thí sinh từng bước tiếp cận và thể hiện các năng lực quản trị ở những cấp độ khác nhau.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tại vòng đầu tiên, thí sinh cần giới thiệu bản thân qua video dài tối đa 90 giây, trả lời câu hỏi tình huống quản trị và thực hiện bài kiểm tra trực tuyến về tư duy số liệu, tư duy logic và kiến thức quản trị nền tảng.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ở vòng thứ 2, 40 thí sinh được chia thành các nhóm để giải quyết tình huống quản trị có yếu tố xung đột lợi ích trong thời gian giới hạn. Không có nhóm trưởng được chỉ định, các thí sinh cần chủ động điều phối thảo luận, xử lý bất đồng và đưa ra quyết định chung, qua đó thể hiện năng lực lãnh đạo, giao tiếp và hợp tác.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tại vòng Chung kết, thí sinh thực hiện thử thách cá nhân mô phỏng công việc của nhà quản lý và thử thách đồng đội giải quyết bài toán quản trị thực tế do doanh nghiệp đưa ra. Qua đó, thí sinh cần thể hiện khả năng sắp xếp ưu tiên, ra quyết định, xây dựng giải pháp và bảo vệ phương án trước hội đồng đánh giá.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thông qua các vòng thi gắn với kiến thức nền tảng và tình huống quản trị thực tiễn, IS-NextGen Manager Challenge 2026 hứa hẹn mang đến cho sinh viên cơ hội rèn luyện tư duy, phát triển những năng lực cần thiết và tích lũy trải nghiệm để sẵn sàng đảm nhận vai trò quản lý trong tương lai.",
+      },
+      {
+        type: "quote",
+        content:
+          "NEXTGEN MANAGER 2026 - CƠ HỘI THỬ SỨC VỚI NĂNG LỰC QUẢN TRỊ\n\nNextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế - ĐHQGHN tổ chức, dành cho sinh viên hệ đại học chính quy tại các trường đại học, học viện trên toàn quốc. Cuộc thi hoàn toàn miễn phí.\n\nThời hạn đăng ký: Đến hết ngày 06/11/2026 tại website: nextgen.vnuis.edu.vn.\n\nVòng 1 - DISCOVER (07/11): Video nói về chủ đề bất kỳ bằng Tiếng Anh hoặc Tiếng Việt, kết hợp bài kiểm tra trực tuyến về tư duy quản trị, lựa chọn 40 thí sinh.\n\nVòng 2 - DECIDE (21/11): Thảo luận nhóm không có nhóm trưởng được chỉ định, lựa chọn 16 thí sinh chia thành 4 đội.\n\nVòng 3 - DELIVER (05/12): Giải quyết bài toán kinh doanh thực tế từ doanh nghiệp đối tác; 6 thí sinh xuất sắc nhất tiếp tục bước vào phần thi cá nhân.\n\nBên cạnh các vòng thi, chương trình còn có NextGen Business Field Trip (14/11) và NextGen Gala Dinner Networking (28/11).\n\nCuộc thi có 8 giải thưởng với tổng giá trị hơn 100 triệu đồng, cùng các cơ hội học bổng, thực tập và làm việc tại doanh nghiệp. Thí sinh tham gia vòng 2 được cấp giấy chứng nhận.",
+      },
+    ],
+  },
   {
     ...sharedMeta.vtcnewsInterview,
     title: sharedMeta.vtcnewsInterview.originalTitle,
@@ -839,6 +1103,237 @@ export const newsArticlesVi: NewsArticleItem[] = [
 ];
 
 export const newsArticlesEn: NewsArticleItem[] = [
+  {
+    ...sharedMeta.tcdn,
+    title: "Registration opens for NextGen Manager 2026 competition",
+    source: "Business & Finance Magazine",
+    summary:
+      "The NextGen Manager 2026 competition themed “Shaping the AI-Era Leader 2026” has officially opened for registration, offering a professional arena to challenge strategic thinking and managerial competencies in the AI era.",
+    thumbnailAlt:
+      "NextGen Manager 2026 competition officially opens registration under the theme “Shaping the AI-Era Leader 2026”.",
+    hasFullText: true,
+    sapo:
+      "TCDN - The NextGen Manager 2026 competition themed “Shaping the AI-Era Leader 2026” has officially opened for registration, offering a professional arena for students to challenge their thinking, master knowledge, and shape their future in the digital era.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Artificial intelligence is transforming the way we work, from fundamental mindset to strategic decision-making. When technology can increasingly handle complex problems, what will define the distinct value of a manager?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "✨ Under Season 1's theme “𝐒𝐡𝐚𝐩𝐢𝐧𝐠 𝐭𝐡𝐞 𝐀𝐈-𝐄𝐫𝐚 𝐋𝐞𝐚𝐝𝐞𝐫 𝟐𝟎𝟐𝟔”, NextGen Manager 2026 provides a dedicated arena for youth passionate about management, bold in independent thinking, and ready to lead in the AI era. Organized by the Faculty of Economics and Management at VNU International School in collaboration with the iSupport Club, IMC Marketing Club, and IMRES Skills & Events Club, the competition brings contestants close to corporate management realities across three competitive rounds:",
+      },
+      {
+        type: "image",
+        src: "/images/news/tcdn.jpg",
+        caption:
+          "NextGen Manager 2026 under the theme “Shaping the AI-Era Leader 2026” officially opens registration nationwide.",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Round 1: Discover (08:00 - 12:00, November 7, 2026)",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Round 2: Decide (November 21, 2026)",
+      },
+      {
+        type: "paragraph",
+        content: "💎 Round 3: Deliver (December 5, 2026)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "👥 Eligible Participants: Undergraduate students from VNU International School and universities / academies nationwide.",
+      },
+      {
+        type: "paragraph",
+        content: "🗣️ Competition Language: Bilingual (English / Vietnamese)",
+      },
+      {
+        type: "paragraph",
+        content:
+          "At each stage, NextGen Manager 2026 introduces simulated challenges mirroring enterprise operations, where contestants not only analyze problems and design solutions, but also weigh alternatives, execute decisions, and take full accountability for outcomes. This is an opportunity to explore personal limits and hone managerial fortitude.",
+      },
+      {
+        type: "quote",
+        content:
+          "📍 Register for NextGen Manager 2026 at: https://nextgen.vnuis.edu.vn\n📌 Registration deadline: 23:59, November 6, 2026\n📎 Detailed information: https://bit.ly/3TTJery\n🔗 Candidate support and updates channel: https://bit.ly/4ztSWje",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.gtvhKt,
+    title:
+      "NextGen Manager 2026 - Shaping a new generation of managers in the AI era",
+    source: "Giai Tri & Van Hoa",
+    summary:
+      "NextGen Manager 2026 themed “Portrait of a Manager in the AI Era” focuses on behavioral competency assessments and practical decision-making, bridging academia and industry.",
+    thumbnailAlt:
+      "NextGen Manager contestants tackle practical business challenges, turning management theory into breakthrough solutions for enterprises.",
+    hasFullText: true,
+    sapo:
+      "Amid the rapid rise of artificial intelligence (AI) and automation, business operations are constantly shifting, demanding increasingly high managerial competencies that students must hone early to prepare for tomorrow's workplace.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Responding to these evolving demands, the “New Era Manager” competition (NextGen Manager 2026 - Shaping the AI-Era Leader) is organized by the Faculty of Economics and Management at VNU International School in partnership with its Youth Union, iSupport Club, IMC Marketing Club, and IMRES Skills & Events Club. The initiative offers students direct exposure to simulated scenarios and practical business cases, emphasizing application, problem-solving, and decisive leadership over rote theoretical knowledge.",
+      },
+      {
+        type: "heading",
+        content: "Bridging managerial competencies from theory to practice",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Management demands more than specialized subject expertise; it requires the fortitude to make decisions under incomplete information, tight resources, and conflicting stakeholder priorities. Students need access to real-world scenarios to apply their knowledge and assume full ownership of their decisions.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-1.jpg",
+        caption:
+          "Contestants tackle real-world business challenges, turning management theory into actionable solutions.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This principle forms the cornerstone of NextGen Manager 2026. Through individual trials and group deliberations, participants develop analytical rigor, systems thinking, and problem-solving agility. In particular, the leaderless group discussion requires members to self-organize, resolve differences, and align on joint strategies—allowing true leadership to shine through facilitation, listening, and collaborative execution.",
+      },
+      {
+        type: "heading",
+        content: "Defining managerial competencies in the AI era",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A hallmark of the competition is evaluating participants using a Behavioral Competency Framework rather than grading purely on technical knowledge or raw output. Competencies such as analytical thinking, leadership, communication, team coordination, ethics, and responsibility are assessed in context, illuminating how candidates execute tasks and interact within teams.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-2.jpg",
+        caption:
+          "Developing managerial skills grounded in business realities, unlocking career pathways for young leaders in the AI era.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "With the theme “Portrait of a Manager in the AI Era”, the competition champions independent thinking and technological mastery. While AI can process data and suggest options, managers must evaluate outcomes, make the final call, and take full accountability. Students are encouraged to leverage AI alongside rigorous critical thinking and information verification.",
+      },
+      {
+        type: "heading",
+        content: "Strengthening university-enterprise partnerships",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Beyond individual development, the competition bridges higher education with dynamic corporate demands. Bringing live business challenges into the Grand Finale allows students to confront real operational hurdles, apply insights, and receive expert critique from corporate leaders.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Alongside the competitive stages, the corporate field trip and Networking Gala Dinner offer students direct engagement with corporate executives, industry experts, and alumni, fostering practical managerial insights and expanding professional networks.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-kt-3.jpg",
+        caption:
+          "NextGen Manager serves as a strategic bridge between university and industry, offering immersive experiences and networks for future leaders.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Anticipating 400-500 participants, NextGen Manager 2026 welcomes students from VNU International School, VNU member institutions, and universities nationwide. Across three stages, contestants exchange insights, tackle managerial hurdles, and grow from individual problem solvers into collaborative team leaders.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "More than an arena for testing management skills, NextGen Manager 2026 fosters leadership potential and deepens enterprise engagement, helping students understand modern corporate demands and advance their future careers.",
+      },
+      {
+        type: "quote",
+        content:
+          "Information Box: NextGen Manager 2026 - An opportunity to test managerial competencies\n\nNextGen Manager 2026 is organized by the Faculty of Economics and Management, VNU International School, open free of charge to full-time undergraduate students nationwide.\n\nRegistration deadline: November 6, 2026 at website: nextgen.vnuis.edu.vn.\n\nRound 1 - DISCOVER (Nov 7): Video presentation in English or Vietnamese and online management thinking assessment; top 40 advance.\n\nRound 2 - DECIDE (Nov 21): Leaderless group discussion; top 16 advance into 4 teams.\n\nRound 3 - DELIVER (Dec 5): Solving live business challenges from partner enterprises; top 6 contestants proceed to individual presentations.\n\nAdditional activities include the NextGen Business Field Trip (Nov 14) and NextGen Networking Gala Dinner (Nov 28).\n\nFeaturing 8 awards valued over 100 million VND, with scholarship, internship, and employment opportunities. Round 2 participants receive official certificates.",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.gtvhCst,
+    title:
+      "NextGen Manager 2026 - An opportunity to test managerial competencies",
+    source: "Giai Tri & Van Hoa",
+    summary:
+      "For the first time, the “New Era Manager” competition (IS-NextGen Manager Challenge 2026) is held with the theme “Portrait of a Manager in the AI Era”, evaluating students through real-world simulations.",
+    thumbnailAlt:
+      "The journey to discover next-generation managers officially begins with IS-NextGen Manager Challenge 2026.",
+    hasFullText: true,
+    sapo:
+      "For the first time, the “New Era Manager” competition (IS-NextGen Manager Challenge 2026) is organized under the theme “Portrait of a Manager in the AI Era”, focusing on assessing students' managerial and operational competencies through practical simulated scenarios.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "IS-NextGen Manager Challenge 2026 is organized by the Faculty of Economics and Management at VNU International School, Vietnam National University, Hanoi. The competition targets students passionate about management who seek to apply specialized knowledge and cultivate operational leadership through hands-on practical problem-solving.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Beyond validating management knowledge, the competition provides exposure to corporate simulation cases, training students to resolve bottlenecks, coordinate effectively, and execute decisions under imperfect information and constrained resources.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The inaugural season explores the theme “Portrait of a Manager in the AI Era” as artificial intelligence reshapes corporate workflows. When algorithms process data and propose alternatives, the expectation for managers extends beyond digital proficiency to critical appraisal, weighing choices, and taking full ownership of decisions.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Focusing on competency development amid widespread AI adoption, the competition equips contestants with critical thinking, analytical verification, and ethical decision-making alongside smart technologies.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-cst.png",
+        caption:
+          "The journey to discover next-generation managers officially begins with IS-NextGen Manager Challenge 2026. (Photo: Organizing Committee)",
+      },
+      {
+        type: "heading",
+        content: "Structure of the practical competition rounds",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The competition spans three rounds, progressively guiding contestants to demonstrate leadership and management competencies across varying tiers of complexity.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In Round 1, candidates introduce themselves in a video of up to 90 seconds, address a management situation question, and complete an online assessment covering numerical reasoning, logical deduction, and foundational management concepts.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In Round 2, 40 contestants form groups to navigate managerial dilemmas involving conflicting interests under tight timeframes. With no designated leader, participants must actively facilitate discussions, mediate differences, and forge consensus—showcasing leadership, communication, and synergy.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In the Grand Finale, contestants undertake individual managerial simulations alongside team presentations addressing live business problems posed by partner enterprises. Candidates must demonstrate prioritization, decision agility, solution architecture, and persuasive defense before the evaluation panel.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Grounded in foundational theory and practical enterprise scenarios, IS-NextGen Manager Challenge 2026 provides university students with invaluable strategic thinking, essential competencies, and practical exposure to step confidently into managerial roles.",
+      },
+      {
+        type: "quote",
+        content:
+          "NEXTGEN MANAGER 2026 - AN OPPORTUNITY TO TEST MANAGERIAL COMPETENCIES\n\nNextGen Manager 2026 is organized by the Faculty of Economics and Management, VNU International School, open free of charge to full-time undergraduate students nationwide.\n\nRegistration deadline: November 6, 2026 at website: nextgen.vnuis.edu.vn.\n\nRound 1 - DISCOVER (Nov 7): Video presentation in English or Vietnamese and online management thinking assessment; top 40 advance.\n\nRound 2 - DECIDE (Nov 21): Leaderless group discussion; top 16 advance into 4 teams.\n\nRound 3 - DELIVER (Dec 5): Solving live business challenges from partner enterprises; top 6 contestants proceed to individual presentations.\n\nAdditional activities include the NextGen Business Field Trip (Nov 14) and NextGen Networking Gala Dinner (Nov 28).\n\nFeaturing 8 awards valued over 100 million VND, with scholarship, internship, and employment opportunities. Round 2 participants receive official certificates.",
+      },
+    ],
+  },
   {
     ...sharedMeta.vtcnewsInterview,
     title:

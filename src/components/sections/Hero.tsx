@@ -58,6 +58,7 @@ function Ctas({
 const SLIDE_IMAGE: Record<string, string> = {
   giaoduc: "/images/news/giaoduc-1.webp",
   ttxvn: "/images/news/ttxvn-1.jpg",
+  phunuvn: "/images/news/phunuvn.jpg",
   vtcnewsInterview: "/images/news/vtc-interview-1.webp",
   tcdn: "/images/news/tcdn.jpg",
   gtvhKt: "/images/news/gtvh-kt-1.jpg",

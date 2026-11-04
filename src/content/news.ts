@@ -36,6 +36,18 @@ interface SharedArticleMeta {
 }
 
 const sharedMeta: Record<string, SharedArticleMeta> = {
+  phunuvn: {
+    id: "phunuvn",
+    slug: "phunuvietnam-lanh-dao-khong-tu-chuc-danh-buoc-dem-de-nu-sinh-dan-than-vao-quan-tri",
+    originalTitle:
+      "Lãnh đạo không từ chức danh: Bước đệm để nữ sinh dấn thân vào quản trị",
+    originalUrl:
+      "https://phunuvietnam.vn/lanh-dao-khong-tu-chuc-danh-buoc-dem-de-nu-sinh-dan-than-vao-quan-tri-23826110421284125.htm",
+    publishedAt: "2026-11-04T21:26:00+07:00",
+    publishedDateLabel: "04/11/2026 · 21:26",
+    thumbnail: "/images/news/phunuvn.jpg",
+    author: "PV",
+  },
   tcdn: {
     id: "tcdn",
     slug: "tcdn-mo-don-dang-ky-cuoc-thi-nextgen-manager-2026",
@@ -134,6 +146,162 @@ const sharedMeta: Record<string, SharedArticleMeta> = {
 };
 
 export const newsArticlesVi: NewsArticleItem[] = [
+  {
+    ...sharedMeta.phunuvn,
+    title: sharedMeta.phunuvn.originalTitle,
+    source: "Báo Phụ nữ Việt Nam",
+    summary:
+      "Trong kỷ nguyên AI, năng lực lãnh đạo không còn được đo bằng chức danh mà thể hiện qua khả năng kết nối, ra quyết định và chịu trách nhiệm. Những sân chơi quản trị thực tiễn như NextGen Manager 2026 mở ra cơ hội để nữ sinh khám phá thế mạnh, vượt qua giới hạn bản thân và tự tin bước vào con đường quản lý.",
+    thumbnailAlt:
+      "Lãnh đạo không từ chức danh: Bước đệm để nữ sinh dấn thân vào quản trị.",
+    hasFullText: true,
+    sapo:
+      "Trong kỷ nguyên AI, năng lực lãnh đạo không còn được đo bằng chức danh mà thể hiện qua khả năng kết nối, ra quyết định và chịu trách nhiệm. Những sân chơi quản trị thực tiễn như NextGen Manager 2026 mở ra cơ hội để nữ sinh khám phá thế mạnh, vượt qua giới hạn bản thân và tự tin bước vào con đường quản lý.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Không cần chức danh hay quyền hạn được trao trước, năng lực lãnh đạo có thể được thể hiện qua cách mỗi người đưa ra quyết định, kết nối tập thể và chịu trách nhiệm với lựa chọn của mình. Với NextGen Manager 2026, sinh viên có cơ hội tiếp cận những bài toán kinh doanh thực tiễn, khám phá năng lực quản trị và chuẩn bị hành trang nghề nghiệp trong kỷ nguyên trí tuệ nhân tạo (AI).",
+      },
+      {
+        type: "heading",
+        content: "Năng lực lãnh đạo trong kỷ nguyên AI",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tại lễ phát động NextGen Manager 2026 với chủ đề “Chân dung Nhà quản trị trong Kỷ nguyên AI”, PGS.TS. Nguyễn Anh Tuấn, Hiệu trưởng Trường Quốc tế - Đại học Quốc gia Hà Nội (ĐHQGHN), Trưởng Ban Tổ chức cuộc thi, nhấn mạnh rằng khi AI ngày càng đảm nhiệm nhiều công việc chuyên môn, những năng lực mang tính con người như đặt đúng câu hỏi, dám chịu trách nhiệm và dẫn dắt người khác càng trở nên quan trọng.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-1.jpg",
+        caption:
+          "PGS.TS. Nguyễn Anh Tuấn, Hiệu trưởng Trường Quốc tế - Đại học Quốc gia Hà Nội",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Được tổ chức bởi Khoa Kinh tế và Quản lý, Trường Quốc tế - Đại học Quốc gia Hà Nội (ĐHQGHN), cuộc thi áp dụng mô hình Enterprise Assessment Center, đánh giá thí sinh thông qua hành vi và cách xử lý các tình huống quản trị thực tế.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Điểm đáng chú ý là tại vòng 2 - DECIDE, sáu thí sinh được ghép nhóm ngẫu nhiên để giải quyết một bài toán kinh doanh mà không có nhóm trưởng được chỉ định. Ban giám khảo đánh giá khả năng kết nối thành viên, xử lý bất đồng và đưa ra quyết định chung, thay vì chỉ tập trung vào cá nhân thể hiện nổi bật nhất.",
+      },
+      {
+        type: "heading",
+        content: "Những nữ lãnh đạo và góc nhìn về quản trị",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tại lễ phát động, ba nữ lãnh đạo đến từ lĩnh vực tư vấn, ngân hàng và giáo dục đã chia sẻ những góc nhìn thực tiễn về năng lực cần có của nhà quản trị thế hệ mới.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bà Mai Thúy Hằng, Tổng Giám đốc MCG&Partners, giới thiệu mô hình 4A gồm AI Fluent, Adaptive, Agile Learner và Authentic Leader, nhấn mạnh khả năng ứng dụng AI, thích ứng, học hỏi linh hoạt và lãnh đạo chân thực. Bà khuyến khích người trẻ: “Đừng nghĩ đến chức danh, hãy nghĩ đến bộ kỹ năng”.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-2.jpg",
+        caption:
+          "Bà Mai Thúy Hằng, Tổng Giám đốc MCG&Partners, nguyên Phó tổng Giám đốc Sun Group",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ở góc độ ngành ngân hàng, ThS. Nguyễn Thị Lan Ngọc, Giám đốc Chi nhánh Hà Nội của TPBank, nhấn mạnh tầm quan trọng của khả năng làm việc với những cá nhân có tư duy và phong cách khác biệt. Theo bà, “Khả năng phối hợp hiệu quả với những người không do mình lựa chọn là một kỹ năng quan trọng”. Đây cũng là năng lực mà người trẻ cần rèn luyện khi bước vào môi trường doanh nghiệp, nơi sự đa dạng về chuyên môn và quan điểm luôn hiện hữu.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-3.jpg",
+        caption: "ThS. Nguyễn Thị Lan Ngọc, Giám đốc Chi nhánh Hà Nội của TPBank",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Trong khi đó, bà Ngô Thị Duy Phương, Giám đốc Đào tạo Vinpearl, Tập đoàn Vingroup, giới thiệu mô hình O.W.N.E.R với năm yếu tố: xác định mục tiêu, phân bổ nguồn lực, dẫn dắt sự hợp tác, đo lường và đánh giá, bảo đảm kết quả có giá trị.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-4.jpg",
+        caption:
+          "Bà Ngô Thị Duy Phương (giữa), Giám đốc Đào tạo Vinpearl, Tập đoàn Vingroup",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Theo bà, người quản lý hiện đại không còn đơn thuần là người đưa ra mọi câu trả lời, mà cần biết đặt những câu hỏi phù hợp để đội ngũ chủ động tìm kiếm giải pháp. Điều này đòi hỏi khả năng trao quyền, kết nối và phát huy thế mạnh của từng thành viên.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Những chia sẻ từ các nữ lãnh đạo không chỉ gợi mở yêu cầu mới đối với người làm quản trị, mà còn cho thấy con đường lãnh đạo không bị giới hạn bởi ngành học hay giới tính. Với nữ sinh, việc chủ động tiếp cận những cơ hội trải nghiệm và rèn luyện năng lực từ sớm cũng là cách để từng bước khẳng định vị trí của mình trong môi trường nghề nghiệp tương lai.",
+      },
+      {
+        type: "heading",
+        content: "Từ trải nghiệm của sinh viên",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Nguyễn Thị Quỳnh Trang, sinh viên năm thứ tư ngành Luật Thương mại quốc tế, Trường Đại học Ngoại thương, đến với NextGen Manager 2026 sau trải nghiệm tham gia dự án phát triển sản phẩm da sinh học từ phụ phẩm công nghiệp cùng sinh viên nhiều trường đại học.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-5.jpg",
+        caption:
+          "Nguyễn Thị Quỳnh Trang, sinh viên năm thứ tư ngành Luật Thương mại quốc tế, Trường Đại học Ngoại thương",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dự án giúp Trang nhận ra rằng một ý tưởng tốt chưa đủ để tạo nên thành công nếu thiếu khả năng tổ chức, phân bổ nguồn lực và phối hợp nhân sự. Hiện cô đang làm thực tập sinh quản lý dự án tại một doanh nghiệp vừa và nhỏ ở Hà Nội.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Chia sẻ về lý do tham gia cuộc thi, Trang cho biết: “Trong quá trình học đại học, chúng em thường đánh giá bản thân qua điểm số hoặc sự nhận thức chủ quan. Cuộc thi này trao cho em cơ hội hiếm hoi được thử sức trước những vấn đề kinh doanh thật, và sự đánh giá từ ban giám khảo chính là thước đo năng lực thực tiễn nhất cho bản thân em sau này”.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Theo Trang, nữ giới hoàn toàn có thể theo đuổi lĩnh vực quản trị. Sự thấu hiểu và khả năng điều tiết cảm xúc có thể trở thành lợi thế khi làm việc với con người, nhưng quan trọng hơn cả là sự tự tin và chủ động nắm bắt cơ hội.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-6.jpg",
+        caption:
+          "Taiwo Ikeoluwa Odunayo (trái), sinh viên năm thứ ba ngành Kỹ thuật máy tính, Trường Quốc tế - Đại học Quốc gia Hà Nội",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ở góc nhìn quốc tế, Taiwo Ikeoluwa Odunayo, sinh viên năm thứ ba ngành Kỹ thuật máy tính, Trường Quốc tế - ĐHQGHN, quốc tịch Nigeria, cũng lựa chọn thử sức tại cuộc thi để phát triển kỹ năng làm việc nhóm, ra quyết định và quản lý trách nhiệm.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Theo Taiwo, môi trường học tập đa văn hóa tại Việt Nam giúp cô rèn luyện khả năng thích nghi và tôn trọng những quan điểm khác biệt. Chia sẻ về phụ nữ tại Nigeria, cô cho rằng dù ngày càng có nhiều phụ nữ tham gia kinh doanh và đảm nhiệm vị trí lãnh đạo, định kiến giới vẫn là một trở ngại cần được nhìn nhận.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Gửi lời khuyên đến những nữ sinh còn ngần ngại trước các cơ hội trải nghiệm, Taiwo chia sẻ: “Bạn không cần phải có tất cả câu trả lời về tương lai trước khi nắm bắt một cơ hội học hỏi. Nếu một cuộc thi phù hợp với sở thích và mục tiêu của mình, hãy cho bản thân cơ hội trải nghiệm và khám phá những điều có thể nhận được từ hành trình đó”.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Từ những câu chuyện trên, có thể thấy năng lực lãnh đạo không bị giới hạn bởi ngành học, kinh nghiệm hay giới tính. Những sân chơi thực tiễn như NextGen Manager 2026 là cơ hội để sinh viên, đặc biệt là nữ sinh, nhận diện thế mạnh, rèn luyện kỹ năng và tự tin chuẩn bị cho con đường nghề nghiệp tương lai.",
+      },
+      {
+        type: "quote",
+        content:
+          "NEXTGEN MANAGER 2026 - CƠ HỘI THỬ SỨC VỚI NĂNG LỰC QUẢN TRỊ\n\nNextGen Manager 2026 do Khoa Kinh tế và Quản lý, Trường Quốc tế - ĐHQGHN tổ chức, dành cho sinh viên hệ đại học chính quy tại các trường đại học, học viện trên toàn quốc. Cuộc thi hoàn toàn miễn phí.\n\nThời hạn đăng ký: Đến hết ngày 06/11/2026 tại website: nextgen.vnuis.edu.vn.\n\nVòng 1 - DISCOVER (07/11): Video nói về chủ đề bất kỳ bằng Tiếng Anh hoặc Tiếng Việt, kết hợp bài kiểm tra trực tuyến về tư duy quản trị, lựa chọn 40 thí sinh.\n\nVòng 2 - DECIDE (21/11): Thảo luận nhóm không có nhóm trưởng được chỉ định, lựa chọn 16 thí sinh chia thành 4 đội.\n\nVòng 3 - DELIVER (05/12): Giải quyết bài toán kinh doanh thực tế từ doanh nghiệp đối tác; 6 thí sinh xuất sắc nhất tiếp tục bước vào phần thi cá nhân.\n\nBên cạnh các vòng thi, chương trình còn có NextGen Business Field Trip (14/11) và NextGen Gala Dinner Networking (28/11).\n\nCuộc thi có 8 giải thưởng với tổng giá trị hơn 100 triệu đồng, cùng các cơ hội học bổng, thực tập và làm việc tại doanh nghiệp. Thí sinh tham gia vòng 2 được cấp giấy chứng nhận.",
+      },
+    ],
+  },
   {
     ...sharedMeta.tcdn,
     title: sharedMeta.tcdn.originalTitle,
@@ -1103,6 +1271,163 @@ export const newsArticlesVi: NewsArticleItem[] = [
 ];
 
 export const newsArticlesEn: NewsArticleItem[] = [
+  {
+    ...sharedMeta.phunuvn,
+    title:
+      "Leadership without titles: A launchpad for female students to pursue management",
+    source: "Vietnam Women's Newspaper",
+    summary:
+      "In the AI era, leadership is no longer measured by formal titles, but by the ability to connect teams, make decisions, and take ownership. NextGen Manager 2026 opens doors for female students to discover their strengths, transcend limitations, and confidently pursue management.",
+    thumbnailAlt:
+      "Leadership without titles: A stepping stone for female students to step into management.",
+    hasFullText: true,
+    sapo:
+      "In the AI era, leadership is no longer measured by formal titles, but by the ability to connect teams, make decisions, and take ownership. NextGen Manager 2026 opens doors for female students to discover their strengths, transcend limitations, and confidently pursue management.",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Leadership does not require prior titles or delegated authority; it is reflected in how individuals make decisions, connect collective efforts, and take full accountability for their choices. Through NextGen Manager 2026, students gain exposure to live corporate business dilemmas, uncover their managerial capabilities, and equip themselves for careers in the artificial intelligence (AI) era.",
+      },
+      {
+        type: "heading",
+        content: "Managerial and leadership competencies in the AI era",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Speaking at the launch ceremony of NextGen Manager 2026 under the theme “Portrait of a Manager in the AI Era”, Assoc. Prof. Dr. Nguyễn Anh Tuấn, Rector of VNU International School, Vietnam National University, Hanoi and Head of the Organizing Committee, emphasized that as AI takes on more specialized technical tasks, uniquely human competencies—such as framing the right questions, embracing accountability, and inspiring others—become increasingly indispensable.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-1.jpg",
+        caption:
+          "Assoc. Prof. Dr. Nguyễn Anh Tuấn, Rector of VNU International School, Vietnam National University, Hanoi",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Organized by the Faculty of Economics and Management at VNU International School, the competition adopts the Enterprise Assessment Center methodology, evaluating participants through observable behaviors and responses in practical managerial simulations.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Notably, in Round 2 - DECIDE, six candidates are randomly assembled into a team to solve a business problem without a designated team leader. The evaluation panel assesses how members facilitate alignment, manage disagreements, and reach collective consensus, rather than focusing solely on the most dominant individual.",
+      },
+      {
+        type: "heading",
+        content: "Female executive leaders and perspectives on management",
+      },
+      {
+        type: "paragraph",
+        content:
+          "At the launch ceremony, three distinguished female corporate leaders from management consulting, banking, and education shared actionable insights into the core capabilities needed for modern managers.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ms. Mai Thúy Hằng, CEO of MCG&Partners and former Deputy CEO of Sun Group, introduced the 4A framework: AI Fluent, Adaptive, Agile Learner, and Authentic Leader, underscoring AI literacy, adaptability, agile learning, and authenticity. She encouraged students: “Focus on your skillset, not on your job title.”",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-2.jpg",
+        caption:
+          "Ms. Mai Thúy Hằng, CEO of MCG&Partners, former Deputy CEO of Sun Group",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From a commercial banking perspective, Ms. Nguyễn Thị Lan Ngọc, Director of TPBank Hanoi Branch, highlighted the imperative of working effectively with individuals who think and operate differently. In her words: “The ability to collaborate effectively with people you did not choose is a critical skill.” This competence is vital for graduates entering diverse corporate landscapes.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-3.jpg",
+        caption: "Ms. Nguyễn Thị Lan Ngọc, Director of TPBank Hanoi Branch",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Meanwhile, Ms. Ngô Thị Duy Phương, Director of Training at Vinpearl, Vingroup, introduced the O.W.N.E.R framework: Objectives, Workforce & Resource allocation, Navigating collaboration, Evaluation & Measurement, and Result delivery.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-4.jpg",
+        caption:
+          "Ms. Ngô Thị Duy Phương (center), Director of Training at Vinpearl, Vingroup",
+      },
+      {
+        type: "paragraph",
+        content:
+          "According to her, modern managers do not simply provide all the answers; they ask the right questions to empower their teams to find innovative solutions, cultivating delegation, synergy, and collective strengths.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Insights shared by these female leaders demonstrate that leadership is unconstrained by academic majors or gender. For female students, proactively pursuing experiential challenges is a powerful vehicle to establish their leadership standing.",
+      },
+      {
+        type: "heading",
+        content: "Perspectives from participating students",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Nguyễn Thị Quỳnh Trang, a fourth-year student majoring in International Trade Law at Foreign Trade University, entered NextGen Manager 2026 after participating in an inter-university bio-leather development project utilizing agricultural by-products.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-5.jpg",
+        caption:
+          "Nguyễn Thị Quỳnh Trang, fourth-year student in International Trade Law, Foreign Trade University",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The project helped Trang realize that a great idea is insufficient without organizational rigor, resource allocation, and team coordination. She currently works as a project management intern at an SME in Hanoi.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Sharing her motivation, Trang remarked: “In university, we often evaluate ourselves by grades or subjective perceptions. This competition offers a rare chance to confront genuine business problems, where expert feedback serves as the most practical benchmark for our future careers.”",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Trang firmly believes women can excel in leadership. Empathy and emotional intelligence are significant assets in people management, but confidence and proactive engagement remain paramount.",
+      },
+      {
+        type: "image",
+        src: "/images/news/phunuvn-6.jpg",
+        caption:
+          "Taiwo Ikeoluwa Odunayo (left), third-year Computer Engineering student at VNU International School",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From an international vantage, Taiwo Ikeoluwa Odunayo, a Nigerian third-year Computer Engineering student at VNU International School, joined the competition to sharpen teamwork, decision-making, and accountability.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "According to Taiwo, the multicultural environment in Vietnam taught her to adapt and embrace diverse viewpoints. Regarding women in Nigeria, she observed that while more women enter business and executive roles, overcoming gender bias remains an ongoing journey.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Advising female students who may still hesitate, Taiwo shared: “You don't need all the answers before taking a chance to learn. If an opportunity aligns with your passion and goals, take it and see what it brings to your growth.”",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These stories reaffirm that leadership is not defined by field of study, background, or gender. Real-world platforms like NextGen Manager 2026 provide students, especially young women, with the ideal arena to recognize their strengths, build essential competencies, and stride forward into their professional futures.",
+      },
+      {
+        type: "quote",
+        content:
+          "Information Box: NextGen Manager 2026 - An opportunity to test managerial competencies\n\nNextGen Manager 2026 is organized by the Faculty of Economics and Management, VNU International School, open free of charge to full-time undergraduate students nationwide.\n\nRegistration deadline: November 6, 2026 at website: nextgen.vnuis.edu.vn.\n\nRound 1 - DISCOVER (Nov 7): Video presentation in English or Vietnamese and online management thinking assessment; top 40 advance.\n\nRound 2 - DECIDE (Nov 21): Leaderless group discussion; top 16 advance into 4 teams.\n\nRound 3 - DELIVER (Dec 5): Solving live business challenges from partner enterprises; top 6 contestants proceed to individual presentations.\n\nAdditional activities include the NextGen Business Field Trip (Nov 14) and NextGen Networking Gala Dinner (Nov 28).\n\nFeaturing 8 awards valued over 100 million VND, with scholarship, internship, and employment opportunities. Round 2 participants receive official certificates.",
+      },
+    ],
+  },
   {
     ...sharedMeta.tcdn,
     title: "Registration opens for NextGen Manager 2026 competition",

@@ -29,8 +29,8 @@ test("news articles: all slugs and IDs are globally unique", () => {
   }
 });
 
-test("news articles: includes the 3 newly requested articles with full text", () => {
-  const requestedIds = ["tcdn", "gtvh-kt", "gtvh-cst"];
+test("news articles: includes requested articles with full text", () => {
+  const requestedIds = ["phunuvn", "tcdn", "gtvh-kt", "gtvh-cst"];
   for (const id of requestedIds) {
     const vi = newsArticlesVi.find((a) => a.id === id);
     const en = newsArticlesEn.find((a) => a.id === id);

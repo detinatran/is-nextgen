@@ -2,10 +2,10 @@
 // Apps Script (docs/google-apps-script.md) tạo phiên và trả về uploadUrl; trình duyệt PUT file vào đó,
 // nên dung lượng không bị giới hạn 50MB của Apps Script.
 
-// Khớp giới hạn UPLOAD_MAX_BYTES = 500_000_000 của backend (backend/src/config/configuration.ts)
-export const MAX_VIDEO_MB = 500;
-export const MAX_VIDEO_BYTES = 500_000_000;
-export const MAX_VIDEO_SECONDS = 120;
+// Khớp giới hạn UPLOAD_MAX_BYTES = 900_000_000 và VIDEO_MAX_DURATION_SECONDS = 150 của backend (backend/src/config/configuration.ts)
+export const MAX_VIDEO_MB = 900;
+export const MAX_VIDEO_BYTES = 900_000_000;
+export const MAX_VIDEO_SECONDS = 150;
 export const MAX_PHOTO_MB = 10;
 
 type DroppedItemLike = { kind?: string; getAsFile?: () => File | null };

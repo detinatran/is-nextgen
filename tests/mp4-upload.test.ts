@@ -199,9 +199,10 @@ describe("checkMp4 systematic regression suite", () => {
     assert.deepEqual(res, { ok: true, duration: null });
   });
 
-  it("aligns client MAX_VIDEO_MB / MAX_VIDEO_BYTES with backend 500_000_000 bytes limit", () => {
-    assert.equal(uploadLib.MAX_VIDEO_MB, 500);
-    assert.equal((uploadLib as Record<string, unknown>).MAX_VIDEO_BYTES, 500_000_000);
+  it("aligns client MAX_VIDEO_MB / MAX_VIDEO_BYTES with backend 900_000_000 bytes limit and MAX_VIDEO_SECONDS with 150", () => {
+    assert.equal(uploadLib.MAX_VIDEO_MB, 900);
+    assert.equal((uploadLib as Record<string, unknown>).MAX_VIDEO_BYTES, 900_000_000);
+    assert.equal((uploadLib as Record<string, unknown>).MAX_VIDEO_SECONDS, 150);
   });
 
   it("extracts dropped File from either DataTransfer.files or DataTransfer.items fallback", () => {

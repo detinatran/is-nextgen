@@ -40,9 +40,9 @@ const text = {
     corrupt: "File video bị lỗi hoặc chưa tải về đầy đủ. Hãy kiểm tra video phát được trên máy rồi chọn lại.",
     noVideo: "File này không có hình video. Hãy chọn đúng video giới thiệu.",
     tooBig: `Video lớn hơn ${MAX_VIDEO_MB} MB. Hãy nén hoặc giảm độ phân giải rồi thử lại.`,
-    tooLong: (d: string) => `Video dài ${d}, cần ngắn hơn ${MAX_VIDEO_SECONDS / 60} phút (tối đa 01:59).`,
-    label: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) *`,
-    labelOptional: `Video giới thiệu (dưới ${MAX_VIDEO_SECONDS / 60} phút) · không bắt buộc`,
+    tooLong: (d: string) => `Video dài ${d}, cần ngắn hơn 2 phút 30 giây (tối đa 02:30).`,
+    label: "Video giới thiệu (dưới 2 phút) *",
+    labelOptional: "Video giới thiệu (dưới 2 phút) · không bắt buộc",
     later: "Chưa có video? Bạn vẫn nộp đăng ký được, rồi đăng nhập tài khoản thí sinh để nộp bổ sung trước hạn của vòng thi.",
     hint: "Video cá nhân dưới 02 phút, chủ đề tự chọn.",
     remove: "Bỏ video đã chọn",
@@ -50,7 +50,7 @@ const text = {
     formats: `MP4, MOV, WebM · tối đa ${MAX_VIDEO_MB} MB`,
     formatsMp4: `MP4 · tối đa ${MAX_VIDEO_MB} MB`,
     checking: "Đang kiểm tra video...",
-    unknownDuration: `Trình duyệt chưa đọc được độ dài video. Hệ thống sẽ kiểm tra khi nộp (dưới ${MAX_VIDEO_SECONDS / 60} phút).`,
+    unknownDuration: "Trình duyệt chưa đọc được độ dài video. Hệ thống sẽ kiểm tra khi nộp (dưới 2 phút).",
     pick: "Chọn video giới thiệu",
   },
   en: {
@@ -61,9 +61,9 @@ const text = {
     corrupt: "This video file is damaged or incomplete. Make sure it plays on your device, then choose it again.",
     noVideo: "This file has no video track. Please choose your intro video.",
     tooBig: `The video is larger than ${MAX_VIDEO_MB} MB. Compress it or lower the resolution, then try again.`,
-    tooLong: (d: string) => `The video is ${d} long; it must be under ${MAX_VIDEO_SECONDS / 60} minutes (max 01:59).`,
-    label: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) *`,
-    labelOptional: `Intro video (under ${MAX_VIDEO_SECONDS / 60} minutes) · optional`,
+    tooLong: (d: string) => `The video is ${d} long; it must be under 2 minutes 30 seconds (max 02:30).`,
+    label: "Intro video (under 2 minutes) *",
+    labelOptional: "Intro video (under 2 minutes) · optional",
     later: "No video yet? You can still register now, then log in to your candidate account to upload it before the round deadline.",
     hint: "A personal video under 02 minutes on a topic of your choice.",
     remove: "Remove selected video",
@@ -71,7 +71,7 @@ const text = {
     formats: `MP4, MOV, WebM · up to ${MAX_VIDEO_MB} MB`,
     formatsMp4: `MP4 · up to ${MAX_VIDEO_MB} MB`,
     checking: "Checking your video...",
-    unknownDuration: `Your browser could not read the video length. It will be checked on submission (under ${MAX_VIDEO_SECONDS / 60} minutes).`,
+    unknownDuration: "Your browser could not read the video length. It will be checked on submission (under 2 minutes).",
     pick: "Choose intro video",
   },
 };
@@ -104,18 +104,18 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
       const info = await checkMp4(f).catch(() => ({ ok: false as const, reason: "CORRUPT" as const }));
       if (seq !== checkSeq.current) return;
       if (!info.ok) {
-        if (info.reason === "NO_VIDEO") {
-          const probed = await probeVideo(f);
-          if (seq !== checkSeq.current) return;
-          if (!probed.hasVideo) {
-            setChecking(false);
-            onCheckingChange?.(false);
-            return reject(t.noVideo);
-          }
+        // Fallback: nếu checkMp4 không nhận diện được (ví dụ do box vendor/chữ ký riêng hay codec)
+        // nhưng trình duyệt giải mã được có video track thì vẫn chấp nhận
+        const probed = await probeVideo(f);
+        if (seq !== checkSeq.current) return;
+        if (probed.hasVideo) {
           d = probed.duration;
         } else {
           setChecking(false);
           onCheckingChange?.(false);
+          if (info.reason === "NO_VIDEO") {
+            return reject(t.noVideo);
+          }
           const msg = info.reason === "NOT_MP4" ? (/\.mp4$/i.test(f.name) ? t.notMp4Renamed : t.notMp4) : t.corrupt;
           return reject(msg);
         }
@@ -123,15 +123,15 @@ export default function VideoUpload({ lang, file, onChange, progress, mp4Only = 
         d = info.duration;
       }
     }
-    if (d === null || d >= MAX_VIDEO_SECONDS) {
+    if (d === null || d > MAX_VIDEO_SECONDS) {
       const probed = await probeVideo(f);
       if (seq !== checkSeq.current) return;
       if (probed.duration !== null) d = probed.duration;
     }
     setChecking(false);
     onCheckingChange?.(false);
-    // Server nhận video ngắn hơn hẳn 120 giây (đúng 2:00 cũng bị từ chối)
-    if (d !== null && d >= MAX_VIDEO_SECONDS) return reject(t.tooLong(formatTime(d)));
+    // Cho phép video tối đa 2 phút 30 (150 giây)
+    if (d !== null && d > MAX_VIDEO_SECONDS) return reject(t.tooLong(formatTime(d)));
     setDuration(d);
     onChange(f);
   }

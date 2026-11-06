@@ -29,6 +29,8 @@ services:
       DATABASE_URL: postgresql://nextgen:${POSTGRES_PASSWORD}@postgres:5432/nextgen?schema=public
       MEDIA_STORAGE_DIR: /var/lib/isnextgen/media
       TRUST_PROXY: "1"
+      UPLOAD_MAX_BYTES: ${UPLOAD_MAX_BYTES:-900000000}
+      VIDEO_MAX_DURATION_SECONDS: ${VIDEO_MAX_DURATION_SECONDS:-150}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CONTACT_EMAIL: ${CONTACT_EMAIL:-nextgen@vnuis.edu.vn}
       SMTP_URL: ${SMTP_URL:-}

@@ -11,8 +11,8 @@ import { asset } from "@/lib/paths";
 const BANNER_VERSION = "v6";
 
 const text = {
-  vi: { register: "Đăng ký ngay", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
-  en: { register: "Register now", more: "Learn more", audience: ["A competition", "for students", "nationwide"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management" },
+  vi: { register: "Vào thi", more: "Tìm hiểu thêm", audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý" },
+  en: { register: "Take the exam", more: "Learn more", audience: ["A competition", "for students", "nationwide"], bannerAlt: "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management" },
 };
 
 function Ctas({ lang, className = "", compact }: { lang: Lang; className?: string; compact?: boolean }) {
@@ -20,7 +20,7 @@ function Ctas({ lang, className = "", compact }: { lang: Lang; className?: strin
   const size = compact ? "px-5 py-2.5 text-sm whitespace-nowrap shadow-lg shadow-navy-deep/30" : "";
   return (
     <div className={`flex gap-3 ${className}`}>
-      <Link href={localePath(lang, "/dang-ky/")} className={`btn-primary ${size}`}>
+      <Link href={localePath(lang, "/thi/")} className={`btn-primary ${size}`}>
         {t.register} <Icon name="arrowRight" className="h-4 w-4" />
       </Link>
       <Link href={localePath(lang, "/#gioi-thieu")} className={`${compact ? "btn-glass bg-navy-deep/40" : "btn-outline bg-white"} ${size}`}>
@@ -65,7 +65,7 @@ export default function Hero({ lang }: { lang: Lang }) {
           />
           {/* Mã QR và chữ "ĐĂNG KÝ NGAY!" trên ảnh bấm được, mở trang đăng ký (x 1180–1430, y 250–530 trên ảnh 1920x917) */}
           <Link
-            href={localePath(lang, "/dang-ky/")}
+            href={localePath(lang, "/thi/")}
             aria-label={t.register}
             className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
             style={{ left: "61.5%", top: "27.3%", width: "13%", height: "30.5%" }}

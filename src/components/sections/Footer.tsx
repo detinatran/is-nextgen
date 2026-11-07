@@ -11,7 +11,7 @@ const text = {
   vi: {
     ctaTitle: "Đã sẵn sàng bứt phá?",
     ctaBody: "Tham gia NextGen Manager 2026 ngay hôm nay để kiến tạo hành trình sự nghiệp của riêng bạn.",
-    register: "Đăng ký ngay",
+    register: "Vào thi",
     emailSoon: "Email Ban Tổ chức (sắp cập nhật)",
     soon: "Sắp cập nhật",
     links: "Về cuộc thi",
@@ -30,7 +30,7 @@ const text = {
   en: {
     ctaTitle: "Ready to break through?",
     ctaBody: "Join NextGen Manager 2026 today and build your own career journey.",
-    register: "Register now",
+    register: "Take the exam",
     emailSoon: "Organizing Committee email (coming soon)",
     soon: "Coming soon",
     links: "The competition",
@@ -74,7 +74,7 @@ function CtaBand({ lang }: { lang: Lang }) {
               className="pointer-events-none absolute inset-x-0 bottom-0 h-[calc(100%+4.5rem)] w-full object-contain object-bottom"
             />
           </div>
-          <Link href={localePath(lang, "/dang-ky/")} className="btn-white w-max px-8 py-3.5 text-base">
+          <Link href={localePath(lang, "/thi/")} className="btn-white w-max px-8 py-3.5 text-base">
             {t.register} <Icon name="arrowRight" className="h-4 w-4" />
           </Link>
         </div>

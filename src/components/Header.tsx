@@ -39,7 +39,7 @@ export default function Header() {
     onHome,
     nav.map((n) => n.id),
   );
-  const t = lang === "en" ? { register: "Register now", open: "Open menu", close: "Close menu", main: "Main navigation", mobile: "Mobile navigation" } : { register: "Đăng ký ngay", open: "Mở menu", close: "Đóng menu", main: "Điều hướng chính", mobile: "Điều hướng di động" };
+  const t = lang === "en" ? { register: "Take the exam", open: "Open menu", close: "Close menu", main: "Main navigation", mobile: "Mobile navigation" } : { register: "Vào thi", open: "Mở menu", close: "Đóng menu", main: "Điều hướng chính", mobile: "Điều hướng di động" };
   const href = (path: string) => localePath(lang, path);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function Header() {
 
           <div className="flex shrink-0 items-center gap-1.5 min-[360px]:gap-2">
             <LangSwitch />
-            <Link href={href("/dang-ky/")} className="btn-primary hidden px-5 py-2 whitespace-nowrap sm:inline-flex">
+            <Link href={href("/thi/")} className="btn-primary hidden px-5 py-2 whitespace-nowrap sm:inline-flex">
               {t.register} <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
             <button
@@ -113,7 +113,7 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link href={href("/dang-ky/")} className="btn-primary mt-4 w-full" onClick={() => setOpen(false)}>
+            <Link href={href("/thi/")} className="btn-primary mt-4 w-full" onClick={() => setOpen(false)}>
               {t.register} <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
           </nav>

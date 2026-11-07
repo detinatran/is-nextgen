@@ -38,7 +38,7 @@ export const rulesText = {
     voteTitle: "Thể lệ bình chọn Cá nhân được yêu thích nhất",
     faqEyebrow: "Hỏi đáp",
     faqTitle: "Câu hỏi khác",
-    register: "Đăng ký dự thi",
+    register: "Vào thi",
   },
   en: {
     heroEyebrow: "Competition rules",
@@ -67,7 +67,7 @@ export const rulesText = {
     voteTitle: "Fan Favorite voting rules",
     faqEyebrow: "Q&A",
     faqTitle: "More questions",
-    register: "Register to compete",
+    register: "Take the exam",
   },
 };
 
@@ -279,7 +279,7 @@ export default function RulesPage({ lang }: { lang: Lang }) {
           </Block>
 
           <div className="reveal text-center">
-            <Link href={localePath(lang, "/dang-ky/")} className="btn-primary px-8 py-3.5 text-base">
+            <Link href={localePath(lang, "/thi/")} className="btn-primary px-8 py-3.5 text-base">
               {t.register} <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
           </div>

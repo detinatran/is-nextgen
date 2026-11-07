@@ -8,8 +8,8 @@ import { asset } from "@/lib/paths";
 
 // Ảnh nền: Vitaly Gariev trên Unsplash (unsplash.com/photos/kp7qkHTgSKc), giấy phép Unsplash
 const text = {
-  vi: { title: "Cổng đăng ký sẽ đóng sau", lead: "Đừng bỏ lỡ cơ hội trở thành một phần của NextGen Manager 2026!", deadline: "Hạn chót", register: "Đăng ký ngay", rules: "Xem chi tiết" },
-  en: { title: "Registration closes in", lead: "Don't miss your chance to be part of NextGen Manager 2026!", deadline: "Deadline", register: "Register now", rules: "View details" },
+  vi: { title: "Cổng đăng ký sẽ đóng sau", lead: "Đừng bỏ lỡ cơ hội trở thành một phần của NextGen Manager 2026!", deadline: "Hạn chót", register: "Vào thi", rules: "Xem chi tiết" },
+  en: { title: "Registration closes in", lead: "Don't miss your chance to be part of NextGen Manager 2026!", deadline: "Deadline", register: "Take the exam", rules: "View details" },
 };
 
 export default function Deadline({ lang }: { lang: Lang }) {
@@ -43,7 +43,7 @@ export default function Deadline({ lang }: { lang: Lang }) {
               <Countdown lang={lang} deadline={site.registrationDeadline} large />
             </div>
             <div className="flex flex-wrap gap-3 lg:self-start">
-              <Link href={localePath(lang, "/dang-ky/")} className="btn-primary cta-pulse px-7 py-3">
+              <Link href={localePath(lang, "/thi/")} className="btn-primary cta-pulse px-7 py-3">
                 {t.register} <Icon name="arrowRight" className="h-4 w-4" />
               </Link>
               <Link href={localePath(lang, "/the-le/")} className="btn bg-white px-6 py-3 text-navy shadow-sm hover:shadow-md">

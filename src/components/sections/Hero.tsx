@@ -11,14 +11,14 @@ const BANNER_VERSION = "v11";
 
 const text = {
   vi: {
-    register: "Đăng ký ngay",
+    register: "Vào thi",
     more: "Tìm hiểu thêm",
     audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"],
     bannerAlt:
       "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
   },
   en: {
-    register: "Register now",
+    register: "Take the exam",
     more: "Learn more",
     audience: ["A competition", "for students", "nationwide"],
     bannerAlt:
@@ -41,7 +41,7 @@ function Ctas({
     : "";
   return (
     <div className={`flex gap-3 ${className}`}>
-      <Link href={localePath(lang, "/dang-ky/")} className={`btn-primary ${size}`}>
+      <Link href={localePath(lang, "/thi/")} className={`btn-primary ${size}`}>
         {t.register} <Icon name="arrowRight" className="h-4 w-4" />
       </Link>
       <Link
@@ -112,9 +112,9 @@ export default function Hero({ lang }: { lang: Lang }) {
               className="absolute inset-0 h-full w-full object-cover"
             />
 
-            {/* Vùng thẻ QR và chữ ĐĂNG KÝ NGAY trên poster bấm được, mở trang đăng ký */}
+            {/* Vùng thẻ QR và chữ ĐĂNG KÝ NGAY trên poster bấm được; đã hết hạn đăng ký nên mở trang vào thi */}
             <Link
-              href={localePath(lang, "/dang-ky/")}
+              href={localePath(lang, "/thi/")}
               aria-label={t.register}
               className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
               style={{ left: "61.5%", top: "38.5%", width: "13%", height: "29%" }}

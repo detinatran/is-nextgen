@@ -6,8 +6,8 @@ import { getContent } from "@/content";
 import { type Lang, localePath } from "@/lib/i18n";
 
 const text = {
-  vi: { eyebrow: "Điểm nhấn cuộc thi", rules: "Tìm hiểu thể lệ", register: "Đăng ký ngay", watch: "Xem video", alt: "Sinh viên Trường Quốc tế trong giờ học" },
-  en: { eyebrow: "Competition highlights", rules: "Read the rules", register: "Register now", watch: "Watch video", alt: "VNU International School students in class" },
+  vi: { eyebrow: "Điểm nhấn cuộc thi", rules: "Tìm hiểu thể lệ", register: "Vào thi", watch: "Xem video", alt: "Sinh viên Trường Quốc tế trong giờ học" },
+  en: { eyebrow: "Competition highlights", rules: "Read the rules", register: "Take the exam", watch: "Watch video", alt: "VNU International School students in class" },
 };
 
 export default function About({ lang }: { lang: Lang }) {
@@ -34,7 +34,7 @@ export default function About({ lang }: { lang: Lang }) {
                   <Icon name="play" className="h-4 w-4 text-brand" /> {t.watch}
                 </a>
               ) : (
-                <Link href={localePath(lang, "/dang-ky/")} className="btn bg-white text-navy shadow-sm ring-1 ring-line hover:shadow-md">
+                <Link href={localePath(lang, "/thi/")} className="btn bg-white text-navy shadow-sm ring-1 ring-line hover:shadow-md">
                   {t.register}
                 </Link>
               )}

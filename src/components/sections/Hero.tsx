@@ -6,7 +6,7 @@ import { asset } from "@/lib/paths";
 import HeroSlider, { type NewsSlide } from "./HeroSlider";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-const BANNER_VERSION = "v12";
+const BANNER_VERSION = "v13";
 
 const text = {
   vi: {

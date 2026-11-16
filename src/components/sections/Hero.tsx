@@ -6,8 +6,7 @@ import { asset } from "@/lib/paths";
 import HeroSlider, { type NewsSlide } from "./HeroSlider";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-// Banner chính (16:9) duy nhất kết xuất từ NEXTGEN_MANAGER_MASTERDES.pdf nguyên gốc chất lượng cao.
-const BANNER_VERSION = "v11";
+const BANNER_VERSION = "v12";
 
 const text = {
   vi: {
@@ -15,14 +14,14 @@ const text = {
     more: "Tìm hiểu thêm",
     audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"],
     bannerAlt:
-      "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
+      "NextGen Manager 2026 – Cuộc thi Nhà quản trị thế hệ mới 2026 – Shaping the AI-era Leader. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
   },
   en: {
     register: "Take the exam",
     more: "Learn more",
     audience: ["A competition", "for students", "nationwide"],
     bannerAlt:
-      "NextGen Manager 2026 – Discover 07/11, Decide 21/11, Deliver 05/12 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management",
+      "NextGen Manager 2026 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management",
   },
 };
 
@@ -107,17 +106,16 @@ export default function Hero({ lang }: { lang: Lang }) {
               sizes="100vw"
               alt={t.bannerAlt}
               width={1920}
-              height={1080}
+              height={729}
               fetchPriority="high"
               className="absolute inset-0 h-full w-full object-cover"
             />
 
-            {/* Vùng thẻ QR và chữ ĐĂNG KÝ NGAY trên poster bấm được; đã hết hạn đăng ký nên mở trang vào thi */}
+            {/* Bấm vào banner để mở trang vào thi (đã qua giai đoạn đăng ký) */}
             <Link
               href={localePath(lang, "/thi/")}
               aria-label={t.register}
-              className="group absolute rounded-xl transition hover:bg-white/5 hover:ring-2 hover:ring-[#f5d27a]/70 focus-visible:outline-2 focus-visible:outline-white"
-              style={{ left: "61.5%", top: "38.5%", width: "13%", height: "29%" }}
+              className="absolute inset-0 z-10 focus-visible:outline-2 focus-visible:outline-white"
             />
           </>
         }

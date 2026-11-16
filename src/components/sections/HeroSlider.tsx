@@ -56,7 +56,7 @@ export default function HeroSlider({ lang, banner, news }: { lang: Lang; banner:
       role="region"
       aria-roledescription="carousel"
       aria-label={t.label}
-      className="group/slider relative aspect-[16/9] overflow-hidden bg-[#0d0f0c]"
+      className="group/slider relative aspect-[1024/389] overflow-hidden bg-[#0d0f0c]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

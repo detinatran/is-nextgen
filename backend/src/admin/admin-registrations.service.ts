@@ -249,8 +249,8 @@ export class AdminRegistrationsService {
   }
 
   /** Một đoạn video từ Google Drive (đã xác thực quyền ở controller). */
-  driveStream(fileId: string, start: number, end: number) {
-    return this.drive.download(fileId, start, end);
+  driveStream(fileId: string, start: number, end: number, signal?: AbortSignal) {
+    return this.drive.download(fileId, start, end, signal);
   }
 
   async recordMediaView(actorUserId: string, registrationId: string, kind: 'photo' | 'video', correlationId: string) {

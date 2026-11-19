@@ -10,6 +10,7 @@ import { AuthGuard } from '../identity-access/guards/auth.guard';
 import { PermissionGuard, RequirePermission } from '../identity-access/guards/permission.guard';
 import { ListRegistrationsQuery } from './dto/admin-registrations.dto';
 import { AdminRegistrationsService, type RegistrationFilter } from './admin-registrations.service';
+import { MAX_VIDEO_OPEN_RANGE_BYTES, pipeReadableToResponse, resolveByteRange } from '../media/drive/stream-proxy';
 
 function filterOf(q: ListRegistrationsQuery): RegistrationFilter {
   return {
@@ -71,44 +72,58 @@ export class AdminRegistrationsController {
   /** Streams private media with HTTP Range support (video seeking); audits the first chunk only. */
   private async send(id: string, kind: 'photo' | 'video', req: AuthenticatedRequest, res: Response) {
     const file = await this.registrations.media(id, kind);
-    const range = /^bytes=(\d*)-(\d*)$/.exec(req.header('range') ?? '');
-    let start = 0;
-    let end = file.size - 1;
-    if (range) {
-      if (range[1]) start = Number(range[1]);
-      if (range[2]) end = Math.min(Number(range[2]), file.size - 1);
-      if (!range[1] && range[2]) start = Math.max(0, file.size - Number(range[2]));
-      if (start > end || start >= file.size) {
-        res.status(416).setHeader('Content-Range', `bytes */${file.size}`).end();
-        return;
-      }
+    const parsed = resolveByteRange(
+      req.header('range'),
+      file.size,
+      kind === 'video' ? MAX_VIDEO_OPEN_RANGE_BYTES : undefined,
+    );
+    if (!parsed.ok) {
+      res.status(416).setHeader('Content-Range', `bytes */${file.size}`).end();
+      return;
     }
+    const abort = new AbortController();
+    const onEarlyClose = () => {
+      if (!res.writableEnded) abort.abort();
+    };
+    res.once('close', onEarlyClose);
     // Lấy luồng từ Drive trước khi gửi header, để lỗi trả về đúng mã thay vì một phản hồi rỗng
     let remote: globalThis.Response | undefined;
     if (file.driveFileId) {
-      remote = await this.registrations.driveStream(file.driveFileId, start, end).catch((e: { status?: number }) => {
-        if (e?.status === 404) throw AppException.notFound('Video file is missing from Google Drive');
+      try {
+        remote = await this.registrations.driveStream(file.driveFileId, parsed.start, parsed.end, abort.signal);
+      } catch (e) {
+        res.off('close', onEarlyClose);
+        if (abort.signal.aborted || res.destroyed || res.closed) return;
+        const status = (e as { status?: number })?.status;
+        if (status === 404) throw AppException.notFound('Video file is missing from Google Drive');
         throw AppException.dependencyUnavailable('Google Drive is unavailable');
-      });
+      }
     }
-    if (start === 0) {
+    res.off('close', onEarlyClose);
+    if (abort.signal.aborted || res.destroyed || res.closed) {
+      await remote?.body?.cancel().catch(() => undefined);
+      return;
+    }
+    if (parsed.start === 0) {
       await this.registrations.recordMediaView(req.auth!.userId, id, kind, req.correlationId ?? 'unknown');
+      if (res.destroyed || res.closed) {
+        await remote?.body?.cancel().catch(() => undefined);
+        return;
+      }
     }
-    res.status(range ? 206 : 200);
+    res.status(parsed.isRange ? 206 : 200);
     res.setHeader('Content-Type', file.contentType);
-    res.setHeader('Content-Length', String(end - start + 1));
+    res.setHeader('Content-Length', String(parsed.end - parsed.start + 1));
     res.setHeader('Accept-Ranges', 'bytes');
-    if (range) res.setHeader('Content-Range', `bytes ${start}-${end}/${file.size}`);
+    if (parsed.isRange) res.setHeader('Content-Range', `bytes ${parsed.start}-${parsed.end}/${file.size}`);
     res.setHeader('Cache-Control', 'private, no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     if (remote?.body) {
       const body = Readable.fromWeb(remote.body as import('node:stream/web').ReadableStream);
-      body.on('error', () => res.destroy());
-      body.pipe(res);
+      await pipeReadableToResponse(body, res, () => abort.abort());
       return;
     }
-    const stream = createReadStream(file.path!, { start, end });
-    stream.on('error', () => res.destroy());
-    stream.pipe(res);
+    const stream = createReadStream(file.path!, { start: parsed.start, end: parsed.end });
+    await pipeReadableToResponse(stream, res);
   }
 }

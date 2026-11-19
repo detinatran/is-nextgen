@@ -40,8 +40,9 @@ export class DriveService {
     return Boolean(this.clientId && this.clientSecret && this.refreshToken);
   }
 
-  private async accessToken(): Promise<string> {
+  private async accessToken(signal?: AbortSignal): Promise<string> {
     if (this.token && this.token.expiresAt > Date.now() + 60_000) return this.token.value;
+    const timeout = AbortSignal.timeout(15_000);
     const res = await fetch(TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -51,8 +52,12 @@ export class DriveService {
         refresh_token: this.refreshToken,
         grant_type: 'refresh_token',
       }),
+      signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
     });
-    if (!res.ok) throw new Error(`Drive token refresh failed: HTTP ${res.status}`);
+    if (!res.ok) {
+      await res.body?.cancel().catch(() => undefined);
+      throw new Error(`Drive token refresh failed: HTTP ${res.status}`);
+    }
     const body = (await res.json()) as { access_token: string; expires_in: number };
     this.token = { value: body.access_token, expiresAt: Date.now() + body.expires_in * 1000 };
     return body.access_token;
@@ -60,7 +65,7 @@ export class DriveService {
 
   private async api(path: string, init: RequestInit = {}, base = API): Promise<Response> {
     const headers = new Headers(init.headers);
-    headers.set('Authorization', `Bearer ${await this.accessToken()}`);
+    headers.set('Authorization', `Bearer ${await this.accessToken(init.signal ?? undefined)}`);
     return fetch(`${base}${path}`, { ...init, headers });
   }
 
@@ -69,13 +74,20 @@ export class DriveService {
     if (this.folderId) {
       // Thư mục có thể đã bị xoá hoặc chuyển vào thùng rác trên Drive: kiểm tra trước khi dùng lại
       const check = await this.api(`/files/${encodeURIComponent(this.folderId)}?fields=trashed`);
-      if (check.ok && !((await check.json()) as { trashed: boolean }).trashed) return this.folderId;
+      if (check.ok) {
+        if (!((await check.json()) as { trashed: boolean }).trashed) return this.folderId;
+      } else {
+        await check.body?.cancel().catch(() => undefined);
+      }
       this.folderId = undefined;
     }
     const name = this.folderName;
     const q = `mimeType='application/vnd.google-apps.folder' and name='${name.replace(/'/g, "\\'")}' and trashed=false`;
     const found = await this.api(`/files?${new URLSearchParams({ q, fields: 'files(id)', spaces: 'drive' })}`);
-    if (!found.ok) throw new Error(`Drive folder lookup failed: HTTP ${found.status}`);
+    if (!found.ok) {
+      await found.body?.cancel().catch(() => undefined);
+      throw new Error(`Drive folder lookup failed: HTTP ${found.status}`);
+    }
     const existing = ((await found.json()) as { files: { id: string }[] }).files[0];
     if (existing) return (this.folderId = existing.id);
     const created = await this.api('/files?fields=id', {
@@ -83,7 +95,10 @@ export class DriveService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder' }),
     });
-    if (!created.ok) throw new Error(`Drive folder create failed: HTTP ${created.status}`);
+    if (!created.ok) {
+      await created.body?.cancel().catch(() => undefined);
+      throw new Error(`Drive folder create failed: HTTP ${created.status}`);
+    }
     this.folderId = ((await created.json()) as { id: string }).id;
     this.logger.log(`drive folder created id=${this.folderId}`);
     return this.folderId;
@@ -108,7 +123,9 @@ export class DriveService {
         UPLOAD_API,
       );
       const session = init.headers.get('location');
-      if (!init.ok || !session) throw new Error(`Drive upload session failed: HTTP ${init.status}`);
+      const initOk = init.ok;
+      await init.body?.cancel().catch(() => undefined);
+      if (!initOk || !session) throw new Error(`Drive upload session failed: HTTP ${init.status}`);
 
       let offset = 0;
       const buf = Buffer.alloc(Math.min(CHUNK_BYTES, Math.max(size, 1)));
@@ -126,11 +143,18 @@ export class DriveService {
         if (res.status === 308) {
           // Google báo đã nhận tới byte nào; tiếp tục từ đó
           const range = res.headers.get('range');
+          await res.body?.cancel().catch(() => undefined);
           offset = range ? Number(range.split('-')[1]) + 1 : offset + n;
           continue;
         }
-        if (!res.ok) throw new Error(`Drive upload chunk failed: HTTP ${res.status}`);
-        if (!last) throw new Error('Drive finished the upload before all bytes were sent');
+        if (!res.ok) {
+          await res.body?.cancel().catch(() => undefined);
+          throw new Error(`Drive upload chunk failed: HTTP ${res.status}`);
+        }
+        if (!last) {
+          await res.body?.cancel().catch(() => undefined);
+          throw new Error('Drive finished the upload before all bytes were sent');
+        }
         return (await res.json()) as DriveFile;
       }
     } finally {
@@ -139,9 +163,31 @@ export class DriveService {
   }
 
   /** Luồng tải một đoạn file (hỗ trợ Range) để trang quản trị phát video. */
-  async download(fileId: string, start: number, end: number): Promise<Response> {
-    const res = await this.api(`/files/${encodeURIComponent(fileId)}?alt=media`, { headers: { Range: `bytes=${start}-${end}` } });
-    if (!res.ok || !res.body) throw Object.assign(new Error(`Drive download failed: HTTP ${res.status}`), { status: res.status });
-    return res;
+  async download(fileId: string, start: number, end: number, signal?: AbortSignal): Promise<Response> {
+    if (signal?.aborted) {
+      throw signal.reason ?? new DOMException('Aborted', 'AbortError');
+    }
+    const ac = new AbortController();
+    const forward = () => ac.abort(signal?.reason);
+    signal?.addEventListener('abort', forward, { once: true });
+    // Chỉ giới hạn thời gian chờ phản hồi header, không ngắt luồng phát video dài sau khi đã nhận body
+    const headerTimer = setTimeout(() => ac.abort(new Error('Drive header timeout')), 30_000);
+    headerTimer.unref?.();
+    try {
+      const res = await this.api(
+        `/files/${encodeURIComponent(fileId)}?alt=media`,
+        { headers: { Range: `bytes=${start}-${end}` }, signal: ac.signal },
+      );
+      if (!res.ok || !res.body) {
+        await res.body?.cancel().catch(() => undefined);
+        throw Object.assign(new Error(`Drive download failed: HTTP ${res.status}`), { status: res.status });
+      }
+      return res;
+    } catch (e) {
+      signal?.removeEventListener('abort', forward);
+      throw e;
+    } finally {
+      clearTimeout(headerTimer);
+    }
   }
 }

@@ -27,6 +27,11 @@ import { CsrfGuard } from "../identity-access/guards/csrf.guard";
 import type { AuthenticatedRequest } from "../common/http/request-context";
 import { LocalStorageService } from "../media/storage/local-storage.service";
 import { DriveReadService } from "../media/drive/drive-read.service";
+import {
+  MAX_VIDEO_OPEN_RANGE_BYTES,
+  pipeReadableToResponse,
+  resolveByteRange,
+} from "../media/drive/stream-proxy";
 import { PrismaService } from "../database/prisma.service";
 import { AppException } from "../common/errors/app-error";
 import { AdminService } from "./admin.service";
@@ -174,33 +179,41 @@ export class AdminOperationsController {
     });
   }
   private async fromDrive(fileId: string, size: number, mimeType: string, req: AuthenticatedRequest, res: Response) {
-    const range = /^bytes=(\d*)-(\d*)$/.exec(req.header("range") ?? "");
-    let start = 0;
-    let end = size - 1;
-    if (range) {
-      if (range[1]) start = Number(range[1]);
-      if (range[2]) end = Math.min(Number(range[2]), size - 1);
-      if (!range[1] && range[2]) start = Math.max(0, size - Number(range[2]));
-      if (start > end || start >= size) {
-        res.status(416).setHeader("Content-Range", `bytes */${size}`).end();
-        return;
-      }
+    const parsed = resolveByteRange(req.header("range"), size, MAX_VIDEO_OPEN_RANGE_BYTES);
+    if (!parsed.ok) {
+      res.status(416).setHeader("Content-Range", `bytes */${size}`).end();
+      return;
     }
-    // Lấy luồng từ Drive trước khi gửi header để lỗi trả đúng mã
-    const remote = await this.drive.download(fileId, start, end).catch((e: { status?: number }) => {
-      if (e?.status === 404) throw AppException.notFound("Không tìm thấy video trên Google Drive");
+    const abort = new AbortController();
+    const onEarlyClose = () => {
+      if (!res.writableEnded) abort.abort();
+    };
+    res.once("close", onEarlyClose);
+    // Lấy luồng từ Drive trước khi gửi header để lỗi trả đúng mã; hủy kết nối nếu client đóng sớm
+    let remote: globalThis.Response;
+    try {
+      remote = await this.drive.download(fileId, parsed.start, parsed.end, abort.signal);
+    } catch (e) {
+      res.off("close", onEarlyClose);
+      if (abort.signal.aborted || res.destroyed || res.closed) return;
+      const status = (e as { status?: number })?.status;
+      if (status === 404) throw AppException.notFound("Không tìm thấy video trên Google Drive");
       throw AppException.dependencyUnavailable("Google Drive tạm thời không phản hồi");
-    });
-    res.status(range ? 206 : 200);
+    }
+    res.off("close", onEarlyClose);
+    if (abort.signal.aborted || res.destroyed || res.closed) {
+      await remote.body?.cancel().catch(() => undefined);
+      return;
+    }
+    res.status(parsed.isRange ? 206 : 200);
     res.setHeader("Content-Type", mimeType);
-    res.setHeader("Content-Length", String(end - start + 1));
+    res.setHeader("Content-Length", String(parsed.end - parsed.start + 1));
     res.setHeader("Accept-Ranges", "bytes");
-    if (range) res.setHeader("Content-Range", `bytes ${start}-${end}/${size}`);
+    if (parsed.isRange) res.setHeader("Content-Range", `bytes ${parsed.start}-${parsed.end}/${size}`);
     res.setHeader("Cache-Control", "private, no-store");
     res.setHeader("X-Content-Type-Options", "nosniff");
     const body = Readable.fromWeb(remote.body as import("node:stream/web").ReadableStream);
-    body.on("error", () => res.destroy());
-    body.pipe(res);
+    await pipeReadableToResponse(body, res, () => abort.abort());
   }
   @Get("questions") questions() {
     return this.admin.questions();

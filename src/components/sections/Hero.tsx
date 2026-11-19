@@ -6,7 +6,7 @@ import { asset } from "@/lib/paths";
 import HeroSlider, { type NewsSlide } from "./HeroSlider";
 
 // Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-const BANNER_VERSION = "v13";
+const BANNER_VERSION = "v14";
 
 const text = {
   vi: {
@@ -14,14 +14,14 @@ const text = {
     more: "Tìm hiểu thêm",
     audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"],
     bannerAlt:
-      "NextGen Manager 2026 – Cuộc thi Nhà quản trị thế hệ mới 2026 – Shaping the AI-era Leader. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
+      "NextGen Manager 2026 – Cuộc thi Nhà quản trị thế hệ mới 2026 – Shaping the AI-era Leader. Discover 07/11, Decide 21/11, Deliver 05/12. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
   },
   en: {
     register: "Take the exam",
     more: "Learn more",
     audience: ["A competition", "for students", "nationwide"],
     bannerAlt:
-      "NextGen Manager 2026 – Shaping the AI-era Leader 2026. Organized by VNU International School, Faculty of Economics and Management",
+      "NextGen Manager 2026 – Shaping the AI-era Leader 2026. Discover Nov 7, Decide Nov 21, Deliver Dec 5. Organized by VNU International School, Faculty of Economics and Management",
   },
 };
 
@@ -100,16 +100,26 @@ export default function Hero({ lang }: { lang: Lang }) {
         banner={
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={asset(`/images/cover-${BANNER_VERSION}-1280.webp`)}
-              srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.webp`)} 2560w`}
-              sizes="100vw"
-              alt={t.bannerAlt}
-              width={1920}
-              height={729}
-              fetchPriority="high"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            <picture>
+              <source
+                type="image/webp"
+                srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1024.webp`)} 1024w, ${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.webp`)} 2560w, ${asset(`/images/cover-${BANNER_VERSION}-3840.webp`)} 3840w`}
+                sizes="100vw"
+              />
+              <source
+                type="image/jpeg"
+                srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1024.jpg`)} 1024w, ${asset(`/images/cover-${BANNER_VERSION}-1280.jpg`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.jpg`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.jpg`)} 2560w, ${asset(`/images/cover-${BANNER_VERSION}-3840.jpg`)} 3840w`}
+                sizes="100vw"
+              />
+              <img
+                src={asset(`/images/cover-${BANNER_VERSION}.jpg`)}
+                alt={t.bannerAlt}
+                width={1920}
+                height={382}
+                fetchPriority="high"
+                className="absolute inset-0 h-full w-full object-contain bg-[#0c1445] lg:object-cover"
+              />
+            </picture>
 
             {/* Bấm vào banner để mở trang vào thi (đã qua giai đoạn đăng ký) */}
             <Link

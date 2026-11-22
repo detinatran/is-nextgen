@@ -1,27 +1,21 @@
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { getContent } from "@/content";
+import { buildSrcSet, HERO_BANNER } from "@/content/heroBanner";
 import { type Lang, localePath } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
 import HeroSlider, { type NewsSlide } from "./HeroSlider";
-
-// Đổi số phiên bản (và tên file ảnh) mỗi lần sửa banner: ảnh được trình duyệt giữ 30 ngày.
-const BANNER_VERSION = "v14";
 
 const text = {
   vi: {
     register: "Vào thi",
     more: "Tìm hiểu thêm",
     audience: ["Cuộc thi", "dành cho sinh viên", "trên toàn quốc"],
-    bannerAlt:
-      "NextGen Manager 2026 – Cuộc thi Nhà quản trị thế hệ mới 2026 – Shaping the AI-era Leader. Discover 07/11, Decide 21/11, Deliver 05/12. Đơn vị tổ chức: Trường Quốc tế – ĐHQGHN, Khoa Kinh tế và Quản lý",
   },
   en: {
     register: "Take the exam",
     more: "Learn more",
     audience: ["A competition", "for students", "nationwide"],
-    bannerAlt:
-      "NextGen Manager 2026 – Shaping the AI-era Leader 2026. Discover Nov 7, Decide Nov 21, Deliver Dec 5. Organized by VNU International School, Faculty of Economics and Management",
   },
 };
 
@@ -84,6 +78,7 @@ export default function Hero({ lang }: { lang: Lang }) {
       summary: a.summary,
     }));
   const t = text[lang];
+  const { desktop, mobile, alt, bgColor } = HERO_BANNER;
   return (
     <section
       id="top"
@@ -98,26 +93,64 @@ export default function Hero({ lang }: { lang: Lang }) {
         lang={lang}
         news={news}
         banner={
-          <>
+          <div className="relative w-full" style={{ backgroundColor: bgColor }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <picture>
-              <source
-                type="image/webp"
-                srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1024.webp`)} 1024w, ${asset(`/images/cover-${BANNER_VERSION}-1280.webp`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.webp`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.webp`)} 2560w, ${asset(`/images/cover-${BANNER_VERSION}-3840.webp`)} 3840w`}
-                sizes="100vw"
-              />
-              <source
-                type="image/jpeg"
-                srcSet={`${asset(`/images/cover-${BANNER_VERSION}-1024.jpg`)} 1024w, ${asset(`/images/cover-${BANNER_VERSION}-1280.jpg`)} 1280w, ${asset(`/images/cover-${BANNER_VERSION}-1920.jpg`)} 1920w, ${asset(`/images/cover-${BANNER_VERSION}-2560.jpg`)} 2560w, ${asset(`/images/cover-${BANNER_VERSION}-3840.jpg`)} 3840w`}
-                sizes="100vw"
-              />
+            <picture className="block w-full">
+              {mobile?.webp?.length ? (
+                <source
+                  media="(max-width: 639px)"
+                  type="image/webp"
+                  srcSet={buildSrcSet(mobile.webp, asset)}
+                  sizes="100vw"
+                  width={mobile.width}
+                  height={mobile.height}
+                />
+              ) : null}
+              {mobile ? (
+                <source
+                  media="(max-width: 639px)"
+                  type="image/jpeg"
+                  srcSet={
+                    mobile.jpeg?.length
+                      ? buildSrcSet(mobile.jpeg, asset)
+                      : asset(mobile.fallbackSrc)
+                  }
+                  sizes="100vw"
+                  width={mobile.width}
+                  height={mobile.height}
+                />
+              ) : null}
+              {desktop.webp?.length ? (
+                <source
+                  type="image/webp"
+                  srcSet={buildSrcSet(desktop.webp, asset)}
+                  sizes="100vw"
+                  width={desktop.width}
+                  height={desktop.height}
+                />
+              ) : null}
+              {desktop.jpeg?.length ? (
+                <source
+                  type="image/jpeg"
+                  srcSet={buildSrcSet(desktop.jpeg, asset)}
+                  sizes="100vw"
+                  width={desktop.width}
+                  height={desktop.height}
+                />
+              ) : null}
               <img
-                src={asset(`/images/cover-${BANNER_VERSION}.jpg`)}
-                alt={t.bannerAlt}
-                width={1920}
-                height={382}
+                src={asset(desktop.fallbackSrc)}
+                alt={alt[lang]}
+                width={desktop.width}
+                height={desktop.height}
                 fetchPriority="high"
-                className="absolute inset-0 h-full w-full object-contain bg-[#0c1445] lg:object-cover"
+                decoding="async"
+                style={
+                  !mobile
+                    ? { aspectRatio: `${desktop.width} / ${desktop.height}` }
+                    : undefined
+                }
+                className="block h-auto w-full"
               />
             </picture>
 
@@ -127,7 +160,7 @@ export default function Hero({ lang }: { lang: Lang }) {
               aria-label={t.register}
               className="absolute inset-0 z-10 focus-visible:outline-2 focus-visible:outline-white"
             />
-          </>
+          </div>
         }
       />
 
@@ -145,24 +178,26 @@ export default function Hero({ lang }: { lang: Lang }) {
 
       {/* Thẻ quyền lợi ngay dưới banner */}
       <div className="container-x relative z-10 pt-6 pb-4 lg:pt-8">
-        <ul className="grid grid-cols-2 gap-y-2 rounded-3xl bg-white p-3 shadow-2xl shadow-navy/15 ring-1 ring-line sm:p-4 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 auto-rows-fr gap-1.5 rounded-3xl bg-white p-2 shadow-2xl shadow-navy/15 ring-1 ring-line sm:gap-3 sm:p-4 lg:grid-cols-4 lg:gap-0">
           {heroStats.map((s, i) => (
             <li
               key={s.value}
-              className={`flex items-center gap-2 px-1.5 py-2 min-[360px]:gap-3 min-[360px]:px-2 sm:px-4 ${i > 0 ? "lg:border-l lg:border-line" : ""}`}
+              className={`flex h-full min-w-0 items-start gap-1.5 rounded-2xl px-1 py-2 min-[360px]:gap-2.5 min-[360px]:px-2 sm:gap-3 sm:px-3.5 sm:py-2.5 lg:rounded-none lg:px-4 ${i > 0 ? "lg:border-l lg:border-line" : ""}`}
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange min-[360px]:h-12 min-[360px]:w-12 sm:h-14 sm:w-14">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff1e6] text-orange min-[360px]:h-9 min-[360px]:w-9 sm:h-12 sm:w-12">
                 <Icon
                   name={s.icon}
-                  className="h-5 w-5 min-[360px]:h-6 min-[360px]:w-6"
+                  className="h-4 w-4 min-[360px]:h-[18px] min-[360px]:w-[18px] sm:h-6 sm:w-6"
                   strokeWidth={1.9}
                 />
               </span>
-              <div className="min-w-0">
-                <p className="text-[0.95rem] leading-tight font-bold whitespace-nowrap text-navy sm:text-lg">
+              <div className="min-w-0 flex-1">
+                <p className="text-[12px] leading-snug font-bold text-navy min-[360px]:text-sm sm:text-base xl:text-lg">
                   {s.value}
                 </p>
-                <p className="mt-0.5 text-[13px] leading-snug text-muted">{s.label}</p>
+                <p className="mt-0.5 text-[12px] leading-snug text-muted sm:text-[13px]">
+                  {s.label}
+                </p>
               </div>
             </li>
           ))}

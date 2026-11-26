@@ -1,94 +1,35 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import Eyebrow from "@/components/Eyebrow";
 import { getContent } from "@/content";
+import type { SponsorTier } from "@/content/site";
 import type { Lang } from "@/lib/i18n";
 import { asset } from "@/lib/paths";
-
-const MARQUEE_SPEED_PX_PER_SEC = 18;
-const DEFAULT_SLOT_WIDTH_PX = 272;
 
 const text = {
   vi: {
     eyebrow: "Nhà tài trợ",
-    title: "Doanh nghiệp đồng hành",
+    title: "Nhà tài trợ & doanh nghiệp đồng hành",
     altId: "doanh-nghiep-dong-hanh",
-    ariaRegion: "Danh sách doanh nghiệp đồng hành cùng NextGen Manager 2026",
   },
   en: {
     eyebrow: "Sponsors",
-    title: "Partner Companies",
+    title: "Sponsors & partner companies",
     altId: "partner-companies",
-    ariaRegion: "Partner companies supporting NextGen Manager 2026",
   },
 };
 
-function getLogoClass(logo: string) {
-  if (logo.includes("talentnet")) {
-    return "h-11 w-auto max-w-[175px] object-contain sm:h-12 sm:max-w-[195px]";
-  }
-  if (logo.includes("vinpearl")) {
-    return "h-14 w-auto max-w-[135px] object-contain sm:h-16 sm:max-w-[155px]";
-  }
-  if (logo.includes("tpbank")) {
-    return "h-11 w-auto max-w-[170px] object-contain sm:h-12 sm:max-w-[190px]";
-  }
-  if (logo.includes("the-mentor")) {
-    return "h-16 w-auto max-w-[125px] object-contain sm:h-20 sm:max-w-[145px]";
-  }
-  if (logo.includes("customized-learning-culture")) {
-    return "h-14 w-auto max-w-[155px] object-contain sm:h-[68px] sm:max-w-[175px]";
-  }
-  if (logo.includes("topcv")) {
-    return "h-11 w-auto max-w-[170px] object-contain sm:h-12 sm:max-w-[190px]";
-  }
-  if (logo.includes("van-tam")) {
-    return "h-16 w-auto max-w-[125px] object-contain sm:h-20 sm:max-w-[145px]";
-  }
-  if (logo.includes("huong-viet")) {
-    return "h-16 w-auto max-w-[125px] object-contain sm:h-20 sm:max-w-[145px]";
-  }
-  return "h-14 w-auto max-w-[165px] object-contain";
-}
+// Hạng cao hơn hiển thị logo lớn hơn; khung cố định để logo khác tỷ lệ vẫn thẳng hàng
+const tierStyle: Record<SponsorTier, { box: string; label: string }> = {
+  diamond: { box: "h-16 w-36 sm:h-20 sm:w-44", label: "text-navy" },
+  gold: { box: "h-14 w-32 sm:h-16 sm:w-40", label: "text-amber-700" },
+  silver: { box: "h-11 w-28 sm:h-12 sm:w-32", label: "text-slate-500" },
+  companion: { box: "h-14 w-32 sm:h-16 sm:w-40", label: "text-orange-ink" },
+};
 
 export default function Sponsors({ lang }: { lang: Lang }) {
-  const { partnerCompanies } = getContent(lang);
+  const { sponsorTiers } = getContent(lang);
   const t = text[lang];
-  const primaryListRef = useRef<HTMLUListElement>(null);
-
-  const fallbackDuration = Number(
-    (
-      ((partnerCompanies?.length || 8) * DEFAULT_SLOT_WIDTH_PX) /
-      MARQUEE_SPEED_PX_PER_SEC
-    ).toFixed(2),
-  );
-  const [durationSec, setDurationSec] = useState<number>(fallbackDuration);
-
-  useEffect(() => {
-    const el = primaryListRef.current;
-    if (!el) return;
-
-    const updateDuration = () => {
-      const distancePx = el.getBoundingClientRect().width;
-      if (distancePx > 0) {
-        setDurationSec(Number((distancePx / MARQUEE_SPEED_PX_PER_SEC).toFixed(2)));
-      }
-    };
-
-    updateDuration();
-
-    if (typeof ResizeObserver !== "undefined") {
-      const observer = new ResizeObserver(updateDuration);
-      observer.observe(el);
-      return () => observer.disconnect();
-    }
-
-    window.addEventListener("resize", updateDuration);
-    return () => window.removeEventListener("resize", updateDuration);
-  }, [partnerCompanies?.length]);
-
-  if (!partnerCompanies || partnerCompanies.length === 0) return null;
+  const tiers = (sponsorTiers ?? []).filter((g) => g.items.length > 0);
+  if (tiers.length === 0) return null;
 
   return (
     <section
@@ -106,43 +47,29 @@ export default function Sponsors({ lang }: { lang: Lang }) {
             <h2 className="h2-section mt-2">{t.title}</h2>
           </div>
 
-          <div
-            className="marquee mt-6 -mx-4 py-2 sm:-mx-6 lg:-mx-8"
-            style={{ "--marquee-duration": `${durationSec}s` } as React.CSSProperties}
-            role="region"
-            aria-label={t.ariaRegion}
-          >
-            <div className="marquee-track items-center">
-              {[0, 1].map((copy) => (
-                <ul
-                  key={copy}
-                  ref={copy === 0 ? primaryListRef : undefined}
-                  className={`flex shrink-0 items-center gap-12 pr-12 sm:gap-16 sm:pr-16 ${
-                    copy === 1 ? "motion-reduce:hidden" : "motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-8 motion-reduce:px-4"
-                  }`}
-                  aria-hidden={copy === 1 || undefined}
-                  inert={copy === 1 || undefined}
-                >
-                  {partnerCompanies.map((item) => (
-                    <li
-                      key={item.name}
-                      className="flex shrink-0 items-center justify-center"
-                    >
-                      <div className="flex h-20 w-44 shrink-0 items-center justify-center sm:h-24 sm:w-52">
+          <div className="mt-6 divide-y divide-line">
+            {tiers.map((g) => {
+              const s = tierStyle[g.tier];
+              return (
+                <div key={g.tier} className="py-6 first:pt-2 last:pb-0">
+                  <h3 className={`text-center text-xs font-bold tracking-[0.18em] uppercase ${s.label}`}>{g.label}</h3>
+                  <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-5 sm:gap-x-12">
+                    {g.items.map((item) => (
+                      <li key={item.name} className={`flex shrink-0 items-center justify-center ${s.box}`} title={item.name}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={asset(item.logo)}
-                          alt={copy === 0 ? item.name : ""}
-                          loading="eager"
+                          alt={item.name}
+                          loading="lazy"
                           decoding="async"
-                          className={getLogoClass(item.logo)}
+                          className="max-h-full max-w-full object-contain"
                         />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ))}
-            </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

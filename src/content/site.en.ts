@@ -279,28 +279,78 @@ export const minorPrizes =
 
 export const partners: { name: string; logo?: string; ink?: boolean }[] = [
   { name: "VNU International School (VNU-IS)", logo: "/images/org/truong-crest.png" },
+  { name: "Faculty of Economics and Management" },
   { name: "Ho Chi Minh Communist Youth Union", logo: "/images/org/doan.png" },
   { name: "Youth Union Branch – Economics & Management", logo: "/images/org/lcd-ktql-navy.png" },
   { name: "iSupport Club", logo: "/images/org/isupport.png" },
   { name: "Marketing Club (IMC)", logo: "/images/org/imc.png" },
+  { name: "AMES", logo: "/images/sponsors/ames.png" },
 ];
 
-// TODO(BTC): add sponsors once agreements are signed, e.g. { name: "Company name", logo: "/images/sponsors/company-name.png" }
+// Per the Organizing Committee's logo band (Canva version, 26/11/2026)
 export const sponsors: { name: string; logo?: string }[] = [
+  { name: "Faculty of Economics and Management, VNU International School" },
   { name: "MCG & Partners Co., Ltd.", logo: "/images/sponsors/mcg-partners.svg" },
 ];
 
-export const mediaPartners: { name: string; logo?: string }[] = [{ name: "VTC News", logo: "/images/sponsors/vtcnews.png" }];
+export const mediaPartners: { name: string; logo?: string }[] = [
+  { name: "Business & Finance Magazine", logo: "/images/sponsors/tai-chinh-doanh-nghiep.png" },
+  { name: "VTC News", logo: "/images/sponsors/vtcnews.png" },
+  { name: "Vietnam Women's Newspaper", logo: "/images/sponsors/bao-phu-nu-viet-nam.png" },
+  { name: "CJC Marketing Agency", logo: "/images/sponsors/cjc-marketing-agency.png" },
+  { name: "Italian Atelier", logo: "/images/sponsors/italian-atelier.png" },
+  { name: "Amplus Group", logo: "/images/sponsors/amplus-group.png" },
+  { name: "Giai Tri & Van Hoa", logo: "/images/sponsors/giai-tri-van-hoa.png" },
+];
 
-export const partnerCompanies: { name: string; logo: string }[] = [
-  { name: "Công ty Cổ phần Kết Nối Nhân Tài (Talentnet)", logo: "/images/sponsors/talentnet.png" },
-  { name: "Công ty Cổ phần Vinpearl", logo: "/images/sponsors/vinpearl.png" },
-  { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
-  { name: "The Mentor", logo: "/images/sponsors/the-mentor.png" },
-  { name: "Customized Learning Culture", logo: "/images/sponsors/customized-learning-culture.png" },
-  { name: "Vạn Tam", logo: "/images/sponsors/van-tam.png" },
-  { name: "TopCV", logo: "/images/sponsors/topcv.png" },
-  { name: "Nhà hàng Hương Việt", logo: "/images/sponsors/huong-viet.png" },
+export type SponsorTier = "diamond" | "gold" | "silver" | "companion";
+
+export const sponsorTiers: { tier: SponsorTier; label: string; items: { name: string; logo: string }[] }[] = [
+  {
+    tier: "diamond",
+    label: "Diamond Sponsors",
+    items: [
+      { name: "Bao Minh Insurance", logo: "/images/sponsors/bao-minh.png" },
+      { name: "Van Tam", logo: "/images/sponsors/van-tam.png" },
+      { name: "TPBank", logo: "/images/sponsors/tpbank.png" },
+      { name: "Huong Viet Restaurant", logo: "/images/sponsors/huong-viet.png" },
+      { name: "Hubitos", logo: "/images/sponsors/hubitos.png" },
+      { name: "TopCV", logo: "/images/sponsors/topcv.png" },
+    ],
+  },
+  {
+    tier: "gold",
+    label: "Gold Sponsors",
+    items: [
+      { name: "The Mentor", logo: "/images/sponsors/the-mentor.png" },
+      { name: "Customized Learning Culture", logo: "/images/sponsors/customized-learning-culture.png" },
+      { name: "Eduwing Global", logo: "/images/sponsors/eduwing-global.png" },
+      { name: "Vinex", logo: "/images/sponsors/vinex.png" },
+    ],
+  },
+  {
+    tier: "silver",
+    label: "Silver Sponsors",
+    items: [
+      { name: "COLE", logo: "/images/sponsors/cole.png" },
+      { name: "SAPP Academy", logo: "/images/sponsors/sapp.png" },
+      { name: "Naka Garden", logo: "/images/sponsors/naka-garden.png" },
+      { name: "TIMES", logo: "/images/sponsors/times.png" },
+      { name: "HAH Academy", logo: "/images/sponsors/hah-academy.png" },
+      { name: "THALIC", logo: "/images/sponsors/thalic.png" },
+      { name: "86 HSK", logo: "/images/sponsors/86hsk.png" },
+      { name: "LEX Education", logo: "/images/sponsors/lex-education.png" },
+    ],
+  },
+  {
+    tier: "companion",
+    label: "Partner Companies",
+    items: [
+      { name: "Vinpearl", logo: "/images/sponsors/vinpearl.png" },
+      { name: "Talentnet", logo: "/images/sponsors/talentnet.png" },
+      { name: "VNPAY", logo: "/images/sponsors/vnpay.png" },
+    ],
+  },
 ];
 
 export const eligibility = [

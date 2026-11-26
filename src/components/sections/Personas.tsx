@@ -12,7 +12,7 @@ const text = {
     title: ["Bạn có phải nhà quản trị", "chúng tôi đang tìm?"],
     lead: "Sáu chân dung năng lực được chấm ở cả ba vòng thi. Bạn thấy mình trong chân dung nào?",
     more: "Xem khung năng lực",
-    partners: "Đơn vị tổ chức",
+    partners: "Đơn vị tổ chức & thực hiện",
     sponsors: "Bảo trợ chuyên môn",
     media: "Bảo trợ truyền thông",
     sponsor: "Trở thành nhà tài trợ",
@@ -24,9 +24,9 @@ const text = {
     title: ["Are you the manager", "we are looking for?"],
     lead: "Six competency profiles, assessed in all three rounds. Which one sounds like you?",
     more: "See the framework",
-    partners: "Organizers",
-    sponsors: "Professional sponsor",
-    media: "Media partner",
+    partners: "Organizers & implementing units",
+    sponsors: "Professional sponsors",
+    media: "Media partners",
     sponsor: "Become a sponsor",
     group: "Competency",
     every: "assessed in all three rounds",
@@ -94,18 +94,20 @@ export default function Personas({ lang }: { lang: Lang }) {
           ].filter((g) => g.items.length > 0);
           if (!groups.length) return null;
           return (
-            <div className={`mt-4 grid gap-4 ${groups.length > 1 ? "sm:grid-cols-2" : ""}`}>
+            <div className={`mt-4 grid gap-4 ${groups.length > 1 ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]" : ""}`}>
               {groups.map((g) => (
                 <div key={g.label} className="reveal rounded-3xl bg-white/90 px-5 py-4 shadow-card ring-1 ring-line backdrop-blur-sm sm:px-8">
                   <p className="text-center text-xs font-semibold tracking-wider text-muted uppercase">{g.label}</p>
-                  <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
+                  <div className="mt-4 flex flex-wrap items-start justify-center gap-x-6 gap-y-5">
                     {g.items.map((sp) => (
-                      <div key={sp.name} className="flex max-w-md flex-col items-center gap-2 text-center">
+                      <div key={sp.name} className="flex w-36 flex-col items-center gap-2 text-center sm:w-40">
                         {sp.logo && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={asset(sp.logo)} alt={`Logo ${sp.name}`} className="h-10 w-auto max-w-full object-contain sm:h-12 md:h-14" />
+                          <span className="flex h-12 w-full items-center justify-center sm:h-14">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={asset(sp.logo)} alt={`Logo ${sp.name}`} className="max-h-full max-w-full object-contain" />
+                          </span>
                         )}
-                        <span className="text-[13px] leading-snug font-medium text-navy sm:text-sm">{sp.name}</span>
+                        <span className="text-xs leading-snug font-medium text-navy sm:text-[13px]">{sp.name}</span>
                       </div>
                     ))}
                   </div>

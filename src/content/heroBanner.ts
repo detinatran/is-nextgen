@@ -32,23 +32,23 @@ export type HeroBannerConfig = {
  * và cập nhật `version`, `width`, `height`, `fallbackSrc`, danh sách `webp`/`jpeg` và `alt` tại đây.
  */
 export const HERO_BANNER: HeroBannerConfig = {
-  version: "v15",
+  version: "v16",
   bgColor: "#0a1138",
   desktop: {
     width: 1958,
     height: 745,
-    fallbackSrc: "/images/cover-v15-1958.jpg",
+    fallbackSrc: "/images/cover-v16-1958.jpg",
     webp: [
-      { src: "/images/cover-v15-640.webp", width: 640 },
-      { src: "/images/cover-v15-960.webp", width: 960 },
-      { src: "/images/cover-v15-1280.webp", width: 1280 },
-      { src: "/images/cover-v15-1958.webp", width: 1958 },
+      { src: "/images/cover-v16-640.webp", width: 640 },
+      { src: "/images/cover-v16-960.webp", width: 960 },
+      { src: "/images/cover-v16-1280.webp", width: 1280 },
+      { src: "/images/cover-v16-1958.webp", width: 1958 },
     ],
     jpeg: [
-      { src: "/images/cover-v15-640.jpg", width: 640 },
-      { src: "/images/cover-v15-960.jpg", width: 960 },
-      { src: "/images/cover-v15-1280.jpg", width: 1280 },
-      { src: "/images/cover-v15-1958.jpg", width: 1958 },
+      { src: "/images/cover-v16-640.jpg", width: 640 },
+      { src: "/images/cover-v16-960.jpg", width: 960 },
+      { src: "/images/cover-v16-1280.jpg", width: 1280 },
+      { src: "/images/cover-v16-1958.jpg", width: 1958 },
     ],
   },
   mobile: undefined,

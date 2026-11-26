@@ -36,6 +36,30 @@ interface SharedArticleMeta {
 }
 
 const sharedMeta: Record<string, SharedArticleMeta> = {
+  gtvhTrip: {
+    id: "gtvh-trip",
+    slug: "giaitrivanhoa-next-gen-business-trip-hanh-trinh-kham-pha-thuc-tien-doanh-nghiep-tai-vnpay-va-tpbank",
+    originalTitle:
+      "Next Gen Business Trip: Hành trình khám phá thực tiễn doanh nghiệp tại VNPAY và TPBank",
+    originalUrl:
+      "https://www.giaitrivanhoa.vn/2026/11/next-gen-business-trip-hanh-trinh-kham.html",
+    publishedAt: "2026-11-19T10:00:00+07:00",
+    publishedDateLabel: "19/11/2026",
+    thumbnail: "/images/news/gtvh-trip-1.jpg",
+    author: "Phương Nhi",
+  },
+  vnpayTrip: {
+    id: "vnpay-trip",
+    slug: "vnpay-dong-hanh-cung-the-he-nha-quan-tri-tuong-lai-tai-nextgen-business-field-trip",
+    originalTitle:
+      "VNPAY đồng hành cùng thế hệ nhà quản trị tương lai tại NextGen Business Field Trip",
+    originalUrl:
+      "https://tuyendung.vnpay.vn/tin-tuc/vnpay-dong-hanh-cung-the-he-nha-quan-tri-tuong-lai-tai-nextgen-business-field-trip.html",
+    publishedAt: "2026-11-18T18:00:00+07:00",
+    publishedDateLabel: "18/11/2026",
+    thumbnail: "/images/news/vnpay-trip-1.jpg",
+    author: "VNPAY",
+  },
   phunuvn: {
     id: "phunuvn",
     slug: "phunuvietnam-lanh-dao-khong-tu-chuc-danh-buoc-dem-de-nu-sinh-dan-than-vao-quan-tri",
@@ -146,6 +170,257 @@ const sharedMeta: Record<string, SharedArticleMeta> = {
 };
 
 export const newsArticlesVi: NewsArticleItem[] = [
+  {
+    ...sharedMeta.gtvhTrip,
+    title: sharedMeta.gtvhTrip.originalTitle,
+    source: "Chuyên trang Giải trí & Văn hóa",
+    summary:
+      "Ngày 18/11/2026, chương trình NEXT GEN Business Trip thuộc Cuộc thi NextGen Manager 2026 đưa thí sinh đến tham quan, tìm hiểu môi trường làm việc thực tế tại VNPAY và TPBank, nghe chia sẻ trực tiếp từ đội ngũ lãnh đạo về tư duy quản lý, nghệ thuật ra quyết định và câu chuyện trưởng thành từ trải nghiệm.",
+    thumbnailAlt:
+      "Ban Tổ chức, thí sinh NextGen Manager 2026 và đại diện VNPAY trong chương trình NEXT GEN Business Trip.",
+    hasFullText: true,
+    sapo:
+      "Ngày 18/11/2026, chương trình NEXT GEN Business Trip thuộc khuôn khổ Cuộc thi NextGen Manager - Nhà Quản trị trong kỷ nguyên mới đã mang đến cho sinh viên cơ hội tham quan, tìm hiểu và trải nghiệm môi trường làm việc thực tế tại hai doanh nghiệp lớn trong lĩnh vực công nghệ tài chính và ngân hàng: Công ty Cổ phần Giải pháp Thanh toán Việt Nam (VNPAY) và Ngân hàng TMCP Tiên Phong (TPBank).",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "Chuyến đi không chỉ mở ra góc nhìn thực tiễn về hoạt động vận hành doanh nghiệp mà còn giúp các bạn sinh viên tiếp cận những kinh nghiệm quản lý, tư duy kinh doanh và kỹ năng nghề nghiệp thông qua những chia sẻ trực tiếp từ đội ngũ lãnh đạo, nhân sự tại doanh nghiệp.",
+      },
+      { type: "heading", content: "VNPAY - Hiểu về tư duy quản lý và nghệ thuật ra quyết định" },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-1.jpg",
+        caption: "Ban Tổ chức, thí sinh NextGen Manager 2026 và đại diện VNPAY tại trụ sở doanh nghiệp",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Điểm dừng chân đầu tiên của đoàn là trụ sở VNPAY, nơi các bạn sinh viên được giới thiệu tổng quan về quá trình hình thành, phát triển và hệ sinh thái sản phẩm, dịch vụ của doanh nghiệp. Với đội ngũ hơn 2.000 nhân sự và mạng lưới hợp tác cùng hơn 40 ngân hàng, VNPAY đã và đang khẳng định vị thế trong lĩnh vực thanh toán điện tử, cung cấp đa dạng giải pháp từ thanh toán số, hóa đơn điện tử đến các dịch vụ tiện ích phục vụ đời sống hàng ngày.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-2.jpg",
+        caption: "Chị Nguyễn Ánh Tuyết - Phó Tổng Giám đốc VNPAY chia sẻ về một ngày làm quản lý tại VNPAY",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tiếp nối chương trình, chị Nguyễn Ánh Tuyết - Phó Tổng Giám đốc VNPAY đã mang đến chuyên đề chia sẻ về kinh nghiệm quản lý được đúc kết sau gần 20 năm làm việc tại doanh nghiệp. Từ câu chuyện thực tiễn trong quá trình điều hành và triển khai các dự án, chị nhấn mạnh rằng bản chất công việc của một nhà quản lý chính là đưa ra quyết định. Dù ở bất kỳ vị trí nào, mỗi quyết định đều có thể ảnh hưởng đến định hướng, tiến độ và hiệu quả hoạt động của cả một tập thể.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thông qua bốn khía cạnh công việc thường ngày gồm tổ chức cuộc họp, ký kết văn bản, đàm phán với đối tác và quản lý nhân sự, chị Tuyết giúp sinh viên hình dung rõ hơn về trách nhiệm của người đứng đầu. Trong đó, việc đưa ra quyết định cần dựa trên dữ liệu, kinh nghiệm và sự nhạy bén trong kinh doanh. Đặc biệt, chị nhấn mạnh một nguyên tắc đáng chú ý: “Đừng bao giờ ký những gì mình chưa hiểu”, bởi mỗi chữ ký không chỉ thể hiện sự đồng thuận mà còn gắn liền với trách nhiệm pháp lý và lợi ích lâu dài của doanh nghiệp.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bên cạnh đó, tốc độ cũng là yếu tố quan trọng đối với một nhà quản lý trong bối cảnh công nghệ và dịch vụ liên tục thay đổi. Người quản lý cần chủ động học hỏi, cập nhật xu hướng, đặc biệt là những tiến bộ về trí tuệ nhân tạo và thanh toán số. Việc ra quyết định cần được thực hiện kịp thời khi đã có đủ những thông tin cốt lõi, tránh để sự chần chừ làm lỡ mất cơ hội. Đồng thời, khi đối mặt với những vấn đề vượt ngoài khả năng đánh giá, nhà quản lý cần biết tham vấn ý kiến, chọn lọc thông tin và sử dụng AI như một công cụ hỗ trợ thay vì phụ thuộc hoàn toàn vào công nghệ.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Không chỉ dừng lại ở lý thuyết, chuyên đề còn trở nên sôi nổi hơn với phần giao lưu, hỏi đáp giữa diễn giả và sinh viên. Những câu hỏi xoay quanh cách cân bằng lợi ích khi đàm phán, giải quyết xung đột giữa các phòng ban, đánh giá và đề bạt nhân sự hay thời điểm cần đưa ra quyết định khó khăn đã mở ra nhiều góc nhìn thực tế.",
+      },
+      { type: "image", src: "/images/news/gtvh-trip-3.jpg", caption: "Sinh viên từ các trường đặt câu hỏi dành cho doanh nghiệp" },
+      { type: "image", src: "/images/news/gtvh-trip-4.jpg", caption: "Phần giao lưu, hỏi đáp giữa diễn giả và thí sinh" },
+      {
+        type: "paragraph",
+        content:
+          "Phần trao đổi sau đó ghi nhận nhiều câu hỏi từ sinh viên các trường. Sinh viên Nguyễn Thị Thu Hiền (UEB) và Marus (Trường Quốc tế) hỏi về việc ra quyết định khi dữ liệu do AI cung cấp chưa đầy đủ, việc cân bằng các quyết định giữa lãnh đạo và stakeholder; Lê Cẩm Tú (Ngoại thương) đặt vấn đề cân bằng lợi ích giữa các phòng ban; Thủy Tiên (NEU) quan tâm tới cách bảo vệ quyền lợi doanh nghiệp khi đàm phán với đối tác. Trả lời, diễn giả nhấn mạnh vai trò của việc tự đánh giá mức độ thông tin hiện có, tham vấn người liên quan và đàm phán để tìm phương án phù hợp. Trước câu hỏi của Lê Mai Anh (USSH) về văn hóa doanh nghiệp, chị Nguyễn Thị Ngọc Phúc cho biết văn hóa được hình thành từ cách ứng xử và vai trò làm gương của đội ngũ lãnh đạo, cùng những quan tâm thường ngày tới người lao động.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-5.jpg",
+        caption: "Chị Nguyễn Thị Ngọc Phúc - Giám đốc Nhân sự VNPAY phát biểu chào mừng",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Song song với câu chuyện quản lý, chị Nguyễn Thị Ngọc Phúc - Giám đốc Nhân sự VNPAY cũng chia sẻ về văn hóa doanh nghiệp và cách xây dựng môi trường làm việc tích cực. Theo chị, văn hóa doanh nghiệp trước hết được hình thành từ chính người lãnh đạo thông qua sự gương mẫu, tôn trọng và quan tâm đến nhân viên. Những chính sách phúc lợi, sự hỗ trợ từ cấp trên hay thậm chí những điều nhỏ như bữa sáng miễn phí dành cho nhân viên đều góp phần tạo nên cảm giác gắn kết và mong muốn đồng hành lâu dài với tổ chức.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Khép lại phần chuyên đề, đoàn sinh viên được tham quan không gian làm việc và tìm hiểu trực tiếp về môi trường vận hành tại VNPAY. Qua đó, các bạn có cơ hội quan sát sự kết nối giữa các phòng ban, cũng như cách một doanh nghiệp công nghệ tổ chức và phối hợp nguồn lực trong thực tế.",
+      },
+      { type: "heading", content: "TPBank - Tiếp cận môi trường ngân hàng và câu chuyện trưởng thành từ trải nghiệm" },
+      { type: "image", src: "/images/news/gtvh-trip-6.jpg", caption: "Đoàn thí sinh NextGen Manager 2026 tại TPBank" },
+      {
+        type: "paragraph",
+        content:
+          "Rời VNPAY, đoàn tiếp tục hành trình đến TPBank - điểm dừng chân thứ hai của chương trình. Tại đây, sinh viên được đón tiếp bởi chị Nguyễn Thị Lan Ngọc - Giám đốc Chi nhánh Hà Nội và chị Nhữ Thị Diễm Thùy - Phó Giám đốc Chi nhánh Hà Nội. Trong không khí thân thiện, đại diện ngân hàng đã gửi lời chào mừng và giới thiệu về mối quan hệ hợp tác mật thiết giữa TPBank và VNPAY.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-7.jpg",
+        caption: "Chị Nguyễn Thị Lan Ngọc - Giám đốc Chi nhánh Hà Nội và chị Nhữ Thị Diễm Thùy - Phó Giám đốc Chi nhánh Hà Nội, TPBank",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Một trong những nội dung thu hút sự quan tâm của sinh viên là phần chia sẻ từ Antony - thực tập sinh đang đảm nhiệm vị trí Quản lý quan hệ tại TPBank.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-8.jpg",
+        caption: "Antony (Tony), sinh viên ngành Management của Trường Quốc tế, thực tập sinh tại bộ phận quản lý quan hệ khách hàng của TPBank chia sẻ kinh nghiệm làm việc",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bắt đầu kỳ thực tập từ tháng 4, Antony đã kể lại hành trình làm quen với môi trường ngân hàng, từ những ngày đầu còn bỡ ngỡ với các thuật ngữ chuyên ngành đến khi dần cải thiện kiến thức, sự tự tin và khả năng thích nghi nhờ sự hướng dẫn, hỗ trợ từ các anh chị đồng nghiệp. Câu chuyện của bạn là minh chứng cho giá trị của trải nghiệm thực tế, tinh thần chủ động học hỏi và sự đồng hành trong quá trình phát triển nghề nghiệp.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bên cạnh đó, sinh viên còn được theo dõi video giới thiệu về những dấu ấn và hành trình phát triển của TPBank, đồng thời tham gia minigame tìm hiểu về ngân hàng thông qua các câu hỏi liên quan đến tên gọi đầy đủ, màu sắc nhận diện, slogan, năm thành lập và mô hình giao dịch tự động đặc trưng. Hoạt động không chỉ tạo không khí sôi nổi mà còn giúp các bạn ghi nhớ thêm những thông tin thú vị về doanh nghiệp.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-9.jpg",
+        caption: "Thí sinh tham dự cuộc thi tham gia chương trình Lunch Networking with TPBank",
+      },
+      { type: "heading", content: "Mở rộng góc nhìn - Kết nối kiến thức với thực tiễn" },
+      {
+        type: "paragraph",
+        content:
+          "Khép lại hành trình tại hai doanh nghiệp, NEXT GEN Business Trip đã mang đến nhiều hơn một chuyến tham quan đơn thuần. Từ những câu chuyện quản lý tại VNPAY đến trải nghiệm nghề nghiệp tại TPBank, sinh viên có cơ hội đối chiếu kiến thức được học trên giảng đường với cách doanh nghiệp thực sự vận hành, ra quyết định và phát triển nguồn nhân lực.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đặc biệt, những chia sẻ từ các nhà quản lý và nhân sự đang làm việc trong ngành đã giúp các bạn hiểu rằng năng lực chuyên môn chỉ là một phần của hành trang nghề nghiệp. Để thích nghi và phát triển trong môi trường kinh doanh hiện đại, mỗi sinh viên cần không ngừng học hỏi, rèn luyện tư duy phản biện, khả năng giao tiếp, kỹ năng giải quyết vấn đề và tinh thần sẵn sàng trước những thay đổi.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "NEXT GEN Business Trip ngày 18/11/2026 đã khép lại, nhưng những kiến thức, trải nghiệm và góc nhìn được tích lũy trong chuyến đi sẽ tiếp tục là hành trang ý nghĩa để mỗi sinh viên định hình con đường phát triển của bản thân, chủ động chuẩn bị cho những cơ hội nghề nghiệp trong tương lai.",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.vnpayTrip,
+    title: sharedMeta.vnpayTrip.originalTitle,
+    source: "VNPAY",
+    sourceRole: "Doanh nghiệp đồng hành",
+    summary:
+      "Sáng 18/11/2026, VNPAY đón Ban Tổ chức và thí sinh Vòng 2 Cuộc thi NextGen Manager 2026 tại văn phòng Hateco Laroma (Hà Nội) trong chương trình NextGen Business Field Trip: nghe chuyên đề về công việc của nhà quản lý, giao lưu cùng lãnh đạo VNPAY và tham quan không gian làm việc Fintech.",
+    thumbnailAlt:
+      "Đại diện VNPAY cùng các thầy cô và thí sinh Cuộc thi NextGen Manager 2026 tại chương trình NextGen Business Field Trip.",
+    hasFullText: true,
+    sapo:
+      "Sáng ngày 18/11/2026, tại văn phòng VNPAY (Tòa nhà Hateco Laroma, Hà Nội), VNPAY đã đón tiếp đoàn Ban Tổ chức và các thí sinh Vòng 2 Cuộc thi NextGen Manager 2026 – Trường Quốc tế, Đại học Quốc gia Hà Nội trong khuôn khổ chương trình tham quan doanh nghiệp NextGen Business Field Trip. Chương trình mang đến cơ hội để sinh viên tiếp cận thực tiễn hoạt động của doanh nghiệp công nghệ tài chính, tìm hiểu về công việc quản trị và trực tiếp trao đổi với đội ngũ lãnh đạo VNPAY.",
+    sections: [
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-1.jpg",
+        caption: "Đại diện VNPAY cùng các thầy cô và thí sinh Cuộc thi NextGen Manager 2026 tại chương trình NextGen Business Field Trip.",
+      },
+      { type: "heading", content: "Từ góc nhìn thực tiễn doanh nghiệp đến những bài toán quản trị trong thời đại mới" },
+      {
+        type: "paragraph",
+        content:
+          "Mở đầu chương trình, các thầy cô và sinh viên đã cùng tìm hiểu về hành trình hình thành, phát triển, lĩnh vực hoạt động cũng như văn hóa doanh nghiệp VNPAY thông qua video giới thiệu.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Phát biểu khai mạc chương trình, chị Nguyễn Thị Ngọc Phúc – Giám đốc Nhân sự VNPAY đã gửi lời chào mừng tới Ban Tổ chức và các thí sinh Cuộc thi NextGen Manager 2026, đồng thời chia sẻ tinh thần đồng hành của VNPAY trong các hoạt động kết nối giữa môi trường giáo dục và thực tiễn doanh nghiệp.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-2.jpg",
+        caption: "Chị Nguyễn Thị Ngọc Phúc – Giám đốc Nhân sự VNPAY phát biểu khai mạc chương trình.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đại diện Nhà trường, TS. Đào Công Tuấn – Bí thư Liên chi đoàn Khoa Kinh tế và Quản lý, đại diện Ban Tổ chức Cuộc thi NextGen Manager 2026 cũng có những chia sẻ về ý nghĩa của chương trình tham quan doanh nghiệp, giúp sinh viên có cơ hội tiếp cận gần hơn với môi trường làm việc thực tế trước khi bước vào Vòng 2 của cuộc thi.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-3.jpg",
+        caption: "TS. Đào Công Tuấn – Bí thư Liên chi đoàn Khoa Kinh tế và Quản lý, đại diện Ban Tổ chức Cuộc thi NextGen Manager 2026 phát biểu tại sự kiện.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Một trong những nội dung trọng tâm của chương trình là chuyên đề “Những công việc thường ngày của nhà quản lý tại doanh nghiệp; yêu cầu và thách thức của nhà quản trị hiện nay”, từ chị Nguyễn Ánh Tuyết – Phó Tổng Giám đốc VNPAY trực tiếp chia sẻ.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-4.jpg",
+        caption: "Chị Nguyễn Ánh Tuyết – Phó Tổng Giám đốc VNPAY chia sẻ về công việc, vai trò và những thách thức của nhà quản lý trong môi trường doanh nghiệp hiện nay.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Với chủ đề gắn liền với thực tiễn hoạt động doanh nghiệp, chị Nguyễn Ánh Tuyết đã mang đến những chia sẻ sâu sắc về vai trò và trách nhiệm của người làm công tác quản lý trong một tổ chức. Từ việc hoạch định mục tiêu, tổ chức nguồn lực, điều phối hoạt động đến giải quyết những vấn đề phát sinh trong quá trình vận hành, công việc của một nhà quản lý không đơn thuần là đưa ra quyết định, mà còn đòi hỏi khả năng nhìn nhận vấn đề toàn diện, tư duy hệ thống và bản lĩnh chịu trách nhiệm trước mỗi lựa chọn.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đặc biệt, trong bối cảnh công nghệ phát triển nhanh chóng và trí tuệ nhân tạo đang từng bước thay đổi phương thức làm việc, người làm quản lý cần không ngừng cập nhật tri thức, chủ động thích ứng và biết cách khai thác những cơ hội mới để nâng cao hiệu quả hoạt động. Qua những chia sẻ từ chính trải nghiệm điều hành tại VNPAY, các bạn sinh viên có cơ hội nhìn nhận rõ hơn khoảng cách giữa kiến thức quản trị trên giảng đường và những yêu cầu thực tế tại doanh nghiệp, đồng thời hiểu rằng hành trình trở thành một nhà quản trị đòi hỏi sự tích lũy bền bỉ về chuyên môn, tư duy lãnh đạo và năng lực thích ứng trước những thay đổi.",
+      },
+      { type: "heading", content: "Giao lưu đa quốc gia, lan tỏa góc nhìn quản trị đa chiều" },
+      {
+        type: "paragraph",
+        content:
+          "Tiếp nối chuyên đề là phần giao lưu, hỏi đáp trực tiếp giữa diễn giả và các thí sinh. Không khí chương trình trở nên sôi nổi với nhiều câu hỏi được đặt ra, thể hiện sự chủ động, tinh thần cầu thị và mối quan tâm của sinh viên đối với những vấn đề quản trị trong thực tiễn.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đặc biệt, phần giao lưu còn có sự tham gia của các sinh viên quốc tế. Những câu hỏi và trao đổi bằng tiếng Anh đã mang đến màu sắc đa văn hóa cho chương trình, tạo cơ hội để các bạn sinh viên cùng chia sẻ quan điểm từ những góc nhìn và trải nghiệm khác nhau. Sự tương tác cởi mở giữa diễn giả và các bạn sinh viên đã góp phần tạo nên một phiên hỏi đáp gần gũi, giàu năng lượng và nhiều giá trị.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-5.jpg",
+        caption: "Sinh viên hào hứng đặt câu hỏi và trao đổi cùng diễn giả trong phần giao lưu chuyên đề.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thông qua những câu trả lời và chia sẻ trực tiếp từ chị Nguyễn Ánh Tuyết, các bạn sinh viên có thêm cơ hội đối chiếu kiến thức học thuật với thực tế vận hành doanh nghiệp, đồng thời hiểu rõ hơn về những thách thức, yêu cầu và trách nhiệm của người làm công tác quản lý. Những phần quà từ VNPAY cũng được trao tặng tới các bạn có câu hỏi giao lưu, ghi nhận tinh thần tích cực và sự nhiệt tình tham gia của các thí sinh.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-6.jpg",
+        caption: "Chị Nguyễn Ánh Tuyết trực tiếp giải đáp các câu hỏi, chia sẻ kinh nghiệm thực tiễn cùng các thí sinh NextGen Manager 2026.",
+      },
+      { type: "heading", content: "Trải nghiệm không gian làm việc, khám phá môi trường Fintech tại VNPAY" },
+      {
+        type: "paragraph",
+        content:
+          "Trong khuôn khổ chương trình, đoàn giảng viên và sinh viên đã tham quan văn phòng VNPAY theo hai nhóm, trực tiếp khám phá không gian làm việc và tìm hiểu môi trường hoạt động tại doanh nghiệp.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Đây là cơ hội để các bạn có thêm hình dung cụ thể về môi trường làm việc trong lĩnh vực công nghệ tài chính, cách thức tổ chức không gian và hoạt động tại một doanh nghiệp Fintech, qua đó có thêm cơ sở định hướng nghề nghiệp và chuẩn bị hành trang cho chặng đường phát triển phía trước.",
+      },
+      { type: "image", src: "/images/news/vnpay-trip-7.jpg", caption: "Ban Tổ chức và thí sinh cuộc thi NextGen Manager 2026 tham quan không gian làm việc tại VNPAY." },
+      { type: "image", src: "/images/news/vnpay-trip-8.jpg" },
+      { type: "heading", content: "Đồng hành cùng thế hệ trẻ, kết nối tri thức với thực tiễn" },
+      {
+        type: "paragraph",
+        content:
+          "Đại diện VNPAY và Nhà trường đã trao tặng những món quà tri ân tới nhau, như lời cảm ơn chân thành và sự trân trọng dành cho những trải nghiệm, giá trị ý nghĩa mà cuộc thi mang lại.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-9.jpg",
+        caption: "Đại diện Trường Quốc tế – Đại học Quốc gia Hà Nội trao tặng quà tri ân tới đại diện VNPAY.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Thông qua chương trình NextGen Business Field Trip, VNPAY tiếp tục thể hiện sự quan tâm tới các hoạt động kết nối giáo dục – doanh nghiệp, tạo điều kiện để sinh viên tiếp cận môi trường làm việc thực tế, lắng nghe kinh nghiệm từ đội ngũ quản lý và mở rộng hiểu biết về lĩnh vực công nghệ tài chính. Đồng thời, đây cũng là dịp để các bạn sinh viên có cơ hội gặp gỡ, trao đổi trực tiếp với những người đang đảm nhiệm vai trò quản lý tại doanh nghiệp, từ đó tích lũy thêm kinh nghiệm và góc nhìn thực tiễn cho hành trình phát triển nghề nghiệp.",
+      },
+    ],
+  },
   {
     ...sharedMeta.phunuvn,
     title: sharedMeta.phunuvn.originalTitle,
@@ -1271,6 +1546,257 @@ export const newsArticlesVi: NewsArticleItem[] = [
 ];
 
 export const newsArticlesEn: NewsArticleItem[] = [
+  {
+    ...sharedMeta.gtvhTrip,
+    title: "Next Gen Business Trip: Exploring real-world business practice at VNPAY and TPBank",
+    source: "Giai Tri & Van Hoa",
+    summary:
+      "On November 18, 2026, the NEXT GEN Business Trip of the NextGen Manager 2026 competition took contestants to VNPAY and TPBank, where they saw real workplaces and heard leaders speak about managerial thinking, the art of decision-making, and growing through hands-on experience.",
+    thumbnailAlt:
+      "The Organizing Committee, NextGen Manager 2026 contestants and VNPAY representatives during the NEXT GEN Business Trip.",
+    hasFullText: true,
+    sapo:
+      "On November 18, 2026, the NEXT GEN Business Trip, part of the NextGen Manager competition – Managers in a New Era, gave students the chance to visit, learn about and experience the real working environment at two major companies in fintech and banking: Vietnam Payment Solution JSC (VNPAY) and Tien Phong Commercial Joint Stock Bank (TPBank).",
+    sections: [
+      {
+        type: "paragraph",
+        content:
+          "The trip not only offered a practical view of how businesses operate, but also gave students access to management experience, business thinking and professional skills through direct conversations with company leaders and staff.",
+      },
+      { type: "heading", content: "VNPAY – Understanding managerial thinking and the art of decision-making" },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-1.jpg",
+        caption: "The Organizing Committee, NextGen Manager 2026 contestants and VNPAY representatives at the company's headquarters",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The first stop was VNPAY's headquarters, where students were introduced to the company's history, growth and ecosystem of products and services. With more than 2,000 employees and partnerships with over 40 banks, VNPAY has established itself in electronic payments, offering solutions ranging from digital payments and e-invoicing to everyday utility services.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-2.jpg",
+        caption: "Ms. Nguyễn Ánh Tuyết, Deputy CEO of VNPAY, describes a day in the life of a manager at VNPAY",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ms. Nguyễn Ánh Tuyết, Deputy CEO of VNPAY, then delivered a talk on management lessons distilled from nearly 20 years at the company. Drawing on real stories from running operations and delivering projects, she stressed that the essence of a manager's job is making decisions. At any level, each decision can affect the direction, pace and performance of an entire team.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Through four everyday aspects of the job – running meetings, signing documents, negotiating with partners and managing people – Ms. Tuyết helped students picture the responsibilities of those in charge. Decisions, she said, must rest on data, experience and business acumen. She highlighted one principle in particular: “Never sign anything you do not understand”, because every signature signals not only agreement but also legal responsibility and the company's long-term interests.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Speed also matters for managers as technology and services keep changing. Managers need to keep learning and follow trends, especially advances in artificial intelligence and digital payments. Decisions should be made promptly once the core information is in hand, so that hesitation does not cost opportunities. And when a problem goes beyond their ability to judge, managers should seek advice, filter information and use AI as a support tool rather than relying on it entirely.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Going beyond theory, the session came alive in the Q&A between the speaker and students. Questions on balancing interests in negotiations, resolving conflicts between departments, evaluating and promoting staff, and knowing when to make a hard call opened up many practical perspectives.",
+      },
+      { type: "image", src: "/images/news/gtvh-trip-3.jpg", caption: "Students from different universities put questions to the company" },
+      { type: "image", src: "/images/news/gtvh-trip-4.jpg", caption: "The Q&A session between the speaker and contestants" },
+      {
+        type: "paragraph",
+        content:
+          "Students from many universities took part. Nguyễn Thị Thu Hiền (UEB) and Marus (VNU International School) asked about making decisions when AI-provided data is incomplete and balancing decisions between leadership and stakeholders; Lê Cẩm Tú (Foreign Trade University) raised the issue of balancing interests across departments; Thủy Tiên (NEU) asked how to protect the company's interests when negotiating with partners. In response, the speaker emphasized assessing how much information is available, consulting the people involved and negotiating to find a suitable solution. Answering Lê Mai Anh (USSH) on corporate culture, Ms. Nguyễn Thị Ngọc Phúc said culture is shaped by how leaders behave and set an example, along with everyday care for employees.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-5.jpg",
+        caption: "Ms. Nguyễn Thị Ngọc Phúc, HR Director of VNPAY, gives the welcome address",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Alongside the management talk, Ms. Nguyễn Thị Ngọc Phúc, HR Director of VNPAY, spoke about corporate culture and building a positive workplace. In her view, culture starts with leaders themselves, through setting an example, showing respect and caring for employees. Welfare policies, support from managers and even small things like free breakfast for staff all help create a sense of belonging and a desire to stay with the organization for the long term.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "To close the session, students toured the workspace and saw VNPAY's operations first-hand, observing how departments connect and how a technology company organizes and coordinates its resources in practice.",
+      },
+      { type: "heading", content: "TPBank – Discovering the banking environment and a story of growth through experience" },
+      { type: "image", src: "/images/news/gtvh-trip-6.jpg", caption: "NextGen Manager 2026 contestants at TPBank" },
+      {
+        type: "paragraph",
+        content:
+          "From VNPAY, the group continued to TPBank, the second stop of the program. Students were welcomed by Ms. Nguyễn Thị Lan Ngọc, Director of the Hanoi Branch, and Ms. Nhữ Thị Diễm Thùy, Deputy Director of the Hanoi Branch. In a friendly atmosphere, the bank's representatives greeted the group and introduced the close partnership between TPBank and VNPAY.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-7.jpg",
+        caption: "Ms. Nguyễn Thị Lan Ngọc, Director, and Ms. Nhữ Thị Diễm Thùy, Deputy Director, TPBank Hanoi Branch",
+      },
+      {
+        type: "paragraph",
+        content:
+          "One highlight for students was a talk by Antony, an intern working as a Relationship Manager at TPBank.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-8.jpg",
+        caption: "Antony (Tony), a Management student at VNU International School and an intern in TPBank's customer relationship management team, shares his work experience",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Having started his internship in April, Antony described getting used to the banking environment, from the early days of struggling with industry jargon to gradually building knowledge, confidence and adaptability with guidance from his colleagues. His story showed the value of hands-on experience, a proactive attitude to learning and mentorship in career development.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Students also watched a video on TPBank's milestones and growth, and took part in a minigame with questions about the bank's full name, brand colors, slogan, founding year and its signature automated banking model. The activity livened up the room and helped students remember interesting facts about the bank.",
+      },
+      {
+        type: "image",
+        src: "/images/news/gtvh-trip-9.jpg",
+        caption: "Contestants at the Lunch Networking with TPBank session",
+      },
+      { type: "heading", content: "Broadening perspectives – Connecting knowledge with practice" },
+      {
+        type: "paragraph",
+        content:
+          "Across the two companies, the NEXT GEN Business Trip was more than a simple visit. From management stories at VNPAY to career experiences at TPBank, students could compare what they learn in class with how businesses actually operate, make decisions and develop their people.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In particular, the insights from managers and professionals in the industry helped students understand that technical expertise is only part of their career toolkit. To adapt and grow in today's business environment, every student needs to keep learning and build critical thinking, communication, problem-solving skills and readiness for change.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The NEXT GEN Business Trip on November 18, 2026 has ended, but the knowledge, experiences and perspectives gained will remain valuable for each student in shaping their own path and preparing for future career opportunities.",
+      },
+    ],
+  },
+  {
+    ...sharedMeta.vnpayTrip,
+    title: "VNPAY accompanies the next generation of managers at the NextGen Business Field Trip",
+    source: "VNPAY",
+    sourceRole: "Corporate Partner",
+    summary:
+      "On the morning of November 18, 2026, VNPAY welcomed the Organizing Committee and Round 2 contestants of NextGen Manager 2026 to its Hateco Laroma office in Hanoi for the NextGen Business Field Trip: a talk on what managers really do, a Q&A with VNPAY leaders and a tour of a fintech workplace.",
+    thumbnailAlt:
+      "VNPAY representatives with lecturers and contestants of NextGen Manager 2026 at the NextGen Business Field Trip.",
+    hasFullText: true,
+    sapo:
+      "On the morning of November 18, 2026, at its office in the Hateco Laroma Building, Hanoi, VNPAY welcomed the Organizing Committee and Round 2 contestants of NextGen Manager 2026 – VNU International School, Vietnam National University, Hanoi – as part of the NextGen Business Field Trip. The program gave students a close look at how a fintech company operates, insight into management work, and direct conversations with VNPAY's leadership.",
+    sections: [
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-1.jpg",
+        caption: "VNPAY representatives with lecturers and contestants of NextGen Manager 2026 at the NextGen Business Field Trip.",
+      },
+      { type: "heading", content: "From real business perspectives to the management challenges of a new era" },
+      {
+        type: "paragraph",
+        content:
+          "The program opened with an introductory video in which lecturers and students learned about VNPAY's history, growth, business areas and corporate culture.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In her opening speech, Ms. Nguyễn Thị Ngọc Phúc, HR Director of VNPAY, welcomed the Organizing Committee and contestants of NextGen Manager 2026 and spoke about VNPAY's commitment to activities that connect education with business practice.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-2.jpg",
+        caption: "Ms. Nguyễn Thị Ngọc Phúc, HR Director of VNPAY, opens the program.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "On behalf of the university, Dr. Đào Công Tuấn, Secretary of the Youth Union of the Faculty of Economics and Management and representative of the NextGen Manager 2026 Organizing Committee, spoke about the value of company visits in bringing students closer to the real workplace before they enter Round 2 of the competition.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-3.jpg",
+        caption: "Dr. Đào Công Tuấn, Secretary of the Youth Union of the Faculty of Economics and Management, representing the NextGen Manager 2026 Organizing Committee, speaks at the event.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A centerpiece of the program was the talk “The everyday work of managers in a company; the demands and challenges facing managers today”, delivered by Ms. Nguyễn Ánh Tuyết, Deputy CEO of VNPAY.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-4.jpg",
+        caption: "Ms. Nguyễn Ánh Tuyết, Deputy CEO of VNPAY, speaks about the work, role and challenges of managers in today's business environment.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Grounded in real business operations, Ms. Tuyết shared in-depth insights into the role and responsibilities of managers in an organization. From setting goals, organizing resources and coordinating activities to solving problems that arise in operations, a manager's job is not simply making decisions; it also requires a holistic view, systems thinking and the courage to take responsibility for every choice.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "With technology advancing rapidly and artificial intelligence gradually changing how work is done, managers must keep updating their knowledge, adapt proactively and seize new opportunities to improve performance. Through her own experience leading at VNPAY, students saw more clearly the gap between management knowledge in the classroom and real business demands, and understood that becoming a manager requires steady accumulation of expertise, leadership thinking and adaptability to change.",
+      },
+      { type: "heading", content: "A multinational exchange of diverse management perspectives" },
+      {
+        type: "paragraph",
+        content:
+          "The talk was followed by a live Q&A between the speaker and contestants. The room was lively with questions that showed the students' initiative, eagerness to learn and interest in real management issues.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "International students also joined the exchange. Their questions and discussion in English added a multicultural dimension to the program and let students share views from different backgrounds and experiences. The open interaction between the speaker and students made for a warm, energetic and valuable Q&A session.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-5.jpg",
+        caption: "Students eagerly ask questions and engage with the speaker during the Q&A.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Through Ms. Tuyết's answers, students could compare academic knowledge with real business operations and better understand the challenges, demands and responsibilities of management. VNPAY also presented gifts to students who asked questions, recognizing the contestants' positive spirit and enthusiasm.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-6.jpg",
+        caption: "Ms. Nguyễn Ánh Tuyết answers questions and shares practical experience with NextGen Manager 2026 contestants.",
+      },
+      { type: "heading", content: "Experiencing the workspace and the fintech environment at VNPAY" },
+      {
+        type: "paragraph",
+        content:
+          "During the program, lecturers and students toured the VNPAY office in two groups, exploring the workspace and learning about the company's working environment first-hand.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It gave students a concrete picture of working in financial technology and of how a fintech company organizes its space and operations, helping them orient their careers and prepare for the road ahead.",
+      },
+      { type: "image", src: "/images/news/vnpay-trip-7.jpg", caption: "The Organizing Committee and NextGen Manager 2026 contestants tour the VNPAY workspace." },
+      { type: "image", src: "/images/news/vnpay-trip-8.jpg" },
+      { type: "heading", content: "Supporting young people, connecting knowledge with practice" },
+      {
+        type: "paragraph",
+        content:
+          "Representatives of VNPAY and the university exchanged tokens of appreciation as a sincere thank-you for the meaningful experiences the competition brings.",
+      },
+      {
+        type: "image",
+        src: "/images/news/vnpay-trip-9.jpg",
+        caption: "A representative of VNU International School presents a token of appreciation to VNPAY.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Through the NextGen Business Field Trip, VNPAY continues to support education–business partnerships, giving students access to real workplaces, lessons from its management team and a broader understanding of financial technology. It was also a chance for students to meet and talk directly with people in management roles, gaining experience and practical perspectives for their career journeys.",
+      },
+    ],
+  },
   {
     ...sharedMeta.phunuvn,
     title:

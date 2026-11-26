@@ -10,8 +10,8 @@ const badgeClass: Record<ResultStatus, string> = {
   upcoming: "bg-slate-200 text-slate-600",
 };
 const text = {
-  vi: { status: { published: "Đã công bố", soon: "Sắp công bố", upcoming: "Chưa diễn ra" }, error: "Chưa tải được kết quả. Vui lòng thử lại sau.", view: "Xem danh sách" },
-  en: { status: { published: "Published", soon: "Coming soon", upcoming: "Not started" }, error: "Could not load results. Please try again later.", view: "View list" },
+  vi: { status: { published: "Đã công bố", soon: "Sắp công bố", upcoming: "Chưa diễn ra" }, error: "Chưa tải được kết quả. Vui lòng thử lại sau.", view: "Xem danh sách", names: "Danh sách thí sinh" },
+  en: { status: { published: "Published", soon: "Coming soon", upcoming: "Not started" }, error: "Could not load results. Please try again later.", view: "View list", names: "Contestants" },
 };
 
 export default function Results({ lang }: { lang: Lang }) {
@@ -66,6 +66,19 @@ export default function Results({ lang }: { lang: Lang }) {
                 <span className="text-sm text-muted">{(en && item.dateEn) || item.date}</span>
               )}
             </span>
+            {item.status === "published" && item.names.length > 0 && (
+              <ol
+                aria-label={t.names}
+                className="col-span-2 mt-2 grid list-none grid-cols-1 gap-x-6 gap-y-1.5 border-t border-line pt-4 sm:col-span-3 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {item.names.map((name, i) => (
+                  <li key={name + i} className="flex items-baseline gap-3 text-sm text-ink sm:text-[15px]">
+                    <span className="w-6 shrink-0 text-right text-[13px] font-bold text-orange-ink tabular-nums">{i + 1}.</span>
+                    <span>{name}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
           </li>
         );
       })}

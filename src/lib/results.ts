@@ -12,9 +12,19 @@ export type ResultItem = {
   roundEn: string;
   titleEn: string;
   dateEn: string;
+  /** Danh sách tên hiển thị ngay trên trang (thí sinh đi tiếp); trống thì không hiện */
+  names: string[];
 };
 
-type RawResult = Partial<Record<"round" | "title" | "status" | "date" | "link" | "roundEn" | "titleEn" | "dateEn" | "round_en" | "title_en" | "date_en", string>>;
+type RawResult = Partial<Record<"round" | "title" | "status" | "date" | "link" | "roundEn" | "titleEn" | "dateEn" | "round_en" | "title_en" | "date_en", string>> & {
+  /** JSON: mảng tên; CSV (Google Sheet): các tên cách nhau bởi dấu | */
+  names?: string[] | string;
+};
+
+function parseNames(raw: RawResult["names"]): string[] {
+  const list = Array.isArray(raw) ? raw : (raw || "").split("|");
+  return list.map((n) => n.trim()).filter(Boolean);
+}
 
 const STATUSES: ResultStatus[] = ["upcoming", "soon", "published"];
 
@@ -29,6 +39,7 @@ function normalize(raw: RawResult): ResultItem {
     roundEn: (raw.roundEn || raw.round_en || "").trim(),
     titleEn: (raw.titleEn || raw.title_en || "").trim(),
     dateEn: (raw.dateEn || raw.date_en || "").trim(),
+    names: parseNames(raw.names),
   };
 }
 
